@@ -85,11 +85,20 @@ module.exports = {
         blog: {
           showReadingTime: true,
           editUrl:
-            'https://github.com/go-kratos/go-kratos.dev/edit/master/blog/',
+            'https://github.com/go-kratos/go-kratos.dev/edit/master/',
         },
         theme: {
           customCss: require.resolve('./src/css/custom.css'),
         },
+      },
+    ],
+  ],
+  plugins: [
+    [
+      require.resolve("@easyops-cn/docusaurus-search-local"),
+      {
+        hashed: true,
+        language: ["en", "zh"],
       },
     ],
   ],
