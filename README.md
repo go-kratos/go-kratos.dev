@@ -1,5 +1,5 @@
 # Website
-![documentation](https://github.com/go-kratos/go-kratos.dev/workflows/documentation/badge.svg?branch=gh-pages)
+![documentation](https://github.com/go-kratos/go-kratos.dev/workflows/documentation/badge.svg)
 
 [go-kratos.dev](https://kratos-go.dev) website.
 
