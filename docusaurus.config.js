@@ -70,7 +70,7 @@ module.exports = {
           ],
         },
       ],
-      copyright: `Copyright © ${new Date().getFullYear()} go-kratos. Built with Docusaurus.`,
+      copyright: `Copyright © ${new Date().getFullYear()} go-kratos.`,
     },
   },
   presets: [
