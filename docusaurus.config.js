@@ -7,7 +7,7 @@ module.exports = {
   onBrokenMarkdownLinks: 'warn',
   favicon: 'img/favicon.ico',
   organizationName: 'go-kratos',
-  projectName: 'kratos',
+  projectName: 'go-kratos.dev',
   themeConfig: {
     navbar: {
       title: 'Kratos',
