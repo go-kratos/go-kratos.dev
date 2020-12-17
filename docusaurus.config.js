@@ -80,12 +80,12 @@ module.exports = {
         docs: {
           sidebarPath: require.resolve('./sidebars.js'),
           editUrl:
-            'https://github.com/go-kratos/go-kratos.dev/edit/master/website/',
+            'https://github.com/go-kratos/go-kratos.dev/edit/master/',
         },
         blog: {
           showReadingTime: true,
           editUrl:
-            'https://github.com/go-kratos/go-kratos.dev/edit/master/website/blog/',
+            'https://github.com/go-kratos/go-kratos.dev/edit/master/blog/',
         },
         theme: {
           customCss: require.resolve('./src/css/custom.css'),
