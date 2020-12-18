@@ -3,7 +3,35 @@ id: start
 title: 开始
 ---
 
-## 开始
+## block测试
+
+:::note
+The content and title *can* include markdown.
+:::
+
+:::tip You can specify an optional title
+Heads up! Here's a pro-tip.
+:::
+
+:::info
+Useful information.
+:::
+
+:::caution
+Warning! You better pay attention!
+:::
+
+:::danger
+Danger danger, mayday!
+:::
+
+## 表格
+| Syntax      | Description |
+| ----------- | ----------- |
+| Header      | Title       |
+| Paragraph   | Text        |
+
+## 语法高亮测试
 
 
 bash语法高亮测试
