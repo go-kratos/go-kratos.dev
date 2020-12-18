@@ -27,7 +27,7 @@ module.exports = {
           label: 'API',
           position: 'left',
         },
-        {to: 'blog', label: 'Blog', position: 'right'},
+        { to: 'blog', label: 'Blog', position: 'right' },
         {
           href: 'https://github.com/go-kratos/kratos',
           label: 'GitHub',
@@ -71,6 +71,9 @@ module.exports = {
         },
       ],
       copyright: `Copyright © ${new Date().getFullYear()} go-kratos.`,
+    },
+    prism: {
+      additionalLanguages: ['protobuf', 'toml'],
     },
   },
   presets: [
