@@ -1,150 +1,53 @@
 ---
 id: start
-title: 开始
+title: Kratos 快速开始
 ---
 
-## block测试
+# 版本
+需要使用 kratos v2.0.0 以上版本；
+# 环境准备
+需要安装好对应的依赖环境，以及工具：
+- [go](https://golang.org/dl/)
+- [protoc](https://github.com/protocolbuffers/protobuf)
+- [protoc-gen-go](https://github.com/protocolbuffers/protobuf-go)
 
-:::note
-The content and title *can* include markdown.
-:::
+# 安装
+```
+# 安装 kratos 命令工具
+go get github.com/go-kratos/kratos/cmd/kratos
+go get github.com/go-kratos/kratos/cmd/protoc-gen-go-http
+go get github.com/go-kratos/kratos/cmd/protoc-gen-go-errors
 
-:::tip You can specify an optional title
-Heads up! Here's a pro-tip.
-:::
+# 或者通过 Source 安装
+cd cmd/kratos && go install
+cd cmd/protoc-gen-go-http && go install
+cd cmd/protoc-gen-go-errors && go install
+```
+# 创建项目
+```
+# 创建项目模板
+kratos new helloworld
 
-:::info
-Useful information.
-:::
+cd helloworld
+# 生成proto模板
+kratos proto add api/helloworld/helloworld.proto
+# 生成service模板
+kratos proto service api/helloworld/helloworld.proto -t internal/service
+```
+# 项目编译和运行
+```
+# 生成api下所有proto文件
+make proto
+# 编码cmd下所有main文件
+make build
+# 进行单元测试
+make test
 
-:::caution
-Warning! You better pay attention!
-:::
-
-:::danger
-Danger danger, mayday!
-:::
-
-## 表格
-| Syntax      | Description |
-| ----------- | ----------- |
-| Header      | Title       |
-| Paragraph   | Text        |
-
-## 语法高亮测试
-
-
-bash语法高亮测试
-
-```bash
-#!/bin/bash
-var="Hello World"
- 
-# Run date and hostname command and store output to shell variables
-now="$(date)"
-computer_name="$(hostname)"
- 
-#
-# print it or use the variable
-# Variable names are case sensitive $now and $NOW are different names
-#
-echo "$var"
-echo "Current date and time : $now"
-echo "Computer name : $computer_name"
-echo ""
-
-go get -u github.com/go-kratos/kratos/cmd/kratos
+# 运行项目
+./bin/helloworld
 ```
 
-go语法高亮测试
+# 项目模板
+Kratos 是通过在线 github 模板，进行创建项目模板：
 
-```go
-package config
-
-import (
-	"encoding/json"
-	"strings"
-
-	"github.com/ghodss/yaml"
-	"github.com/golang/protobuf/jsonpb"
-	"github.com/golang/protobuf/proto"
-	"github.com/pelletier/go-toml"
-)
-
-func ApplyJSON(js string, pb proto.Message) error {
-	reader := strings.NewReader(js)
-	m := jsonpb.Unmarshaler{}
-	if err := m.Unmarshal(reader, pb); err != nil {
-		m.AllowUnknownFields = true
-		reader.Reset(js)
-		return m.Unmarshal(reader, pb)
-	}
-	return nil
-}
-```
-
-protobuf语法高亮测试
-
-```protobuf
-syntax = "proto3";
-package config.example.v1;
-
-import "google/protobuf/wrappers.proto";
-option go_package = ".;example";
-
-message example_config {
-    string address = 1;
-    google.protobuf.StringValue password = 2;
-    google.protobuf.Int64Value timeout = 3;
-}
-```
-
-yaml
-
-```yaml
-key: value
-another_key: Another value goes here.
-a_number_value: 100
-scientific_notation: 1e+12
-
-a_sequence:
-  - Item 1
-  - Item 2
-  - 0.5  # sequences can contain disparate types.
-  - Item 4
-  - key: value
-    another_key: another_value
-  -
-    - This is a sequence
-    - inside another sequence
-  - - - Nested sequence indicators
-      - can be collapsed
-
-```
-
-**极为先进的JSON**
-
-```json
-{
-  "key": "value",
-
-  "keys": "must always be enclosed in double quotes",
-  "numbers": 0,
-  "strings": "Hellø, wørld. All unicode is allowed, along with \"escaping\".",
-  "has bools?": true,
-  "nothingness": null,
-
-  "big number": 1.2e+100,
-
-  "objects": {
-    "comment": "Most of your structure will come from objects.",
-
-    "array": [0, 1, 2, 3, "Arrays can have anything in them.", 5],
-
-    "another object": {
-      "comment": "These things can be nested, very useful."
-    }
-  }
-}
-
-```
+* [Service Layout](https://github.com/go-kratos/service-layout)

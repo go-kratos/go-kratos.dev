@@ -6,7 +6,7 @@ module.exports = {
     ],
     "快速上手": [
       'getting-started/start', 
-      'getting-started/install'
+      'getting-started/usage'
     ],
     "用户指南": ['guide/api-protobuf'],
   },
