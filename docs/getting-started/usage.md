@@ -28,11 +28,29 @@ kratos new helloworld
 ```
 Output:
 ```
-Creating service helloworld
-Enumerating objects: 3, done.
-Counting objects: 100% (3/3), done.
-Compressing objects: 100% (3/3), done.
-Total 3 (delta 0), reused 0 (delta 0), pack-reused 0
+helloworld
+|____cmd
+| |____helloworld
+| | |____main.go
+|____go.mod
+|____LICENSE
+|____Makefile
+|____internal
+| |____biz
+| | |____README.md
+| |____service
+| | |____README.md
+| | |____greeter.go
+| |____data
+| | |____README.md
+|____go.sum
+|____README.md
+|____api
+| |____helloworld
+| | |____helloworld_grpc.pb.go
+| | |____helloworld.proto
+| | |____helloworld.pb.go
+| | |____helloworld_http.pb.go
 ```
 
 ## 添加 Proto 文件
