@@ -1,6 +1,6 @@
 ---
 id: usage
-title: Kratos 工具使用
+title: 工具使用
 ---
 
 ## 安装

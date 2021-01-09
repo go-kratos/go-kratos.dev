@@ -1,6 +1,6 @@
 ---
 id: start
-title: Kratos 快速开始
+title: 快速开始
 ---
 
 # 版本
