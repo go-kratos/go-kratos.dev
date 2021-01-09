@@ -50,4 +50,4 @@ make test
 ## 项目模板
 Kratos 是通过在线 github 模板，进行创建项目模板：
 
-* [Service Layout](https://github.com/go-kratos/service-layout)
+* [Service Layout](https://github.com/go-kratos/kratos-layout)
