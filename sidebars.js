@@ -8,6 +8,6 @@ module.exports = {
       'getting-started/start', 
       'getting-started/install'
     ],
-    "教程": ['tutorial/step-1'],
+    "用户指南": ['guide/api-protobuf'],
   },
 };
