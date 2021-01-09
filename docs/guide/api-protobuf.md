@@ -160,23 +160,6 @@ message HelloReply {
     string message = 1;
 }
 ```
-业务码定义(ecode.proto)：
-```protobuf
-syntax = "proto3";
-
-package kratos.demo.errors;
-
-// 多语言特定包名，用于源代码引用
-option go_package = "github.com/go-kratos/kratos/demo/errors;errors";
-option java_multiple_files = true;
-option java_package = "com.github.kratos.demo.errors";
-option objc_class_prefix = "KratosDemoErrors";
-
-enum Kratos {
-    RequestBlocked = 0;     // 请求已被封禁
-    MissingField = 1;       // 请求参数缺失
-}
-```
 
 ## References
 * https://developers.google.com/protocol-buffers/docs/style

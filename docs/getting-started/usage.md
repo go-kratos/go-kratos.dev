@@ -31,10 +31,15 @@ Output:
 helloworld
 |____api
 | |____helloworld
-| | |____helloworld_grpc.pb.go
-| | |____helloworld.proto
-| | |____helloworld.pb.go
-| | |____helloworld_http.pb.go
+| | |____v1
+| | | |____helloworld_grpc.pb.go
+| | | |____helloworld.proto
+| | | |____helloworld.pb.go
+| | | |____helloworld_http.pb.go
+| | |____errors
+| | | |____helloworld_errors.pb.go
+| | | |____helloworld.proto
+| | | |____helloworld.pb.go
 |____cmd
 | |____helloworld
 | | |____main.go
