@@ -29,12 +29,15 @@ kratos new helloworld
 Output:
 ```
 helloworld
+|____api
+| |____helloworld
+| | |____helloworld_grpc.pb.go
+| | |____helloworld.proto
+| | |____helloworld.pb.go
+| | |____helloworld_http.pb.go
 |____cmd
 | |____helloworld
 | | |____main.go
-|____go.mod
-|____LICENSE
-|____Makefile
 |____internal
 | |____biz
 | | |____README.md
@@ -43,14 +46,11 @@ helloworld
 | | |____greeter.go
 | |____data
 | | |____README.md
-|____go.sum
 |____README.md
-|____api
-| |____helloworld
-| | |____helloworld_grpc.pb.go
-| | |____helloworld.proto
-| | |____helloworld.pb.go
-| | |____helloworld_http.pb.go
+|____Makefile
+|____LICENSE
+|____go.mod
+|____go.sum
 ```
 
 ## 添加 Proto 文件
