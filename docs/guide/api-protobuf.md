@@ -1,22 +1,13 @@
-# APIs 接口规范定义
+---
+id: api-protobuf
+title: APIs 接口规范定义
+---
 
 这里主要进行修订Proto规范约定和多语言之间特定商定，帮助大家写出更标准的接口。
 
 API接口统一以HTTP/GRPC为基础，并通过Protobuf进行协议定义，包括完整的Request/Reply，以及对应的接口错误码（Errors）。
 
-## Table of Contents
-* [Directory Structure](#directory-structure)
-* [Package Name](#package-name)
-  * [go_package](#go_package)
-  * [java_package](#java_package)
-  * [objc_class_prefix](#objc_class_prefix)
-* [Version](#version)
-* [Import](#import)
-* [Naming Conventions](#naming-conventions)
-* [Comment](#comment)
-* [Examples](#examples)
-
-## Directory Structure
+## Structure
 API接口可以定义到项目，或者在统一仓库中管理Proto，类似googleapis、envoy-api、istio-api；
 
 项目中定义Proto，以api为包名根目录：
