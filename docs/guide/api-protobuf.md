@@ -1,7 +1,6 @@
 ---
 id: api-protobuf
 title: APIs 接口规范定义
-slug: /
 ---
 
 这里主要进行修订Proto规范约定和多语言之间特定商定，帮助大家写出更标准的接口。
