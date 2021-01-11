@@ -22,9 +22,9 @@ go env -w GO111MODULE=on
 ## 安装
 ```
 # 安装 kratos 命令工具
-go get github.com/go-kratos/kratos/cmd/kratos
-go get github.com/go-kratos/kratos/cmd/protoc-gen-go-http
-go get github.com/go-kratos/kratos/cmd/protoc-gen-go-errors
+go get -u github.com/go-kratos/kratos/cmd/kratos
+go get -u github.com/go-kratos/kratos/cmd/protoc-gen-go-http
+go get -u github.com/go-kratos/kratos/cmd/protoc-gen-go-errors
 
 # 或者通过 Source 安装
 cd cmd/kratos && go install
