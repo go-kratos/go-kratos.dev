@@ -61,7 +61,7 @@ make test
 ./bin/helloworld
 ```
 
-## 项目模板结构
+## 项目模板
 Kratos 是通过在线 github 仓库模板，并且进行拉取创建项目，对应模板地址：
 
-* [Service Layout](https://github.com/go-kratos/kratos-layout)
+* [Kratos Layout](https://github.com/go-kratos/kratos-layout)
