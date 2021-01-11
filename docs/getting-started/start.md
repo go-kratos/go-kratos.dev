@@ -32,6 +32,7 @@ go get -u github.com/go-kratos/kratos/v2/cmd/protoc-gen-go-errors
 
 # 或者源代码拉取到本地，手动安装
 git clone -b v2.0.x https://github.com/go-kratos/kratos
+cd kratos
 cd cmd/kratos && go install
 cd cmd/protoc-gen-go-http && go install
 cd cmd/protoc-gen-go-errors && go install
