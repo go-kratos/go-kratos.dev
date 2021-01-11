@@ -52,7 +52,7 @@ kratos proto service api/helloworld/helloworld.proto -t internal/service
 ```bash
 # 生成api下所有proto文件
 make proto
-# 编码cmd下所有main文件
+# 编译cmd下所有main文件
 make build
 # 进行单元测试
 make test
@@ -61,7 +61,7 @@ make test
 ./bin/helloworld
 ```
 
-## 项目模板
-Kratos 是通过在线 github 模板，进行创建项目模板：
+## 项目模板结构
+Kratos 是通过在线 github 仓库模板，并且进行拉取创建项目，对应模板地址：
 
 * [Service Layout](https://github.com/go-kratos/kratos-layout)
