@@ -13,7 +13,7 @@ title: 快速开始
 - [protoc-gen-go](https://github.com/protocolbuffers/protobuf-go)
 
 建议开启GO111MODULE
-```
+```bash
 go env -w GO111MODULE=on
 ```
 
@@ -24,7 +24,7 @@ go env -w GO111MODULE=on
 注意，目前v2仍未合并master发布正式版，因此请采用后一种拉取项目到本地，手动go install的方法安装
 :::
 
-```
+```bash
 # 安装 kratos 命令工具
 go get -u github.com/go-kratos/kratos/v2/cmd/kratos
 go get -u github.com/go-kratos/kratos/v2/cmd/protoc-gen-go-http
@@ -38,7 +38,7 @@ cd cmd/protoc-gen-go-http && go install
 cd cmd/protoc-gen-go-errors && go install
 ```
 ## 创建项目
-```
+```bash
 # 创建项目模板
 kratos new helloworld
 
@@ -49,7 +49,7 @@ kratos proto add api/helloworld/helloworld.proto
 kratos proto service api/helloworld/helloworld.proto -t internal/service
 ```
 ## 项目编译和运行
-```
+```bash
 # 生成api下所有proto文件
 make proto
 # 编码cmd下所有main文件

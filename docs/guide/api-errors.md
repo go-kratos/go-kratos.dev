@@ -6,7 +6,7 @@ title: APIs 错误码规范定义
 APIs 错误码可以统一通过 proto 定义，然后通过 protoc-gen-go-errors 生成判定代码。
 
 ### 安装
-```
+```bash
 go get github.com/go-kratos/kratos/cmd/protoc-gen-go-errors
 ```
 
@@ -38,11 +38,11 @@ enum Helloworld {
 
 通过 proto 生成对应的代码：
 
-```
+```bash
 make proto
 ```
 Source:
-```
+```go
 const (
 	Errors_MissingName = "Helloworld_MissingName"
 )

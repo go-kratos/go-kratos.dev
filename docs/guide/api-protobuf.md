@@ -11,7 +11,7 @@ API接口统一以HTTP/GRPC为基础，并通过Protobuf进行协议定义，包
 API接口可以定义到项目，或者在统一仓库中管理Proto，类似googleapis、envoy-api、istio-api；
 
 项目中定义Proto，以api为包名根目录：
-```
+```bash
 |____kratos-demo
 | |____api // 服务API定义
 | | |____kratos
@@ -20,7 +20,7 @@ API接口可以定义到项目，或者在统一仓库中管理Proto，类似goo
 | | | | | |____demo.proto
 ```
 在统一仓库中管理Proto，以仓库为包名根目录：
-```
+```bash
 |____api // 服务API定义
 | |____kratos
 | | |____demo
