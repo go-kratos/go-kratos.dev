@@ -20,13 +20,18 @@ go env -w GO111MODULE=on
 如果拉取依赖遇到网络问题，建议[配置GOPROXY](https://goproxy.cn/)
 
 ## 安装
+:::caution
+注意，目前v2仍未合并master发布正式版，因此请采用后一种拉取项目到本地，手动go install的方法安装
+:::
+
 ```
 # 安装 kratos 命令工具
-go get -u github.com/go-kratos/kratos/cmd/kratos
-go get -u github.com/go-kratos/kratos/cmd/protoc-gen-go-http
-go get -u github.com/go-kratos/kratos/cmd/protoc-gen-go-errors
+go get -u github.com/go-kratos/kratos/v2/cmd/kratos
+go get -u github.com/go-kratos/kratos/v2/cmd/protoc-gen-go-http
+go get -u github.com/go-kratos/kratos/v2/cmd/protoc-gen-go-errors
 
-# 或者通过 Source 安装
+# 或者源代码拉取到本地，手动安装
+git clone -b v2.0.x https://github.com/go-kratos/kratos
 cd cmd/kratos && go install
 cd cmd/protoc-gen-go-http && go install
 cd cmd/protoc-gen-go-errors && go install
