@@ -5,11 +5,19 @@ title: 快速开始
 
 ## 版本需求
 需要使用 kratos v2.0.0 以上版本；
+
 ## 环境准备
 需要安装好对应的依赖环境，以及工具：
 - [go](https://golang.org/dl/)
 - [protoc](https://github.com/protocolbuffers/protobuf)
 - [protoc-gen-go](https://github.com/protocolbuffers/protobuf-go)
+
+建议开启GO111MODULE
+```
+go env -w GO111MODULE=on
+```
+
+如果拉取依赖遇到网络问题，建议[配置GOPROXY](https://goproxy.cn/)
 
 ## 安装
 ```
