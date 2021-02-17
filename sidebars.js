@@ -14,6 +14,9 @@ module.exports = {
     ],
     "工程骨架(Kratos Layout)": [
       'layout/layout-intro',
-  ],
+    ],
+    "组件": [
+      'component/component-intro',
+    ],
   },
 };
