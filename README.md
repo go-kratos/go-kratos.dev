@@ -10,3 +10,18 @@
 `main`分支更新将自动触发构建并部署。
 
 文档编辑格式和高级用法请参考[Docusaurus文档](https://v2.docusaurus.io/docs/docs-introduction)。
+
+
+# Running the development server
+To preview your changes as you edit the files, you can run a local development server that will serve your website and it will reflect the latest changes.
+
+```bash
+yarn run start
+```
+
+# Build
+Build static site into `build` directory
+
+```bash
+yarn run build
+```

@@ -11,6 +11,9 @@ module.exports = {
     "用户指南": [
       'guide/api-protobuf',
       'guide/api-errors'
+    ],
+    "工程骨架(Kratos Layout)": [
+      'layout/layout-intro',
   ],
   },
 };
