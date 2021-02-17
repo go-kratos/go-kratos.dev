@@ -20,9 +20,6 @@ go env -w GO111MODULE=on
 如果拉取依赖遇到网络问题，建议[配置GOPROXY](https://goproxy.cn/)
 
 ## 安装
-:::caution
-注意，目前v2仍未合并master发布正式版，因此请采用后一种拉取项目到本地，手动go install的方法安装
-:::
 
 ```bash
 # 安装 kratos 命令工具

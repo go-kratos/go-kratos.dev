@@ -6,7 +6,7 @@ title: 工具使用
 ## 安装
 
 ```bash
-go get -u github.com/go-kratos/kratos/v2/cmd/kratos
+go get -u github.com/go-kratos/kratos/cmd/kratos/v2
 ```
 
 ## 工具使用
