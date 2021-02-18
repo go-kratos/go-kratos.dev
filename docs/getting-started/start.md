@@ -47,6 +47,8 @@ kratos proto service api/helloworld/helloworld.proto -t internal/service
 ```
 ## 项目编译和运行
 ```bash
+# 初始化依赖工具
+make init
 # 生成api下所有proto文件
 make proto
 # 编译cmd下所有main文件
