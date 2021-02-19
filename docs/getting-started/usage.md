@@ -16,7 +16,7 @@ go get -u github.com/go-kratos/kratos/cmd/kratos/v2
 ```bash
 kratos -v
 ```
-Output:
+输出:
 ```
 kratos version v2.0.0
 ```
@@ -26,7 +26,7 @@ kratos version v2.0.0
 ```bash
 kratos new helloworld
 ```
-Output:
+输出:
 ```bash
 helloworld
 |____api
@@ -62,7 +62,7 @@ helloworld
 ```bash
 kratos proto add api/helloworld/demo.proto
 ```
-Output:
+输出:
 
 api/helloworld/demo.proto
 
@@ -106,7 +106,7 @@ kratos proto source api/helloworld/demo.proto
 // 或者
 make proto
 ```
-Output:
+输出:
 ```bash
 api/helloworld/demo.pb.go
 api/helloworld/demo_grpc.pb.go
