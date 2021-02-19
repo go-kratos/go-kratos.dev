@@ -53,7 +53,7 @@ func IsMissingName(err error) bool {
 ```
 
 ### Errors 使用
-```
+```go
 import "github.com/go-kratos/kratos/errors"
 import apierr "app/api/errors"
 
