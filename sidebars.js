@@ -3,7 +3,7 @@ module.exports = {
     "简介": [
       'intro/intro',
       'intro/layout',
-      'changelog'
+      'intro/changelog'
     ],
     "快速上手": [
       'getting-started/start', 
