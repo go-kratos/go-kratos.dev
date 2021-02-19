@@ -57,7 +57,7 @@ make build
 make test
 
 # 运行项目
-./bin/helloworld
+./bin/helloworld -conf ./configs
 ```
 
 ## 项目模板
