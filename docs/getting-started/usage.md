@@ -119,7 +119,7 @@ api/helloworld/demo_http.pb.go
 ```bash
 kratos proto service api/helloworld/demo.proto -t internal/service
 ```
-输出:
+输出:  
 internal/service/demo.go
 
 ```go
