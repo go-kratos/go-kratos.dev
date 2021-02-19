@@ -12,7 +12,7 @@ API接口可以定义到项目，或者在统一仓库中管理Proto，类似goo
 
 项目中定义Proto，以api为包名根目录：
 ```bash
-|____kratos-demo
+kratos-demo：
 | |____api // 服务API定义
 | | |____kratos
 | | | |____demo
@@ -21,6 +21,7 @@ API接口可以定义到项目，或者在统一仓库中管理Proto，类似goo
 ```
 在统一仓库中管理Proto，以仓库为包名根目录：
 ```bash
+kratos-apis:
 |____api // 服务API定义
 | |____kratos
 | | |____demo
