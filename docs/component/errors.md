@@ -56,6 +56,7 @@ func IsMissingName(err error) bool {
 ```
 import "github.com/go-kratos/kratos/errors"
 import apierr "app/api/errors"
+
 func doSomething() error {
 	return errrors.InvalidArgument("reason", "message")
 }
