@@ -62,6 +62,6 @@ func doSomething() error {
 }
 
 if err := doSomething(); apierr.IsMissingName(err) {
-	// DOTO
+	// TODO
 }
 ```
