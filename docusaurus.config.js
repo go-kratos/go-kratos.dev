@@ -47,7 +47,7 @@ module.exports = {
               to: 'docs/',
             },
             {
-              label: 'v1 Docs',
+              label: 'Kratos v1',
               href: 'http://v1.go-kratos.dev/',
             },
           ],

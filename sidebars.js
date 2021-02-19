@@ -8,6 +8,8 @@ module.exports = {
     "快速上手": [
       'getting-started/start', 
       'getting-started/usage'
+      'getting-started/wire'
+      'getting-started/data'
     ],
     "框架组件": [
       'component/api',
