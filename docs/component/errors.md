@@ -1,6 +1,6 @@
 ---
-id: api-errors
-title: APIs 错误码规范定义
+id: errors
+title: Errors
 ---
 
 APIs 错误码可以统一通过 proto 定义，然后通过 protoc-gen-go-errors 生成判定代码。
@@ -41,7 +41,7 @@ enum Helloworld {
 ```bash
 make proto
 ```
-Source:
+生成的源码，可以直接通过 `errors.IsMissingName(err)` 进行对应的错误判定:
 ```go
 const (
 	Errors_MissingName = "Helloworld_MissingName"

@@ -1,6 +1,6 @@
 ---
 id: usage
-title: 工具使用
+title: 工具介绍
 ---
 
 ## 安装

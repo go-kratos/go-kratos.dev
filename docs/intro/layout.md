@@ -1,18 +1,18 @@
 ---
-id: layout-intro
-title: Kratos Layout介绍
+id: layout
+title: Kratos 工程骨架 
 ---
-我们创建了[kratos-layout](https://github.com/go-kratos/kratos-layout)作为使用`kratos new`新建项目时所使用结构，其中包括了开发过程中所需的配套工具链(Makefile等)，便于开发者更高效地维护整个项目，本项目亦可作为使用Kratos构建微服务的工程化最佳实践的参考。
+我们创建了 [kratos-layout](https://github.com/go-kratos/kratos-layout) 作为使用 `kratos new` 新建项目时所使用结构，其中包括了开发过程中所需的配套工具链( Makefile 等)，便于开发者更高效地维护整个项目，本项目亦可作为使用 Kratos 构建微服务的工程化最佳实践的参考。
 
 <img src="/images/ddd.jpg" alt="kratos ddd" width="500px" />
 
-使用如下命令即可基于kratos-layout创建项目
+使用如下命令即可基于 kratos-layout 创建项目：
 
 ```
 kratos new <project-name>
 ```
 
-生成的目录结构如下
+生成的目录结构如下：
 
 ```
 .

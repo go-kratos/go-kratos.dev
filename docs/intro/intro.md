@@ -1,6 +1,6 @@
 ---
 id: intro
-title: Kratos
+title: Kratos 概念
 slug: /
 ---
 
