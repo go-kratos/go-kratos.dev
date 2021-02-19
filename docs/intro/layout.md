@@ -1,6 +1,6 @@
 ---
 id: layout
-title: Kratos 工程骨架 
+title: 工程骨架 
 ---
 我们创建了 [kratos-layout](https://github.com/go-kratos/kratos-layout) 作为使用 `kratos new` 新建项目时所使用结构，其中包括了开发过程中所需的配套工具链( Makefile 等)，便于开发者更高效地维护整个项目，本项目亦可作为使用 Kratos 构建微服务的工程化最佳实践的参考。
 
