@@ -102,8 +102,6 @@ message ListDemoReply {}
 ## 生成 Proto 代码
 可以通过 make proto 直接生成，或者：
 ```bash
-kratos proto source api/helloworld/demo.proto
-// 或者
 make proto
 ```
 输出:
