@@ -7,7 +7,7 @@ title: Config
 ### 使用方式
 配置源可以指定多个，并且 config 会进行合并成 map[string]interface{}，然后通过 Scan 或者 Value 获取值内容；
 
-```
+```go
 c := config.New(
     config.WithSource(
         file.NewSource(path),
