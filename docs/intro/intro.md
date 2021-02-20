@@ -39,4 +39,4 @@ Kratos 一套轻量级 Go 微服务框架，包含大量微服务相关框架及
 
 ## Architecture
 
-<img src="/images/arch.png" alt="kratos architecture" width="800px" />
+<img src="/images/arch.png" alt="kratos architecture" width="650px" />
