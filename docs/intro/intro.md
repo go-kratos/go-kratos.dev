@@ -35,3 +35,5 @@ Kratos 一套轻量级 Go 微服务框架，包含大量微服务相关框架及
 * Encoding：支持Accept和Content-Type进行自动选择内容编码；
 * Transport：通用的 HTTP/gRPC 传输层，实现统一的 Middleware 插件支持；
 * Server：进行基础的 Server 层封装，统一以 Options 方式配置使用；
+
+<img src="/images/arch.jpg" alt="kratos ddd" width="600px" />
