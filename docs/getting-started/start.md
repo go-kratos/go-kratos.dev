@@ -51,6 +51,16 @@ make test
 ./bin/helloworld -conf ./configs
 ```
 
+## 测试调试
+```bash
+curl 'http://127.0.0.1:8000/helloworld/tony'
+
+输出：
+{
+  "message": "Hello tony"
+}
+```
+
 ## 项目模板
 Kratos 是通过在线 github 仓库模板，并且进行拉取创建项目，对应模板地址：
 
