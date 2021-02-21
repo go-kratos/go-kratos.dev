@@ -15,7 +15,7 @@ title: 依赖注入
 go get github.com/google/wire/cmd/wire
 ```
 
-### Wire 的工作原理
+### Wire 工作原理
 
 Wire 具有两个基本概念：*Provider* 和 *Injector*。
 
