@@ -10,7 +10,7 @@ APIs 错误码可以统一通过 proto 定义，然后通过 protoc-gen-go-error
 go get github.com/go-kratos/kratos/cmd/protoc-gen-go-errors
 ```
 
-### Errors 定义
+### 错误定义
 
 api/helloworld/errors/helloworld.proto
 
@@ -34,7 +34,7 @@ enum Helloworld {
 }
 ```
 
-### Errors 生成
+### 错误生成
 
 通过 proto 生成对应的代码：
 
@@ -52,7 +52,7 @@ func IsMissingName(err error) bool {
 }
 ```
 
-### Errors 使用
+### 使用方式
 ```go
 import "github.com/go-kratos/kratos/errors"
 import apierr "app/api/errors"
