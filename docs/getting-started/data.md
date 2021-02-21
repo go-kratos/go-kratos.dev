@@ -126,4 +126,4 @@ func CreateUser(ctx context.Context, client *ent.Client) (*ent.User, error) {
 ### References
 
 * https://entgo.io/docs/getting-started/
-* 
+* https://github.com/go-kratos/examples/tree/main/blog/internal/data
