@@ -5,9 +5,9 @@ title: 依赖注入
 
 **Wire** 是一个灵活的依赖注入工具，通过自动生成代码的方式在编译期完成依赖注入。
 
-在各个组件之间的依赖关系，通常鼓励显式初始化，而不是全局变量传递。
+在各个组件之间的依赖关系中，通常鼓励显式初始化，而不是全局变量传递。
 
-所有通过 *Wire* 进行初始化代码，可以很好地处理组件之间的耦合，以及提供代码维护性。
+所有通过 *Wire* 进行初始化代码，可以很好地解决组件之间的耦合，以及提高代码维护性。
 
 ### Wire 安装工具
 
@@ -84,3 +84,8 @@ func initApp(*conf.Server, *conf.Data, log.Logger) (*kratos.App, error) {
 }
 ```
 
+## References
+
+* https://blog.golang.org/wire
+* https://github.com/google/wire
+* https://medium.com/@dche423/master-wire-cn-d57de86caa1b
