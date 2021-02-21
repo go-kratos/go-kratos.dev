@@ -17,9 +17,9 @@ go get github.com/google/wire/cmd/wire
 
 ### Wire 的工作原理
 
-**Wire** 具有两个基本概念：*Provider* 和 *Injector*。
+Wire 具有两个基本概念：*Provider* 和 *Injector*。
 
-**Provider** 是一个普通的 *Go Func* ，这个方法也可以接收其它 *Provider* 的返回值，从而形成了依赖注入；
+Provider 是一个普通的 *Go Func* ，这个方法也可以接收其它 *Provider* 的返回值，从而形成了依赖注入；
 
 ```
 // 提供一个配置文件（也可能是配置文件）
@@ -45,7 +45,7 @@ func NewUserRepo(d *data.Data) (*UserRepo, error) {...}
 ```
 -data
 --data.go    // var ProviderSet = wire.NewSet(NewData, NewGreeterRepo)
---greeter.go // func NewGreeterRepo(data *Data, logger log.Logger) biz.GreeterRepo
+--greeter.go // func NewGreeterRepo(data *Data, logger log.Logger) biz.GreeterRepo {...}
 ```
 
 然后通过 *wire.go* 中定义所有 *ProviderSet* 可以完成依赖注入配置。
