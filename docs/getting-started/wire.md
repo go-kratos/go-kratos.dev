@@ -9,6 +9,12 @@ title: 依赖注入
 
 所有通过 *Wire* 进行初始化代码，可以很好地处理组件之间的耦合，以及提供代码维护性。
 
+### Wire 安装工具
+
+```
+go get github.com/google/wire/cmd/wire
+```
+
 ### Wire 的工作原理
 
 **Wire** 具有两个基本概念：*Provider* 和 *Injector*。
@@ -43,4 +49,38 @@ func NewUserRepo(d *data.Data) (*UserRepo, error) {...}
 ```
 
 然后通过 *wire.go* 中定义所有 *ProviderSet* 可以完成依赖注入配置。
+
+### Wire 初始化组件
+
+通过 wire 初始化组件，需要定义对应的 wire.go，以及 kratos application 用于启动管理。
+
+```
+// 应用程序入口
+// 通过命令 wire 或者 go generate 可以生成依赖注入代码
+cmd
+-main.go
+-wire.go
+-wire_gen.go
+
+// main.go 创建 kratos 应用生命周期管理
+func newApp(logger log.Logger, hs *http.Server, gs *grpc.Server, greeter *service.GreeterService) *kratos.App {
+	pb.RegisterGreeterServer(gs, greeter)
+	pb.RegisterGreeterHTTPServer(hs, greeter)
+	return kratos.New(
+		kratos.Name(Name),
+		kratos.Version(Version),
+		kratos.Logger(logger),
+		kratos.Server(
+			hs,
+			gs,
+		),
+	)
+}
+
+// wire.go 初始化模块
+func initApp(*conf.Server, *conf.Data, log.Logger) (*kratos.App, error) {
+  // 构建所有模块中的 ProviderSet，用于生成 wire_gen.go 自动依赖注入文件
+	panic(wire.Build(server.ProviderSet, data.ProviderSet, biz.ProviderSet, service.ProviderSet, newApp))
+}
+```
 
