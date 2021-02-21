@@ -40,10 +40,6 @@ kratos new <project-name>
 ├── go.mod           
 ├── go.sum
 └── internal  // 该服务所有不对外暴露的代码，通常的业务逻辑都在这下面，使用internal避免错误引用
-    ├── biz  // 业务逻辑的组装层，类似 DDD 的 domain 层，data 类似 DDD 的 repo，repo 接口在这里定义，使用依赖倒置的原则。
-    │   ├── README.md
-    │   ├── biz.go
-    │   └── greeter.go
     ├── conf  // 内部使用的config的结构定义，使用proto格式生成
     │   ├── conf.pb.go
     │   └── conf.proto
@@ -51,12 +47,16 @@ kratos new <project-name>
     │   ├── README.md
     │   ├── data.go
     │   └── greeter.go
-    ├── server  // http和grpc实例的创建和配置
-    │   ├── grpc.go
-    │   ├── http.go
-    │   └── server.go
-    └── service  // 实现了 api 定义的服务层，类似 DDD 的 application 层，处理 DTO 到 biz 领域实体的转换(DTO -> DO)，同时协同各类 biz 交互，但是不应处理复杂逻辑
-        ├── README.md
-        ├── greeter.go
-        └── service.go
+    ├── biz  // 业务逻辑的组装层，类似 DDD 的 domain 层，data 类似 DDD 的 repo，repo 接口在这里定义，使用依赖倒置的原则。
+    │   ├── README.md
+    │   ├── biz.go
+    │   └── greeter.go
+    ├──service  // 实现了 api 定义的服务层，类似 DDD 的 application 层，处理 DTO 到 biz 领域实体的转换(DTO -> DO)，同时协同各类 biz 交互，但是不应处理复杂逻辑
+    │   ├── README.md
+    │   ├── greeter.go
+    │   └── service.go
+    └── server  // http和grpc实例的创建和配置
+        ├── grpc.go
+        ├── http.go
+        └── server.go
 ```
