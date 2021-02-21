@@ -7,7 +7,7 @@ title: Logging
 
 为了方便业务自适配不同的log接入使用，Logger只包含了最简单的print接口。当业务需要在kratos框架内部使用自定义的logging middlerware的时候，只需要简单实现Print方法即可
 
-```
+```go
 type Logger interface {
 	Print(pairs ...interface{})
 }
@@ -18,7 +18,7 @@ type Logger interface {
 
 使用自带的StdLogger可以创建标准输出日志对象. 通过NewHelper构造日志模块，help生成的日志模块可以提供不同等级的日志输出。
 
-```
+```go
 logger := log.NewStdLogger()
 log := log.NewHelper("module_name", logger)
 // Levels
@@ -31,7 +31,7 @@ log.Infow("field_name", "some log")
 
 引入 fluent sdk
 
-```
+```go
 import "github.com/go-kratos/fluent"
 
 addr := "unix:///var/run/fluent/fluent.sock"
@@ -50,7 +50,7 @@ log.Infow("field_name", "some log")
 
 在http.ServerOption 中引入logging.Server(), 则kratos会在每次收到http请求的时候打印详细请求信息。
 
-```
+```go
 var opts = []http.ServerOption{
 		http.Middleware(
 			middleware.Chain(
