@@ -11,7 +11,7 @@ title: 依赖注入
 
 ### Wire 安装工具
 
-```
+```bash
 go get github.com/google/wire/cmd/wire
 ```
 
@@ -21,7 +21,7 @@ Wire 具有两个基本概念：*Provider* 和 *Injector*。
 
 Provider 是一个普通的 *Go Func* ，这个方法也可以接收其它 *Provider* 的返回值，从而形成了依赖注入；
 
-```
+```go
 // 提供一个配置文件（也可能是配置文件）
 func NewConfig() *conf.Data {...}
 
@@ -42,7 +42,7 @@ func NewUserRepo(d *data.Data) (*UserRepo, error) {...}
 
 并且我们在每个组件提供入口即可，不需要其它依赖依赖，例如：
 
-```
+```go
 -data
 --data.go    // var ProviderSet = wire.NewSet(NewData, NewGreeterRepo)
 --greeter.go // func NewGreeterRepo(data *Data, logger log.Logger) biz.GreeterRepo {...}
@@ -54,7 +54,7 @@ func NewUserRepo(d *data.Data) (*UserRepo, error) {...}
 
 通过 wire 初始化组件，需要定义对应的 wire.go，以及 kratos application 用于启动管理。
 
-```
+```go
 // 应用程序入口
 // 通过命令 wire 或者 go generate 可以生成依赖注入代码
 cmd
