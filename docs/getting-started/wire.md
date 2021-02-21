@@ -56,7 +56,6 @@ func NewUserRepo(d *data.Data) (*UserRepo, error) {...}
 
 ```go
 // 应用程序入口
-// 通过命令 wire 或者 go generate 可以生成依赖注入代码
 cmd
 -main.go
 -wire.go
@@ -82,6 +81,10 @@ func initApp(*conf.Server, *conf.Data, log.Logger) (*kratos.App, error) {
     // 构建所有模块中的 ProviderSet，用于生成 wire_gen.go 自动依赖注入文件
     panic(wire.Build(server.ProviderSet, data.ProviderSet, biz.ProviderSet, service.ProviderSet, newApp))
 }
+```
+在项目的 main 目录中，运行 go generate 进行生成编译期依赖注入代码：
+```
+go generate ./...
 ```
 
 ## References
