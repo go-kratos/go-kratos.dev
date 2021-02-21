@@ -59,7 +59,7 @@ function Home() {
   return (
     <Layout
       title={` A Go framework for microservices. `}
-      description="Description will go into a meta tag in <head />">
+      description="Kratos is a lightweight Go microservice framework that contains a large number of microservice related frameworks and tools. <head />">
       <header className={clsx('hero hero--primary', styles.heroBanner)}>
         <div className="container">
           <h1 className="hero__title">{siteConfig.title}</h1>
