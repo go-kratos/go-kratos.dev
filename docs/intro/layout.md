@@ -32,7 +32,7 @@ kratos new <project-name>
 │           ├── greeter.proto
 │           ├── greeter_grpc.pb.go
 │           └── greeter_http.pb.go
-├── cmd         // 整个项目启动的入口文件
+├── cmd    // 整个项目启动的入口文件
 │   └── server
 │       ├── main.go
 │       ├── wire.go  // 我们使用wire来维护依赖注入
