@@ -16,9 +16,11 @@ kratos new <project-name>
 
 ```
 .
-├── LICENSE  
+├── go.mod           
+├── go.sum
+├── LICENSE
 ├── Makefile   // make命令使用的配置文件，可以在这里新增您的自定义命令
-├── README.md     
+├── README.md
 ├── api   // 下面维护了微服务使用的proto文件以及根据它们所生成的go文件
 │   └── helloworld
 │       ├── errors
@@ -37,8 +39,6 @@ kratos new <project-name>
 │       └── wire_gen.go
 ├── configs  // 这里通常维护一些本地调试用的样例配置文件
 │   └── config.yaml
-├── go.mod           
-├── go.sum
 └── internal  // 该服务所有不对外暴露的代码，通常的业务逻辑都在这下面，使用internal避免错误引用
     ├── conf  // 内部使用的config的结构定义，使用proto格式生成
     │   ├── conf.pb.go
