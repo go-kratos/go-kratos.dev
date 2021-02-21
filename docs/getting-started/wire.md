@@ -64,23 +64,23 @@ cmd
 
 // main.go 创建 kratos 应用生命周期管理
 func newApp(logger log.Logger, hs *http.Server, gs *grpc.Server, greeter *service.GreeterService) *kratos.App {
-	pb.RegisterGreeterServer(gs, greeter)
-	pb.RegisterGreeterHTTPServer(hs, greeter)
-	return kratos.New(
-		kratos.Name(Name),
-		kratos.Version(Version),
-		kratos.Logger(logger),
-		kratos.Server(
-			hs,
-			gs,
-		),
-	)
+    pb.RegisterGreeterServer(gs, greeter)
+    pb.RegisterGreeterHTTPServer(hs, greeter)
+    return kratos.New(
+        kratos.Name(Name),
+        kratos.Version(Version),
+        kratos.Logger(logger),
+        kratos.Server(
+            hs,
+            gs,
+        ),
+    )
 }
 
 // wire.go 初始化模块
 func initApp(*conf.Server, *conf.Data, log.Logger) (*kratos.App, error) {
-  // 构建所有模块中的 ProviderSet，用于生成 wire_gen.go 自动依赖注入文件
-	panic(wire.Build(server.ProviderSet, data.ProviderSet, biz.ProviderSet, service.ProviderSet, newApp))
+    // 构建所有模块中的 ProviderSet，用于生成 wire_gen.go 自动依赖注入文件
+    panic(wire.Build(server.ProviderSet, data.ProviderSet, biz.ProviderSet, service.ProviderSet, newApp))
 }
 ```
 
