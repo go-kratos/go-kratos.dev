@@ -15,11 +15,11 @@ title: 依赖注入
 go get github.com/google/wire/cmd/wire
 ```
 
-### Wire 的工作原理
+### Wire 工作原理
 
-**Wire** 具有两个基本概念：*Provider* 和 *Injector*。
+Wire 具有两个基本概念：*Provider* 和 *Injector*。
 
-**Provider** 是一个普通的 *Go Func* ，这个方法也可以接收其它 *Provider* 的返回值，从而形成了依赖注入；
+Provider 是一个普通的 *Go Func* ，这个方法也可以接收其它 *Provider* 的返回值，从而形成了依赖注入；
 
 ```
 // 提供一个配置文件（也可能是配置文件）
@@ -45,7 +45,7 @@ func NewUserRepo(d *data.Data) (*UserRepo, error) {...}
 ```
 -data
 --data.go    // var ProviderSet = wire.NewSet(NewData, NewGreeterRepo)
---greeter.go // func NewGreeterRepo(data *Data, logger log.Logger) biz.GreeterRepo
+--greeter.go // func NewGreeterRepo(data *Data, logger log.Logger) biz.GreeterRepo {...}
 ```
 
 然后通过 *wire.go* 中定义所有 *ProviderSet* 可以完成依赖注入配置。
@@ -64,23 +64,23 @@ cmd
 
 // main.go 创建 kratos 应用生命周期管理
 func newApp(logger log.Logger, hs *http.Server, gs *grpc.Server, greeter *service.GreeterService) *kratos.App {
-	pb.RegisterGreeterServer(gs, greeter)
-	pb.RegisterGreeterHTTPServer(hs, greeter)
-	return kratos.New(
-		kratos.Name(Name),
-		kratos.Version(Version),
-		kratos.Logger(logger),
-		kratos.Server(
-			hs,
-			gs,
-		),
-	)
+    pb.RegisterGreeterServer(gs, greeter)
+    pb.RegisterGreeterHTTPServer(hs, greeter)
+    return kratos.New(
+        kratos.Name(Name),
+        kratos.Version(Version),
+        kratos.Logger(logger),
+        kratos.Server(
+            hs,
+            gs,
+        ),
+    )
 }
 
 // wire.go 初始化模块
 func initApp(*conf.Server, *conf.Data, log.Logger) (*kratos.App, error) {
-  // 构建所有模块中的 ProviderSet，用于生成 wire_gen.go 自动依赖注入文件
-	panic(wire.Build(server.ProviderSet, data.ProviderSet, biz.ProviderSet, service.ProviderSet, newApp))
+    // 构建所有模块中的 ProviderSet，用于生成 wire_gen.go 自动依赖注入文件
+    panic(wire.Build(server.ProviderSet, data.ProviderSet, biz.ProviderSet, service.ProviderSet, newApp))
 }
 ```
 
