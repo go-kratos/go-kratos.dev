@@ -9,13 +9,13 @@ title: 依赖注入
 
 所有通过 *Wire* 进行初始化代码，可以很好地解决组件之间的耦合，以及提高代码维护性。
 
-### Wire 安装工具
+### 安装工具
 
 ```bash
 go get github.com/google/wire/cmd/wire
 ```
 
-### Wire 工作原理
+### 工作原理
 
 Wire 具有两个基本概念：*Provider* 和 *Injector*。
 
@@ -32,7 +32,7 @@ func NewData(c *conf.Data) (*Data, error) {...}
 func NewUserRepo(d *data.Data) (*UserRepo, error) {...}
 ```
 
-### Wire 使用方式
+### 使用方式
 
 在 Kratos 中，主要分为 *server、service、biz、data* 服务模块，会通过 *Wire* 进行模块顺序的初始化；
 
@@ -50,7 +50,7 @@ func NewUserRepo(d *data.Data) (*UserRepo, error) {...}
 
 然后通过 *wire.go* 中定义所有 *ProviderSet* 可以完成依赖注入配置。
 
-### Wire 初始化组件
+### 初始化组件
 
 通过 wire 初始化组件，需要定义对应的 wire.go，以及 kratos application 用于启动管理。
 
