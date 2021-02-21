@@ -25,7 +25,7 @@ go get entgo.io/ent/cmd/ent
 ent init User
 ```
 
-将会在 *<project>/ent/schema/* 目录下为用户生成模式:
+将会在 *project/ent/schema/* 目录下为用户生成模式:
 
 ```go
 // <project>/ent/schema/user.go
