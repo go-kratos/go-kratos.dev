@@ -30,7 +30,7 @@ func NewUserRepo(d *data.Data) (*UserRepo, error) {...}
 
 在 Kratos 中，主要分为 *server、service、biz、data* 服务模块，会通过 *Wire* 进行模块顺序的初始化；
 
-<img src="/images/wire.png" alt="kratos ddd" width="500px" />
+<img src="/images/wire.png" alt="kratos ddd" width="650px" />
 
 在每个模块中，只需要一个 *ProviderSet* 提供者集合，就可以在 wire 中进行依赖注入；
 
