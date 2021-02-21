@@ -21,7 +21,7 @@ kratos new <project-name>
 ├── LICENSE
 ├── Makefile   // make命令使用的配置文件，可以在这里新增您的自定义命令
 ├── README.md
-├── api   // 下面维护了微服务使用的proto文件以及根据它们所生成的go文件
+├── api        // 下面维护了微服务使用的proto文件以及根据它们所生成的go文件
 │   └── helloworld
 │       ├── errors
 │       │   ├── helloworld.pb.go
@@ -32,22 +32,22 @@ kratos new <project-name>
 │           ├── greeter.proto
 │           ├── greeter_grpc.pb.go
 │           └── greeter_http.pb.go
-├── cmd  //整个项目启动的入口文件
+├── cmd         // 整个项目启动的入口文件
 │   └── server
 │       ├── main.go
-│       ├── wire.go  //我们使用wire来维护依赖注入
+│       ├── wire.go  // 我们使用wire来维护依赖注入
 │       └── wire_gen.go
-├── configs  // 这里通常维护一些本地调试用的样例配置文件
+├── configs     // 这里通常维护一些本地调试用的样例配置文件
 │   └── config.yaml
-└── internal  // 该服务所有不对外暴露的代码，通常的业务逻辑都在这下面，使用internal避免错误引用
-    ├── conf  // 内部使用的config的结构定义，使用proto格式生成
+└── internal    // 该服务所有不对外暴露的代码，通常的业务逻辑都在这下面，使用internal避免错误引用
+    ├── conf    // 内部使用的config的结构定义，使用proto格式生成
     │   ├── conf.pb.go
     │   └── conf.proto
-    ├── data  // 业务数据访问，包含 cache、db 等封装，实现了 biz 的 repo 接口。我们可能会把 data 与 dao 混淆在一起，data 偏重业务的含义，它所要做的是将领域对象重新拿出来，我们去掉了 DDD 的 infra层。
+    ├── data    // 业务数据访问，包含 cache、db 等封装，实现了 biz 的 repo 接口。我们可能会把 data 与 dao 混淆在一起，data 偏重业务的含义，它所要做的是将领域对象重新拿出来，我们去掉了 DDD 的 infra层。
     │   ├── README.md
     │   ├── data.go
     │   └── greeter.go
-    ├── biz  // 业务逻辑的组装层，类似 DDD 的 domain 层，data 类似 DDD 的 repo，repo 接口在这里定义，使用依赖倒置的原则。
+    ├── biz     // 业务逻辑的组装层，类似 DDD 的 domain 层，data 类似 DDD 的 repo，repo 接口在这里定义，使用依赖倒置的原则。
     │   ├── README.md
     │   ├── biz.go
     │   └── greeter.go
