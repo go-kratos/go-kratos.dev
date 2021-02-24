@@ -23,7 +23,7 @@ go env -w GO111MODULE=on
 
 ```bash
 # 安装 kratos 命令工具
-go get -u github.com/go-kratos/kratos/cmd/kratos/v2
+go get -u github.com/go-kratos/kratos/cmd/kratos/v2@latest
 ```
 ## 创建项目
 ```bash
@@ -33,19 +33,18 @@ kratos new helloworld
 cd helloworld
 # 生成proto模板
 kratos proto add api/helloworld/helloworld.proto
-# 生成service模板
-kratos proto service api/helloworld/helloworld.proto -t internal/service
+# 生成proto源码
+kratos proto client api/helloworld/helloworld.proto
+# 生成server模板
+kratos proto server api/helloworld/helloworld.proto -t internal/service
 ```
 ## 项目编译和运行
 ```bash
-# 初始化依赖工具
-make init
-# 生成api下所有proto文件
-make proto
-# 编译cmd下所有main文件
-make build
-# 进行单元测试
-make test
+# 生成所有proto源码、wire等等
+go generate ./...
+
+# 编译成可执行文件
+go build -o ./bin/ ./...
 
 # 运行项目
 ./bin/helloworld -conf ./configs
