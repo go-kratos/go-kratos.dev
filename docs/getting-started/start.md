@@ -52,11 +52,11 @@ go build -o ./bin/ ./...
 
 ## 测试调试
 ```bash
-curl 'http://127.0.0.1:8000/helloworld/tony'
+curl 'http://127.0.0.1:8000/helloworld/krtaos'
 
 输出：
 {
-  "message": "Hello tony"
+  "message": "Hello kratos"
 }
 ```
 
