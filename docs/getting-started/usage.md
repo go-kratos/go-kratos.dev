@@ -6,7 +6,7 @@ title: 工具介绍
 ## 安装
 
 ```bash
-go get -u github.com/go-kratos/kratos/cmd/kratos/v2
+go get -u github.com/go-kratos/kratos/cmd/kratos/v2@latest
 ```
 
 ## 工具使用
@@ -102,7 +102,7 @@ message ListDemoReply {}
 ## 生成 Proto 代码
 可以通过 make proto 直接生成，或者：
 ```bash
-make proto
+kratos proto client api/helloworld/demo.proto
 ```
 输出:
 ```bash
@@ -115,7 +115,7 @@ api/helloworld/demo_http.pb.go
 
 通过 proto文件，可以直接生成对应的 Service 实现代码：
 ```bash
-kratos proto service api/helloworld/demo.proto -t internal/service
+kratos proto server api/helloworld/demo.proto -t internal/service
 ```
 输出:  
 internal/service/demo.go
