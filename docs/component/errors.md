@@ -3,9 +3,23 @@ id: errors
 title: Errors
 ---
 
-APIs 错误码可以统一通过 proto 定义，然后通过 protoc-gen-go-errors 生成判定代码。
+APIs 错误码可以统一通过 proto 定义业务原因，然后通过 protoc-gen-go-errors 生成判定代码。
 
-### 安装
+在errors包中，错误信息通过 proto 定义，并且实现对应的 Error 接口，并且可以直接通过 middleware 转换成 gRPC 错误码。
+```
+message Status {
+  // 错误码，跟 grpc-status 一致，并且在HTTP中可映射成 http-status
+  int32 code = 1;
+  // 错误原因，定义为业务判定错误码
+  string reason = 2;
+  // 错误信息，为用户可读的信息，可作为用户提示内容
+  string message = 3;
+  // 错误详细信息，可以附加自定义的信息列表
+  repeated google.protobuf.Any details = 4;
+}
+```
+
+### 安装工具
 ```bash
 go get github.com/go-kratos/kratos/cmd/protoc-gen-go-errors
 ```
