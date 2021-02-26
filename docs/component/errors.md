@@ -6,7 +6,7 @@ title: Errors
 APIs 错误码可以统一通过 proto 定义业务原因，然后通过 protoc-gen-go-errors 生成判定代码。
 
 在errors包中，错误信息通过 proto 定义，并且实现对应的 Error 接口，并且可以直接通过 middleware 转换成 gRPC 错误码。
-```
+```proto
 message Status {
   // 错误码，跟 grpc-status 一致，并且在HTTP中可映射成 http-status
   int32 code = 1;
