@@ -47,7 +47,7 @@ function Feature({imageUrl, title, description}) {
           <img className={styles.featureImage} src={imgUrl} alt={title} />
         </div>
       )}
-      <h3>{title}</h3>
+      <h3 className={styles.featureTitle}>{title}</h3>
       <p>{description}</p>
     </div>
   );

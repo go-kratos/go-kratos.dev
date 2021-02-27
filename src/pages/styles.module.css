@@ -34,6 +34,7 @@
 .featureImage {
   height: 160px;
   width: 160px;
+  opacity: 0.5;
   filter: invert(52%) sepia(0%) saturate(11%) hue-rotate(135deg) brightness(89%) contrast(89%);
 }
 
@@ -49,4 +50,8 @@
 
 .heroSubtitle {
 
+}
+
+.featureTitle {
+  margin-top: 10px;
 }
