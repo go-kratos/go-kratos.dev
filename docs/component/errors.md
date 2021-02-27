@@ -21,7 +21,7 @@ message Status {
 
 ### 安装工具
 ```bash
-go get github.com/go-kratos/kratos/cmd/protoc-gen-go-errors
+go get github.com/go-kratos/kratos/cmd/protoc-gen-go-errors@latest
 ```
 
 ### 错误定义
