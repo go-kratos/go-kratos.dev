@@ -9,7 +9,7 @@ import styles from './styles.module.css';
 const features = [
   {
     title: 'API规范化',
-    imageUrl: 'img/undraw_docusaurus_mountain.svg',
+    imageUrl: 'img/api.svg',
     description: (
       <>
         API 协议使用 Protobuf 定义接口，实现 HTTP/gRPC 方式进行通信，
@@ -19,7 +19,7 @@ const features = [
   },
   {
     title: '组件插件化',
-    imageUrl: 'img/undraw_docusaurus_tree.svg',
+    imageUrl: 'img/plugin.svg',
     description: (
       <>
         Component 统一遵循 OpenTracing 规范进行实现，
@@ -29,7 +29,7 @@ const features = [
   },
   {
     title: '项目工程化',
-    imageUrl: 'img/undraw_docusaurus_react.svg',
+    imageUrl: 'img/layout.svg',
     description: (
       <>
         通过 Git 方式管理 Service 项目模板，并可通过 Kratos 一键初始化脚手架。
@@ -60,10 +60,11 @@ function Home() {
     <Layout
       title={` A Go framework for microservices. `}
       description="Kratos is a lightweight Go microservice framework that contains a large number of microservice related frameworks and tools. <head />">
-      <header className={clsx('hero hero--primary', styles.heroBanner)}>
+      <header className={clsx('hero', styles.heroBanner)}>
         <div className="container">
-          <h1 className="hero__title">{siteConfig.title}</h1>
-          <p className="hero__subtitle">{siteConfig.tagline}</p>
+            <img src="/img/logo.svg" alt="Kratos Logo" className={styles.heroLogo}/>
+          <h1 className={clsx("hero__title", styles.heroTitle)}>{siteConfig.title}</h1>
+          <p className={clsx("hero__subtitle", styles.heroSubitle)}>{siteConfig.tagline}</p>
           <div className={styles.buttons}>
             <Link
               className={clsx(

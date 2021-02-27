@@ -12,10 +12,10 @@ module.exports = {
     sidebarCollapsible: false,
     navbar: {
       title: 'Kratos',
-      // logo: {
-      //   alt: 'Kratos Logo',
-      //   src: 'img/logo.svg',
-      // },
+      logo: {
+        alt: 'Kratos Logo',
+        src: 'img/logo.svg',
+      },
       items: [
         {
           to: 'docs/',
