@@ -62,7 +62,7 @@ app := kratos.New(
 
 #### 服务发现（gRPC）
 
-创建一个Discoverer（以consul为例）,根据Dial url格式\<schema>://[namespace]/\<service-name>创建一个Endpoint，通过grc.WithDiscoverer ,grpc.WithEndpoint创建一个grpc connection
+创建一个Discoverer（以consul为例）,根据Dial url格式`<schema>://[namespace]/<service-name>`创建一个Endpoint，通过grc.WithDiscoverer ,grpc.WithEndpoint创建一个grpc connection
 ```go
 import "github.com/go-kratos/kratos/transport/http"
 import "github.com/go-kratos/kratos/v2/transport/grpc"
