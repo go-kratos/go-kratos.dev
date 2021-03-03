@@ -9,7 +9,8 @@ module.exports = {
       'getting-started/start', 
       'getting-started/usage',
       'getting-started/wire',
-      'getting-started/data'
+      'getting-started/data',
+      'getting-started/faq'
     ],
     "框架组件": [
       'component/api',
