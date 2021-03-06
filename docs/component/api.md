@@ -105,6 +105,8 @@ v1.RegisterGreeterServer(srv, greeter)
 
 ## References
 
+- https://cloud.google.com/apis/design
+- https://cloud.google.com/endpoints/docs/grpc/transcoding
 - https://github.com/googleapis/googleapis
 - https://go-kratos.dev/docs/guide/api-protobuf/
 - https://developers.google.com/protocol-buffers/docs/style
