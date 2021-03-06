@@ -29,17 +29,17 @@ option java_outer_classname = "HelloWorldProtoV1";
 service Greeter {
   // Sends a greeting
   rpc SayHello (HelloRequest) returns (HelloReply)  {
-        option (google.api.http) = {
-            // 定义一个 GET 接口，并且把 name 映射到 HelloRequest
-            get: "/helloworld/{name}",
-            // 可以添加附加接口
-            additional_bindings {
-              // 定义一个 POST 接口，并且把 body 映射到 HelloRequest
-				      post: "/v1/greeter",
-				      body: "*",
-			      }
-        };
-    }
+    option (google.api.http) = {
+      // 定义一个 GET 接口，并且把 name 映射到 HelloRequest
+      get: "/helloworld/{name}",
+      // 可以添加附加接口
+      additional_bindings {
+          // 定义一个 POST 接口，并且把 body 映射到 HelloRequest
+          post: "/v1/greeter",
+          body: "*",
+      }
+    };
+  }
 }
 
 // The request message containing the user's name.
