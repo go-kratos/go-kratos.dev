@@ -3,7 +3,7 @@ id: api
 title: API
 ---
 
-API 与用户的通信协议，通常是 REST API 和 RPC API 作为传输层协议，而 Kratos 主要参考 Google API 指南，实现了 gRPC 和 HTTP 的通信支持，并且遵守了 gRPC API 使用 HTTP 映射功能进行 JSON/HTTP 的支持。
+API 与用户的通信协议，通常是 REST API 和 RPC API 作为传输层协议，而 Kratos 主要参考 Google API 指南，实现了对应通信协议支持，并且遵守了 gRPC API 使用 HTTP 映射功能进行 JSON/HTTP 的支持。
 
 也就是通过定义 proto 即可使用 REST API 和 RPC API，通过类似 Google API 的仓库方式进行 API Schema 的管理。
 
