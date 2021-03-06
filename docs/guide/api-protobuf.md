@@ -7,7 +7,7 @@ title: Protobuf 使用规范
 
 API接口统一以HTTP/GRPC为基础，并通过Protobuf进行协议定义，包括完整的Request/Reply，以及对应的接口错误码（Errors）。
 
-## Structure
+## 目录结构
 API接口可以定义到项目，或者在统一仓库中管理Proto，类似googleapis、envoy-api、istio-api；
 
 项目中定义Proto，以api为包名根目录：
@@ -31,7 +31,7 @@ kratos-apis:
 |____third_party // 第三方引用
 ```
 
-## Package Name
+## 包名
 包名为应用的标识（APP_ID），用于生成gRPC请求路径，或者Proto之间进行引用Message；
 
 *  my.package.v1，为API目录，定义service相关接口，用于提供业务使用
@@ -64,7 +64,7 @@ option objc_class_prefix = "<PackageNameVersion>";
 * 业务proto依赖，以根目录进行引入对应依赖的proto；
 * third_party，主要为依赖的第三方proto，比如protobuf、google rpc、google apis、gogo定义；
 
-## Naming Conventions
+## 命名规范
 
 ###  目录结构
 包名为小写，并且同目录结构一致，例如：my/package/v1/
