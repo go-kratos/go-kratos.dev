@@ -59,7 +59,7 @@ function Home() {
   return (
     <Layout
       title={` A Go framework for microservices. `}
-      description="Kratos is a lightweight Go microservice framework that contains a large number of microservice related frameworks and tools. <head />">
+      description="Kratos is a microservice-oriented governance framework implements by golang, which offers convenient capabilities to help you quickly build a bulletproof application from scratch. <head />">
       <header className={clsx('hero', styles.heroBanner)}>
         <div className="container">
             <img src="/img/logo.svg" alt="Kratos Logo" className={styles.heroLogo}/>
