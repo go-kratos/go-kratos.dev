@@ -80,7 +80,7 @@ server:
 
 ## 接口注册
 
-**HTTP API** 是通过 protoc-gen-go-http 插件进行生成 http.Handler，然后可以直接注册到 HTTPServer 中：
+**HTTP API** 是通过 protoc-gen-go-http 插件进行生成 http.Handler，然后可以注册到 HTTPServer 中：
 
 ```go
 import "github.com/go-kratos/kratos/v2/transport/http"
@@ -90,7 +90,7 @@ srv := http.NewServer(http.Address(":8000"))
 srv.HandlePrefix("/", v1.NewGreeterHandler(greeter, m))
 ```
 
-**gRPC API** 是通过 protoc-gen-go-grpc 插件进行生成 gRPC Registrar，然后可以直接注册到 GRPCServer 中；
+**gRPC API** 是通过 protoc-gen-go-grpc 插件进行生成 gRPC Registrar，然后可以注册到 GRPCServer 中；
 
 ```go
 import "github.com/go-kratos/kratos/v2/transport/grpc"
