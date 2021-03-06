@@ -75,7 +75,7 @@ server:
 
 **HTTP API** 是通过 protoc-gen-go-http 插件进行生成 http.Handler，然后可以直接注册到 HTTPServer 中：
 
-```golang
+```go
 import "github.com/go-kratos/kratos/v2/transport/http"
 
 greeter := &GreeterService{}
