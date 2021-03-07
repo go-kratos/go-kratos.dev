@@ -77,7 +77,7 @@ func (User) Fields() []ent.Field {
 go generate ./ent
 ```
 
-### 创建数据连连接客户端
+### 创建数据库连接客户端
 
 首先，创建一个新的ent.Client。对于本例，我们将使用SQLite3。
 

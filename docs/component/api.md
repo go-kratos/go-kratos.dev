@@ -7,7 +7,7 @@ API 与用户的通信协议，通常是 REST API 和 RPC API 作为传输层协
 
 也就是通过定义 proto 即可使用 REST API 和 RPC API，通过类似 Google API 的仓库方式进行 API Schema 的管理。
 
-## 接口定义
+## 定义接口
 
 通过 Protobuf IDL 定义对应的 REST API 和 gRPC API：
 
@@ -29,17 +29,17 @@ option java_outer_classname = "HelloWorldProtoV1";
 service Greeter {
   // Sends a greeting
   rpc SayHello (HelloRequest) returns (HelloReply)  {
-        option (google.api.http) = {
-            // 定义一个 GET 接口，并且把 name 映射到 HelloRequest
-            get: "/helloworld/{name}",
-            // 可以添加附加接口
-            additional_bindings {
-              // 定义一个 POST 接口，并且把 body 映射到 HelloRequest
-				      post: "/v1/greeter",
-				      body: "*",
-			      }
-        };
-    }
+    option (google.api.http) = {
+        // 定义一个 GET 接口，并且把 name 映射到 HelloRequest
+        get: "/helloworld/{name}",
+        // 可以添加附加接口
+        additional_bindings {
+            // 定义一个 POST 接口，并且把 body 映射到 HelloRequest
+            post: "/v1/greeter/say_hello",
+            body: "*",
+        }
+    };
+  }
 }
 
 // The request message containing the user's name.
@@ -52,7 +52,7 @@ message HelloReply {
   string message = 1;
 }
 ```
-## 接口生成
+## 生成接口
 
 ```shell
 # 生成 proto 模板
@@ -78,19 +78,19 @@ server:
 | | |____greeter.go
 ```
 
-## 接口注册
+## 注册接口
 
-**HTTP API** 是通过 protoc-gen-go-http 插件进行生成 http.Handler，然后可以直接注册到 HTTPServer 中：
+**HTTP API** 是通过 protoc-gen-go-http 插件进行生成 http.Handler，然后可以注册到 HTTPServer 中：
 
 ```go
 import "github.com/go-kratos/kratos/v2/transport/http"
 
 greeter := &GreeterService{}
 srv := http.NewServer(http.Address(":8000"))
-srv.HandlePrefix("/", v1.NewGreeterHandler(greeter, m))
+srv.HandlePrefix("/", v1.NewGreeterHandler(greeter))
 ```
 
-**gRPC API** 是通过 protoc-gen-go-grpc 插件进行生成 gRPC Registrar，然后可以直接注册到 GRPCServer 中；
+**gRPC API** 是通过 protoc-gen-go-grpc 插件进行生成 gRPC Registrar，然后可以注册到 GRPCServer 中；
 
 ```go
 import "github.com/go-kratos/kratos/v2/transport/grpc"
@@ -105,6 +105,8 @@ v1.RegisterGreeterServer(srv, greeter)
 
 ## References
 
+- https://cloud.google.com/apis/design
+- https://cloud.google.com/endpoints/docs/grpc/transcoding
 - https://github.com/googleapis/googleapis
 - https://go-kratos.dev/docs/guide/api-protobuf/
 - https://developers.google.com/protocol-buffers/docs/style

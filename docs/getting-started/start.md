@@ -52,7 +52,7 @@ go build -o ./bin/ ./...
 ./bin/helloworld -conf ./configs
 ```
 
-## 测试调试
+## 测试接口
 ```bash
 curl 'http://127.0.0.1:8000/helloworld/krtaos'
 
