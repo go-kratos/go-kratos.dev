@@ -7,7 +7,7 @@ API 与用户的通信协议，通常是 REST API 和 RPC API 作为传输层协
 
 也就是通过定义 proto 即可使用 REST API 和 RPC API，通过类似 Google API 的仓库方式进行 API Schema 的管理。
 
-## 接口定义
+## 定义接口
 
 通过 Protobuf IDL 定义对应的 REST API 和 gRPC API：
 
@@ -52,7 +52,7 @@ message HelloReply {
   string message = 1;
 }
 ```
-## 接口生成
+## 生成接口
 
 ```shell
 # 生成 proto 模板
@@ -78,7 +78,7 @@ server:
 | | |____greeter.go
 ```
 
-## 接口注册
+## 注册接口
 
 **HTTP API** 是通过 protoc-gen-go-http 插件进行生成 http.Handler，然后可以注册到 HTTPServer 中：
 
