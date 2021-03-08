@@ -85,16 +85,13 @@ application
 | | |____conf.proto
 | | |____conf.pb.go
 | |____data
-| | |____README.md
 | | |____data.go
 | | |____greeter.go
 | |____biz
-| | |____README.md
 | | |____greeter.go
 | | |____biz.go
 | |____service
 | | |____service.go
-| | |____README.md
 | | |____greeter.go
 | |____server
 | | |____server.go
