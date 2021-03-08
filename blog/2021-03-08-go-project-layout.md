@@ -52,6 +52,7 @@ github.com/go-kratos/kratos
 ├── app.go
 ├── options.go
 ├── go.mod
+├── go.sum
 ```
 
 > 注意：为了保证 Kit 基础库的可移植性，尽可能进行接口抽象，并且 go.mod 依赖第三方库也尽可能简单，然后再通过 plugins 进行扩展基础库，以满足不同的业务需求定制化。
@@ -98,8 +99,8 @@ application
 | | |____grpc.go
 | | |____http.go
 |____pkg
-|____go.sum
 |____go.mod
+|____go.sum
 |____LICENSE
 |____README.md
 ```
