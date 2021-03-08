@@ -55,3 +55,55 @@ github.com/go-kratos/kratos
 ```
 
 > 注意：为了保证 Kit 基础库的可移植性，尽可能进行接口抽象，并且 go.mod 依赖第三方库尽可能简单，然后再通过 plugins 进行扩展基础库，以满足不同的业务需求定制化。
+
+### 应用项目
+
+应用项目包含着一些应用模块，然后应用模块之间可以通过 cmd/main.go 进行初始化。
+
+```
+application
+|____api
+| |____helloworld
+| | |____v1
+| | | |____greeter_http.pb.go
+| | | |____greeter.pb.go
+| | | |____greeter.proto
+| | | |____greeter_grpc.pb.go
+| | |____errors
+| | | |____helloworld_errors.pb.go
+| | | |____helloworld.proto
+| | | |____helloworld.pb.go
+|____cmd
+| |____helloworld
+| | |____wire_gen.go
+| | |____wire.go
+| | |____main.go
+|____configs
+| |____config.yaml
+|____internal
+| |____conf
+| | |____conf.proto
+| | |____conf.pb.go
+| |____data
+| | |____README.md
+| | |____data.go
+| | |____greeter.go
+| |____biz
+| | |____README.md
+| | |____greeter.go
+| | |____biz.go
+| |____service
+| | |____service.go
+| | |____README.md
+| | |____greeter.go
+| |____server
+| | |____server.go
+| | |____grpc.go
+| | |____http.go
+|____pkg
+|____go.sum
+|____go.mod
+|____LICENSE
+|____README.md
+```
+
