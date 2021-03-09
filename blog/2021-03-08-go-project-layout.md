@@ -5,7 +5,7 @@ author: Tony
 author_title: Maintainer of go-kratos
 author_url: https://github.com/tonybase
 author_image_url: https://avatars.githubusercontent.com/u/3871120?s=460&v=4
-tags: [go, golang, 工程化, 项目布局, 项目结构, 最佳实践]
+tags: [go, golang, 工程化, 项目布局, 最佳实践]
 ---
 
 ## 介绍
@@ -22,7 +22,7 @@ Go 是一个面向包名设计的语言，可以通过各个包名进行组织 G
 > by Package Oriented Design
 > “To this end, the Kit project is not allowed to have a vendor folder. If any of packages are dependent on 3rd party packages, they must always build against the latest version of those dependences.”
 
-### Kit Projects
+### Kit 基础库
 
 将 Kit 项目作为公司的标准库，因此应该只有一个。并且 Kit 基础库也应该具备以下这些特点：
 
@@ -61,7 +61,7 @@ github.com/go-kratos/kratos
 
 > 注意：为了保证 Kit 基础库的可移植性，尽可能进行接口抽象，并且 go.mod 依赖第三方库也尽可能简单，然后再通过 plugins 进行扩展基础库，以满足不同的业务需求定制化。
 
-## Application Projects
+## 应用项目
 
 如果你尝试学习 Go，或者你正在为自己建立一个 PoC 或一个玩具项目，这个项目布局是没啥必要的。从一些非常简单的事情开始（一个 main.go 文件绰绰有余）。当有更多的人参与这个项目时，你将需要更多的结构，包括需要一个 Toolkit 来方便生成项目的模板，尽可能大家统一的工程目录布局。
 
@@ -130,7 +130,7 @@ application
 由 Travis Jeffery  撰写的 I'll take pkg over internal 博客文章提供了 `pkg` 和 `internal` 目录的一个很好的概述，以及什么时候使用它们是有意义的。
 当根目录包含大量非 Go 组件和目录时，这也是一种将 Go 代码分组到一个位置的方法，这使得运行各种 Go 工具变得更加容易组织。 
 
-### Service Application Directories
+## 服务应用目录
 
 ### /api
 ​    API 协议定义目录，services.proto protobuf 文件，以及生成的 go 文件。我们通常把 api 文档直接在 proto 文件中描述。
@@ -139,7 +139,7 @@ application
 ### /test
 ​    额外的外部测试应用程序和测试数据。你可以随时根据需求构造 /test 目录。对于较大的项目，有一个数据子目录是有意义的。例如，你可以使用 /test/data 或 /test/testdata (如果你需要忽略目录中的内容)。请注意，Go 还会忽略以 “.” 或 “_” 开头的目录或文件，因此在如何命名测试数据目录方面有更大的灵活性。
 
-### Service Application Internal
+## 服务内部目录
 
 Application 目录下有 api、cmd、configs、internal 目录，目录里一般还会放置 README、CHANGELOG、OWNERS。
 
@@ -167,6 +167,8 @@ Application 目录下有 api、cmd、configs、internal 目录，目录里一般
 ## 总结
 
 在实际 go 项目开发中，一定要灵活运用，当然也可以完全不按照这样架构分层、包设计的规则，一切以项目的大小、业务的复杂度、个人专业技能认知的广度和深度、时间的紧迫度为准。
+
+但是，Kit 项目作为公司的标准库，一定要实现统一，并且投入持续迭代，如果因为标准库不好用而已自己再造轮子，可能到最后不一定有人维护，导致最后团队和项目各搞各的，而不好用应该大家进行参与贡献。
 
 ## 参考文献
 
