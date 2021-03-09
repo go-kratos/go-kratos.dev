@@ -12,11 +12,11 @@ tags: [go, golang, 工程化, 项目布局, 最佳实践]
 
 这篇文章主要讲 **Go 项目工程化** 上的一些思考，以及 **Kratos** 在项目不同角度中的设计理念。
 
-Go 是一个面向包名设计的语言，可以通过各个包名进行组织 Go 的项目布局，而大家遵循规范设计准则，可以改善团队成员之间的沟通。
+Go 是一个面向包名设计的语言，可以通过各个包名进行组织 Go 的项目布局，而大家遵循规范设计准则，可以很好地改善团队成员之间的沟通。
 
 ## 项目结构
 
-每个公司都应当为不同的微服务建立一个统一的 Kit 工具包项目（基础库/框架）和 app 项目。
+每个公司都应当为不同的微服务建立一个统一的 Kit 工具包项目（基础库/框架）和 Application 项目。
 基础库 Kit 为独立项目，公司级建议只有一个，按照功能目录来拆分会带来不少的管理工作，因此建议合并整合。
 
 > by Package Oriented Design
@@ -141,34 +141,56 @@ application
 
 ## 服务内部目录
 
-Application 目录下有 api、cmd、configs、internal 目录，目录里一般还会放置 README、CHANGELOG、OWNERS。
+Application 目录下有 api、cmd、configs、internal、pkg 目录，目录里一般还会放置 README、CHANGELOG、OWNERS。
 
-**internal** 是为了避免有同业务下有人跨目录引用了内部的 data、biz、service、server 等内部 struct。
+internal 是为了避免有同业务下有人跨目录引用了内部的 data、biz、service、server 等内部 struct。
 
-* data: 业务数据访问，包含 cache、db 等封装，实现了 biz 的 repo 接口。我们可能会把 data 与 dao 混淆在一起，data 偏重业务的含义，它所要做的是将领域对象重新拿出来，我们去掉了 DDD 的 infra层。
-* biz: 业务逻辑的组装层，类似 DDD 的 domain 层，data 类似 DDD 的 repo，repo 接口在这里定义，使用依赖倒置的原则。
-* service: 实现了 api 定义的服务层，类似 DDD 的 application 层，处理 DTO 到 biz 领域实体的转换(DTO -> DO)，同时协同各类 biz 交互，但是不应处理复杂逻辑。
-* server: 为http和grpc实例的创建和配置，以及注册对应的service。
+### data
+
+业务数据访问，包含 cache、db 等封装，实现了 biz 的 repo 接口。我们可能会把 data 与 dao 混淆在一起，data 偏重业务的含义，它所要做的是将领域对象重新拿出来，我们去掉了 DDD 的 infra层。
+
+###  biz
+
+业务逻辑的组装层，类似 DDD 的 domain 层，data 类似 DDD 的 repo，repo 接口在这里定义，使用依赖倒置的原则。
+###  service
+
+实现了 api 定义的服务层，类似 DDD 的 application 层，处理 DTO 到 biz 领域实体的转换（DTO -> DO），同时协同各类 biz 交互，但是不应处理复杂逻辑。
+
+###  server
+
+为http和grpc实例的创建和配置，以及注册对应的 service 。
+
+### 应用项目类型
+
+微服务中的 app 服务类型分为4类：interface、service、job、admin，应用 cmd 目录负责程序的：启动、关闭、配置初始化等。
+
+* interface: 对外的 BFF 服务，接受来自用户的请求，比如暴露了 HTTP/gRPC 接口。
+* service: 对内的微服务，仅接受来自内部其他服务或者网关的请求，比如暴露了gRPC 接口只对内服务。
+* admin：区别于 service，更多是面向运营测的服务，通常数据权限更高，隔离带来更好的代码级别安全。
+* job: 流式任务处理的服务，上游一般依赖 message broker。
+* task: 定时任务，类似 cronjob，部署到 task 托管平台中。
 
 ## 不建议的目录
 
-- `src/`
+### ~~src/~~
 
-  src目录在java开发语言的项目中是一个常用的模式，但是在go开发项目中，尽量不要使用src目录。
+  src 目录在 java 开发语言的项目中是一个常用的模式，但是在 go 开发项目中，尽量不要使用 src 目录。
 
-- `model/`
+### ~~model/~~
 
-  在其他语言开发中一个非常通用的模块叫model，把所有类型都放在model里。但是在go里不建议的，因为go的包设计是根据功能职责划分的。比如一个User 模型，应该声明在他被用的功能模块里。
+ 在其他语言开发中一个非常通用的模块叫 model，把所有类型都放在 model 里。但是在 go 里不建议的，因为 go 的包设计是根据功能职责划分的。比如一个 User 模型，应该声明在他被用的功能模块里。
 
-- `xxs/`
+### ~~xxs/~~
 
-  带复数的目录或包。虽然go源码中有strings包，但更多都是用单数形式。
+  带复数的目录或包。虽然 go 源码中有 strings 包，但更多都是用单数形式。
 
 ## 总结
 
 在实际 go 项目开发中，一定要灵活运用，当然也可以完全不按照这样架构分层、包设计的规则，一切以项目的大小、业务的复杂度、个人专业技能认知的广度和深度、时间的紧迫度为准。
 
-但是，Kit 项目作为公司的标准库，一定要实现统一，并且投入持续迭代，如果因为标准库不好用而已自己再造轮子，可能到最后不一定有人维护，导致最后团队和项目各搞各的，而不好用应该大家进行参与贡献。
+并且，一定要按实际情况，选择合适自己团队的 Kit 基础库，进行充分的调研以及是否可扩展满足插件定制化，维护好属于团队的 Kit 基础库 和 代码规范 ，带动开发者进行积极参与贡献。
+
+如果大家有更好的架构设计理念，欢迎到 go-kratos 社区进行探讨，希望这篇文章对您有帮助~
 
 ## 参考文献
 
