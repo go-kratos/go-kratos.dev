@@ -91,38 +91,17 @@ application
 |____api
 | |____helloworld
 | | |____v1
-| | | |____greeter_http.pb.go
-| | | |____greeter.pb.go
-| | | |____greeter.proto
-| | | |____greeter_grpc.pb.go
 | | |____errors
-| | | |____helloworld_errors.pb.go
-| | | |____helloworld.proto
-| | | |____helloworld.pb.go
 |____cmd
 | |____helloworld
-| | |____wire_gen.go
-| | |____wire.go
-| | |____main.go
 |____configs
-| |____config.yaml
 |____internal
 | |____conf
-| | |____conf.proto
-| | |____conf.pb.go
 | |____data
-| | |____data.go
-| | |____greeter.go
 | |____biz
-| | |____greeter.go
-| | |____biz.go
 | |____service
-| | |____service.go
-| | |____greeter.go
 | |____server
-| | |____server.go
-| | |____grpc.go
-| | |____http.go
+|____test
 |____pkg
 |____go.mod
 |____go.sum
@@ -160,5 +139,39 @@ application
 ### /test
 ​    额外的外部测试应用程序和测试数据。你可以随时根据需求构造 /test 目录。对于较大的项目，有一个数据子目录是有意义的。例如，你可以使用 /test/data 或 /test/testdata (如果你需要忽略目录中的内容)。请注意，Go 还会忽略以 “.” 或 “_” 开头的目录或文件，因此在如何命名测试数据目录方面有更大的灵活性。
 
-### 不应该包含：/src
-有些 Go 项目确实有一个 src 文件夹，但这通常发生在开发人员有 Java 背景，在那里它是一种常见的模式。不要将项目级别 src 目录与 Go 用于其工作空间的 src 目录。
+### Service Application Internal
+
+Application 目录下有 api、cmd、configs、internal 目录，目录里一般还会放置 README、CHANGELOG、OWNERS。
+
+**internal** 是为了避免有同业务下有人跨目录引用了内部的 data、biz、service、server 等内部 struct。
+
+* data: 业务数据访问，包含 cache、db 等封装，实现了 biz 的 repo 接口。我们可能会把 data 与 dao 混淆在一起，data 偏重业务的含义，它所要做的是将领域对象重新拿出来，我们去掉了 DDD 的 infra层。
+* biz: 业务逻辑的组装层，类似 DDD 的 domain 层，data 类似 DDD 的 repo，repo 接口在这里定义，使用依赖倒置的原则。
+* service: 实现了 api 定义的服务层，类似 DDD 的 application 层，处理 DTO 到 biz 领域实体的转换(DTO -> DO)，同时协同各类 biz 交互，但是不应处理复杂逻辑。
+* server: 为http和grpc实例的创建和配置，以及注册对应的service。
+
+## 不建议的目录
+
+- `src/`
+
+  src目录在java开发语言的项目中是一个常用的模式，但是在go开发项目中，尽量不要使用src目录。
+
+- `model/`
+
+  在其他语言开发中一个非常通用的模块叫model，把所有类型都放在model里。但是在go里不建议的，因为go的包设计是根据功能职责划分的。比如一个User 模型，应该声明在他被用的功能模块里。
+
+- `xxs/`
+
+  带复数的目录或包。虽然go源码中有strings包，但更多都是用单数形式。
+
+## 总结
+
+在实际 go 项目开发中，一定要灵活运用，当然也可以完全不按照这样架构分层、包设计的规则，一切以项目的大小、业务的复杂度、个人专业技能认知的广度和深度、时间的紧迫度为准。
+
+## 参考文献
+
+* [Package Oriented Design](https://www.ardanlabs.com/blog/2017/02/package-oriented-design.html)
+* [Layered Application Guidelines](https://docs.microsoft.com/en-us/previous-versions/msp-n-p/ee658109(v=pandp.10))
+* [Standard Go Project Layout](https://github.com/golang-standards/project-layout)
+* [Go 面向包的设计和架构分层](https://github.com/danceyoung/paper-code/blob/master/package-oriented-design/packageorienteddesign.md)
+* [Go 进阶训练营 - 极客时间](https://u.geekbang.org/subject/go)
