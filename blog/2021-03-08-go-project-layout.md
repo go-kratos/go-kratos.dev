@@ -78,7 +78,7 @@ cd helloworld
 go mod download
 # 生成proto模板
 kratos proto add api/helloworld/helloworld.proto
-# 生成proto源码
+# 生成client源码
 kratos proto client api/helloworld/helloworld.proto
 # 生成server模板
 kratos proto server api/helloworld/helloworld.proto -t internal/service
