@@ -5,7 +5,7 @@ author: Tony
 author_title: Maintainer of go-kratos
 author_url: https://github.com/tonybase
 author_image_url: https://avatars.githubusercontent.com/u/3871120?s=460&v=4
-tags: [go, golang, project layout, best practice]
+tags: [go, golang, 工程化, 项目布局, 项目结构, 最佳实践]
 ---
 
 ## 介绍
