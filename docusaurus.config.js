@@ -118,14 +118,15 @@ module.exports = {
   ],
   i18n: {
     defaultLocale: 'zh',
-    locales: ['en', 'zh'],
+    locales: ['zh', 'en'],
     localeConfigs: {
-      en: {
-        label: 'English',
-      },
       zh: {
         label: '中文',
       },
+      en: {
+        label: 'English',
+      },
+
     },
   }
 };
