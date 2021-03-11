@@ -76,7 +76,7 @@ if err != nil {
 	panic(err)
 }
 endpoint ：= WithEndpoint("discovery://default/provider")
-conn, err := grpc.Dial(context.Background(), grpc.WithEndpoint(endpoint), grpc.WithDiscoverer(dis))
+conn, err := grpc.Dial(context.Background(), grpc.WithEndpoint(endpoint), grpc.WithDiscovery(dis))
 if err != nil {
     panic(err)
 }
