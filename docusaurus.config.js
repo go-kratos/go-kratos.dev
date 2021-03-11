@@ -34,6 +34,10 @@ module.exports = {
           label: 'GitHub',
           position: 'right',
         },
+        {
+          type: 'localeDropdown',
+          position: 'right',
+        },
       ],
     },
     footer: {
@@ -87,11 +91,13 @@ module.exports = {
       {
         docs: {
           sidebarPath: require.resolve('./sidebars.js'),
+          editLocalizedFiles: true,
           editUrl:
             'https://github.com/go-kratos/go-kratos.dev/edit/main/',
         },
         blog: {
           showReadingTime: true,
+          editLocalizedFiles: true,
           editUrl:
             'https://github.com/go-kratos/go-kratos.dev/edit/main/',
         },
@@ -110,4 +116,17 @@ module.exports = {
       },
     ],
   ],
+  i18n: {
+    defaultLocale: 'zh',
+    locales: ['zh', 'en'],
+    localeConfigs: {
+      zh: {
+        label: '中文',
+      },
+      en: {
+        label: 'English',
+      },
+
+    },
+  }
 };

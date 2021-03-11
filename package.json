@@ -9,11 +9,12 @@
     "swizzle": "docusaurus swizzle",
     "deploy": "docusaurus deploy",
     "serve": "docusaurus serve",
-    "clear": "docusaurus clear"
+    "clear": "docusaurus clear",
+    "write-translations": "docusaurus write-translations"
   },
   "dependencies": {
-    "@docusaurus/core": "2.0.0-alpha.70",
-    "@docusaurus/preset-classic": "2.0.0-alpha.70",
+    "@docusaurus/core": "2.0.0-alpha.71",
+    "@docusaurus/preset-classic": "2.0.0-alpha.71",
     "@easyops-cn/docusaurus-search-local": "^0.14.2",
     "@mdx-js/react": "^1.6.21",
     "clsx": "^1.1.1",
