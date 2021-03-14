@@ -1,6 +1,16 @@
 ---
 id: errors
 title: Errors
+keywords:
+  - Go 
+  - Kratos
+  - Toolkit
+  - Framework
+  - Microservices
+  - Protobuf
+  - gRPC
+  - HTTP
+description: Kratos APIs 错误码可以统一通过 proto 定义业务原因，然后通过 protoc-gen-go-errors 生成判定代码
 ---
 
 APIs 错误码可以统一通过 proto 定义业务原因，然后通过 protoc-gen-go-errors 生成判定代码。

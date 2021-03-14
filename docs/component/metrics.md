@@ -1,11 +1,21 @@
 ---
 id: metrics
 title: Metrics
+keywords:
+  - Go
+  - Kratos
+  - Toolkit
+  - Framework
+  - Microservices
+  - Protobuf
+  - gRPC
+  - HTTP
+description: Kratos 暴露了三种监控接口，分别是 Counter, Gauge, Observer
 ---
 
 ### 接口实现
 
-kratos暴露了三种监控接口，分别是 Counter, Gauge, Observer
+Kratos 暴露了三种监控接口，分别是 Counter, Gauge, Observer
 
 ### Counter
 

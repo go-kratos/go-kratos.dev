@@ -1,11 +1,21 @@
 ---
 id: registry
 title: Registry
+keywords:
+  - Go
+  - Kratos
+  - Toolkit
+  - Framework
+  - Microservices
+  - Protobuf
+  - gRPC
+  - HTTP
+description: Kratos Registry 接口分为两个，Registrar为实例注册和反注册，Discovery为服务实例列表获取
 ---
 
 ### 接口实现 
 
-Registry接口分为两个，Registrar为实例注册和反注册，Discoverer为服务实例列表获取
+Registry接口分为两个，Registrar为实例注册和反注册，Discovery为服务实例列表获取
 
 ```go
 type Registrar interface {
@@ -16,7 +26,7 @@ type Registrar interface {
 }
 ```
 ```go
-type Discoverer interface {
+type Discovery interface {
 	// 根据serviceName直接拉取实例列表
 	Fetch(ctx context.Context, serviceName string) ([]*ServiceInstance, error)
 	// 根据serviceName阻塞式订阅一个服务的实例列表信息

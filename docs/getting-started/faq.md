@@ -1,6 +1,16 @@
 ---
 id: faq
 title: FAQ
+keywords:
+  - Go 
+  - Kratos
+  - Toolkit
+  - Framework
+  - Microservices
+  - Protobuf
+  - gRPC
+  - HTTP
+description: Kratos FAQ 使用文档
 ---
 
 ### 在使用`kratos proto`命令时报`google/protobuf/descriptor.proto: File not found.`的错误

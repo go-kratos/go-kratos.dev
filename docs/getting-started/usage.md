@@ -1,6 +1,16 @@
 ---
 id: usage
 title: 工具介绍
+keywords:
+  - Go 
+  - Kratos
+  - Toolkit
+  - Framework
+  - Microservices
+  - Protobuf
+  - gRPC
+  - HTTP
+description: Kratos 工具使用，创建 Protobuf 模板，创建 Go 工程项目，创建 Service 模板
 ---
 
 ## 安装
