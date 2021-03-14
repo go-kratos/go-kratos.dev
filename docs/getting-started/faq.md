@@ -1,6 +1,7 @@
 ---
 id: faq
 title: FAQ
+description: Kratos FAQ 使用文档
 keywords:
   - Go 
   - Kratos
@@ -10,7 +11,6 @@ keywords:
   - Protobuf
   - gRPC
   - HTTP
-description: Kratos FAQ 使用文档
 ---
 
 ### 在使用`kratos proto`命令时报`google/protobuf/descriptor.proto: File not found.`的错误

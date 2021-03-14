@@ -1,6 +1,7 @@
 ---
 id: start
 title: 快速开始
+description: Kratos 微服务框架，快速创建项目代码，生成 Go 工程化项目
 keywords:
   - Go 
   - Kratos
@@ -10,7 +11,6 @@ keywords:
   - Protobuf
   - gRPC
   - HTTP
-description: Kratos 微服务框架，快速创建项目代码，生成 Go 工程化项目
 ---
 
 ## 版本需求

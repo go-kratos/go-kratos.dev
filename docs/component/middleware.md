@@ -1,6 +1,7 @@
 ---
 id: middleware
 title: Middleware
+description: Kratos 内置了一系列的 middleware（中间件）用于处理 logging, metrics 等通用场景。您也可以通过实现 Middleware 接口，开发自定义 middleware，进行通用的业务处理，比如用户登录鉴权等。
 keywords:
   - Go
   - Kratos
@@ -10,7 +11,6 @@ keywords:
   - Protobuf
   - gRPC
   - HTTP
-description: Kratos 内置了一系列的 middleware（中间件）用于处理 logging, metrics 等通用场景。您也可以通过实现 Middleware 接口，开发自定义 middleware，进行通用的业务处理，比如用户登录鉴权等。
 ---
 Kratos 内置了一系列的 middleware（中间件）用于处理 logging、 metrics 等通用场景。您也可以通过实现 Middleware 接口，开发自定义 middleware，进行通用的业务处理，比如用户登录鉴权等。
 

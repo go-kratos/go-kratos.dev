@@ -1,7 +1,7 @@
 ---
 slug: go-project-layout
 title: Go工程化 - Project Layout 最佳实践
-description: Go 项目工程化/基础库，在项目不同角度中的设计理念，Go 是一个面向包名设计的语言，可以通过各个包名进行组织 Go 的项目布局，而大家遵循规范设计准则，可以很好地改善团队成员之间的沟通
+description: Go 项目工程化/基础库，在项目不同角度中的设计理念，Go 是一个面向包名设计的语言，可以通过各个包名进行组织 Go 的项目布局
 keywords:
   - Go 
   - Kratos

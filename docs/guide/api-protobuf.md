@@ -1,6 +1,7 @@
 ---
 id: api-protobuf
 title: Protobuf 使用规范
+description: API接口统一以HTTP/GRPC为基础，并通过Protobuf进行协议定义，包括完整的Request/Reply，以及对应的接口错误码（Errors）
 keywords:
   - Go
   - Kratos
@@ -10,7 +11,6 @@ keywords:
   - Protobuf
   - gRPC
   - HTTP
-description: API接口统一以HTTP/GRPC为基础，并通过Protobuf进行协议定义，包括完整的Request/Reply，以及对应的接口错误码（Errors）
 ---
 
 这里主要进行修订Proto规范约定和多语言之间特定商定，帮助大家写出更标准的接口。

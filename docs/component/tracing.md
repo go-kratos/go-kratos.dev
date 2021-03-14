@@ -1,6 +1,7 @@
 ---
 id: tracing
 title: Tracing
+description:
 keywords:
   - Go
   - Kratos
@@ -10,7 +11,6 @@ keywords:
   - Protobuf
   - gRPC
   - HTTP
-description:
 ---
 
 

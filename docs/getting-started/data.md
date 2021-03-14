@@ -1,6 +1,7 @@
 ---
 id: data
 title: 数据访问
+description: Ent 是 Fackbook 开源的一个简单易用的 Database 实体框架
 keywords:
   - Go 
   - Kratos
@@ -10,7 +11,6 @@ keywords:
   - Protobuf
   - gRPC
   - HTTP
-description: Ent 是 Fackbook 开源的一个简单易用的 Database 实体框架
 ---
 
 **Ent** 是 *Fackbook* 开源的一个简单易用的 Database 实体框架。

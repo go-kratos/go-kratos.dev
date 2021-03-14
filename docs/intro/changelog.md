@@ -1,6 +1,7 @@
 ---
 id: changelog
 title: 更新日志
+description: Kratos Change logs
 keywords:
   - Go 
   - Kratos
@@ -10,7 +11,6 @@ keywords:
   - Protobuf
   - gRPC
   - HTTP
-description: Kratos Change logs
 ---
 
 version changelog here

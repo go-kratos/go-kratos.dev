@@ -1,6 +1,7 @@
 ---
 id: wire
 title: 依赖注入
+description: Kratos 项目模块依赖注入，快速初始化 Go 项目模板，Go 依赖注入工具
 keywords:
   - Go 
   - Kratos
@@ -10,7 +11,6 @@ keywords:
   - Protobuf
   - gRPC
   - HTTP
-description: Kratos 项目模块依赖注入，快速初始化 Go 项目模板，Go 依赖注入工具
 ---
 
 **Wire** 是一个灵活的依赖注入工具，通过自动生成代码的方式在编译期完成依赖注入。
