@@ -1,7 +1,7 @@
 module.exports = {
   title: 'Kratos',
   tagline: 'A Go framework for microservices.',
-  url: 'https://v2.go-kratos.dev',
+  url: 'https://go-kratos.dev',
   baseUrl: '/',
   onBrokenLinks: 'throw',
   onBrokenMarkdownLinks: 'warn',
