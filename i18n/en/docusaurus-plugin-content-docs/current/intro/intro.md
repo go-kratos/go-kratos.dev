@@ -44,7 +44,7 @@ Kratos boosts your productivity. With the integration of excellent resources and
 ## Related
 
 * [Docs](https://go-kratos.dev/)
-* [Examples](./examples)
+* [Examples](https://github.com/go-kratos/kratos/tree/main/examples)
 * [Service Layout](https://github.com/go-kratos/kratos-layout)
 
 ## Community
@@ -53,7 +53,7 @@ Kratos boosts your productivity. With the integration of excellent resources and
 * QQ Group: 716486124
 
 ## License
-Kratos is MIT licensed. See the [LICENSE](./LICENSE) file for details.
+Kratos is MIT licensed. See the [LICENSE](https://github.com/go-kratos/kratos/blob/main/LICENSE) file for details.
 
 ## Contributors
 Thanks for their outstanding contributions.
