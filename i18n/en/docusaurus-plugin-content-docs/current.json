@@ -1,22 +1,22 @@
 {
   "version.label": {
-    "message": "(en) Next",
+    "message": "Next",
     "description": "The label for version current"
   },
   "sidebar.docs.category.简介": {
-    "message": "(en) 简介",
+    "message": "Introduction",
     "description": "The label for category 简介 in sidebar docs"
   },
   "sidebar.docs.category.快速上手": {
-    "message": "(en) 快速上手",
+    "message": "Quick Start",
     "description": "The label for category 快速上手 in sidebar docs"
   },
   "sidebar.docs.category.框架组件": {
-    "message": "(en) 框架组件",
+    "message": "Components",
     "description": "The label for category 框架组件 in sidebar docs"
   },
   "sidebar.docs.category.用户指南": {
-    "message": "(en) 用户指南",
+    "message": "User Guide",
     "description": "The label for category 用户指南 in sidebar docs"
   }
 }
