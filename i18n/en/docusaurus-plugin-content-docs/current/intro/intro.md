@@ -1,5 +1,5 @@
 ---
-id: intro
+id: overview
 title: Overview
 slug: /
 ---
