@@ -23,7 +23,7 @@ const features = [
     imageUrl: 'img/plugin.svg',
     description: (
       <Translate>
-        Component 统一遵循 OpenTracing 规范进行实现，
+        Component 统一遵循 OpenTelemetry 规范进行实现，
         通过 Plugins 设计理念，实现插件化方式提供扩展能力。
       </Translate>
     ),
