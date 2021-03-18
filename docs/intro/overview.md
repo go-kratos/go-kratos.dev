@@ -1,5 +1,5 @@
 ---
-id: intro
+id: overview
 title: 概念
 description: Kratos 一套轻量级 Go 微服务框架，包含大量微服务相关框架及工具
 keywords:
