@@ -4,7 +4,7 @@ module.exports = {
       type: 'category',
       label: '简介',
       items: [
-        'intro/intro',
+        'intro/overview',
         'intro/layout',
         'intro/changelog'
       ],
