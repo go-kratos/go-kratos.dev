@@ -1,38 +1,38 @@
 {
   "link.title.Docs": {
-    "message": "(en) Docs",
+    "message": "Docs",
     "description": "The title of the footer links column with title=Docs in the footer"
   },
   "link.title.Community": {
-    "message": "(en) Community",
+    "message": "Community",
     "description": "The title of the footer links column with title=Community in the footer"
   },
   "link.title.More": {
-    "message": "(en) More",
+    "message": "More",
     "description": "The title of the footer links column with title=More in the footer"
   },
   "link.item.label.Guides": {
-    "message": "(en) Guides",
+    "message": "Guides",
     "description": "The label of footer link with label=Guides linking to docs/"
   },
   "link.item.label.Kratos v1": {
-    "message": "(en) Kratos v1",
+    "message": "Kratos v1",
     "description": "The label of footer link with label=Kratos v1 linking to http://v1.go-kratos.dev/"
   },
   "link.item.label.Discord": {
-    "message": "(en) Discord",
+    "message": "Discord",
     "description": "The label of footer link with label=Discord linking to https://discord.gg/BWzJsUJ"
   },
   "link.item.label.Blog": {
-    "message": "(en) Blog",
+    "message": "Blog",
     "description": "The label of footer link with label=Blog linking to blog"
   },
   "link.item.label.GitHub": {
-    "message": "(en) GitHub",
+    "message": "GitHub",
     "description": "The label of footer link with label=GitHub linking to https://github.com/go-kratos/kratos"
   },
   "copyright": {
-    "message": "(en) Copyright © 2021 go-kratos.dev",
+    "message": "Copyright © 2021 go-kratos.dev",
     "description": "The footer copyright"
   }
 }
