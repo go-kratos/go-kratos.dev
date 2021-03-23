@@ -29,7 +29,6 @@ kratos new <project-name>
 ├── go.mod           
 ├── go.sum
 ├── LICENSE
-├── Makefile   // make命令使用的配置文件，可以在这里新增您的自定义命令
 ├── README.md
 ├── api        // 下面维护了微服务使用的proto文件以及根据它们所生成的go文件
 │   └── helloworld
