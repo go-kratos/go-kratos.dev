@@ -1,27 +1,26 @@
 ---
 id: layout
-title: (en) 工程骨架 
+title: Layout 
 ---
-我们创建了 [kratos-layout](https://github.com/go-kratos/kratos-layout) 作为使用 `kratos new` 新建项目时所使用结构，其中包括了开发过程中所需的配套工具链( Makefile 等)，便于开发者更高效地维护整个项目，本项目亦可作为使用 Kratos 构建微服务的工程化最佳实践的参考。
+The [kratos-layout](https://github.com/go-kratos/kratos-layout) is used in command `kratos new` for new project creation. The directory structures and tool chains are included in this layout project. Which help you be more efficient in developing. This project could also considered as the best practice of building microservices by Go and Kratos.
 
 <img src="/images/ddd.jpg" alt="kratos ddd" width="500px" />
 
-使用如下命令即可基于 kratos-layout 创建项目：
+To create a new project:
 
 ```
 kratos new <project-name>
 ```
 
-生成的目录结构如下：
+The following directory structures will be generated.
 
 ```
 .
 ├── go.mod           
 ├── go.sum
 ├── LICENSE
-├── Makefile   // make命令使用的配置文件，可以在这里新增您的自定义命令
 ├── README.md
-├── api        // 下面维护了微服务使用的proto文件以及根据它们所生成的go文件
+├── api        // Includes .proto API files and the .go files which generated from them.
 │   └── helloworld
 │       ├── errors
 │       │   ├── helloworld.pb.go
@@ -32,30 +31,30 @@ kratos new <project-name>
 │           ├── greeter.proto
 │           ├── greeter_grpc.pb.go
 │           └── greeter_http.pb.go
-├── cmd    // 整个项目启动的入口文件
+├── cmd    // The entry point of the kratos app
 │   └── server
 │       ├── main.go
-│       ├── wire.go  // 我们使用wire来维护依赖注入
+│       ├── wire.go  // wire library is for dependency injection
 │       └── wire_gen.go
-├── configs     // 这里通常维护一些本地调试用的样例配置文件
+├── configs     // The configuration files for local development.
 │   └── config.yaml
-└── internal    // 该服务所有不对外暴露的代码，通常的业务逻辑都在这下面，使用internal避免错误引用
-    ├── conf    // 内部使用的config的结构定义，使用proto格式生成
+└── internal    // All the codes which are private. Business logics are often exist in there, under "internal" directory for preventing from unwilling import.
+    ├── conf    // The structure for configuration parsing, generated from .proto file
     │   ├── conf.pb.go
     │   └── conf.proto
-    ├── data    // 业务数据访问，包含 cache、db 等封装，实现了 biz 的 repo 接口。我们可能会把 data 与 dao 混淆在一起，data 偏重业务的含义，它所要做的是将领域对象重新拿出来，我们去掉了 DDD 的 infra层。
+    ├── data    // For accessing data sources. This layer is mainly used as the encapsulation of databases, caches etc. The implementation of repo interface which defined in biz layer should be placed here. In order to distinguish from DAO (data access object), the data layer stress on business. Its responsibility is to transform PO to DTO. We dropped the infra layer of DDD.
     │   ├── README.md
     │   ├── data.go
     │   └── greeter.go
-    ├── biz     // 业务逻辑的组装层，类似 DDD 的 domain 层，data 类似 DDD 的 repo，repo 接口在这里定义，使用依赖倒置的原则。
+    ├── biz     // The layer for composing business logics. It is similar to the domain layer in DDD. The interface of repo are defined in there, following the Dependence Inversion Principle.
     │   ├── README.md
     │   ├── biz.go
     │   └── greeter.go
-    ├──service  // 实现了 api 定义的服务层，类似 DDD 的 application 层，处理 DTO 到 biz 领域实体的转换(DTO -> DO)，同时协同各类 biz 交互，但是不应处理复杂逻辑
+    ├──service  // The service layer which implements API defination. It is similar to the application layer in DDD. The transformations of DTO to DO and the composing of biz are processed in this layer. We should avoid to write complex business logics here. 
     │   ├── README.md
     │   ├── greeter.go
     │   └── service.go
-    └── server  // http和grpc实例的创建和配置
+    └── server  // The creation of http and grpc instance
         ├── grpc.go
         ├── http.go
         └── server.go
