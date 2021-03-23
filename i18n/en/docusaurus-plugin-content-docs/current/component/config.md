@@ -1,11 +1,10 @@
 ---
 id: config
-title: (en) Config
+title: Config
 ---
 
-
-### 使用方式
-配置源可以指定多个，并且 config 会进行合并成 map[string]interface{}，然后通过 Scan 或者 Value 获取值内容；
+### Usage
+One or more config sources can be applied. They will be merged into map[string]interface{}, then you could use Scan or Value to get the values.
 
 ```go
 c := config.New(
@@ -16,17 +15,17 @@ c := config.New(
         // kv.Key
         // kv.Value
         // kv.Metadata
-        // 自定义实现对应的数据源解析，如果是配置中心数据源也可以指定metadata进行识别配置类型
+        // Configuration center can use the metadata to determine the type of the config.
         return yaml.Unmarshal(kv.Value, v)
     }),
 )
-// 加载配置源：
+// load config source
 if err := c.Load(); err != nil {
     panic(err)
 }
-// 获取对应的值内容：
+// get value
 name, err := c.Value("service").String()
-// 解析到结构体（由于已经合并到map[string]interface{}，所以需要指定 jsonName 进行解析）：
+// parse the values to the struct. (the json tags are required for parsing)
 var v struct {
     Service string `json:"service"`
     Version string `json:"version"`
@@ -34,8 +33,8 @@ var v struct {
 if err := c.Scan(&v); err != nil {
     panic(err)
 }
-// 监听值内容变更
+// watch the changing of the value
 c.Watch("service.name", func(key string, value config.Value) {
-    // 值内容变更
+    // callback of this event
 })
 ```
