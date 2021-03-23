@@ -50,7 +50,7 @@ The following directory structures will be generated.
     │   ├── README.md
     │   ├── biz.go
     │   └── greeter.go
-    ├──service  // The service layer which implements API defination. It is similar to the application layer in DDD. The transformations of DTO to DO and the composing of biz are processed in this layer. We should avoid to write complex business logics here. 
+    ├──service  // The service layer which implements API definition. It is similar to the application layer in DDD. The transformations of DTO to DO and the composing of biz are processed in this layer. We should avoid to write complex business logics here. 
     │   ├── README.md
     │   ├── greeter.go
     │   └── service.go
