@@ -1,38 +1,37 @@
 ---
 id: registry
-title: (en) Registry
+title: Registry
 ---
 
-### 接口实现 
+### Interface
 
-Registry接口分为两个，Registrar为实例注册和反注册，Discoverer为服务实例列表获取
+Registry has two interface, the Registrar is for services' register and deregister, the Discoverer is for fetching the list of services.
 
 ```go
 type Registrar interface {
-	// 注册实例
+	// register the service
 	Register(ctx context.Context, service *ServiceInstance) error
-	// 反注册实例
+	// deregister the service
 	Deregister(ctx context.Context, service *ServiceInstance) error
 }
 ```
 ```go
 type Discoverer interface {
-	// 根据serviceName直接拉取实例列表
+	// fetch the service list of serviceName
 	Fetch(ctx context.Context, serviceName string) ([]*ServiceInstance, error)
-	// 根据serviceName阻塞式订阅一个服务的实例列表信息
+	// subscribe to a list of serviceName
 	Watch(ctx context.Context, serviceName string) (Watcher, error)
 }
 ```
-已支持的实现：
+Implementations:
 [consul](https://github.com/go-kratos/consul)
 [etcd](https://github.com/go-kratos/etcd)
 [k8s](https://github.com/go-kratos/kube)
 
-### 使用方式
+### Usage
 
-#### 注册服务实例
-
-创建一个Registrar（以consul为例），将Registrar注入进Kratos应用实例中，Kratos会自动完成实例注册和反注册
+#### Register a Service
+Create a Registrar(e.g. consul) and inject it to Kratos applications. Then the framework will do register and deregister automatically.
 
 ```go
 import consul "github.com/go-kratos/consul/registry"
@@ -60,9 +59,9 @@ app := kratos.New(
 ```
 
 
-#### 服务发现（gRPC）
+#### Service Discovery (gRPC)
+Create a Registrar(e.g. consul), create an Endpoint with url format as `<schema>://[namespace]/<service-name>`, then use `grc.WithDiscovery` and `grpc.WithEndpoint` as the options of the Dial method to get the gRPC connection.
 
-创建一个Discoverer（以consul为例）,根据Dial url格式`<schema>://[namespace]/<service-name>`创建一个Endpoint，通过grc.WithDiscoverer ,grpc.WithEndpoint创建一个grpc connection
 ```go
 import "github.com/go-kratos/kratos/transport/http"
 import "github.com/go-kratos/kratos/v2/transport/grpc"
@@ -81,8 +80,3 @@ if err != nil {
     panic(err)
 }
 ```
-
-
-
-
-
