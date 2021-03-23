@@ -1,7 +1,7 @@
 ---
 id: faq
-title: (en) FAQ
+title: FAQ
 ---
 
-### 在使用`kratos proto`命令时报`google/protobuf/descriptor.proto: File not found.`的错误
-通常是因为您的protoc工具没有正确安装导致的。具体安装方式可以参考文档[protoc-installation](https://grpc.io/docs/protoc-installation/)，请尽量采用包管理器方式进行安装，以确保安装的完整性。如果您一定要自行下载zip包安装预编译的版本或自行编译安装，请参考zip包中`readme.txt`文件的说明进行操作，确保`include`下的所有东西（通常是`google`目录，里面是一系列`.proto`后缀的文件）都已经正确放置在您的include路径下，如`/usr/local/include/`目录中，以确保protoc在编译过程中能成功找到。
+### `google/protobuf/descriptor.proto: File not found.` error while using `kratos proto` command.
+This issue is mainly caused by the improperly installation of protoc. The documentation [protoc-installation](https://grpc.io/docs/protoc-installation/) shows the correct way to install protoc. It is highly recommended that install protoc by system package manager to ensure the installation's integrity. If you have to install the pre-compiled version, please refer to the `readme.txt` in the zip file, make sure all the files under `include` folder could be put to correct include path of your system, e.g. `/usr/local/include/`, so that protoc can find them while compiling.
