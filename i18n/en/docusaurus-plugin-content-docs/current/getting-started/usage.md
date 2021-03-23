@@ -1,32 +1,32 @@
 ---
 id: usage
-title: (en) 工具介绍
+title: Usage
 ---
 
-## 安装
+## Installation
 
 ```bash
 go get -u github.com/go-kratos/kratos/cmd/kratos/v2@latest
 ```
 
-## 工具使用
+## Tool Usage
 
-### 版本
-查看工具版本：
+### Version
+To show the version
 ```bash
 kratos -v
 ```
-输出:
+Output:
 ```
 kratos version v2.0.0
 ```
 
-## 创建项目
-通过 kratos 命令创建项目模板：
+## Project Creation
+To create a new project:
 ```bash
 kratos new helloworld
 ```
-输出:
+Output:
 ```bash
 helloworld
 |____api
@@ -58,11 +58,11 @@ helloworld
 |____go.sum
 ```
 
-## 添加 Proto 文件
+## Adding Proto files
 ```bash
 kratos proto add api/helloworld/demo.proto
 ```
-输出:
+Output:
 
 api/helloworld/demo.proto
 
@@ -99,25 +99,23 @@ message ListDemoRequest {}
 message ListDemoReply {}
 ```
 
-## 生成 Proto 代码
-可以通过 make proto 直接生成，或者：
+## Generate Proto Codes
 ```bash
 kratos proto client api/helloworld/demo.proto
 ```
-输出:
+Output:
 ```bash
 api/helloworld/demo.pb.go
 api/helloworld/demo_grpc.pb.go
 api/helloworld/demo_http.pb.go
 ```
 
-## 生成 Service 代码
-
-通过 proto文件，可以直接生成对应的 Service 实现代码：
+## Generate Service Codes
+kratos can generate the bootstrap codes from the proto file.
 ```bash
 kratos proto server api/helloworld/demo.proto -t internal/service
 ```
-输出:  
+Output:
 internal/service/demo.go
 
 ```go
