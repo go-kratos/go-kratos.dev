@@ -1,11 +1,11 @@
 ---
 id: metrics
-title: (en) Metrics
+title: Metrics
 ---
 
-### 接口实现
+### Interface
 
-kratos暴露了三种监控接口，分别是 Counter, Gauge, Observer
+`Counter`, `Gauge`, `Observer` are the three major metric interface of kratos.
 
 ### Counter
 
@@ -20,7 +20,7 @@ type Counter interface {
 
 
 
-Counter 是最简单的计数器，对外提供了Inc, Add两个方法。只能用于计数的增加。通常用于统计服务的错误数，请求qps。
+Counter is just a standard counter. It should expose `Inc` and `Add` method. This counter can only count the increasing. It usually used at counting the numbers of errors or QPS.
 
 #### Gauge
 
@@ -33,7 +33,7 @@ type Gauge interface {
 }
 ```
 
- Guage是个状态指示器，用于记录服务当前的状态，状态值可以随着时间增加或减少。通常用于监控服务当前的cpu使用率，内存使用量等。
+Gauge is a status indicator. It records the current status of service. The value of gauge may increase or decrease. It usually used at monitoring CPU usage or Mem usage etc.
 
 #### Observer
 
@@ -43,14 +43,12 @@ type Observer interface {
 	Observe(float64)
 }
 ```
+Observer is a kind of more complex metric. It provides more extra information for monitoring sums, quantities and percentages. It is corresponding to Prometheus'**Histogram** and **Summary**. The Histogram is used for record the counts in different buckets, such as the count of requests in different latency ranges. The Histogram is efficient. Summary records the percentiles, because of extra computation, it maybe slower.
 
 
+### Usage
 
-Observer属于比较复杂的监控指标，对比以上两个提供了更多而外的信息，可以用于观察统计总值，数量以及分位百分比。在Prometheus中，对应了**Histogram** 和**Summary**的实现。其中Histogram 直方图用于记录不同分桶的数量。比如不同请求耗时区间的请求数，用于指示将指标保存到了多个分桶，因此Histogram几乎无开销。Summary则记录了不同分位的值，基于概率采样计算，比如90% 99% 分位耗时，由于需要进行额外的计算，因此对于服务有一定的开销。
-
-### 使用方式
-
-#### server中使用metrics
+#### Metrics in server
 
 ```go
 import (
@@ -61,7 +59,7 @@ import (
 	"github.com/prometheus/client_golang/prometheus"
 )
 func NewHTTPServer(c *conf.Server) *http.Server {
-    // 使用promethues 
+    // for prometheus 
 	counter := prometheus.NewCounterVec(prometheus.CounterOpts{Name: "kratos_counter"}, []string{"server", "qps"})
 	var opts = []http.ServerOption{
 		http.Middleware(
@@ -74,7 +72,7 @@ func NewHTTPServer(c *conf.Server) *http.Server {
 
 ```
 
-#### Client中使用metrics
+#### Metrics in Client
 
 ```go
 import (
