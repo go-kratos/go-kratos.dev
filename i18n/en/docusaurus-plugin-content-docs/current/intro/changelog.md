@@ -1,6 +1,6 @@
 ---
 id: changelog
-title: (en) 更新日志
+title: Changelog
 ---
 
 version changelog here
