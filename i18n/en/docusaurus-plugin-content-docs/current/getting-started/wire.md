@@ -1,67 +1,65 @@
 ---
 id: wire
-title: (en) 依赖注入
+title: Dependency Injection
 ---
 
-**Wire** 是一个灵活的依赖注入工具，通过自动生成代码的方式在编译期完成依赖注入。
+**Wire** is a compile-time dependency injection tool.
 
-在各个组件之间的依赖关系中，通常鼓励显式初始化，而不是全局变量传递。
+It is recommended that doing explicit initialization rather than using global variables.
 
-所以通过 *Wire* 进行初始化代码，可以很好地解决组件之间的耦合，以及提高代码维护性。
+Generating the initialization codes by *Wire* can reduce the coupling among components and increase the maintainability of the project.
 
-### 安装工具
+### Installation
 
 ```bash
 go get github.com/google/wire/cmd/wire
 ```
 
-### 工作原理
+### Terms
 
-Wire 具有两个基本概念：*Provider* 和 *Injector*。
+There are two basic terms in wire, *Provider* and *Injector*.
 
-Provider 是一个普通的 *Go Func* ，这个方法也可以接收其它 *Provider* 的返回值，从而形成了依赖注入；
+Provider is a *Go Func*, it can also receive the *Provider* return value from other *Provider*s for dependency injection.
 
 ```go
-// 提供一个配置文件（也可能是配置文件）
+// provides a config file
 func NewConfig() *conf.Data {...}
 
-// 提供数据组件，依赖了数据配置（初始化 Database、Cache 等）
+// provides the data component (the initialization of database, cache and etc.) which depends on the data config.
 func NewData(c *conf.Data) (*Data, error) {...}
 
-// 提供持久化组件，依赖数据组件（实现 CURD 持久化层）
+// provides persistence components (implementation of CRUD persistence) which depends on the data component.
 func NewUserRepo(d *data.Data) (*UserRepo, error) {...}
 ```
 
-### 使用方式
+### Usage
 
-在 Kratos 中，主要分为 *server、service、biz、data* 服务模块，会通过 *Wire* 进行模块顺序的初始化；
+In Kratos project, there are for major modules, *server, service, biz and data*. They will be initialized by *Wire*.
 
 <img src="/images/wire.png" alt="kratos ddd" width="650px" />
 
-在每个模块中，只需要一个 *ProviderSet* 提供者集合，就可以在 wire 中进行依赖注入；
+A *ProviderSet* should be provided in every module so that wire could scan them and generate the DI codes.
 
-并且我们在每个组件提供入口即可，不需要其它依赖，例如：
-
+First, you should define ProviderSet in the entry of every module.
+The 
 ```go
 -data
 --data.go    // var ProviderSet = wire.NewSet(NewData, NewGreeterRepo)
 --greeter.go // func NewGreeterRepo(data *Data, logger log.Logger) biz.GreeterRepo {...}
 ```
+Then put these *ProviderSet* in the *wire.go* for DI configuration.
 
-然后通过 *wire.go* 中定义所有 *ProviderSet* 可以完成依赖注入配置。
-
-### 初始化组件
-
-通过 wire 初始化组件，需要定义对应的 wire.go，以及 kratos application 用于启动管理。
+### Component Initialization
+`wire.go` is required for DI. The kratos application is for lifecycle management.
 
 ```go
-// 应用程序入口
+// the entry point of the application
 cmd
 -main.go
 -wire.go
 -wire_gen.go
 
-// main.go 创建 kratos 应用生命周期管理
+// main.go creates the kratos application for lifecycle management.
 func newApp(logger log.Logger, hs *http.Server, gs *grpc.Server, greeter *service.GreeterService) *kratos.App {
     pb.RegisterGreeterServer(gs, greeter)
     pb.RegisterGreeterHTTPServer(hs, greeter)
@@ -76,13 +74,13 @@ func newApp(logger log.Logger, hs *http.Server, gs *grpc.Server, greeter *servic
     )
 }
 
-// wire.go 初始化模块
+// wire.go initialization
 func initApp(*conf.Server, *conf.Data, log.Logger) (*kratos.App, error) {
-    // 构建所有模块中的 ProviderSet，用于生成 wire_gen.go 自动依赖注入文件
+    //  builds ProviderSet in every modules, for the generation of wire_gen.go
     panic(wire.Build(server.ProviderSet, data.ProviderSet, biz.ProviderSet, service.ProviderSet, newApp))
 }
 ```
-在项目的 main 目录中，运行 go generate 进行生成编译期依赖注入代码：
+run `go generate` command in main directory to generate DI codes.
 ```
 go generate ./...
 ```
