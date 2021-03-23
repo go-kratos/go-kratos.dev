@@ -1,6 +1,6 @@
 ---
 id: tracing
-title: (en) Tracing
+title: Tracing
 ---
 
 
