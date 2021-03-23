@@ -1,48 +1,49 @@
 ---
 id: middleware
-title: (en) Middleware
+title: Middleware
 ---
-Kratos内置了一系列的middleware（中间件）用于处理logging, metrics等通用场景。您也可以通过实现Middleware接口，开发自定义middleware，进行通用的业务处理，比如用户登录鉴权等。
+Kratos has a series of middleware to deal with common purpose such as logging or metrics. You could also implement Middleware interface to develop your custom middleware to process common business such as the user authentication etc.
 
-## 内置中间件
-相关代码均可以在`middleware`目录下找到。
+## Builtin Middleware
+Their codes are located in `middleware` directory.
 
 ### logging
-代码位于`middleware/logging`，用于请求日志的记录。
+In `middleware/logging`, this middleware is for logging the request.
 
 ### metrics
-代码位于`middleware/metrics`，用于启用metric。
+In `middleware/metrics`, this middleware is for enabling metric.
 
 ### recovery
-代码位于`middleware/recovery`，用于recovery panic。
+In `middleware/recovery`，, this middleware is for panic recovery.
 
 ### status
-代码位于`middleware/status`，用于grpc的error信息转换处理。
+In `middleware/status`, this middleware is for transformation of gRPC error.
 
 ### tracing
-代码位于`middleware/tracing`，用于启用trace。
+In `middleware/tracing`, this middleware is for enabling trace.
 
 ### validate
-代码位于`middleware/validate`，用于处理参数校验。
+In `middleware/validate`, this middleware is for parameter validation.
 
 ### 
 
-## 使用中间件
-在`NewGRPCServer`和`NewHTTPServer`中通过`ServerOption`进行注册。
-如
+## Usage
+Register it with `ServerOption` in `NewGRPCServer` or `NewHTTPServer`.
+
+For example:
 ```go
 // http
-// 定义opts
+// define opts
 var opts = http.NewServer([]http.ServerOption{
 	http.Middleware(
 		middleware.Chain(
-			recovery.Recovery(), // 把middleware按照需要的顺序加入到Chain里面
+			recovery.Recovery(), // put middlewares into Chain
 			tracing.Server(),
 			logging.Server(),
 		),
 	),
 })
-// 创建server
+// create server
 http.NewServer(opts...)
 
 
@@ -51,19 +52,21 @@ http.NewServer(opts...)
 var opts = []grpc.ServerOption{
 		grpc.Middleware(
 			middleware.Chain(
-				recovery.Recovery(),  // 把middleware按照需要的顺序加入到Chain里面
+				recovery.Recovery(),  // put middlewares into Chain
 				status.Server(),
 				tracing.Server(),
 				logging.Server(),
 			),
 		),
 	}
-// 创建server
+// create server
 grpc.NewServer(opts...)
 
 ```
 
 
-## 自定义中间件
-需要实现`Middleware`接口。
-[TBD]
+## Custom Middleware
+Implement `Middleware` interface.
+
+(TBD)
+
