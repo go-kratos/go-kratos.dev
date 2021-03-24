@@ -2,9 +2,9 @@
 id: middleware
 title: Middleware
 ---
-Kratos has a series of middleware to deal with common purpose such as logging or metrics. You could also implement Middleware interface to develop your custom middleware to process common business such as the user authentication etc.
+Kratos has a series of built-in middleware to deal with common purpose such as logging or metrics. You could also implement Middleware interface to develop your custom middleware to process common business such as the user authentication etc.
 
-## Builtin Middleware
+## Built-in Middleware
 Their codes are located in `middleware` directory.
 
 ### logging
