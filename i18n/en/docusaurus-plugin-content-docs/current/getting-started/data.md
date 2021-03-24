@@ -5,7 +5,7 @@ title: Data Access
 
 Any ORM or library is supported in Kratos project for data accessing. Please refer to the [examples](https://github.com/go-kratos/kratos/tree/main/examples) for integration.
 
-**Ent** is an easy-to-use ORM which developed by *Fackbook*. Here is a brief guide to use this library.
+**Ent** is an easy-to-use ORM which developed by *Facebook*. Here is a brief guide to use this library.
 
 ### Install Ent
 
