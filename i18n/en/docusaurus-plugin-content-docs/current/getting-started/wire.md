@@ -19,7 +19,7 @@ go get github.com/google/wire/cmd/wire
 
 There are two basic terms in wire, *Provider* and *Injector*.
 
-Provider is a *Go Func*, it can also receive the *Provider* return value from other *Provider*s for dependency injection.
+Provider is a *Go Func*, it can also receive the values from other *Provider*s for dependency injection.
 
 ```go
 // provides a config file
