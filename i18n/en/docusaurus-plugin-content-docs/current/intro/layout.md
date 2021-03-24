@@ -2,7 +2,7 @@
 id: layout
 title: Layout 
 ---
-The [kratos-layout](https://github.com/go-kratos/kratos-layout) is used by command `kratos new` for new project creation. The directory structures and tool chains are included in this layout project. Which help you be more efficient in developing. This project could also considered as the best practice of building microservices by Go and Kratos.
+The [kratos-layout](https://github.com/go-kratos/kratos-layout) is used by command `kratos new` for new project creation. The directory structures and tool chains are included in this layout project. Which help you be more efficient in developing. This project could also considered as the best practice of building microservices with Go and Kratos.
 
 <img src="/images/ddd.jpg" alt="kratos ddd" width="500px" />
 
