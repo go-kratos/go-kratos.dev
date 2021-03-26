@@ -4,10 +4,10 @@ title: API
 ---
 Kratos implements REST and gRPC as the transport protocols. We mainly follows the [API Design Guide](https://cloud.google.com/apis/design/) from Google.
 
-You could define REST API and gRPC API in proto files and generate their Go codes from the proto files. 
+You could define REST API and gRPC API in proto files and generate Go codes from these files. 
 
 ## Definition
-You could define REST API And gRPC API with Protobuf IDL.
+You could define REST API and gRPC API with Protobuf IDL.
 
 api/helloworld/v1/greeter.proto
 
