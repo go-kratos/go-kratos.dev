@@ -1,6 +1,6 @@
 ---
 id: changelog
-title: Changelog
+title: 更新日志
 description: Kratos Change logs
 keywords:
   - Go 
