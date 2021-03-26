@@ -63,7 +63,7 @@ enum Helloworld {
 通过 proto 生成对应的代码：
 
 ```bash
-make proto
+kratos proto client api/helloworld/errors/helloworld.proto
 ```
 生成的源码，可以直接通过 `errors.IsMissingName(err)` 进行对应的错误判定:
 ```go
