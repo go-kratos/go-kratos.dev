@@ -50,3 +50,29 @@ Kratos 一套轻量级 Go 微服务框架，包含大量微服务相关框架及
 ## Architecture
 
 <img src="/images/arch.png" alt="kratos architecture" width="650px" />
+
+
+## Related
+
+* [Docs](https://go-kratos.dev/)
+* [Examples](https://github.com/go-kratos/kratos/tree/main/examples)
+* [Service Layout](https://github.com/go-kratos/kratos-layout)
+
+## Community
+* [Wechat Group](https://github.com/go-kratos/kratos/issues/682)
+* [Discord Group](https://discord.gg/BWzJsUJ)
+* QQ Group: 716486124
+
+## Sponsors and Backers
+
+![kratos](docs/images/alipay.png)
+
+## License
+Kratos is MIT licensed. See the [LICENSE](./LICENSE) file for details.
+
+## Contributors
+感谢开发者们对本项目的贡献。
+<a href="https://github.com/go-kratos/kratos/graphs/contributors">
+  <img src="https://contrib.rocks/image?repo=go-kratos/kratos" />
+</a>
+
