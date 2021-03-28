@@ -62,10 +62,6 @@ Kratos 一套轻量级 Go 微服务框架，包含大量微服务相关框架及
 * [Discord Group](https://discord.gg/BWzJsUJ)
 * QQ Group: 716486124
 
-## Sponsors and Backers
-
-![kratos](docs/images/alipay.png)
-
 ## License
 Kratos is MIT licensed. See the [LICENSE](./LICENSE) file for details.
 
