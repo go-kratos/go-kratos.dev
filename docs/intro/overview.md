@@ -63,7 +63,7 @@ Kratos 一套轻量级 Go 微服务框架，包含大量微服务相关框架及
 * QQ Group: 716486124
 
 ## License
-Kratos is MIT licensed. See the [LICENSE](./LICENSE) file for details.
+Kratos is MIT licensed. See the [LICENSE](https://github.com/go-kratos/kratos/blob/main/LICENSE) file for details.
 
 ## Contributors
 感谢开发者们对本项目的贡献。
