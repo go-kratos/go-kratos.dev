@@ -54,7 +54,7 @@ go build -o ./bin/ ./...
 
 ## Try it out
 ```bash
-curl 'http://127.0.0.1:8000/helloworld/krtaos'
+curl 'http://127.0.0.1:8000/helloworld/kratos'
 
 The response should be
 {
