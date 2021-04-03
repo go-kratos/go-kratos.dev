@@ -43,7 +43,7 @@ Kratos 内置了一系列的 middleware（中间件）用于处理 logging、 me
 ```go
 // http
 // 定义opts
-var opts = http.NewServer([]http.ServerOption{
+var opts = []http.ServerOption{
 	http.Middleware(
 		middleware.Chain(
 			recovery.Recovery(), // 把middleware按照需要的顺序加入到Chain里面
@@ -51,7 +51,7 @@ var opts = http.NewServer([]http.ServerOption{
 			logging.Server(),
 		),
 	),
-})
+}
 // 创建server
 http.NewServer(opts...)
 
@@ -59,15 +59,15 @@ http.NewServer(opts...)
 
 //grpc
 var opts = []grpc.ServerOption{
-		grpc.Middleware(
-			middleware.Chain(
-				recovery.Recovery(),  // 把middleware按照需要的顺序加入到Chain里面
-				status.Server(),
-				tracing.Server(),
-				logging.Server(),
-			),
+	grpc.Middleware(
+		middleware.Chain(
+			recovery.Recovery(),  // 把middleware按照需要的顺序加入到Chain里面
+			status.Server(),
+			tracing.Server(),
+			logging.Server(),
 		),
-	}
+	),
+}
 // 创建server
 grpc.NewServer(opts...)
 
