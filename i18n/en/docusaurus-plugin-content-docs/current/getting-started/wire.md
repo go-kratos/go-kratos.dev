@@ -34,7 +34,7 @@ func NewUserRepo(d *data.Data) (*UserRepo, error) {...}
 
 ### Usage
 
-In Kratos project, there are for major modules, *server, service, biz and data*. They will be initialized by *Wire*.
+In Kratos project, there are four major modules, *server, service, biz and data*. They will be initialized by *Wire*.
 
 <img src="/images/wire.png" alt="kratos ddd" width="650px" />
 
