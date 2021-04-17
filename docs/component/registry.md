@@ -52,10 +52,8 @@ cli, err := api.NewClient(api.DefaultConfig())
 if err != nil {
 	panic(err)
 }
-reg, err := consul.New(cli)
-if err != nil {
-	panic(err)
-}
+reg := consul.New(cli)
+
 app := kratos.New(
     kratos.Name(Name),
     kratos.Version(Version),
@@ -81,11 +79,9 @@ cli, err := api.NewClient(api.DefaultConfig())
 if err != nil {
 	panic(err)
 }
-dis, err := consul.New(cli)
-if err != nil {
-	panic(err)
-}
-endpoint ：= WithEndpoint("discovery://default/provider")
+dis := consul.New(cli)
+
+endpoint := "discovery://default/provider"
 conn, err := grpc.Dial(context.Background(), grpc.WithEndpoint(endpoint), grpc.WithDiscovery(dis))
 if err != nil {
     panic(err)
