@@ -63,7 +63,7 @@ app := kratos.New(
         hs,
         gs,
     ),
-    kratos.Registrar(r),
+    kratos.Registrar(reg),
 )
 ```
 
