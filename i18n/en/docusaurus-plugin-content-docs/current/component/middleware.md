@@ -34,7 +34,7 @@ For example:
 ```go
 // http
 // define opts
-var opts = http.NewServer([]http.ServerOption{
+var opts = []http.ServerOption{
 	http.Middleware(
 		middleware.Chain(
 			recovery.Recovery(), // put middlewares into Chain
@@ -42,7 +42,7 @@ var opts = http.NewServer([]http.ServerOption{
 			logging.Server(),
 		),
 	),
-})
+}
 // create server
 http.NewServer(opts...)
 

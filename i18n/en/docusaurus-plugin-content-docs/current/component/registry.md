@@ -5,7 +5,7 @@ title: Registry
 
 ### Interface
 
-Registry has two interface, the Registrar is for services' register and deregister, the Discoverer is for fetching the list of services.
+Registry has two interface, the Registrar is for services' register and deregister, the Discovery is for fetching the list of services.
 
 ```go
 type Registrar interface {
@@ -15,8 +15,9 @@ type Registrar interface {
 	Deregister(ctx context.Context, service *ServiceInstance) error
 }
 ```
+
 ```go
-type Discoverer interface {
+type Discovery interface {
 	// fetch the service list of serviceName
 	Fetch(ctx context.Context, serviceName string) ([]*ServiceInstance, error)
 	// subscribe to a list of serviceName
@@ -41,10 +42,8 @@ cli, err := api.NewClient(api.DefaultConfig())
 if err != nil {
 	panic(err)
 }
-reg, err := consul.New(cli)
-if err != nil {
-	panic(err)
-}
+reg := consul.New(cli)
+
 app := kratos.New(
     kratos.Name(Name),
     kratos.Version(Version),
@@ -54,7 +53,7 @@ app := kratos.New(
         hs,
         gs,
     ),
-    kratos.Registrar(r),
+    kratos.Registrar(reg),
 )
 ```
 
@@ -70,11 +69,9 @@ cli, err := api.NewClient(api.DefaultConfig())
 if err != nil {
 	panic(err)
 }
-dis, err := consul.New(cli)
-if err != nil {
-	panic(err)
-}
-endpoint ：= WithEndpoint("discovery://default/provider")
+dis := consul.New(cli)
+
+endpoint := "discovery://default/provider"
 conn, err := grpc.Dial(context.Background(), grpc.WithEndpoint(endpoint), grpc.WithDiscovery(dis))
 if err != nil {
     panic(err)
