@@ -34,9 +34,11 @@ type Discovery interface {
 }
 ```
 已支持的实现：
-[consul](https://github.com/go-kratos/consul)
-[etcd](https://github.com/go-kratos/etcd)
-[k8s](https://github.com/go-kratos/kube)
+* [consul](https://github.com/go-kratos/consul)
+* [etcd](https://github.com/go-kratos/etcd)
+* [kube](https://github.com/go-kratos/kube)
+* [nacos](https://github.com/go-kratos/nacos)
+
 
 ### 使用方式
 
