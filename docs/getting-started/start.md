@@ -53,7 +53,7 @@ kratos proto server api/helloworld/helloworld.proto -t internal/service
 ## 项目编译和运行
 ```bash
 # 生成所有proto源码、wire等等
-go generate ./...
+go generate ./.. .
 
 # 编译成可执行文件
 go build -o ./bin/ ./...
