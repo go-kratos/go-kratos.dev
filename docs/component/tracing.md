@@ -1,7 +1,6 @@
 ---
 id: tracing
 title: Tracing
-description:
 keywords:
   - Go
   - Kratos

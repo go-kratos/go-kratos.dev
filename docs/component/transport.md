@@ -1,7 +1,6 @@
 ---
 id: transport
 title: Transport
-description:
 keywords:
   - Go
   - Kratos
