@@ -64,7 +64,7 @@ go build -o ./bin/ ./...
 
 ## 测试接口
 ```bash
-curl 'http://127.0.0.1:8000/helloworld/krtaos'
+curl 'http://127.0.0.1:8000/helloworld/kratos'
 
 输出：
 {
