@@ -77,7 +77,7 @@ import "github.com/go-kratos/kratos/errors"
 import "<app>/api/helloworld/v1"
 
 func doSomething() error {
-	return errrors.BadRequest("hellworld", v1.SERVICE_DISABLED.String(), "service has been disabled")
+	return errors.BadRequest("hellworld", v1.SERVICE_DISABLED.String(), "service has been disabled")
 }
 
 if err := doSomething(); errors.IsBadRequest(err) {
