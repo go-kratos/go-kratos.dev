@@ -26,8 +26,9 @@ APIs 错误码可以统一通过 proto 定义业务原因，然后通过 protoc-
     "details": [
         {
             "@type": "type.googleapis.com/google.rpc.ErrorInfo",
-	    // 错误原因，定义为业务判定错误码
+            // 错误原因，定义为业务判定错误码
             "reason": "custom_error",
+            // 错误域，定义为业务域
             "domain": "helloworld"
         }
     ]
