@@ -34,6 +34,8 @@ go env -w GO111MODULE=on
 ```bash
 # 安装 kratos 命令工具
 go get -u github.com/go-kratos/kratos/cmd/kratos/v2@latest
+# 可能不是最新的项目，可以执行
+kratos upgrade
 ```
 ## 创建项目
 ```bash
