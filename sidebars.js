@@ -22,6 +22,21 @@ module.exports = {
     },
     {
       type: 'category',
+      label: '用户指南',
+      items: [
+        'guide/api-protobuf',
+        'guide/openapi',
+      ],
+    },
+    {
+      type: 'category',
+      label: '插件',
+      items: [
+        'plugin/overview',
+      ],
+    },
+    {
+      type: 'category',
       label: '框架组件',
       items: [
         'component/api',
@@ -33,13 +48,6 @@ module.exports = {
         'component/registry',
         'component/middleware',
         'component/transport',
-      ],
-    },
-    {
-      type: 'category',
-      label: '用户指南',
-      items: [
-        'guide/api-protobuf',
       ],
     },
   ],
