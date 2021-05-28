@@ -60,7 +60,7 @@ protoc --proto_path=. \
 ### 使用
 上面的命令执行成功后，将在您的proto文件所在目录生成相应的swagger.json文件。
 您可以将其导入任何支持OpenAPI规范的平台进行浏览，例如:
-* [Swagger UI](https://github.com/swagger-api/swagger-ui)，
+* [Swagger UI](https://github.com/swagger-api/swagger-ui)
 * [Swagger Editor](https://editor.swagger.io/)
 * [ReDoc](https://github.com/Redocly/redoc)
 * [YApi](https://github.com/YMFE/yapi)
