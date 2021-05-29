@@ -37,6 +37,13 @@ module.exports = {
     },
     {
       type: 'category',
+      label: '代码示例',
+      items: [
+        'example/overview',
+      ],
+    },
+    {
+      type: 'category',
       label: '框架组件',
       items: [
         'component/api',
