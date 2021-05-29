@@ -9,7 +9,7 @@ module.exports = {
   organizationName: 'go-kratos',
   projectName: 'go-kratos.dev',
   themeConfig: {
-    sidebarCollapsible: false,
+    sidebarCollapsible: true,
     navbar: {
       title: 'Kratos',
       logo: {
