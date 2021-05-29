@@ -30,16 +30,16 @@ module.exports = {
     },
     {
       type: 'category',
-      label: '插件',
+      label: '代码示例',
       items: [
-        'plugin/overview',
+        'example/overview',
       ],
     },
     {
       type: 'category',
-      label: '代码示例',
+      label: '插件',
       items: [
-        'example/overview',
+        'plugin/overview',
       ],
     },
     {
