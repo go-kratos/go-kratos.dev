@@ -15,17 +15,18 @@ module.exports = {
       items: [
         'getting-started/start',
         'getting-started/usage',
-        'getting-started/wire',
-        'getting-started/data',
         'getting-started/faq'
       ],
     },
     {
       type: 'category',
       label: '用户指南',
+      collapsed: false,
       items: [
         'guide/api-protobuf',
         'guide/openapi',
+        'guide/wire',
+        'guide/ent',
       ],
     },
     {

@@ -1,41 +1,25 @@
 ---
-id: data
-title: 数据访问
-description: Ent 是 Facebook 开源的一个简单易用的 Database 实体框架
-keywords:
-  - Go 
-  - Kratos
-  - Toolkit
-  - Framework
-  - Microservices
-  - Protobuf
-  - gRPC
-  - HTTP
+id: ent
+title: Ent
 ---
 
-**Ent** 是 *Fackbook* 开源的一个简单易用的 Database 实体框架。
+Any ORM or library is supported in Kratos project for data accessing. Please refer to the [examples](https://github.com/go-kratos/kratos/tree/main/examples) for integration.
 
-它使构建和维护具有大型数据模型的应用程序变得容易，并坚持以下原则:
+**Ent** is an easy-to-use ORM which developed by *Facebook*. Here is a brief guide to use this library.
 
-* 轻松地将数据库模式建模为图形结构。
-* 将模式定义为可编程的Go代码。
-* 基于代码生成的静态类型。
-* 数据库查询和图遍历很容易编写。
-* 简单地扩展和使用Go模板自定义。
-
-### 安装工具
+### Install Ent
 
 ```bash
 go get entgo.io/ent/cmd/ent
 ```
 
-### 创建实体 Schema
+### Create Schema
 
 ```bash
 ent init User
 ```
 
-将会在 *project/ent/schema/* 目录下为用户生成模式:
+This command will generate schema in `project/ent/schema/` directory.
 
 ```go
 // <project>/ent/schema/user.go
@@ -60,7 +44,7 @@ func (User) Edges() []ent.Edge {
 }
 ```
 
-为 `User` 添加 `name、age` 两个数据库字段:
+Add two fields `name、age` to `User` table.
 
 ```go
 package schema
@@ -81,15 +65,14 @@ func (User) Fields() []ent.Field {
 }
 ```
 
-从项目的ent目录运行go generate，如下所示:
-
+Run `go generate`:
 ```
 go generate ./ent
 ```
 
-### 创建数据库连接客户端
+### Create DB Connection Client
 
-首先，创建一个新的ent.Client。对于本例，我们将使用SQLite3。
+First, create a new `ent.Client`. We use SQLite3 here for demonstration.
 
 ```go
 package main
@@ -116,7 +99,7 @@ func main() {
 }
 ```
 
-然后进行创建一个 `User` 将会写入到数据库中：
+To create a `User` in table.
 
 ```go
 func CreateUser(ctx context.Context, client *ent.Client) (*ent.User, error) {
@@ -136,5 +119,5 @@ func CreateUser(ctx context.Context, client *ent.Client) (*ent.User, error) {
 ### References
 
 * https://entgo.io/docs/getting-started/
-* https://github.com/go-kratos/kratos/tree/main/examples/blog/internal/data
+* https://github.com/go-kratos/examples/tree/main/blog/internal/data
 

@@ -18,5 +18,13 @@
   "sidebar.docs.category.用户指南": {
     "message": "用户指南",
     "description": "The label for category 用户指南 in sidebar docs"
+  },
+  "sidebar.docs.category.代码示例": {
+    "message": "代码示例",
+    "description": "The label for category 代码示例 in sidebar docs"
+  },
+  "sidebar.docs.category.插件": {
+    "message": "插件",
+    "description": "The label for category 插件 in sidebar docs"
   }
 }

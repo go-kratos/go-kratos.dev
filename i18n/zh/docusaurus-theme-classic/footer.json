@@ -34,5 +34,13 @@
   "copyright": {
     "message": "Copyright © 2021 go-kratos.dev",
     "description": "The footer copyright"
+  },
+  "link.item.label.Kratos v1(legacy)": {
+    "message": "Kratos v1(legacy)",
+    "description": "The label of footer link with label=Kratos v1(legacy) linking to http://v1.go-kratos.dev/"
+  },
+  "link.item.label.Docs Repo": {
+    "message": "Docs Repo",
+    "description": "The label of footer link with label=Docs Repo linking to https://github.com/go-kratos/go-kratos.dev"
   }
 }
