@@ -76,6 +76,10 @@ module.exports = {
               label: 'GitHub',
               href: 'https://github.com/go-kratos/kratos',
             },
+            {
+              label: 'Docs Repo',
+              href: 'https://github.com/go-kratos/go-kratos.dev',
+            },
           ],
         },
       ],
