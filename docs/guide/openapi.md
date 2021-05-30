@@ -12,7 +12,7 @@ keywords:
   - gRPC
   - HTTP
 ---
-框架可通过两种方式提供OpenAPI/Swagger的使用：1. 在服务上提供swagger接口，2. 使用protoc插件生成swagger.json文件。下文描述了这两种方式的用法。
+框架可通过两种方式提供OpenAPI/Swagger的使用：1. 在服务上提供swagger接口，2. 使用protoc插件生成swagger.json文件。下面介绍这两种方式。
 
 ## 方式1: 使用插件提供swagger接口
 [swagger-api](https://github.com/go-kratos/swagger-api)插件提供了一系列swagger相关的API，以及相应的UI界面
