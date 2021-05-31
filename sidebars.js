@@ -21,7 +21,6 @@ module.exports = {
     {
       type: 'category',
       label: '用户指南',
-      collapsed: false,
       items: [
         'guide/api-protobuf',
         'guide/openapi',
