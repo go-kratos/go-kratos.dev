@@ -135,7 +135,7 @@ module.exports = {
   },
   scripts: [
     {
-      src: 'https://cdn.jsdelivr.net/npm/pangu@4.0.7/dist/browser/pangu.min.js',
+      src: 'https://cdn.staticfile.org/pangu/4.0.7/pangu.min.js',
     },
     { src: '/js/custom.js' },
   ],
