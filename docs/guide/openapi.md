@@ -20,10 +20,10 @@ keywords:
 ### 安装
 首先安装插件
 ```bash
-go get -u github.com/go-kratos/swagger-api/openapiv2
+go get -u github.com/go-kratos/swagger-api
 ```
 
-然后在`internal/server/http.go`的NewHTTPServer中进行初始化和注册
+然后在`internal/server/http.go`的NewHTTPServer中进行初始化和注册，请尽量将这个路由注册放在最前面，以免匹配不到。
 ```go
 import	"github.com/go-kratos/swagger-api/openapiv2"
 
