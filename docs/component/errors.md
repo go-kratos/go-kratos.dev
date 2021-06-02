@@ -20,18 +20,12 @@ APIs 错误码可以统一通过 proto 定义业务原因，然后通过 protoc-
 {
     // 错误码，跟 grpc-status 一致，并且在HTTP中可映射成 http-status
     "code": 3,
+    // 错误原因，定义为业务判定错误码
+    "reason": "custom_error",
     // 错误信息，为用户可读的信息，可作为用户提示内容
     "message": "invalid argument error",
-    // 错误详细信息，可以附加自定义的信息列表
-    "details": [
-        {
-            "@type": "type.googleapis.com/google.rpc.ErrorInfo",
-            // 错误原因，定义为业务判定错误码
-            "reason": "custom_error",
-            // 错误域，定义为业务域
-            "domain": "helloworld"
-        }
-    ]
+    // 错误元信息，为错误添加附加可扩展信息
+    "metadata": {}
 }
 ```
 
@@ -77,7 +71,7 @@ import "github.com/go-kratos/kratos/errors"
 import "<app>/api/helloworld/v1"
 
 func doSomething() error {
-	return errors.BadRequest("hellworld", v1.SERVICE_DISABLED.String(), "service has been disabled")
+	return errors.BadRequest(v1.SERVICE_DISABLED.String(), "service has been disabled")
 }
 
 if err := doSomething(); errors.IsBadRequest(err) {
