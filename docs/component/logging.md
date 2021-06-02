@@ -63,7 +63,7 @@ log.Infow("field_name", "some log")
 ```go
 var opts = []http.ServerOption{
 		http.Middleware(
-			logging.Server(),	
+			logging.Server(log.DefaultLogger),	
 		),
 	}
 http.NewServer(opts...)
