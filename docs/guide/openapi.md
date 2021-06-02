@@ -1,7 +1,7 @@
 ---
 id: openapi
-title: OpenAPI/Swagger使用
-description: OpenAPI/Swagger使用
+title: OpenAPI Swagger 使用
+description: OpenAPI Swagger 使用
 keywords:
   - Go
   - Kratos
