@@ -18,7 +18,7 @@ APIs 错误码可以统一通过 proto 定义业务原因，然后通过 protoc-
 在errors包中，错误模型主要跟 gRPC 状态码一致，并且 Error 实现了 GRPCStatus() 接口，业务原因通过 ErrorInfo 返回：
 ```json
 {
-    // 错误码，跟 grpc-status 一致，并且在HTTP中可映射成 http-status
+    // 错误码，跟 http-status 一致，并且在HTTP中可映射成 grpc-status
     "code": 3,
     // 错误原因，定义为业务判定错误码
     "reason": "custom_error",
