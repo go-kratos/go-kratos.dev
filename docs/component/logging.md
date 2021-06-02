@@ -19,7 +19,7 @@ keywords:
 
 ```go
 type Logger interface {
-	Print(pairs ...interface{})
+	Print(level log.Level, keyvals ...interface{})
 }
 ```
 ### 使用方式
@@ -30,7 +30,7 @@ type Logger interface {
 
 ```go
 logger := log.NewStdLogger()
-log := log.NewHelper("module_name", logger)
+log := log.NewHelper(logger)
 // Levels
 log.Info("some log")
 log.Infof("format %s", "some log")
@@ -49,7 +49,7 @@ logger,err := fluent.NewLogger(addr)
 if err != nil {
     return 
 }
-log := log.NewHelper("module_name", logger)
+log := log.NewHelper(logger)
 // Levels
 log.Info("some log")
 log.Infof("format %s", "some log")
@@ -63,9 +63,7 @@ log.Infow("field_name", "some log")
 ```go
 var opts = []http.ServerOption{
 		http.Middleware(
-			middleware.Chain(
-				logging.Server(),
-			),
+			logging.Server(),	
 		),
 	}
 http.NewServer(opts...)
