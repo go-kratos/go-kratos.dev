@@ -31,7 +31,7 @@ openAPIhandler := openapiv2.NewHandler()
 srv.HandlePrefix("/q/", openAPIhandler)
 ```
 ### 使用
-浏览器中访问服务的`/q/swagger-ui`路径即可打开Swagger UI
+浏览器中访问服务的`/q/swagger-ui/`路径即可打开Swagger UI
 
 ## 方式2: 使用protoc插件生成swagger.json文件
 新建项目Makefile中已经默认集成了生成swagger.json的相关命令，这里也介绍下具体的使用方式
