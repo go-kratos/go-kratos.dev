@@ -58,15 +58,15 @@ log.Infow("field_name", "some log")
 
 #### 在kratos中引入logging middleware
 
-在 http.ServerOption 中引入 logging.Server(), 则 Kratos 会在每次收到 HTTP 请求的时候打印详细请求信息。
+在 grpc.ServerOption 中引入 logging.Server(), 则 Kratos 会在每次收到 gRPC 请求的时候打印详细请求信息。
 
 ```go
-var opts = []http.ServerOption{
-		http.Middleware(
+var opts = []grpc.ServerOption{
+		grpc.Middleware(
 			logging.Server(log.DefaultLogger),	
 		),
 	}
-http.NewServer(opts...)
+grpc.NewServer(opts...)
 ```
 
 
