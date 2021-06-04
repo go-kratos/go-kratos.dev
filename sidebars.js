@@ -30,7 +30,7 @@ module.exports = {
     },
     {
       type: 'category',
-      label: '代码示例',
+      label: '代码/项目示例',
       items: [
         'example/overview',
       ],
