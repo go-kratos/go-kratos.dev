@@ -1,7 +1,7 @@
 ---
 id: overview
-title: 代码示例
-description: Kratos 代码示例
+title: 代码/项目示例
+description: Kratos 代码/项目示例
 keywords:
   - Go 
   - Kratos
@@ -12,7 +12,7 @@ keywords:
   - gRPC
   - HTTP
 ---
-Kratos提供了丰富的示例代码供参考
+Kratos提供了丰富的示例代码/项目供参考
 
 ## 组件使用
 ### 配置
