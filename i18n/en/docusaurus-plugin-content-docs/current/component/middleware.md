@@ -36,11 +36,9 @@ For example:
 // define opts
 var opts = []http.ServerOption{
 	http.Middleware(
-		middleware.Chain(
-			recovery.Recovery(), // put middlewares into Chain
-			tracing.Server(),
-			logging.Server(),
-		),
+		recovery.Recovery(),
+		tracing.Server(),
+		logging.Server(),
 	),
 }
 // create server
@@ -51,12 +49,10 @@ http.NewServer(opts...)
 //grpc
 var opts = []grpc.ServerOption{
 		grpc.Middleware(
-			middleware.Chain(
-				recovery.Recovery(),  // put middlewares into Chain
-				status.Server(),
-				tracing.Server(),
-				logging.Server(),
-			),
+			recovery.Recovery(),
+			status.Server(),
+			tracing.Server(),
+			logging.Server(),
 		),
 	}
 // create server

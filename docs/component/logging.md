@@ -1,7 +1,7 @@
 ---
 id: logging
 title: Logging
-description: Kratos 为了方便业务自适配不同的 log 接入使用，Logger 只包含了最简单的 Print 接口。当业务需要在 kratos 框架内部使用自定义的 logging middlerware 的时候，只需要简单实现Print方法即可
+description: Kratos 为了方便业务自适配不同的 log 接入使用，Logger 只包含了最简单的 Print 接口。当业务需要在 kratos 框架内部使用自定义的 logging middleware 的时候，只需要简单实现Print方法即可
 keywords:
   - Go
   - Kratos
@@ -15,7 +15,7 @@ keywords:
 
 ### 接口实现 
 
-为了方便业务自适配不同的 log 接入使用，Logger 只包含了最简单的 Print 接口。当业务需要在 Kratos 框架内部使用自定义的 logging middlerware 的时候，只需要简单实现 Print 方法即可
+为了方便业务自适配不同的 log 接入使用，Logger 只包含了最简单的 Print 接口。当业务需要在 Kratos 框架内部使用自定义的 logging middleware 的时候，只需要简单实现 Print 方法即可
 
 ```go
 type Logger interface {
