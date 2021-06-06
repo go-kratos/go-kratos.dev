@@ -23,12 +23,12 @@ module.exports = {
           label: 'Docs',
           position: 'left',
         },
+        { to: 'blog', label: 'Blog', position: 'left' },
         {
           href: 'https://pkg.go.dev/github.com/go-kratos/kratos/v2/',
           label: 'API',
           position: 'left',
         },
-        { to: 'blog', label: 'Blog', position: 'right' },
         {
           href: 'https://github.com/go-kratos/kratos',
           label: 'GitHub',

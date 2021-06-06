@@ -16,30 +16,26 @@ Kratos 内置了一系列的 middleware（中间件）用于处理 logging、 me
 
 ## 内置中间件
 相关代码均可以在`middleware`目录下找到。
-* logging: 用于请求日志的记录。
-* metrics: 用于启用metric。
-* recovery: 用于recovery panic。
-* tracing: 用于启用trace。
-* validate: 用于处理参数校验。
 
-## 生效顺序
-一个请求进入时的处理顺序为Middleware注册的顺序，而响应返回的处理顺序为注册顺序的倒序。
+### logging
+代码位于`middleware/logging`，用于请求日志的记录。
 
-```
-         ┌───────────────────┐
-         │MIDDLEWARE 1       │
-         │ ┌────────────────┐│
-         │ │MIDDLEWARE 2    ││
-         │ │ ┌─────────────┐││
-         │ │ │MIDDLEWARE 3 │││
-         │ │ │ ┌─────────┐ │││
-REQUEST  │ │ │ │  YOUR   │ │││  RESPONSE
-   ──────┼─┼─┼─▷ HANDLER ○─┼┼┼───▷
-         │ │ │ └─────────┘ │││
-         │ │ └─────────────┘││
-         │ └────────────────┘│
-         └───────────────────┘
-``` 
+### metrics
+代码位于`middleware/metrics`，用于启用metric。
+
+### recovery
+代码位于`middleware/recovery`，用于recovery panic。
+
+### status
+代码位于`middleware/status`，用于grpc的error信息转换处理。
+
+### tracing
+代码位于`middleware/tracing`，用于启用trace。
+
+### validate
+代码位于`middleware/validate`，用于处理参数校验。
+
+### 
 
 ## 使用中间件
 在`NewGRPCServer`和`NewHTTPServer`中通过`ServerOption`进行注册。
@@ -76,16 +72,4 @@ grpc.NewServer(opts...)
 
 ## 自定义中间件
 需要实现`Middleware`接口。
-
-基本的代码模板
-```
-func Middleware1() middleware.Middleware {
-	return func(handler middleware.Handler) middleware.Handler {
-		return func(ctx context.Context, req interface{}) (interface{}, error) {
-			// Do something here
-			return handler(ctx, req) 
-		}
-	}
-}
-```
-
+[TBD]
