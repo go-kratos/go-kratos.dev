@@ -72,6 +72,7 @@ module.exports = {
             'component/transport/overview',
             'component/transport/http',
             'component/transport/grpc',
+            'component/transport/encoding',
           ],
         },
       ],
