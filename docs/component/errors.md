@@ -62,7 +62,12 @@ enum ErrorReason {
 通过 proto 生成对应的代码：
 
 ```bash
-protoc --go_out=. --go_opt=paths=source_relative api/helloworld/v1/error_reason.proto
+protoc --go_out=. --go_opt=paths=source_relative --go-errors_out=paths=source_relative api/helloworld/v1/error_reason.proto
+```
+
+或者在项目根目录使用Makefile指令
+```
+make errors
 ```
 
 ### 使用方式
