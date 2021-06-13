@@ -79,7 +79,7 @@ grpc.NewServer(opts...)
 中间件中您可以使用`tr, ok := transport.FromServerContext(ctx)`获得Transporter实例以便访问接口相关的元信息
 
 基本的代码模板
-```
+```go
 import (
 	"context"
 
