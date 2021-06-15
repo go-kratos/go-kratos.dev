@@ -49,7 +49,7 @@ module.exports = {
         'component/api',
         'component/errors',
         'component/config',
-        'component/logging',
+        'component/log',
         'component/metrics',
         'component/tracing',
         'component/registry',
