@@ -1,6 +1,6 @@
 ---
 id: ent
-title: Ent使用
+title: Ent 数据库框架使用
 description: Ent 是 Facebook 开源的一个简单易用的 Database 实体框架
 keywords:
   - Go 
