@@ -24,7 +24,7 @@ c := config.New(
     config.WithDecoder(func(kv *config.KeyValue, v map[string]interface{}) error {
         // kv.Key
         // kv.Value
-        // kv.Metadata
+        // kv.Format
         // 自定义实现对应的数据源解析，如果是配置中心数据源也可以指定metadata进行识别配置类型
         return yaml.Unmarshal(kv.Value, v)
     }),
