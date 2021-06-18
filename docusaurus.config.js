@@ -133,10 +133,4 @@ module.exports = {
 
     },
   },
-  scripts: [
-    {
-      src: 'https://cdn.staticfile.org/pangu/4.0.7/pangu.min.js',
-    },
-    { src: '/js/custom.js' },
-  ],
 };
