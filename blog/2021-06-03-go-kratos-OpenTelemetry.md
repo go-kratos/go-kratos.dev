@@ -55,7 +55,7 @@ kratos 框架提供的自带中间件中有一个名为 **tracing** 中间件，
 kratos 的链路追踪中间件由三个文件组成 **carrie.go**,**tracer.go**,**tracing.go**。client和 server 的实现原理基本相同，本文以 server 实现进行原理解析。
 
 1. 首先当请求进入时，**tracing** 中间件会被调用,首先调用了 **tracer.go** 中的 **NewTracer** 方法
-```golang
+```go
 // Server returns a new server middleware for OpenTelemetry.
 func Server(opts ...Option) middleware.Middleware {
         // 调用 tracer.go 中的 NewTracer 传入了一个 SpanKindServer 和配置项
@@ -65,28 +65,28 @@ func Server(opts ...Option) middleware.Middleware {
 ```
 2. **tracer.go** 中的 **NewTracer** 方法被调用后会返回一个 **Tracer**,实现如下
 
-```js
+```go
 func NewTracer(kind trace.SpanKind, opts ...Option) *Tracer {
 	options := options{}
 	for _, o := range opts {
 		o(&options)
 	}
-        // 判断是否存在 otel 追踪提供者配置，如果存在则设置
+	// 判断是否存在 otel 追踪提供者配置，如果存在则设置
 	if options.TracerProvider != nil {
 		otel.SetTracerProvider(options.TracerProvider)
 	}
-        /*
-        判断是否存在 Propagators 设置，如果存在设置则覆盖，不存在则设置一个默认的TextMapPropagator
-        注意如果没有设置默认的TextMapPropagator,链路信息则无法正确的传递
-        */
+	/*
+	判断是否存在 Propagators 设置，如果存在设置则覆盖，不存在则设置一个默认的TextMapPropagator
+	注意如果没有设置默认的TextMapPropagator,链路信息则无法正确的传递
+	*/
 	if options.Propagators != nil {
 		otel.SetTextMapPropagator(options.Propagators)
 	} else {	otel.SetTextMapPropagator(propagation.NewCompositeTextMapPropagator(propagation.Baggage{}, propagation.TraceContext{}))
 	}
-        
-       
+
+
 	var name string
-        // 判断当前中间件的类型，是 server 还是 client
+	// 判断当前中间件的类型，是 server 还是 client
 	if kind == trace.SpanKindServer {
 		name = "server"
 	} else if kind == trace.SpanKindClient {
@@ -94,49 +94,49 @@ func NewTracer(kind trace.SpanKind, opts ...Option) *Tracer {
 	} else {
 		panic(fmt.Sprintf("unsupported span kind: %v", kind))
 	}
-        // 调用 otel包的 Tracer 方法 传入 name 用来创建一个 tracer 实例
+	// 调用 otel包的 Tracer 方法 传入 name 用来创建一个 tracer 实例
 	tracer := otel.Tracer(name)
 	return &Tracer{tracer: tracer, kind: kind}
 }
 ```
 3. 判断当前请求类型，处理需要采集的数据，并调用 **tracer.go** 中的 **Start** 方法
 
-```golang
-			var (
-				component string
-				operation string
-				carrier   propagation.TextMapCarrier
-			)
-			// 判断请求类型
-			if info, ok := http.FromServerContext(ctx); ok {
-				// HTTP
-				component = "HTTP"
-				// 取出请求的地址
-				operation = info.Request.RequestURI
-				// 调用 otel/propagation包中的 HeaderCarrier，会处理 http.Header 以用来满足TextMapCarrier interface
-				// TextMapCarrier 是一个文本映射载体，用于承载信息
-				carrier = propagation.HeaderCarrier(info.Request.Header)
-				// otel.GetTextMapPropagator().Extract() 方法用于将文本映射载体，读取到上下文中
-				ctx = otel.GetTextMapPropagator().Extract(ctx, propagation.HeaderCarrier(info.Request.Header))
-			} else if info, ok := grpc.FromServerContext(ctx); ok {
-				// Grpc
-				component = "gRPC"
-				operation = info.FullMethod
-				//
-				// 调用 grpc/metadata包中metadata.FromIncomingContext(ctx)传入 ctx，转换 grpc 的元数据
-				if md, ok := metadata.FromIncomingContext(ctx); ok {
-					// 调用carrier.go 中的 MetadataCarrier 将 MD 转换 成文本映射载体
-					carrier = MetadataCarrier(md)
-				}
-			}
-                        // 调用 tracer.Start 方法
-			ctx, span := tracer.Start(ctx, component, operation, carrier)
-                        // ... 省略代码
-		}
+```go
+var (
+	component string
+	operation string
+	carrier   propagation.TextMapCarrier
+)
+// 判断请求类型
+if info, ok := http.FromServerContext(ctx); ok {
+	// HTTP
+	component = "HTTP"
+	// 取出请求的地址
+	operation = info.Request.RequestURI
+	// 调用 otel/propagation包中的 HeaderCarrier，会处理 http.Header 以用来满足TextMapCarrier interface
+	// TextMapCarrier 是一个文本映射载体，用于承载信息
+	carrier = propagation.HeaderCarrier(info.Request.Header)
+	// otel.GetTextMapPropagator().Extract() 方法用于将文本映射载体，读取到上下文中
+	ctx = otel.GetTextMapPropagator().Extract(ctx, propagation.HeaderCarrier(info.Request.Header))
+} else if info, ok := grpc.FromServerContext(ctx); ok {
+	// Grpc
+	component = "gRPC"
+	operation = info.FullMethod
+	//
+	// 调用 grpc/metadata包中metadata.FromIncomingContext(ctx)传入 ctx，转换 grpc 的元数据
+	if md, ok := metadata.FromIncomingContext(ctx); ok {
+		// 调用carrier.go 中的 MetadataCarrier 将 MD 转换 成文本映射载体
+		carrier = MetadataCarrier(md)
+	}
+}
+// 调用 tracer.Start 方法
+ctx, span := tracer.Start(ctx, component, operation, carrier)
+// ... 省略代码
+}
 ```
 4. 调用 **tracing.go** 中的 **Start** 方法
 
-```golang
+```go
 func (t *Tracer) Start(ctx context.Context, component string, operation string, carrier propagation.TextMapCarrier) (context.Context, trace.Span) {
 	// 判断当前中间件如果是 server则将 carrier 注入到上下文中
 	if t.kind == trace.SpanKindServer {
@@ -166,13 +166,13 @@ func (t *Tracer) Start(ctx context.Context, component string, operation string, 
 defer func() { tracer.End(ctx, span, err) }()
 ```
 6. 中间件继续执行
-```golang
+```go
 // tracing.go 69行
 reply, err = handler(ctx, req)
 ```
 7. 中间件调用结束 **defer** 中的闭包被调用后执行了 **tracer.go** 中的 **End** 方法
 
-```golang
+```go
 func (t *Tracer) End(ctx context.Context, span trace.Span, err error) {
 	// 判断是否有异常发生，如果有则设置一些异常信息
 	if err != nil {
@@ -198,7 +198,7 @@ func (t *Tracer) End(ctx context.Context, span trace.Span, err error) {
 
 #### 如何使用
 tracing 中间件的使用示例可以从  [kratos/examples/traces](https://github.com/go-kratos/kratos/tree/main/examples/traces) ,该示例简单的实现了跨服务间的链路追踪,以下代码片段包含部分示例代码。
-```golang
+```go
 // https://github.com/go-kratos/kratos/blob/7f835db398c9d0332e69b81bad4c652b4b45ae2e/examples/traces/app/message/main.go#L38
 // 首先调用otel 库方法，得到一个 TracerProvider
 func tracerProvider(url string) (*tracesdk.TracerProvider, error) {
@@ -224,76 +224,67 @@ func tracerProvider(url string) (*tracesdk.TracerProvider, error) {
 #### 在 grpc/server 中使用
 
 
-```golang
+```go
 // https://github.com/go-kratos/kratos/blob/main/examples/traces/app/message/main.go
-	grpcSrv := grpc.NewServer(
-		grpc.Address(":9000"),
-		grpc.Middleware(
-			middleware.Chain(
-				recovery.Recovery(),
-				// Configuring tracing Middleware
-				tracing.Server(
-					tracing.WithTracerProvider(tp),
-					),
-				),
-				logging.Server(logger),
-			),
-		))
+grpcSrv := grpc.NewServer(
+	grpc.Address(":9000"),
+	grpc.Middleware(
+		// Configuring tracing Middleware
+		tracing.Server(
+			tracing.WithTracerProvider(tp),
+		),
+	),
+)
 ```
 #### 在 grpc/client 中使用
 
-```golang
+```go
 // https://github.com/go-kratos/kratos/blob/149fc0195eb62ee1fbc2728adb92e1bcd1a12c4e/examples/traces/app/user/main.go#L63
-	conn, err := grpc.DialInsecure(ctx,
-		grpc.WithEndpoint("127.0.0.1:9000"),
-		grpc.WithMiddleware(middleware.Chain(
-			tracing.Client(
-				tracing.WithTracerProvider(s.tracer),
-				tracing.WithPropagators(
-					propagation.NewCompositeTextMapPropagator(propagation.Baggage{}, propagation.TraceContext{}),
-				),
+conn, err := grpc.DialInsecure(ctx,
+	grpc.WithEndpoint("127.0.0.1:9000"),
+	grpc.WithMiddleware(
+		tracing.Client(
+			tracing.WithTracerProvider(s.tracer),
+			tracing.WithPropagators(
+				propagation.NewCompositeTextMapPropagator(propagation.Baggage{}, propagation.TraceContext{}),
 			),
-			recovery.Recovery())),
-		grpc.WithTimeout(2*time.Second),
-	)
+		)
+	),
+	grpc.WithTimeout(2*time.Second),
+)
 ```
 #### 在 http/server 中使用
 
-```golang
+```go
 // https://github.com/go-kratos/kratos/blob/main/examples/traces/app/user/main.go
-	httpSrv := http.NewServer(http.Address(":8000"))
-	httpSrv.HandlePrefix("/", pb.NewUserHandler(s,
-		http.Middleware(
-			middleware.Chain(
-				recovery.Recovery(),
-				// Configuring tracing middleware
-				tracing.Server(
-					tracing.WithTracerProvider(tp),
-					tracing.WithPropagators(
-						propagation.NewCompositeTextMapPropagator(propagation.Baggage{}, propagation.TraceContext{}),
-					),
-				),
-				logging.Server(logger),
+httpSrv := http.NewServer(http.Address(":8000"))
+httpSrv.HandlePrefix("/", pb.NewUserHandler(s,
+	http.Middleware(
+		// Configuring tracing middleware
+		tracing.Server(
+			tracing.WithTracerProvider(tp),
+			tracing.WithPropagators(
+				propagation.NewCompositeTextMapPropagator(propagation.Baggage{}, propagation.TraceContext{}),
 			),
-		)),
-	)
+		),
+	),
+)
 ```
 #### 在 http/client 中使用
 
 
-```golang
-	http.NewClient(ctx, http.WithMiddleware(
-		tracing.Client(
-			tracing.WithTracerProvider(s.tracer),
-		),
-	))
+```go
+http.NewClient(ctx, http.WithMiddleware(
+	tracing.Client(
+		tracing.WithTracerProvider(s.tracer),
+	),
+))
 ```
 #### 如何实现一个其他场景的 tracing
 我们可以借鉴 **kratos** 的 **tracing** 中间件的代码来实现例如数据库的 **tracing**，如下面的代码片段，作者借鉴了**tracing** 中间件，实现了 **qmgo** 库操作 **MongoDB** 数据库的 **tracing**。
 
-```golang
+```go
 func mongoTracer(ctx context.Context,tp trace.TracerProvider, command interface{}) {
-	otel.SetTracerProvider(tp)
 	var (
 		commandName string
 		failure     string
@@ -302,6 +293,7 @@ func mongoTracer(ctx context.Context,tp trace.TracerProvider, command interface{
 		queryId     int64
 		eventName   string
 	)
+	otel.SetTracerProvider(tp)
 	reply = bson.Raw{}
 	switch value := command.(type) {
 	case *event.CommandStartedEvent:
