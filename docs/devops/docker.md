@@ -1,7 +1,7 @@
 ---
-id: changelog
-title: 更新日志
-description: Kratos Change logs
+id: docker
+title: docker
+description: docker
 keywords:
   - Go 
   - Kratos
@@ -12,6 +12,3 @@ keywords:
   - gRPC
   - HTTP
 ---
-
-## v2.0.0
-

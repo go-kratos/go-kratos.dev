@@ -1,7 +1,7 @@
 ---
-id: overview
-title: 代码/项目示例
-description: Kratos 代码/项目示例
+id: examples
+title: 代码示例
+description: Kratos 代码示例
 keywords:
   - Go 
   - Kratos
