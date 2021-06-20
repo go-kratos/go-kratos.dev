@@ -1,7 +1,7 @@
 ---
-id: overview
-title: 插件
-description: Kratos 插件
+id: plugin
+title: 插件中心
+description: Kratos 插件中心
 keywords:
   - Go 
   - Kratos
