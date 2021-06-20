@@ -24,7 +24,6 @@ module.exports = {
         'component/config',
         'component/log',
         'component/metrics',
-        'component/tracing',
         'component/registry',
         {
           type: 'category',
