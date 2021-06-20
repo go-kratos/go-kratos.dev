@@ -60,50 +60,80 @@ Observer属于比较复杂的监控指标，对比以上两个提供了更多而
 
 ### 使用方式
 
-#### server中使用metrics
+#### 使用 prometheus
+```go
+// https://github.com/go-kratos/kratos/tree/main/examples/metrics
+_metricSeconds = prometheus.NewHistogramVec(prometheus.HistogramOpts{
+	Namespace: "server",
+	Subsystem: "requests",
+	Name:      "duration_ms",
+	Help:      "server requests duration(ms).",
+	Buckets:   []float64{5, 10, 25, 50, 100, 250, 500, 1000},
+}, []string{"kind", "operation"})
+
+_metricRequests = prometheus.NewCounterVec(prometheus.CounterOpts{
+	Namespace: "client",
+	Subsystem: "requests",
+	Name:      "code_total",
+	Help:      "The total number of processed requests",
+}, []string{"kind", "operation", "code", "reason"})
+	
+prometheus.MustRegister(_metricSeconds, _metricRequests)
+
+httpSrv.Handle("/metrics", promhttp.Handler())
+```
+#### Server 中使用 metrics
 
 ```go
-import (
-	"github.com/go-kratos/kratos/v2/middleware"
-	kmetrics "github.com/go-kratos/prometheus/metrics"
-	"github.com/go-kratos/kratos/v2/middleware/metrics"
-	"github.com/go-kratos/kratos/v2/transport/http"
-	"github.com/prometheus/client_golang/prometheus"
-)
-func NewHTTPServer(c *conf.Server) *http.Server {
-    // 使用promethues 
-	counter := prometheus.NewCounterVec(prometheus.CounterOpts{Name: "kratos_counter"}, []string{"server", "qps"})
-	var opts = []http.ServerOption{
-		http.Middleware(
-			middleware.Chain(
-				recovery.Recovery(),
-				metrics.Server(metrics.WithRequests(kmetrics.NewCounter(counter))),
-			),
+// grpc sever
+grpcSrv := grpc.NewServer(
+	grpc.Address(":9000"),
+	grpc.Middleware(
+		metrics.Server(
+			metrics.WithSeconds(prom.NewHistogram(_metricSeconds)),
+			metrics.WithRequests(prom.NewCounter(_metricRequests)),
 		),
-	}
+	),
+)
 
+// http server
+httpSrv := http.NewServer(
+	http.Address(":8000"),
+	http.Middleware(
+		metrics.Server(
+			metrics.WithSeconds(prom.NewHistogram(_metricSeconds)),
+			metrics.WithRequests(prom.NewCounter(_metricRequests)),
+		),
+	),
+)
 ```
 
-#### Client中使用metrics
+#### Client 中使用 metrics
 
 ```go
-import (
-	"context"
-
-	"github.com/go-kratos/kratos/v2/middleware"
-	kmetrics "github.com/go-kratos/prometheus/metrics"
-
-	"github.com/go-kratos/kratos/v2/middleware/metrics"
-	"github.com/go-kratos/kratos/v2/transport/http"
-	"github.com/prometheus/client_golang/prometheus"
+// grpc client
+conn, err := grpc.DialInsecure(
+	context.Background(),
+	grpc.WithEndpoint("127.0.0.1:9000"),
+	grpc.WithMiddleware(
+		metrics.Client(
+			metrics.WithSeconds(prom.NewHistogram(_metricSeconds)),
+			metrics.WithRequests(prom.NewCounter(_metricRequests)),
+		),
+	),
 )
-func useClient() {
-	counter := prometheus.NewCounterVec(prometheus.CounterOpts{Name: "kratos_counter"},
-		[]string{"client", "qps"})
-	client, _ := http.NewClient(context.Background(),
-		http.WithMiddleware(metrics.Client(metrics.WithRequests(kmetrics.NewCounter(counter)))))
-	// ...
-}
+
+// http client
+conn, err := http.NewClient(
+	context.Background(),
+	http.WithEndpoint("127.0.0.1:8000"),
+	http.WithMiddleware(
+		metrics.Client(
+			metrics.WithSeconds(prom.NewHistogram(_metricSeconds)),
+			metrics.WithRequests(prom.NewCounter(_metricRequests)),
+		),
+	),
+)
 ```
 
 
@@ -111,3 +141,4 @@ func useClient() {
 ### References
 
 * https://prometheus.io/docs/concepts/metric_types/
+* https://github.com/go-kratos/kratos/tree/main/examples/metrics
