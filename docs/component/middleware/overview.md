@@ -63,7 +63,6 @@ http.NewServer(opts...)
 var opts = []grpc.ServerOption{
 	grpc.Middleware(
 		recovery.Recovery(),  // 把middleware按照需要的顺序加入
-		status.Server(),
 		tracing.Server(),
 		logging.Server(),
 	),
