@@ -1,6 +1,6 @@
 ---
 id: usage
-title: CLI工具
+title: 构建工具
 description: Kratos 工具使用，创建 Protobuf 模板，创建 Go 工程项目，创建 Service 模板
 keywords:
   - Go 

@@ -1,6 +1,6 @@
 ---
 id: layout
-title: 工程骨架
+title: 项目结构
 description: Kratos 项目工程骨架，Go 项目目录结构，快速创建工程项目
 keywords:
   - Go

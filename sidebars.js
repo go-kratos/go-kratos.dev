@@ -6,8 +6,8 @@ module.exports = {
       collapsed: false,
       items: [
         'intro/overview',
-        'intro/layout',
         'getting-started/start',
+        'intro/layout',
         'getting-started/usage',
         'getting-started/examples',
         'getting-started/plugin',
