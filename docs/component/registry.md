@@ -28,7 +28,7 @@ type Registrar interface {
 ```go
 type Discovery interface {
 	// 根据serviceName直接拉取实例列表
-	Fetch(ctx context.Context, serviceName string) ([]*ServiceInstance, error)
+	GetService(ctx context.Context, serviceName string) ([]*ServiceInstance, error)
 	// 根据serviceName阻塞式订阅一个服务的实例列表信息
 	Watch(ctx context.Context, serviceName string) (Watcher, error)
 }
@@ -50,11 +50,10 @@ type Discovery interface {
 import consul "github.com/go-kratos/consul/registry"
 import	"github.com/hashicorp/consul/api"
 
-cli, err := api.NewClient(api.DefaultConfig())
+client, err := api.NewClient(api.DefaultConfig())
 if err != nil {
 	panic(err)
 }
-reg := consul.New(cli)
 
 app := kratos.New(
     kratos.Name(Name),
@@ -65,7 +64,7 @@ app := kratos.New(
         hs,
         gs,
     ),
-    kratos.Registrar(reg),
+    kratos.Registrar(consul.New(client)),
 )
 ```
 
@@ -77,11 +76,11 @@ app := kratos.New(
 import "github.com/go-kratos/kratos/transport/http"
 import "github.com/go-kratos/kratos/v2/transport/grpc"
 
-cli, err := api.NewClient(api.DefaultConfig())
+client, err := api.NewClient(api.DefaultConfig())
 if err != nil {
 	panic(err)
 }
-dis := consul.New(cli)
+dis := consul.New(client)
 
 endpoint := "discovery://default/provider"
 conn, err := grpc.Dial(context.Background(), grpc.WithEndpoint(endpoint), grpc.WithDiscovery(dis))
