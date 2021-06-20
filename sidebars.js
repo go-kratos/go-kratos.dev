@@ -66,7 +66,7 @@ module.exports = {
       label: '运维指南',
       collapsed: false,
       items: [
-        'community/contribution',
+        'devops/docker',
       ],
     },
     {
