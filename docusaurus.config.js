@@ -31,7 +31,7 @@ module.exports = {
         },
         {
           href: 'https://github.com/go-kratos/kratos/releases',
-          label: 'ChangeLog',
+          label: 'Changelog',
           position: 'left',
         },
         {
