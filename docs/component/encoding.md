@@ -21,7 +21,7 @@ keywords:
 
 ## 接口实现
 
-encoding 的 `Codec` 接口中,包含了 Marshal，Unmarshal，Name 三个方法，用户只需要实现 `Codec` 即可使用自定义的 `encoding`
+`encoding` 的 `Codec` 接口中,包含了 Marshal，Unmarshal，Name 三个方法，用户只需要实现 `Codec` 即可使用自定义的 `encoding`
 
 ```go
 // Codec 用于定义传输时用到的编码和解码接口，实现这个接口时必须注意，实现必须是线程安全的，可以并发协程调用。
