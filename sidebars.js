@@ -25,6 +25,7 @@ module.exports = {
         'component/log',
         'component/metrics',
         'component/registry',
+        'component/encoding',
         {
           type: 'category',
           label: 'Middleware',
@@ -44,7 +45,6 @@ module.exports = {
             'component/transport/overview',
             'component/transport/http',
             'component/transport/grpc',
-            'component/transport/encoding',
           ],
         },
       ],
