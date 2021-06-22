@@ -11,7 +11,12 @@ keywords:
   - gRPC
   - HTTP
 ---
+
+Metrics 中间件用于实现服务的性能指标监控，统计了请求耗时和请求计数。
+
 ### 配置
+
+Metrics 中间件中提供了两个配置方法 `WithSeconds()` 和 `WithRequests()`。
 
 #### `WithSeconds()`
 ```go
@@ -21,7 +26,7 @@ func WithSeconds(c metrics.Observer) Option {
 	}
 }
 ```
-用于设置 metrics 中间件统计请求耗时的 Observer 直方图。
+用于设置 metrics 中间件统计请求耗时的 `Observer` 直方图。
 
 #### `WithRequests()`
 
@@ -33,7 +38,7 @@ func WithRequests(c metrics.Counter) Option {
 }
 ```
 
-用于设置 metrics 中间件统计请求计数的 Counter 计数器。
+用于设置 metrics 中间件统计请求计数的 `Counter` 计数器。
 
 ### 使用方式
 

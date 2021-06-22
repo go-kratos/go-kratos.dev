@@ -11,8 +11,12 @@ keywords:
   - gRPC
   - HTTP
 ---
+
+Tracing 中间件使用 opentelemetry 实现了链路追踪。
+
 ### 配置
-Kratos tracing 中间件使用 opentelemetry 实现了链路追踪，分别实现了 client/server 的中间件并提供了 WithTracerProvider，WithPropagators 两个配置方法。
+
+Tracing 中间件中提供了两个配置方法 `WithTracerProvider()`，`WithPropagators()`。
 
 #### `WithTracerProvider`
 
