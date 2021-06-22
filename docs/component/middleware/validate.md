@@ -25,6 +25,7 @@ go get -d github.com/envoyproxy/protoc-gen-validate
 ## 规则示例
 下面为大家列举几种常用类型的参数校验示例，更多的示例可以在 [proto-gen-validate](https://github.com/envoyproxy/protoc-gen-validate) 文档中查看
 
+```
 ### 数字类型
 
 ```protobuf
@@ -61,6 +62,16 @@ string card = 10 [(validate.rules).string.pattern = "(?i)^[0-9a-f]+$"];
 // 参数文本必须是 email 格式
 string email = 11 [(validate.rules).string.email = true];
 ```
+
+### 消息体
+```protobuf
+// 参数为必填项
+Info info = 11 [(validate.rules).message.required = true];
+message Info {
+    string address = 1;
+}
+```
+
 ## 生成代码
 生成代码时可以使用 kratos layout 提供的 Makefile 中的 make validate 命令，也可以直接使用 protoc
 ```bash
@@ -76,23 +87,19 @@ protoc --proto_path=. \
 我们可以将 validate 中间件注入到 http 或者 grpc 中，在有请求进入时 validate 中间件会自动对参数根据 proto 中编写的规则进行校验
 ### http
 ```go
-	httpSrv := http.NewServer(
-		http.Address(":8000"),
-		http.Middleware(
-			middleware.Chain(
-				validate.Validator(),
-			),
-		))
+httpSrv := http.NewServer(
+	http.Address(":8000"),
+	http.Middleware(
+		validate.Validator(),
+	))
 ```
 ### grpc
 ```go
-	grpcSrv := grpc.NewServer(
-		grpc.Address(":9000"),
-		grpc.Middleware(
-			middleware.Chain(
-				validate.Validator(),
-			),
-		))
+grpcSrv := grpc.NewServer(
+	grpc.Address(":9000"),
+	grpc.Middleware(
+		validate.Validator(),
+	))
 ```
 
 ### References
