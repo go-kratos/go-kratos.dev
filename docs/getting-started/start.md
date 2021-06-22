@@ -13,10 +13,10 @@ keywords:
   - HTTP
 ---
 
-## 版本需求
+### 版本需求
 需要使用 kratos v2.0.0 以上版本；
 
-## 环境准备
+### 环境准备
 需要安装好对应的依赖环境，以及工具：
 - [go](https://golang.org/dl/)
 - [protoc](https://github.com/protocolbuffers/protobuf)
@@ -29,7 +29,7 @@ go env -w GO111MODULE=on
 
 如果拉取依赖遇到网络问题，建议[配置GOPROXY](https://goproxy.cn/)
 
-## 安装
+### 安装
 
 ```bash
 # 安装 kratos 命令工具
@@ -37,7 +37,7 @@ go get -u github.com/go-kratos/kratos/cmd/kratos/v2@latest
 # 可能不是最新的项目，可以执行
 kratos upgrade
 ```
-## 创建项目
+### 创建项目
 ```bash
 # 创建项目模板
 kratos new helloworld
@@ -52,7 +52,7 @@ kratos proto client api/helloworld/helloworld.proto
 # 生成server模板
 kratos proto server api/helloworld/helloworld.proto -t internal/service
 ```
-## 项目编译和运行
+### 项目编译和运行
 ```bash
 # 生成所有proto源码、wire等等
 go generate ./...
@@ -64,7 +64,7 @@ go build -o ./bin/ ./...
 ./bin/helloworld -conf ./configs
 ```
 
-## 测试接口
+### 测试接口
 ```bash
 curl 'http://127.0.0.1:8000/helloworld/kratos'
 
@@ -74,7 +74,7 @@ curl 'http://127.0.0.1:8000/helloworld/kratos'
 }
 ```
 
-## 项目模板
+### 项目模板
 Kratos 是通过在线 github 仓库模板，并且进行拉取创建项目，对应模板地址：
 
 * [Kratos Layout](https://github.com/go-kratos/kratos-layout)

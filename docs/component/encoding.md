@@ -19,7 +19,7 @@ keywords:
 * xml
 * yaml
 
-## 接口实现
+### 接口实现
 
 `encoding` 的 `Codec` 接口中,包含了 Marshal，Unmarshal，Name 三个方法，用户只需要实现 `Codec` 即可使用自定义的 `encoding`
 
@@ -32,7 +32,7 @@ type Codec interface {
 }
 ```
 
-## 实现示例
+### 实现示例
 
 在实现 `Codec` 时，可以参考 kratos 的内置实现, 如 json encoding，源代码如下
 
@@ -98,21 +98,21 @@ func (codec) Name() string {
 }
 ````
 
-## 使用方式
+### 使用方式
 
-### 注册 Codec
+#### 注册 Codec
 
 ```go
 encoding.RegisterCodec(codec{})
 ```
 
-### 获取 Codec
+#### 获取 Codec
 
 ```go
 jsonCodec := encoding.GetCodec("json")
 ```
 
-### 序列化
+#### 序列化
 
 ```go
 // 直接使用内置 Codec 时需要 import _ "github.com/go-kratos/kratos/v2/encoding/json"
@@ -131,7 +131,7 @@ bytes, _ := jsonCode.Marshal(u)
 // output {"Name":"kratos","Age":"2"}
 ```
 
-### 反序列化
+#### 反序列化
 
 ```go
 // 直接使用内置 Codec 时需要 import _ "github.com/go-kratos/kratos/v2/encoding/json"
