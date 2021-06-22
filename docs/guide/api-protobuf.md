@@ -17,7 +17,7 @@ keywords:
 
 API接口统一以HTTP/GRPC为基础，并通过Protobuf进行协议定义，包括完整的Request/Reply，以及对应的接口错误码（Errors）。
 
-## 目录结构
+### 目录结构
 API接口可以定义到项目，或者在统一仓库中管理Proto，类似googleapis、envoy-api、istio-api；
 
 项目中定义Proto，以api为包名根目录：
@@ -41,7 +41,7 @@ kratos-apis:
 |____third_party // 第三方引用
 ```
 
-## 包名
+### 包名
 包名为应用的标识（APP_ID），用于生成gRPC请求路径，或者Proto之间进行引用Message；
 
 *  my.package.v1，为API目录，定义service相关接口，用于提供业务使用
@@ -51,38 +51,38 @@ kratos-apis:
 // RequestURL: /<package_name>.<version>.<service_name>/{method}
 package <package_name>.<version>;
 ```
-### go_package
+#### go_package
 ```protobuf
 option go_package = "github.com/go-kratos/kratos/<package_name>;<version>";
 ```
-### java_package
+#### java_package
 ```protobuf
 option java_multiple_files = true;
 option java_package = "com.github.kratos.<package_name>.<version>";
 ```
-### objc_class_prefix
+#### objc_class_prefix
 ```protobuf
 option objc_class_prefix = "<PackageNameVersion>";
 ```
 
-## Version
+### Version
 
 该版本号为标注不兼容版本，并且会在<package_name>中进行区分，当接口需要重构时一般会更新不兼容结构；
 
-## Import
+### Import
 
 * 业务proto依赖，以根目录进行引入对应依赖的proto；
 * third_party，主要为依赖的第三方proto，比如protobuf、google rpc、google apis、gogo定义；
 
-## 命名规范
+### 命名规范
 
-###  目录结构
+####  目录结构
 包名为小写，并且同目录结构一致，例如：my/package/v1/
 ```protobuf
 package my.package.v1;
 ```
 
-### 文件结构
+#### 文件结构
 文件应该命名为：`lower_snake_case.proto`
 所有Proto应按下列方式排列:
 1. License header (if applicable)
@@ -93,7 +93,7 @@ package my.package.v1;
 6. File options
 7. Everything else
 
-### Message 和 字段命名
+#### Message 和 字段命名
 使用驼峰命名法（首字母大写）命名 message，例子：SongServerRequest
 使用下划线命名字段，栗子：song_name
 ```protobuf
@@ -111,7 +111,7 @@ Java:
   public String getSongName() { ... }
   public Builder setSongName(String v) { ... }
 ```
-### 数组 Repeated
+#### 数组 Repeated
 通过repeated关键字定义数组（List）：
 ```protobuf
 repeated string keys = 1;
@@ -119,7 +119,7 @@ repeated string keys = 1;
 repeated Account accounts = 17;
 ```
 
-### 枚举 Enums
+#### 枚举 Enums
 使用驼峰命名法（首字母大写）命名枚举类型，使用 “大写_下划线_大写” 的方式命名枚举值：
 ```protobuf
 enum Foo {
@@ -129,7 +129,7 @@ enum Foo {
 ```
 每一个枚举值以分号结尾，而非逗号。
 
-### 服务 Services
+#### 服务 Services
 如果你在 .proto 文件中定义 RPC 服务，你应该使用驼峰命名法（首字母大写）命名 RPC 服务以及其中的 RPC 方法：
 ```protobuf
 service FooService {
@@ -137,12 +137,12 @@ service FooService {
 }
 ```
 
-## Comment
+### Comment
 * Service，描述清楚服务的作用
 * Method，描述清楚接口的功能特性
 * Field，描述清楚字段准确的信息
 
-## Examples
+### Examples
 API Service接口定义(demo.proto)
 ```protobuf
 syntax = "proto3";
@@ -172,7 +172,7 @@ message HelloReply {
 }
 ```
 
-## References
+### References
 * https://developers.google.com/protocol-buffers/docs/style
 * https://developers.google.com/protocol-buffers/docs/proto3
 * https://colobu.com/2017/03/16/Protobuf3-language-guide/

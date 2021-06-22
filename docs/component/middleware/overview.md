@@ -14,7 +14,7 @@ keywords:
 ---
 Kratos 内置了一系列的 middleware（中间件）用于处理 logging、 metrics 等通用场景。您也可以通过实现 Middleware 接口，开发自定义 middleware，进行通用的业务处理，比如用户登录鉴权等。
 
-## 内置中间件
+### 内置中间件
 相关代码均可以在`middleware`目录下找到。
 * logging: 用于请求日志的记录。
 * metrics: 用于启用metric。
@@ -22,7 +22,7 @@ Kratos 内置了一系列的 middleware（中间件）用于处理 logging、 me
 * tracing: 用于启用trace。
 * validate: 用于处理参数校验。
 
-## 生效顺序
+### 生效顺序
 一个请求进入时的处理顺序为Middleware注册的顺序，而响应返回的处理顺序为注册顺序的倒序。
 
 ```
@@ -41,7 +41,7 @@ REQUEST  │ │ │ │  YOUR   │ │││  RESPONSE
          └───────────────────┘
 ``` 
 
-## 使用中间件
+### 使用中间件
 在`NewGRPCServer`和`NewHTTPServer`中通过`ServerOption`进行注册。
 如
 ```go
@@ -73,7 +73,7 @@ grpc.NewServer(opts...)
 ```
 
 
-## 自定义中间件
+### 自定义中间件
 需要实现`Middleware`接口。
 中间件中您可以使用`tr, ok := transport.FromServerContext(ctx)`获得Transporter实例以便访问接口相关的元信息
 
