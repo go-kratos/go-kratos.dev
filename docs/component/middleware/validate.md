@@ -11,7 +11,8 @@ keywords:
   - gRPC
   - HTTP
 ---
-在 kratos 中，内置的 validate 使用 proto-gen-validate 生成后的代码进行参数校验，我们可以通过在 proto 中编写参数校验规则，然后生成代码，通过中间件自动的进行校验。
+
+Validate 中间件使用 proto-gen-validate 生成后的代码进行参数校验，我们可以通过在 proto 中编写参数校验规则，然后生成代码，通过中间件自动的进行校验。
 
 ### 安装工具
 
