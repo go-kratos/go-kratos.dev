@@ -19,7 +19,6 @@ Kratos recovery 中间件使用 recover() 实现了异常恢复, 用于服务出
 kratos recovery 中间件中提供了两个配置方法 `WithHandler()` 和 `WithLogger()` 。
 
 #### `WithHandler()`
-用于设置服务异常时可以使用自定义的 handler 进行处理，例如投递异常信息到 sentry。
 
 ```go
 func WithHandler(h HandlerFunc) Option {
@@ -28,8 +27,9 @@ func WithHandler(h HandlerFunc) Option {
 	}
 }
 ```
+用于设置服务异常时可以使用自定义的 handler 进行处理，例如投递异常信息到 sentry。
+
 #### `WithLogger()`
-用于设置中间件打印日志时使用的 logger。
 
 ```go
 func WithLogger(logger log.Logger) Option {
@@ -38,6 +38,7 @@ func WithLogger(logger log.Logger) Option {
 	}
 }
 ```
+用于设置中间件打印日志时使用的 logger。
 
 ### 使用方法
 
