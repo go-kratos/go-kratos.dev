@@ -1,6 +1,6 @@
 ---
 id: logging
-title: logging
+title: Logging
 keywords:
   - Go
   - Kratos

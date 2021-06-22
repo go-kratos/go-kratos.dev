@@ -15,7 +15,7 @@ keywords:
 kratos社区希望能够得到广大开发者的帮助，所以希望请在您要提 issue 或者 pull request 之前花几分钟来阅读一遍这篇指南。
 
 ## Bug修复
-kratos 使用 github issue 来管理问题。 如果您需要协助解决 bug，请先确保已经搜索过已有的 issue 和阅读了我们的 [常见问题](https://go-kratos.dev/docs/community/faq)。
+kratos 使用 github issue 来管理问题。 如果您需要协助解决 bug，请先确保已经搜索过已有的 issue 和阅读了我们的 [常见问题](https://go-kratos.dev/docs/intro/faq)。
 
 提交 bug 时，请使用我们提供的 issue 模板，清楚地描述遇到的问题和复现方式，如果方便最好是可以提供一个最小复现仓库。
 

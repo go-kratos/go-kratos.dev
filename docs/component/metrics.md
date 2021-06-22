@@ -15,7 +15,7 @@ keywords:
 
 ### 接口实现
 
-Kratos 暴露了三种监控接口，分别是 Counter, Gauge, Observer
+Kratos 暴露了三种监控接口，分别是 Counter, Gauge, Observer。
 
 ### Counter
 
@@ -54,89 +54,7 @@ type Observer interface {
 }
 ```
 
-
-
 Observer属于比较复杂的监控指标，对比以上两个提供了更多而外的信息，可以用于观察统计总值，数量以及分位百分比。在Prometheus中，对应了**Histogram** 和**Summary**的实现。其中Histogram 直方图用于记录不同分桶的数量。比如不同请求耗时区间的请求数，用于指示将指标保存到了多个分桶，因此Histogram几乎无开销。Summary则记录了不同分位的值，基于概率采样计算，比如90% 99% 分位耗时，由于需要进行额外的计算，因此对于服务有一定的开销。
-
-### 使用方式
-
-#### 使用 prometheus
-```go
-// https://github.com/go-kratos/kratos/tree/main/examples/metrics
-_metricSeconds = prometheus.NewHistogramVec(prometheus.HistogramOpts{
-	Namespace: "server",
-	Subsystem: "requests",
-	Name:      "duration_ms",
-	Help:      "server requests duration(ms).",
-	Buckets:   []float64{5, 10, 25, 50, 100, 250, 500, 1000},
-}, []string{"kind", "operation"})
-
-_metricRequests = prometheus.NewCounterVec(prometheus.CounterOpts{
-	Namespace: "client",
-	Subsystem: "requests",
-	Name:      "code_total",
-	Help:      "The total number of processed requests",
-}, []string{"kind", "operation", "code", "reason"})
-	
-prometheus.MustRegister(_metricSeconds, _metricRequests)
-
-httpSrv.Handle("/metrics", promhttp.Handler())
-```
-#### Server 中使用 metrics
-
-```go
-// grpc sever
-grpcSrv := grpc.NewServer(
-	grpc.Address(":9000"),
-	grpc.Middleware(
-		metrics.Server(
-			metrics.WithSeconds(prom.NewHistogram(_metricSeconds)),
-			metrics.WithRequests(prom.NewCounter(_metricRequests)),
-		),
-	),
-)
-
-// http server
-httpSrv := http.NewServer(
-	http.Address(":8000"),
-	http.Middleware(
-		metrics.Server(
-			metrics.WithSeconds(prom.NewHistogram(_metricSeconds)),
-			metrics.WithRequests(prom.NewCounter(_metricRequests)),
-		),
-	),
-)
-```
-
-#### Client 中使用 metrics
-
-```go
-// grpc client
-conn, err := grpc.DialInsecure(
-	context.Background(),
-	grpc.WithEndpoint("127.0.0.1:9000"),
-	grpc.WithMiddleware(
-		metrics.Client(
-			metrics.WithSeconds(prom.NewHistogram(_metricSeconds)),
-			metrics.WithRequests(prom.NewCounter(_metricRequests)),
-		),
-	),
-)
-
-// http client
-conn, err := http.NewClient(
-	context.Background(),
-	http.WithEndpoint("127.0.0.1:8000"),
-	http.WithMiddleware(
-		metrics.Client(
-			metrics.WithSeconds(prom.NewHistogram(_metricSeconds)),
-			metrics.WithRequests(prom.NewCounter(_metricRequests)),
-		),
-	),
-)
-```
-
-
 
 ### References
 

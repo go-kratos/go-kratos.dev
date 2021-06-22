@@ -11,7 +11,7 @@ keywords:
   - gRPC
   - HTTP
 ---
-我们抽象出了`Codec`接口，用于统一处理请求的序列化/反序列化逻辑，您也可以实现您自己的Codec以便支持更多格式。具体源代码在[encoding](https://github.com/go-kratos/kratos/tree/main/encoding)
+我们抽象出了`Codec`接口，用于统一处理请求的序列化/反序列化逻辑，您也可以实现您自己的Codec以便支持更多格式。具体源代码在[encoding](https://github.com/go-kratos/kratos/tree/main/encoding)。
 
 目前内置支持了如下格式：
 * json
@@ -21,7 +21,7 @@ keywords:
 
 ### 接口实现
 
-`encoding` 的 `Codec` 接口中,包含了 Marshal，Unmarshal，Name 三个方法，用户只需要实现 `Codec` 即可使用自定义的 `encoding`
+`encoding` 的 `Codec` 接口中,包含了 Marshal，Unmarshal，Name 三个方法，用户只需要实现 `Codec` 即可使用自定义的 `encoding`。
 
 ```go
 // Codec 用于定义传输时用到的编码和解码接口，实现这个接口时必须注意，实现必须是线程安全的，可以并发协程调用。
@@ -34,7 +34,7 @@ type Codec interface {
 
 ### 实现示例
 
-在实现 `Codec` 时，可以参考 kratos 的内置实现, 如 json encoding，源代码如下
+在实现 `Codec` 时，可以参考 kratos 的内置实现, 如 json encoding，源代码如下。
 
 ```go
 // https://github.com/go-kratos/kratos/blob/main/encoding/json/json.go

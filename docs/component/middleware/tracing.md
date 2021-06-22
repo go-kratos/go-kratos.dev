@@ -1,6 +1,6 @@
 ---
 id: tracing
-title: tracing
+title: Tracing
 keywords:
   - Go
   - Kratos
@@ -12,7 +12,7 @@ keywords:
   - HTTP
 ---
 ### 配置
-Kratos tracing 中间件使用 opentelemetry 实现了链路追踪,分别实现了 client/server 的中间件并提供了 WithTracerProvider, WithPropagators 两个配置方法.
+Kratos tracing 中间件使用 opentelemetry 实现了链路追踪，分别实现了 client/server 的中间件并提供了 WithTracerProvider，WithPropagators 两个配置方法。
 
 #### `WithTracerProvider`
 
@@ -24,7 +24,7 @@ func WithTracerProvider(provider trace.TracerProvider) Option {
 }    
 ```
 
-WithTracerProvider 用于设置 tracing 的链路追踪程序的提供者,该方法接收一个 trace.TracerProvider.
+WithTracerProvider 用于设置 tracing 的链路追踪程序的提供者，该方法接收一个 trace.TracerProvider。
 
 #### `WithPropagators`
 
@@ -37,7 +37,7 @@ func WithPropagators(propagators propagation.TextMapPropagator) Option {
 ```
 
 
-WithPropagators 用于设置 tracing 的文本映射的传播器,该方法接收一个 propagation.TextMapPropagator
+WithPropagators 用于设置 tracing 的文本映射的传播器，该方法接收一个 propagation.TextMapPropagator。
 
 ### 使用方法
 

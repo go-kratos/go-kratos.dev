@@ -1,6 +1,6 @@
 ---
 id: validate
-title: validate
+title: Validate
 keywords:
   - Go
   - Kratos
@@ -11,11 +11,11 @@ keywords:
   - gRPC
   - HTTP
 ---
-在 kratos 中，内置的 validate 使用 proto-gen-validate 生成后的代码进行参数校验，我们可以通过在 proto 中编写参数校验规则，然后生成代码，通过中间件自动的进行校验
+在 kratos 中，内置的 validate 使用 proto-gen-validate 生成后的代码进行参数校验，我们可以通过在 proto 中编写参数校验规则，然后生成代码，通过中间件自动的进行校验。
 
 ## 安装工具
 
-在使用 validate 之前首先需要安装 [proto-gen-validate](https://github.com/envoyproxy/protoc-gen-validate)
+在使用 validate 之前首先需要安装 [proto-gen-validate](https://github.com/envoyproxy/protoc-gen-validate)。
 ```bash
 go get -d github.com/envoyproxy/protoc-gen-validate
 # 如果使用中遇到无法使用或者生成的代码中 包含 // no validation rules for xxxx
@@ -23,7 +23,7 @@ go get -d github.com/envoyproxy/protoc-gen-validate
 ```
 
 ## 规则示例
-下面为大家列举几种常用类型的参数校验示例，更多的示例可以在 [proto-gen-validate](https://github.com/envoyproxy/protoc-gen-validate) 文档中查看
+下面为大家列举几种常用类型的参数校验示例，更多的示例可以在 [proto-gen-validate](https://github.com/envoyproxy/protoc-gen-validate) 文档中查看。
 
 ```
 ### 数字类型
@@ -73,7 +73,7 @@ message Info {
 ```
 
 ## 生成代码
-生成代码时可以使用 kratos layout 提供的 Makefile 中的 make validate 命令，也可以直接使用 protoc
+生成代码时可以使用 kratos layout 提供的 Makefile 中的 make validate 命令，也可以直接使用 protoc。
 ```bash
 make validate
 # 或者
@@ -84,7 +84,7 @@ protoc --proto_path=. \
            xxxx.proto
 ```
 ## 搭配中间件使用
-我们可以将 validate 中间件注入到 http 或者 grpc 中，在有请求进入时 validate 中间件会自动对参数根据 proto 中编写的规则进行校验
+我们可以将 validate 中间件注入到 http 或者 grpc 中，在有请求进入时 validate 中间件会自动对参数根据 proto 中编写的规则进行校验。
 ### http
 ```go
 httpSrv := http.NewServer(
