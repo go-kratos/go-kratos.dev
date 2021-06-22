@@ -39,9 +39,7 @@ conn, err := transgrpc.DialInsecure(
 	context.Background(),
 	grpc.WithEndpoint("127.0.0.1:9000"),
 	 grpc.WithMiddleware(
-		middleware.Chain(
-			logging.Client(logger),
-		),
+		logging.Client(logger),
 	),
 )
 ```

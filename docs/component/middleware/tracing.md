@@ -16,7 +16,7 @@ Tracing 中间件使用 opentelemetry 实现了链路追踪。
 
 ### 配置
 
-Tracing 中间件中提供了两个配置方法 `WithTracerProvider()`，`WithPropagators()`。
+Tracing 中间件中提供了两个配置方法 `WithTracerProvider()`，`WithPropagator()`。
 
 #### `WithTracerProvider`
 
@@ -30,18 +30,18 @@ func WithTracerProvider(provider trace.TracerProvider) Option {
 
 WithTracerProvider 用于设置 tracing 的链路追踪程序的提供者，该方法接收一个 trace.TracerProvider。
 
-#### `WithPropagators`
+#### `WithPropagator`
 
 ```go
-func WithPropagators(propagators propagation.TextMapPropagator) Option {
+func WithPropagator(propagator propagation.TextMapPropagator) Option {
 	return func(opts *options) {
-		opts.Propagators = propagators
+		opts.Propagator = propagator
 	}
 }
 ```
 
 
-WithPropagators 用于设置 tracing 的文本映射的传播器，该方法接收一个 propagation.TextMapPropagator。
+WithPropagator 用于设置 tracing 的文本映射的传播器，该方法接收一个 propagation.TextMapPropagator。
 
 ### 使用方法
 
