@@ -26,6 +26,7 @@ module.exports = {
         'component/metrics',
         'component/registry',
         'component/encoding',
+        'component/metadata',
         {
           type: 'category',
           label: 'Middleware',
