@@ -21,6 +21,7 @@ Kratos 内置了一系列的 middleware（中间件）用于处理 logging、 me
 * recovery: 用于recovery panic。
 * tracing: 用于启用trace。
 * validate: 用于处理参数校验。
+* metadata: 用于启用元信息传递
 
 ### 生效顺序
 一个请求进入时的处理顺序为Middleware注册的顺序，而响应返回的处理顺序为注册顺序的倒序。
