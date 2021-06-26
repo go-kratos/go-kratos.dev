@@ -19,6 +19,15 @@ keywords:
 
 ### 接口抽象
 
+#### `server`
+```go
+// 服务的启动和停止，用于管理服务生命周期。
+type Server interface {
+	Start(context.Context) error
+	Stop(context.Context) error
+}
+```
+
 #### `Transporter`
 ```go
 type Transporter interface {
