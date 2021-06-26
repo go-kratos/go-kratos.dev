@@ -25,13 +25,13 @@ c := config.New(
         // kv.Key
         // kv.Value
         // kv.Format
-        // 自定义实现对应的数据源解析，如果是配置中心数据源也可以指定metadata进行识别配置类型
+        // 自定义实现对应的数据源解析，如果是配置中心数据源也可以指定对应的 format 进行识别配置类型
         return yaml.Unmarshal(kv.Value, v)
     }),
 )
 // 加载配置源：
 if err := c.Load(); err != nil {
-    panic(err)
+    log.Fatal(err)
 }
 // 获取对应的值内容：
 name, err := c.Value("service").String()
@@ -41,9 +41,9 @@ var v struct {
     Version string `json:"version"`
 }
 if err := c.Scan(&v); err != nil {
-    panic(err)
+    log.Fatal(err)
 }
-// 监听值内容变更
+// 监听某个键值内容变更
 c.Watch("service.name", func(key string, value config.Value) {
     // 值内容变更
 })
