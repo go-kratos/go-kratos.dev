@@ -22,21 +22,21 @@ keywords:
 #### `Transporter`
 ```go
 type Transporter interface {
-  // 代表实现的通讯协议的种类，如内置的 http grpc，也可以实现其他的类型如 mqtt，websocket
+	// 代表实现的通讯协议的种类，如内置的 http grpc，也可以实现其他的类型如 mqtt，websocket
 	Kind() Kind
-  // 提供的服务终端地址
+	// 提供的服务终端地址
 	Endpoint() string
 	// 用于标识服务的完整方法路径
 	// 示例: /helloworld.Greeter/SayHello
 	Operation() string
-  // http 的请求头或者 grpc 的元数据
+ 	// http 的请求头或者 grpc 的元数据
 	Header() Header
 }
 ```
 #### `Endpointer`
 ```go
 type Endpointer interface {
-  // 用于实现注册到注册中心的终端地址，如果不实现这个方法则不会注册到注册中心
+	// 用于实现注册到注册中心的终端地址，如果不实现这个方法则不会注册到注册中心
 	Endpoint() (*url.URL, error)
 }
 ```
