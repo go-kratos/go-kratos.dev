@@ -57,11 +57,13 @@ github.com/go-kratos/kratos
 ├── api
 ├── errors
 ├── config
+├── encoding
 ├── log
 ├── metrics
-├── registry
+├── metadata
 ├── middleware
 ├── transport
+├── registry
 ├── third_party
 ├── app.go
 ├── options.go
