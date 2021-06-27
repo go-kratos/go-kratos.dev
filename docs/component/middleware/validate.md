@@ -26,7 +26,6 @@ go get -d github.com/envoyproxy/protoc-gen-validate
 ### 规则示例
 下面为大家列举几种常用类型的参数校验示例，更多的示例可以在 [proto-gen-validate](https://github.com/envoyproxy/protoc-gen-validate) 文档中查看。
 
-```
 ### 数字类型
 
 ```protobuf
