@@ -30,12 +30,21 @@ go env -w GO111MODULE=on
 如果拉取依赖遇到网络问题，建议[配置GOPROXY](https://goproxy.cn/)
 
 ### 安装
+安装 kratos 命令工具
+#### go get 安装
 
 ```bash
-# 安装 kratos 命令工具
 go get -u github.com/go-kratos/kratos/cmd/kratos/v2@latest
-# 可能不是最新的项目，可以执行
-kratos upgrade
+```
+#### go install 安装
+```bash
+go install github.com/go-kratos/kratos/cmd/kratos/v2
+```
+#### 源码编译安装
+```bash
+git clone https://github.com/go-kratos/kratos
+cd kratos
+make install
 ```
 ### 创建项目
 ```bash
