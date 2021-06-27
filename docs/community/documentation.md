@@ -36,6 +36,6 @@ keywords:
 ## 文档翻译
 如果您要维护文档，请将文档仓库 clone 到本地。
 
-在`i18n`目录下的对应语言目录如，英文版本在`i18n/en/docusaurus-plugin-content-docs/current`可以找到或创建与`docs`目录对应的文件，注意 id 要与`docs`中对应文件的id相同。进行相应的文档翻译后提交即可。
+在`i18n`目录下的对应语言目录如，英文版本在`i18n/en/docusaurus-plugin-content-docs/current`可以找到或创建与`docs`目录对应的文件，注意 id 要与`docs`中对应文件的 id 相同。进行相应的文档翻译后提交即可。
 
 具体文档翻译功能的扩展使用，请参考 [Docusaurus: i18n - Using git](https://docusaurus.io/docs/i18n/git)
