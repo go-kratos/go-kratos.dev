@@ -18,7 +18,7 @@ keywords:
 ## 添加/修改文档
 首先 fork 文档仓库，并 clone 到本地。
 
-然后在docs目录中的对应子目录下可以添加或修改相应的文档。文档格式为Markdown，并支持一些扩展的语法，具体支持的语法请参考 [Docusaurus: Markdown Features](https://docusaurus.io/docs/markdown-features)
+然后在docs目录中的对应子目录下可以添加或修改相应的文档。文档格式为 Markdown，并支持一些扩展的语法，具体支持的语法请参考 [Docusaurus: Markdown Features](https://docusaurus.io/docs/markdown-features)
 
 注意下列事项：
 * 文档正文的子标题请使用二级或更低等级的标题，即`##`或`###`等，避免使用一级标题。
