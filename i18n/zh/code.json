@@ -184,5 +184,13 @@
   },
   "Component 统一遵循 OpenTelemetry 规范进行实现， 通过 Plugins 设计理念，实现插件化方式提供扩展能力。": {
     "message": "Component 统一遵循 OpenTelemetry 规范进行实现， 通过 Plugins 设计理念，实现插件化方式提供扩展能力。"
+  },
+  "theme.blog.sidebar.navAriaLabel": {
+    "message": "Blog recent posts navigation",
+    "description": "The ARIA label for recent posts in the blog sidebar"
+  },
+  "theme.docs.sidebar.navAriaLabel": {
+    "message": "Sidebar navigation",
+    "description": "The ARIA label for documentation menu"
   }
 }
