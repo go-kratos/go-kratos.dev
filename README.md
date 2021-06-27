@@ -9,7 +9,7 @@
 
 `main`分支更新将自动触发构建并部署。
 
-文档编辑格式和高级用法请参考[Docusaurus文档](https://v2.docusaurus.io/docs/docs-introduction)。
+具体贡献方法请参考[文档维护](https://go-kratos.dev/docs/community/documentation)。
 
 
 # Running the development server
