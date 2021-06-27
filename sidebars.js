@@ -75,6 +75,7 @@ module.exports = {
       collapsed: false,
       items: [
         'community/contribution',
+        'community/documentation',
       ],
     },
   ],
