@@ -39,6 +39,8 @@ go get -u github.com/go-kratos/kratos/cmd/kratos/v2@latest
 #### go install 安装
 ```bash
 go install github.com/go-kratos/kratos/cmd/kratos/v2
+# go 1.16版本以上需要指定版本号或使用最新版
+go install github.com/go-kratos/kratos/cmd/kratos/v2@latest
 ```
 #### 源码编译安装
 ```bash
