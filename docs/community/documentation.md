@@ -34,7 +34,7 @@ keywords:
 该文件的具体配置方法请参考 [Docusaurus: Sidebar](https://docusaurus.io/docs/sidebar)
 
 ## 文档翻译
-如果您要维护文档，请将文档仓库 clone 到本地。
+如果您要维护多语言翻译，请将文档仓库 clone 到本地。
 
 在`i18n`目录下的对应语言目录如，英文版本在`i18n/en/docusaurus-plugin-content-docs/current`可以找到或创建与`docs`目录对应的文件，注意 id 要与`docs`中对应文件的 id 相同。进行相应的文档翻译后提交即可。
 
