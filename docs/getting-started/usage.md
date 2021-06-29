@@ -118,6 +118,7 @@ kratos proto client api/helloworld/demo.proto
 ```bash
 api/helloworld/demo.pb.go
 api/helloworld/demo_grpc.pb.go
+# 注意 http 代码只会在 proto 文件中声明了 http 时才会生成
 api/helloworld/demo_http.pb.go
 ```
 
