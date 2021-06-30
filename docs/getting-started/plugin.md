@@ -18,7 +18,7 @@ Kratos提供了一系列插件帮助您增强微服务的功能、或与其它�
 #### 服务发现&服务注册
 * [consul](https://github.com/go-kratos/consul)
 * [etcd](https://github.com/go-kratos/etcd)
-* [kube(kubernetes)](https://github.com/go-kratos/kube)
+* [kubernetes](https://github.com/go-kratos/kube)
 * [nacos](https://github.com/go-kratos/nacos)
 
 #### 日志
@@ -27,11 +27,8 @@ Kratos提供了一系列插件帮助您增强微服务的功能、或与其它�
 #### 配置中心
 * [consul](https://github.com/go-kratos/consul)
 * [etcd](https://github.com/go-kratos/etcd)
-* [kube](https://github.com/go-kratos/kube)
+* [kubernetes](https://github.com/go-kratos/kube)
 * [nacos](https://github.com/go-kratos/nacos)
-
-#### 消息队列
-* [kafka](https://github.com/go-kratos/kafka)
 
 #### 监控告警
 * [datadog](https://github.com/go-kratos/datadog)
