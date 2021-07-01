@@ -14,13 +14,16 @@ keywords:
 ---
 在 Kratos 项目中，配置源可以指定多个，并且 config 会进行合并成 key/value 。
 然后用户通过 Scan 或者 Value 获取对应键值内容，主要功能特性:
+
 - 默认实现了本地文件数据源。
 - 用户可以自定义数据源实现。
 - 支持配置热加载，以及通过 Atomic 方式变更已有 Value。
 - 支持自定义数据源解码实现。
+- 支持通过 go template 获取环境变量
 
 ### 通过 proto 定义配置
 在 Kratos 项目中，我们默认推荐通过 proto 进行定义配置文件，主要有以下几点好处：
+
 - 可以定义统一的模板配置
 - 添加对应的配置校验
 - 更好地管理配置
@@ -44,6 +47,19 @@ data:
     read_timeout: 0.2s
     write_timeout: 0.2s
 
+```
+
+Kratos 支持读取配置文件中的 [go template](https://golang.org/pkg/text/template/) ，并通过`env`获取环境变量，支持当对应变量不存在时使用默认值:
+
+```yaml
+http:
+  server:
+    # 使用环境变量 NAME 替换，若不存在，使用默认值 "service"
+    name: {{ env "NAME" "service" }}
+    # 使用环境变量 PORT 替换，若不存在，使用默认值 8080
+    port: {{ env "PORT" 8080 }}
+    # 使用环境变量 TIMEOUT 替换，无默认值
+    timeout: {{ env "TIMEOUT" }}
 ```
 
 #### proto 声明
