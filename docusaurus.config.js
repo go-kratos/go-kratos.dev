@@ -91,7 +91,7 @@ module.exports = {
       copyright: `Copyright © ${new Date().getFullYear()} go-kratos.dev`,
     },
     prism: {
-      additionalLanguages: ['protobuf', 'toml'],
+      additionalLanguages: ['protobuf', 'toml', 'dockerfile'],
     },
   },
   presets: [
