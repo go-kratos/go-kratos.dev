@@ -30,6 +30,7 @@ module.exports = {
         {
           type: 'category',
           label: 'Middleware',
+          collapsed: false,
           items: [
             'component/middleware/overview',
             'component/middleware/logging',
@@ -42,6 +43,7 @@ module.exports = {
         {
           type: 'category',
           label: 'Transport',
+          collapsed: false,
           items: [
             'component/transport/overview',
             'component/transport/http',
