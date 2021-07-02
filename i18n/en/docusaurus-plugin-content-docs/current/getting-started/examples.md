@@ -19,7 +19,7 @@ Kratos provides a wealth of sample code/projects for reference
 * [config](https://github.com/go-kratos/kratos/tree/main/examples/config) Example of using config to parse configuration files
 
 #### Service Discovery and Registration
-* [consul](https://github.com/go-kratos/kratos/tree/main/examples/registry/consul)Example of service registration on the server side and service registration on the client side using the consul plug-in.
+* [consul](https://github.com/go-kratos/kratos/tree/main/examples/registry/consul) Example of service registration on the server side and service registration on the client side using the consul plug-in.
 * [etcd](https://github.com/go-kratos/kratos/tree/main/examples/registry/etcd) Example of service registration on the server side and service registration on the client side using the etcd plug-in.
 * [kube](https://github.com/go-kratos/kratos/tree/main/examples/registry/nacos) Example of service registration on the server side and service registration on the client side using the kubernetes plug-in.
 
