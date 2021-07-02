@@ -12,11 +12,11 @@ keywords:
   - HTTP
 ---
 
-Recovery 中间件用于异常恢复，服务出现异常的情况下，防止程序直接退出。
+Recovery middleware is used for abnormal recovery and prevents the program from exiting directly in the event of an exception to the service.
 
-### 配置
+### configuration
 
-Recovery 中间件中提供了两个配置方法 `WithHandler()` 和 `WithLogger()`。
+Two configuration methods are available in recovery middleware `WithHandler()` and `WithLogger()`。
 
 #### `WithHandler()`
 
@@ -27,7 +27,7 @@ func WithHandler(h HandlerFunc) Option {
 	}
 }
 ```
-用于设置服务异常时可以使用自定义的 `handler` 进行处理，例如投递异常信息到 sentry。
+When you set up a service exception, you can use a custom `handler` for handler processing, such as posting exception information to sentry.
 
 #### `WithLogger()`
 
@@ -38,11 +38,11 @@ func WithLogger(logger log.Logger) Option {
 	}
 }
 ```
-用于设置中间件打印日志时使用的 `logger`。
+To set up the `logger` for logging.
 
-### 使用方法
+### Usage
 
-#### http
+#### HTTP
 
 ```go
 var opts = []http.ServerOption{
@@ -59,7 +59,7 @@ var opts = []http.ServerOption{
 srv := http.NewServer(opts...)
 ```
 
-#### grpc
+#### gRPC
 
 ```go
 var opts = []grpc.ServerOption{

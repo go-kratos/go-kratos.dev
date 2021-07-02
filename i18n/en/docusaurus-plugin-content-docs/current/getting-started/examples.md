@@ -1,7 +1,7 @@
 ---
 id: examples
-title: 代码示例
-description: Kratos 代码示例
+title: Examples
+description: Kratos Examples
 keywords:
   - Go 
   - Kratos
@@ -12,35 +12,35 @@ keywords:
   - gRPC
   - HTTP
 ---
-Kratos提供了丰富的示例代码/项目供参考
+Kratos provides a wealth of sample code/projects for reference
 
-### 组件使用
-#### 配置
-* [config](https://github.com/go-kratos/kratos/tree/main/examples/config) 使用config组件解析配置文件的示例
+### Components' Usage
+#### Configuration
+* [config](https://github.com/go-kratos/kratos/tree/main/examples/config) Example of using config to parse configuration files
 
-#### 服务发现&服务注册
-* [consul](https://github.com/go-kratos/kratos/tree/main/examples/registry/consul) 使用consul插件，在server端进行服务注册和在client端进行服务注册的示例
-* [etcd](https://github.com/go-kratos/kratos/tree/main/examples/registry/etcd) 使用etcd插件，在server端进行服务注册和在client端进行服务注册的示例
-* [kube](https://github.com/go-kratos/kratos/tree/main/examples/registry/nacos) 使用kube(kubernetes)插件，在server端进行服务注册和在client端进行服务注册的示例
+#### Service Discovery and Registration
+* [consul](https://github.com/go-kratos/kratos/tree/main/examples/registry/consul)Example of service registration on the server side and service registration on the client side using the consul plug-in.
+* [etcd](https://github.com/go-kratos/kratos/tree/main/examples/registry/etcd) Example of service registration on the server side and service registration on the client side using the etcd plug-in.
+* [kube](https://github.com/go-kratos/kratos/tree/main/examples/registry/nacos) Example of service registration on the server side and service registration on the client side using the kubernetes plug-in.
 
 #### HTTP
-* [gin](https://github.com/go-kratos/kratos/tree/main/examples/http/gin) 将gin作为router集成进Kratos项目的示例
-* [handler](https://github.com/go-kratos/kratos/tree/main/examples/http/handler) 注册handler提供http接口的最小化应用示例
-* [health](https://github.com/go-kratos/kratos/blob/main/examples/http/health/main.go) 添加健康检查接口的示例
-* [mux](https://github.com/go-kratos/kratos/tree/main/examples/http/mux) 将mux作为router集成进Kratos项目的示例
-* [static](https://github.com/go-kratos/kratos/tree/main/examples/http/static) 通过http提供静态文件服务的示例
-* [upload](https://github.com/go-kratos/kratos/tree/main/examples/http/upload) 通过http上传文件的示例
+* [gin](https://github.com/go-kratos/kratos/tree/main/examples/http/gin) Example of use gin as the router.
+* [handler](https://github.com/go-kratos/kratos/tree/main/examples/http/handler) Example of use basic http handler.
+* [health](https://github.com/go-kratos/kratos/blob/main/examples/http/health/main.go) Example of health check API.
+* [mux](https://github.com/go-kratos/kratos/tree/main/examples/http/mux) Example of use mux as the router.
+* [static](https://github.com/go-kratos/kratos/tree/main/examples/http/static) Example of static files serving.
+* [upload](https://github.com/go-kratos/kratos/tree/main/examples/http/upload) Example of file upload.
 
 #### RPC
-* [helloworld](https://github.com/go-kratos/kratos/tree/main/examples/helloworld) 分别使用http和gRPC进行远程调用的样例
+* [helloworld](https://github.com/go-kratos/kratos/tree/main/examples/helloworld) Example of file upload.
 
 #### Trace
-* [traces](https://github.com/go-kratos/kratos/tree/main/examples/traces) 使用jaeger对两个服务进行分布式追踪的样例
+* [traces](https://github.com/go-kratos/kratos/tree/main/examples/traces) Example of use jaeger for tracing.
 
 #### WebSocket
-* [ws](https://github.com/go-kratos/kratos/tree/main/examples/ws) 提供WebSocket接口的样例
+* [ws](https://github.com/go-kratos/kratos/tree/main/examples/ws) Example of file WebSocket.
 
-### 综合项目
-* [blog](https://github.com/go-kratos/kratos/tree/main/examples/blog) 简单的CRUD工程，包含MySQL和Redis的使用，展示使用kratos-layout创建的项目的完整结构
+### Complete Projects
+* [blog](https://github.com/go-kratos/kratos/tree/main/examples/blog) A simple CRUD project which includes MySQL Redis integration. 
 
-* [beer-shop](https://github.com/go-kratos/beer-shop) 一个模拟电商的完整微服务应用，展示如何使用kratos构建大型微服务项目
+* [beer-shop](https://github.com/go-kratos/beer-shop) An online shop application, mono-repo microservices demo for kratos.

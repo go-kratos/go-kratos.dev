@@ -12,29 +12,30 @@ keywords:
   - gRPC
   - HTTP
 ---
-框架可通过两种方式提供OpenAPI/Swagger的使用：1. 在服务上提供swagger接口，2. 使用protoc插件生成swagger.json文件。下面介绍这两种方式。
+The framework provides open API/Swagger use in two ways: 1. Provide swagger interface on service, 2. Use the protoc plug-in to generate the swagger.json file. Here are two ways to do this.
 
-### 方式1: 使用插件提供swagger接口
-[swagger-api](https://github.com/go-kratos/swagger-api)插件提供了一系列swagger相关的API，以及相应的UI界面
+### Method 1: Use plug-ins to provide the swagger API 
+Plugin [swagger-api](https://github.com/go-kratos/swagger-api) provides a range of swagger-related APIs, as well as the corresponding UI interface.
 
-#### 安装
-首先安装插件
+#### Installation
+First install this plugin.
 ```bash
 go get -u github.com/go-kratos/swagger-api
 ```
 
-然后在`internal/server/http.go`的NewHTTPServer中进行初始化和注册，请尽量将这个路由注册放在最前面，以免匹配不到。
+Then initialize and register in newHTTPServer of `internal/server/http.go`, and try to put this route registration first to avoid match failed.
+
 ```go
 import	"github.com/go-kratos/swagger-api/openapiv2"
 
 openAPIhandler := openapiv2.NewHandler()
 srv.HandlePrefix("/q/", openAPIhandler)
 ```
-#### 使用
+#### Usage
 Open `/q/swagger-ui/` in Web Browser in order to access Swagger UI
 
-### 方式2: 使用protoc插件生成swagger.json文件
-新建项目Makefile中已经默认集成了生成swagger.json的相关命令，这里也介绍下具体的使用方式
+### Method 2: Use protoc to generate swagger.json
+The new project Makefile has been integrated by default with the commands associated with generating swagger.json, and here's how to use them
 
 #### Installation
 First, install the protoc plug-in

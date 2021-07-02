@@ -1,7 +1,7 @@
 ---
 id: plugin
-title: 插件中心
-description: Kratos 插件中心
+title: Plugins
+description: Kratos Plugins
 keywords:
   - Go 
   - Kratos
@@ -12,30 +12,30 @@ keywords:
   - gRPC
   - HTTP
 ---
-Kratos提供了一系列插件帮助您增强微服务的功能、或与其它系统进行集成。
+Kratos offers a range of plug-ins to help you enhance the functionality of microservices or integrate with other systems.
 
-### 分类
-#### 服务发现&服务注册
+### Categories
+#### Service Discovery and Registration
 * [consul](https://github.com/go-kratos/consul)
 * [etcd](https://github.com/go-kratos/etcd)
 * [kubernetes](https://github.com/go-kratos/kube)
 * [nacos](https://github.com/go-kratos/nacos)
 
-#### 日志
+#### Logging
 * [fluent](https://github.com/go-kratos/fluent)
 
-#### 配置中心
+#### Configuration Center
 * [consul](https://github.com/go-kratos/consul)
 * [etcd](https://github.com/go-kratos/etcd)
 * [kubernetes](https://github.com/go-kratos/kube)
 * [nacos](https://github.com/go-kratos/nacos)
 
-#### 监控告警
+#### Monitor
 * [datadog](https://github.com/go-kratos/datadog)
 * [prometheus](https://github.com/go-kratos/prometheus)
 * [sentry](https://github.com/go-kratos/sentry)
 
-#### API文档
+#### API Document
 * [swagger-api](https://github.com/go-kratos/swagger-api)
 
 
