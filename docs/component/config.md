@@ -1,6 +1,6 @@
 ---
 id: config
-title: 应用配置 Config
+title: 应用配置
 description: Kratos 配置源可以指定多个，并且 config 会进行合并成 map[string]interface{}，然后通过 Scan 或者 Value 获取值内容
 keywords:
   - Go 

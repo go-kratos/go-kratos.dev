@@ -1,6 +1,6 @@
 ---
 id: log
-title: 日志 Logger
+title: 日志接口
 description: Kratos 为了方便业务自适配不同的 log 接入使用，Logger 只包含了最简单的 Log 接口。当业务需要在 kratos 框架内部使用自定义的 log 的时候，只需要简单实现 Log 方法即可
 keywords:
   - Go

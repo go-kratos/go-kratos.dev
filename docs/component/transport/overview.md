@@ -1,6 +1,6 @@
 ---
 id: overview
-title: 概览 Overview
+title: 概览
 keywords:
   - Go
   - Kratos

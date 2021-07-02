@@ -1,6 +1,6 @@
 ---
 id: registry
-title: 服务注册与发现 Registry
+title: 服务注册与发现
 description: Kratos Registry 接口分为两个，Registrar为实例注册和反注册，Discovery为服务实例列表获取
 keywords:
   - Go

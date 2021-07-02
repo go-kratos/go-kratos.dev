@@ -1,6 +1,6 @@
 ---
 id: tracing
-title: 链路追踪 Tracing
+title: 链路追踪
 keywords:
   - Go
   - Kratos

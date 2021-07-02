@@ -29,7 +29,7 @@ module.exports = {
         'component/metadata',
         {
           type: 'category',
-          label: 'Middleware',
+          label: '中间件',
           collapsed: false,
           items: [
             'component/middleware/overview',
@@ -42,7 +42,7 @@ module.exports = {
         },
         {
           type: 'category',
-          label: 'Transport',
+          label: '通信协议',
           collapsed: false,
           items: [
             'component/transport/overview',

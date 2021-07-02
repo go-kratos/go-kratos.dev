@@ -1,6 +1,6 @@
 ---
 id: validate
-title: 参数校验 Validate
+title: 参数校验
 keywords:
   - Go
   - Kratos

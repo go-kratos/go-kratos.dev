@@ -1,6 +1,6 @@
 ---
 id: logging
-title: 日志 Logging
+title: 日志
 keywords:
   - Go
   - Kratos
