@@ -11,47 +11,46 @@ keywords:
   - gRPC
   - HTTP
 ---
+Our transporter/grpc is developed upon [gRPC](https://www.grpc.io/), and implements `Transporter` interface. You could use it for the communication between services on gRPC protocol.
 
-transporter/grpc 中基于谷歌的 [grpc](https://www.grpc.io/) 框架实现了`Transporter`，用以注册 grpc 到 `kratos.Server()` 中。
+## Server
 
-## server
-
-### 配置
+### Options
 
 #### `Network()`
 
-配置服务端的 network 协议，如 tcp
+To set communication protocol such as tcp.
 
 #### `Address()`
 
-配置服务端监听的地址
+To set server's listening address.
 
 #### `Timeout()`
 
-配置服务端的超时设置
+To set the server-side timeout.
 
 #### `Logger()`
 
-配置服务端使用日志
+To set logger.
 
 #### `Middleware()`
 
-配置服务端的 kratos 中间件
+To set middleware for gRPC server.
 
 #### `UnaryInterceptor()`
 
-配置服务端使用的 grpc 拦截器
+To set interceptors for gRPC server.
 
 #### `Options()`
 
-配置一些额外的 grpc.ServerOption
+To set some extra `grpc.ServerOption`
 
-### 主要的实现细节
+### Implementation Details
 
 #### `NewServer()`
 ```go
 func NewServer(opts ...ServerOption) *Server {
-  // grpc server 默认配置
+  // grpc server default configuration
 	srv := &Server{
 		network: "tcp",
 		address: ":0",
@@ -59,11 +58,11 @@ func NewServer(opts ...ServerOption) *Server {
 		health:  health.NewServer(),
 		log:     log.NewHelper(log.DefaultLogger),
 	}
-  // 递归 opts
+  // apply opts
 	for _, o := range opts {
 		o(srv)
 	}
-  // kratos middleware 转换成 grpc 拦截器，并处理一些细节
+  // convert middleware to grpc interceptor
 	var ints = []grpc.UnaryServerInterceptor{
 		srv.unaryServerInterceptor(),
 	}
@@ -72,18 +71,18 @@ func NewServer(opts ...ServerOption) *Server {
 		ints = append(ints, srv.ints...)
 	}
 
-  // 将 UnaryInterceptor 转换成 ServerOption
+  // convert UnaryInterceptor to ServerOption
 	var grpcOpts = []grpc.ServerOption{
 		grpc.ChainUnaryInterceptor(ints...),
 	}
 	if len(srv.grpcOpts) > 0 {
 		grpcOpts = append(grpcOpts, srv.grpcOpts...)
 	}
-  // 创建 grpc server
+  // create grpc server
 	srv.Server = grpc.NewServer(grpcOpts...)
-  // 创建 metadata server
+  // create metadata server
 	srv.metadata = apimd.NewServer(srv.Server)
-	// 内部注册
+	// register these internal API
 	grpc_health_v1.RegisterHealthServer(srv.Server, srv.health)
 	apimd.RegisterMetadataServer(srv.Server, srv.metadata)
 	reflection.Register(srv.Server)
@@ -96,23 +95,23 @@ func NewServer(opts ...ServerOption) *Server {
 ```go
 func (s *Server) unaryServerInterceptor() grpc.UnaryServerInterceptor {
 	return func(ctx context.Context, req interface{}, info *grpc.UnaryServerInfo, handler grpc.UnaryHandler) (interface{}, error) {
-    // 把两个 ctx 合并成一个
+    // merge two ctx
 		ctx, cancel := ic.Merge(ctx, s.ctx)
 		defer cancel()
-    // 从 ctx 中取出 metadata
+    // get metadata from ctx
 		md, _ := grpcmd.FromIncomingContext(ctx)
-    // 把一些信息绑定到 ctx 上
+    // bind some information into ctx
 		ctx = transport.NewServerContext(ctx, &Transport{
 			endpoint:  s.endpoint.String(),
 			operation: info.FullMethod,
 			header:    headerCarrier(md),
 		})
-    // ctx 超时设置
+    // set timeout
 		if s.timeout > 0 {
 			ctx, cancel = context.WithTimeout(ctx, s.timeout)
 			defer cancel()
 		}
-    // 中间件处理
+    // middleware
 		h := func(ctx context.Context, req interface{}) (interface{}, error) {
 			return handler(ctx, req)
 		}
@@ -123,11 +122,11 @@ func (s *Server) unaryServerInterceptor() grpc.UnaryServerInterceptor {
 	}
 }
 ```
-### 使用方式
+### Usage
 
-简单列举了一些 kratos 中 grpc 的用法，其他 grpc 用法可以到 grpc 仓库中查看。
+These are some basic usage of gRPC, you could refer to [gRPC Docs](https://pkg.go.dev/google.golang.org/grpc) for advanced examples.
 
-#### 注册 grpc server
+#### Register gRPC Server
 ```go
 gs := grpc.NewServer()
 app := kratos.New(
@@ -137,7 +136,7 @@ app := kratos.New(
 )
 ```
 
-#### grpc server 中使用 kratos middleware
+#### Set middleware in gRPC Server
 ```go
 grpcSrv := grpc.NewServer(
 	grpc.Address(":9000"),
@@ -147,7 +146,7 @@ grpcSrv := grpc.NewServer(
 )
 ```
 
-#### middleware 中处理 grpc 请求
+#### Process Request in gRPC Middleware
 ```go
 if info, ok := transport.FromServerContext(ctx); ok {
   kind = info.Kind().String()
@@ -157,46 +156,46 @@ if info, ok := transport.FromServerContext(ctx); ok {
 
 ## client
 
-### 配置
+### Options
 
 #### `WithEndpoint()` 
 
-配置客户端使用的终端地址
+To set the endpoint which the client will connect to.
 
 #### `WithTimeout()`
 
-配置客户端的超时设置
+To set the client-side timeout.
 
 #### `WithMiddleware()`
 
-配置客户端使用的 kratos 中间件
+To set middleware.
 
 #### `WithDiscovery()`
 
-配置客户端使用的服务发现 
+To set the discovery for gRPC client.
 
 #### `WithUnaryInterceptor()`
 
-配置客户端使用的 grpc 拦截器
+To set interceptors for gRPC client.
 
 #### `WithOptions()`
 
-配置一些额外的 grpc.ClientOption
+To set some extra `grpc.ClientOption`
 
-### 主要的实现细节
+### Implementation Details
 
 #### `dial()`
 ```go
 func dial(ctx context.Context, insecure bool, opts ...ClientOption) (*grpc.ClientConn, error) {
-	// 默认配置
+	// default options
   options := clientOptions{
 		timeout: 500 * time.Millisecond,
 	}
-  // 遍历 opts
+  // apply opts
 	for _, o := range opts {
 		o(&options)
 	}
-  // 将 kratos 中间件转化成 grpc 拦截器
+  // convert middleware to grpc interceptor
 	var ints = []grpc.UnaryClientInterceptor{
 		unaryClientInterceptor(options.middleware, options.timeout),
 	}
@@ -204,16 +203,16 @@ func dial(ctx context.Context, insecure bool, opts ...ClientOption) (*grpc.Clien
 		ints = append(ints, options.ints...)
 	}
 	var grpcOpts = []grpc.DialOption{
-    // 负载均衡
+    // client side balancer
 		grpc.WithBalancerName(roundrobin.Name),
 		grpc.WithChainUnaryInterceptor(ints...),
 	}
 	if options.discovery != nil {
-    // 如果存在服务发现配置，就配置 grpc 的 Resolvers
+    // To use service discovery
 		grpcOpts = append(grpcOpts, grpc.WithResolvers(discovery.NewBuilder(options.discovery)))
 	}
 	if insecure {
-    // 跳过证书验证
+    // to disable transport security for connection
 		grpcOpts = append(grpcOpts, grpc.WithInsecure())
 	}
 	if len(options.grpcOpts) > 0 {
@@ -228,19 +227,19 @@ func dial(ctx context.Context, insecure bool, opts ...ClientOption) (*grpc.Clien
 ```go
 func unaryClientInterceptor(ms []middleware.Middleware, timeout time.Duration) grpc.UnaryClientInterceptor {
 	return func(ctx context.Context, method string, req, reply interface{}, cc *grpc.ClientConn, invoker grpc.UnaryInvoker, opts ...grpc.CallOption) error {
-    // 把一些信息绑定到 ctx 上
+    // bind some information into ctx
 		ctx = transport.NewClientContext(ctx, &Transport{
 			endpoint:  cc.Target(),
 			operation: method,
 			header:    headerCarrier{},
 		})
 		if timeout > 0 {
-      // timeout 如果大于 0，就重新设置一下 ctx 的超时时间
+      // set the timeout
 			var cancel context.CancelFunc
 			ctx, cancel = context.WithTimeout(ctx, timeout)
 			defer cancel()
 		}
-    // 中间件处理
+    // middleware 
 		h := func(ctx context.Context, req interface{}) (interface{}, error) {
 			if tr, ok := transport.FromClientContext(ctx); ok {
 				keys := tr.Header().Keys()
