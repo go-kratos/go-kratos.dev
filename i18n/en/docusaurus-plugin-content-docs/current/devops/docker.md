@@ -17,7 +17,7 @@ keywords:
 
 ### Dockerfile
 
-```Dockerfile
+```docker
 FROM golang:1.15 AS builder
 
 COPY . /src
