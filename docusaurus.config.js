@@ -10,6 +10,7 @@ module.exports = {
   projectName: 'go-kratos.dev',
   themeConfig: {
     sidebarCollapsible: true,
+    hideableSidebar: true,
     navbar: {
       title: 'Kratos',
       logo: {
