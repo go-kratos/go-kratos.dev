@@ -1,6 +1,6 @@
 id: faq
 title: FAQ
-description: Kratos FAQ 使用文档
+description: Kratos FAQ
 keywords:
   - Go 
   - Kratos

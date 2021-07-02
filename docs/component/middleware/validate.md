@@ -19,9 +19,11 @@ Validate 中间件使用 proto-gen-validate 生成后的代码进行参数校验
 在使用 validate 之前首先需要安装 [proto-gen-validate](https://github.com/envoyproxy/protoc-gen-validate)。
 ```bash
 go get -d github.com/envoyproxy/protoc-gen-validate
-# 如果使用中遇到无法使用或者生成的代码中 包含 // no validation rules for xxxx
-# 可以尝试 git clone github.com/envoyproxy/protoc-gen-validate 然后 make build
 ```
+
+如果使用中遇到无法使用或者生成的代码中 包含 `// no validation rules for xxxx`
+
+可以尝试 `git clone github.com/envoyproxy/protoc-gen-validate` 然后 `make build`
 
 ### 规则示例
 下面为大家列举几种常用类型的参数校验示例，更多的示例可以在 [proto-gen-validate](https://github.com/envoyproxy/protoc-gen-validate) 文档中查看。
