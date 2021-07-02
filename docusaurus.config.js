@@ -92,6 +92,7 @@ module.exports = {
       copyright: `Copyright © ${new Date().getFullYear()} go-kratos.dev`,
     },
     prism: {
+      theme: require('prism-react-renderer/themes/github'),
       additionalLanguages: ['protobuf', 'toml', 'docker', 'yaml'],
     },
   },
