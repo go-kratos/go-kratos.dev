@@ -1,6 +1,6 @@
 ---
 id: tracing
-title: Tracing
+title: 链路追踪 Tracing
 keywords:
   - Go
   - Kratos
@@ -12,7 +12,7 @@ keywords:
   - HTTP
 ---
 
-Tracing 中间件使用 opentelemetry 实现了链路追踪。
+Tracing 中间件使用 OpenTelemetry 实现了链路追踪。
 
 ### 配置
 

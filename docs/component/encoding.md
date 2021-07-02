@@ -1,6 +1,6 @@
 ---
 id: encoding
-title: Encoding
+title: 序列化 Encoding
 keywords:
   - Go
   - Kratos

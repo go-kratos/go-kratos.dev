@@ -1,7 +1,7 @@
 ---
 id: errors
-title: Errors
-description: Kratos APIs 错误码可以统一通过 proto 定义业务原因，然后通过 protoc-gen-go 生成枚举定义。
+title: 错误处理 Errors
+description: Kratos API 错误码可以统一通过 proto 定义业务原因，然后通过 protoc-gen-go 生成枚举定义。
 keywords:
   - Go 
   - Kratos

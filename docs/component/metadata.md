@@ -1,6 +1,6 @@
 ---
 id: metadata
-title: Metadata
+title: 元信息传递 Metadata
 keywords:
   - Go
   - Kratos

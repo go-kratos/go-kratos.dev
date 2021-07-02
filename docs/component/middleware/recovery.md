@@ -1,6 +1,6 @@
 ---
 id: recovery
-title: Recovery
+title: 异常恢复 Recovery
 keywords:
   - Go
   - Kratos

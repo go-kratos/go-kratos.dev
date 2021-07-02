@@ -1,6 +1,6 @@
 ---
 id: metrics
-title: Metrics
+title: 监控 Metrics
 keywords:
   - Go
   - Kratos
