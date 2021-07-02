@@ -1,6 +1,6 @@
 ---
 id: examples
-title: examples
+title: Examples
 description: Kratos examples
 keywords:
   - Go 
