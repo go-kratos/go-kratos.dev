@@ -45,11 +45,8 @@ kratos proto server api/helloworld/helloworld.proto -t internal/service
 # generate all codes of proto and wire etc.
 go generate ./...
 
-# compile the executable binary file
-go build -o ./bin/ ./...
-
 # run the application
-./bin/helloworld -conf ./configs
+kratos run
 ```
 
 ## Try it out

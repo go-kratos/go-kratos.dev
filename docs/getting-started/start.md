@@ -68,11 +68,8 @@ kratos proto server api/helloworld/helloworld.proto -t internal/service
 # 生成所有proto源码、wire等等
 go generate ./...
 
-# 编译成可执行文件
-go build -o ./bin/ ./...
-
 # 运行项目
-./bin/helloworld -conf ./configs
+kratos run
 ```
 
 ### 测试接口
