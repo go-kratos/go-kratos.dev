@@ -50,6 +50,12 @@ go build -o ./bin/ ./...
 
 # run the application
 ./bin/helloworld -conf ./configs
+
+# You can also use the kratos run command directly，the above two steps can be omitted
+# It will automatically find the directory containing cmd/*/main.go in the current directory and run the project
+kratos run
+# or
+kratos run path
 ```
 
 ## Try it out
