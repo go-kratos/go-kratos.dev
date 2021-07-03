@@ -68,17 +68,8 @@ kratos proto server api/helloworld/helloworld.proto -t internal/service
 # 生成所有proto源码、wire等等
 go generate ./...
 
-# 编译成可执行文件
-go build -o ./bin/ ./...
-
 # 运行项目
-./bin/helloworld -conf ./configs
-
-# 也可以直接使用 kratos run 命令省去上面两步
-# 当没有指定路径时，kratos run 工具会自动查找包含 cmd/*/main.go 的目录，运行项目
 kratos run
-# 或者
-kratos run path
 ```
 
 ### 测试接口
