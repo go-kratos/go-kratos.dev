@@ -30,5 +30,9 @@
   "sidebar.docs.category.运维指南": {
     "message": "Deployment",
     "description": "The label for category 运维指南 in sidebar docs"
+  },
+  "sidebar.docs.category.传输协议": {
+    "message": "Transport",
+    "description": "The label for category 传输协议 in sidebar docs"
   }
 }

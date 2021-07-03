@@ -42,7 +42,7 @@ module.exports = {
         },
         {
           type: 'category',
-          label: '通信协议',
+          label: '传输协议',
           collapsed: false,
           items: [
             'component/transport/overview',
