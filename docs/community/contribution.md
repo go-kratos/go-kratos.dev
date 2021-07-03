@@ -12,6 +12,7 @@ keywords:
   - gRPC
   - HTTP
 ---
+
 kratos社区希望能够得到广大开发者的帮助，所以希望您在要提 issue 或者 pull request 之前花几分钟来阅读一遍这篇指南。
 
 ## Bug修复
@@ -32,10 +33,97 @@ kratos 使用 github issue 来管理问题。 如果您希望提交 bug 报告�
 - 在 github 中提交 PR 请求
 - 等待 review 后合并到 main 分支
 
+## Commit 提交规范
 **注意在您提交 PR 请求时首先保证代码使用了正确的编码规范，并有完整的测试用例，提交 PR 的信息中最好关联相关的 issue，以减轻审核人员的工作负担。**
 
+遵循 [Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0/#summary) 来规范化 commit message
+```
+<type>[optional scope]: <description>
+
+[optional body]
+
+[optional footer(s)]
+```
+
+### type
+提交的 commit 类型主要有以下几种
+
+#### 主要类型
+- fix 修复 bug
+- feat 新增功能
+- deps 依赖修改
+- break 不兼容修改
+#### 其他类型
+- docs 文档修改
+- refactor 重构
+- style 代码格式
+- test 测试用例
+- chore 工具相关
+- ci 构建脚本
+
+### scope 
+提交的代码修改的代码文件范围：
+- transport
+- examples
+- middleware
+- config
+- cmd
+- etc.
+
+### description
+用简短的话语清晰的描述提交的代码做了什么事
+
+### body
+补充说明，用于描述原因、目的、实现逻辑等可以省略
+
+### footer
+- **当存在不兼容(breaking change)更新时，需要描述原因以及影响范围**
+- 关联相关的 issue，如 Refs #133
+- 可能涉及到的文档更新和其他模块的更新的 PR 关联
+
+### examples
 
 
+### 只有提交信息
+```
+fix: The log debug level should be -1  
+```
 
+### 需要引起关注
+```
+refactor!(transport/http): replacement underlying implementation
+```
 
+### 包含全部结构
+```
+fix(log): [BREAKING-CHANGE] unable to meet the requirement of log Library
+
+Explain the reason, purpose, realization method, etc.
+
+Close #777
+Doc change on doc/#111
+BREAKING CHANGE:
+  Breaks log.info api, log.log should be used instead
+```
+## release 版本发布
+
+**release** 时可以使用 `kratos changelog dev`命令生成 **release** 说明，工具会筛选出来从上一次 **release** 到现在的所有提交信息，然后根据提交的分类不同，主要汇总成以下几类
+
+- Breaking Change
+- Dependencies
+- Bug Fixes
+- Ohters
+
+### 示例
+通过 `kratos changelog dev` 生成的文本，只需简单修改即可作为 **release** 版本发布的说明
+```
+### New Features
+- feat(cmd): add kratos changelog command (#1140)
+- feat(examples): add  benchmark example (#1134)
+- feat: add int/int32/Stringer support when get atomicValue (#1130)
+### Others
+- add form encoding (#1138)
+- upgrade otel to v1 rc1 (#1132)
+- http stop should use ctx (#1131)
+```
 
