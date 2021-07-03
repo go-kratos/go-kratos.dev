@@ -1,6 +1,6 @@
 ---
 id: metrics
-title: Metrics
+title: 监控接口
 description: Kratos 暴露了三种监控接口，分别是 Counter, Gauge, Observer
 keywords:
   - Go

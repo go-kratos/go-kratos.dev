@@ -1,21 +1,21 @@
 {
   "API规范化": {
-    "message": "(en) API规范化"
+    "message": "Specified API"
   },
   "API 协议使用 Protobuf 定义接口，实现 HTTP/gRPC 方式进行通信， 并且 Errors 通过 Enum 作为错误码，以实现错误判定。": {
-    "message": "(en) API 协议使用 Protobuf 定义接口，实现 HTTP/gRPC 方式进行通信， 并且 Errors 通过 Enum 作为错误码，以实现错误判定。"
+    "message": "The API protocol uses protobuf to define interfaces for HTTP/gRPC communication, and Errors uses Enum as an error code for error determination."
   },
   "组件插件化": {
-    "message": "(en) 组件插件化"
+    "message": "Plug-able Components"
   },
   "Component 统一遵循 OpenTelemetry 规范进行实现， 通过 Plugins 设计理念，实现插件化方式提供扩展能力。": {
-    "message": "(en) Component 统一遵循 OpenTelemetry 规范进行实现， 通过 Plugins 设计理念，实现插件化方式提供扩展能力。"
+    "message": "Components' implementation is following the OpenTelemetry specification, providing scalability in a plug-in approach through plug-in design concepts."
   },
   "项目工程化": {
-    "message": "(en) 项目工程化"
+    "message": "Project Template"
   },
   "通过 Git 方式管理 Service 项目模板，并可通过 Kratos 一键初始化脚手架。": {
-    "message": "(en) 通过 Git 方式管理 Service 项目模板，并可通过 Kratos 一键初始化脚手架。"
+    "message": "Using a Git repository as project boilerplate, for one-click project structure generation."
   },
   "A Go framework for microservices.": {
     "message": "A Go framework for microservices."

@@ -1,6 +1,6 @@
 ---
-id: middleware
-title: Middleware
+id: overview
+title: Overview
 ---
 Kratos has a series of built-in middleware to deal with common purpose such as logging or metrics. You could also implement Middleware interface to develop your custom middleware to process common business such as the user authentication etc.
 

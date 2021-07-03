@@ -1,6 +1,6 @@
 ---
 id: api
-title: API
+title: API 定义
 description: Kratos API 与用户的通信协议，通常是 REST API 和 RPC API 作为传输层协议，而 Kratos 主要参考 Google API 指南，实现了对应通信协议支持，并且遵守了 gRPC API 使用 HTTP 映射功能进行 JSON/HTTP 的支持
 keywords:
   - Go 

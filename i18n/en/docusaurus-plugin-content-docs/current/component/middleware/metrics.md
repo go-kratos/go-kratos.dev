@@ -1,6 +1,6 @@
 ---
 id: metrics
-title: 监控
+title: Metrics
 keywords:
   - Go
   - Kratos
@@ -12,11 +12,11 @@ keywords:
   - HTTP
 ---
 
-Metrics 中间件用于实现服务的性能指标监控，统计了请求耗时和请求计数。
+Metrics middleware is used to monitor performance metrics for services, counting request time and request counts.
 
-### 配置
+### Configuration
 
-Metrics 中间件中提供了两个配置方法 `WithSeconds()` 和 `WithRequests()`。
+Two configuration methods are available in metrics middleware `WithSeconds()` and `WithRequests()`。
 
 #### `WithSeconds()`
 ```go
@@ -26,7 +26,7 @@ func WithSeconds(c metrics.Observer) Option {
 	}
 }
 ```
-用于设置 metrics 中间件统计请求耗时的 `Observer` 直方图。
+The `Observer` histogram used to set up the metrics middleware statistics request.
 
 #### `WithRequests()`
 
@@ -38,11 +38,11 @@ func WithRequests(c metrics.Counter) Option {
 }
 ```
 
-用于设置 metrics 中间件统计请求计数的 `Counter` 计数器。
+The `Counter` counter used to set the metrics middleware statistics request count.
 
-### 使用方式
+### Usage
 
-#### 使用 prometheus
+#### Prometheus
 ```go
 // https://github.com/go-kratos/kratos/tree/main/examples/metrics
 _metricSeconds = prometheus.NewHistogramVec(prometheus.HistogramOpts{
@@ -64,7 +64,7 @@ prometheus.MustRegister(_metricSeconds, _metricRequests)
 
 httpSrv.Handle("/metrics", promhttp.Handler())
 ```
-#### Server 中使用 metrics
+#### To configure metrics in servers
 
 ```go
 // grpc sever
@@ -90,7 +90,7 @@ httpSrv := http.NewServer(
 )
 ```
 
-#### Client 中使用 metrics
+#### To configure metrics in clients
 
 ```go
 // grpc client

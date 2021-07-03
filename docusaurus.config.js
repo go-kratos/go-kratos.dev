@@ -10,6 +10,7 @@ module.exports = {
   projectName: 'go-kratos.dev',
   themeConfig: {
     sidebarCollapsible: true,
+    hideableSidebar: true,
     navbar: {
       title: 'Kratos',
       logo: {
@@ -91,7 +92,8 @@ module.exports = {
       copyright: `Copyright © ${new Date().getFullYear()} go-kratos.dev`,
     },
     prism: {
-      additionalLanguages: ['protobuf', 'toml'],
+      theme: require('prism-react-renderer/themes/github'),
+      additionalLanguages: ['protobuf', 'toml', 'docker', 'yaml'],
     },
   },
   presets: [

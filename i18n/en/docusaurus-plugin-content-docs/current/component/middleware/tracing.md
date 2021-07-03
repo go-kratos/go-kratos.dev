@@ -1,6 +1,6 @@
 ---
 id: tracing
-title: 链路追踪
+title: Tracing
 keywords:
   - Go
   - Kratos
@@ -12,11 +12,11 @@ keywords:
   - HTTP
 ---
 
-Tracing 中间件使用 OpenTelemetry 实现了链路追踪。
+We use OpenTelemetry for distributed tracing.
 
-### 配置
+### Configuration
 
-Tracing 中间件中提供了两个配置方法 `WithTracerProvider()`，`WithPropagator()`。
+There are two methods for configuration `WithTracerProvider()` and `WithPropagator()`.
 
 #### `WithTracerProvider`
 
@@ -28,7 +28,7 @@ func WithTracerProvider(provider trace.TracerProvider) Option {
 }    
 ```
 
-WithTracerProvider 用于设置 tracing 的链路追踪程序的提供者，该方法接收一个 trace.TracerProvider。
+`WithTracerProvider` is for setting the provider, it accepts `trace.TracerProvider`
 
 #### `WithPropagator`
 
@@ -40,18 +40,17 @@ func WithPropagator(propagator propagation.TextMapPropagator) Option {
 }
 ```
 
+`WithPropagator` is for setting the text map propagator, it accepts `propagation.TextMapPropagator`
 
-WithPropagator 用于设置 tracing 的文本映射的传播器，该方法接收一个 propagation.TextMapPropagator。
+### Usage
 
-### 使用方法
-
-#### server 中使用 tracing 采集数据
+#### Tracing for Server
 
 ```go
 package server
 
 func initTracer() func() {
-	// 创建一个 jaeger 的 pipeline,其他收集方式可以查看 opentelemetry 文档
+	// create a jaeger pipeline
 	flush, err := jaeger.InstallNewPipeline(
 		jaeger.WithCollectorEndpoint("http://localhost:14268/api/traces"),
 		jaeger.WithSDKOptions(
@@ -84,12 +83,12 @@ func NewGRPCServer(c *conf.Server, executor *service.ExecutorService) *grpc.Serv
 }
 ```
 
-#### client 中使用 tracing 采集数据
+#### Tracing for Client
 
 ```go
 
 func initTracer() func() {
-	// 创建一个 jaeger 的 pipeline,其他收集方式可以查看 opentelemetry 文档
+	// create a jaeger pipeline
 	flush, err := jaeger.InstallNewPipeline(
 		jaeger.WithCollectorEndpoint("http://localhost:14268/api/traces"),
 		jaeger.WithSDKOptions(

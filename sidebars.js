@@ -29,7 +29,8 @@ module.exports = {
         'component/metadata',
         {
           type: 'category',
-          label: 'Middleware',
+          label: '中间件',
+          collapsed: false,
           items: [
             'component/middleware/overview',
             'component/middleware/logging',
@@ -41,7 +42,8 @@ module.exports = {
         },
         {
           type: 'category',
-          label: 'Transport',
+          label: '传输协议',
+          collapsed: false,
           items: [
             'component/transport/overview',
             'component/transport/http',
