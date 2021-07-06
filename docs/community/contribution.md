@@ -58,7 +58,7 @@ kratos 使用 github issue 来管理问题。 如果您希望提交 bug 报告�
 - refactor 重构
 - style 代码格式
 - test 测试用例
-- chore 工具相关
+- chore 日常工作，如文档修改，示例等
 - ci 构建脚本
 
 ### scope 
