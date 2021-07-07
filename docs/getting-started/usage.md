@@ -110,7 +110,7 @@ message ListDemoReply {}
 ```
 
 ### 生成 Proto 代码
-可以通过 make proto 直接生成，或者：
+可以通过 make api 直接生成，或者：
 ```bash
 kratos proto client api/helloworld/demo.proto
 ```
