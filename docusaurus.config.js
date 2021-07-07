@@ -36,13 +36,14 @@ module.exports = {
           position: 'left',
         },
         {
-          href: 'https://github.com/go-kratos/kratos',
-          label: 'GitHub',
+          type: 'localeDropdown',
           position: 'right',
         },
         {
-          type: 'localeDropdown',
+          href: 'https://github.com/go-kratos/kratos',
           position: 'right',
+          className: 'header-github-link',
+          'aria-label': 'GitHub repository',
         },
       ],
     },
@@ -93,6 +94,7 @@ module.exports = {
     },
     prism: {
       theme: require('prism-react-renderer/themes/github'),
+      darkTheme: require('prism-react-renderer/themes/dracula'),
       additionalLanguages: ['protobuf', 'toml', 'docker', 'yaml'],
     },
   },
