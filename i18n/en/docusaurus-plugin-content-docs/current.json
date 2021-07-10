@@ -35,4 +35,8 @@
     "message": "Transport",
     "description": "The label for category 传输协议 in sidebar docs"
   }
+  "sidebar.docs.category.中间件": {
+    "message": "Middleware",
+    "description": "The label for category 中间件 in sidebar docs"
+  }
 }
