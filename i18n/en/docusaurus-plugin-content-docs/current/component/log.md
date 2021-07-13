@@ -1,7 +1,7 @@
 ---
 id: log
 title: Logger
-description: Kratos 为了方便业务自适配不同的 log 接入使用，Logger 只包含了最简单的 Log 接口。当业务需要在 kratos 框架内部使用自定义的 log 的时候，只需要简单实现 Log 方法即可
+description: Kratos contains only the simplest Log interface for business-adapted log access. When your business logic needs to use custom logs inside the kratos framework, you only need to implement the Log method simply.
 keywords:
   - Go
   - Kratos
@@ -13,18 +13,17 @@ keywords:
   - HTTP
 ---
 
-### 接口实现 
-
-为了方便业务自适配不同的 log 接入使用，Logger 只包含了最简单的 Log 接口。当业务需要在 Kratos 框架内部使用自定义的 log  的时候，只需要简单实现 Log 方法即可。同时 kratos log 也提供了一些日志的辅助功能，如 value、helper、 filter 等，当我们需要用到这些功能时可以直接使用框架的内置实现，或自行实现相应的功能。
+### Interface 
+Kratos contains only the simplest Log interface for business-adapted log access. When your business logic needs to use custom logs inside the kratos framework, you only need to implement the Log method simply. Kratos logs also provide some log helpful features such as valuer, helper, filter, and so on, which can be implemented directly using the framework's built-in implementations when we need them, or by ourselves.
 
 ```go
 type Logger interface {
 	Log(level Level, keyvals ...interface{}) error
 }
 ```
-### 如何实现
+### Implementation
 
-#### 实现 logger
+#### Implement logger
 ```go
 // https://github.com/go-kratos/kratos/blob/main/log/std.go
 var _ Logger = (*stdLogger)(nil)
@@ -65,7 +64,7 @@ func (l *stdLogger) Log(level Level, keyvals ...interface{}) error {
 	return nil
 }
 ```
-#### 实现 valuer
+#### Implement valuer
 ```go
 func Timestamp(layout string) Valuer {
 	return func(context.Context) interface{} {
@@ -73,14 +72,14 @@ func Timestamp(layout string) Valuer {
 	}
 }
 ```
-### 使用方式
+### Usage
 
-#### 使用 Logger 打印日志
+#### Print log with Logger
 ```go
 logger := log.DefaultLogger
 logger.Log(LevelInfo, "key1", "value1")
 ```
-#### 使用 Helper 打印日志
+#### Print log with Helper
 ```go
 log := log.NewHelper(DefaultLogger)
 log.Debug("test debug")
@@ -88,20 +87,20 @@ log.Info("test info")
 log.Warn("test warn")
 log.Error("test error")
 ```
-#### 使用 valuer
+#### Add some default fields with Valuer
 ```go
 logger := DefaultLogger
 logger = With(logger, "ts", DefaultTimestamp, "caller", DefaultCaller)
 logger.Log(LevelInfo, "msg", "helloworld")
 ```
-#### 同时打印多个 logger
+#### Log to multiple loggers
 ```go
 out := log.NewStdLogger(os.Stdout)
 err := log.NewStdLogger(os.Stderr)
 l := log.With(MultiLogger(out, err))
 l.Log(LevelInfo, "msg", "test")
 ```
-#### 使用 context
+#### Bind context to logger
 ```go
 logger := log.With(NewStdLogger(os.Stdout),
 	"trace", Trace(),
@@ -111,11 +110,11 @@ ctx := context.WithValue(context.Background(), "trace_id", "2233")
 log.WithContext(ctx).Info("got trace!")
 ```
 
-#### 使用 filter 过滤日志
+#### Log Filtering
 
-如果需要过滤日志中某些不应该被打印明文的字段如 password 等,可以通过 log.NewFilter() 来实现过滤功能
+If you need to filter some fields in the log that should not be printed in plain text, such as password, you can do so by log. NewFilter() implements filtering.
 
-##### 通过 level 过滤日志
+##### Filter by level
 
 ```go
 l := log.NewHelper(log.NewFilter(log.DefaultLogger, log.FilterLevel(log.LevelWarn)))
@@ -125,21 +124,21 @@ l.Debugf("test %s", "debug")
 l.Debugw("log", "test debug")
 l.Warn("warn log")
 ```
-##### 通过 key 过滤日志
+##### Filter by key
 
 ```go
 l := log.NewHelper(log.NewFilter(log.DefaultLogger, log.FilterKey("password")))
 l.Debugw("password", "123456")
 ```
 
-###### 通过 value 过滤日志
+##### Filter by value
 
 ```go
 l := log.NewHelper(log.NewFilter(log.DefaultLogger, log.FilterValue("kratos")))
 l.Debugw("name", "kratos")
 ```
 
-##### 通过 hook func 过滤日志
+##### Filter with hook function
 
 ```go
 l := log.NewHelper(log.NewFilter(log.DefaultLogger, log.FilterFunc(testFilterFunc)))
@@ -158,9 +157,8 @@ func testFilterFunc(level Level, keyvals ...interface{}) bool {
 }
 ```
 
-#### 输出日志到stdout
-
-使用自带的 StdLogger 可以创建标准输出日志对象. 通过 NewHelper 构造日志模块，Helper 生成的日志模块可以提供不同等级的日志输出。
+#### Print to STDOUT
+You can create standard output log objects using the StdLogger that comes with it. With the NewHelper log module, Helper generates log modules that provide different levels of log output.
 
 ```go
 logger := log.NewStdLogger()
@@ -171,9 +169,9 @@ log.Infof("format %s", "some log")
 log.Infow("field_name", "some log")
 ```
 
-#### 输出日志到fluentd
+#### Print to fluentd
 
-引入 fluent sdk
+Import fluent sdk
 
 ```go
 import "github.com/go-kratos/fluent"
@@ -189,8 +187,8 @@ log.Info("some log")
 log.Infof("format %s", "some log")
 log.Infow("field_name", "some log")
 ```
-### 扩展阅读
-#### 使用 Zap 实现 Logger
+### Advanced Usage
+#### Implement Zap Logger
 ```go
 var _ log.Logger = (*ZapLogger)(nil)
 

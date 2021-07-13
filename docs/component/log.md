@@ -132,7 +132,7 @@ l := log.NewHelper(log.NewFilter(log.DefaultLogger, log.FilterKey("password")))
 l.Debugw("password", "123456")
 ```
 
-###### 通过 value 过滤日志
+##### 通过 value 过滤日志
 
 ```go
 l := log.NewHelper(log.NewFilter(log.DefaultLogger, log.FilterValue("kratos")))
