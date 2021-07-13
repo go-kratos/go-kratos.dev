@@ -72,3 +72,43 @@ conn, err := http.NewClient(
 )
 ```
 
+#### 在server 中只打印 trace_id 不采集数据
+grpc server internal/server/grpc.go配置
+```go
+exporter, err := stdouttrace.New(stdouttrace.WithWriter(ioutil.Discard))
+if err != nil {
+	fmt.Printf("creating stdout exporter: %v", err)
+	panic(err)
+}
+tp := tracesdk.NewTracerProvider(
+	tracesdk.WithBatcher(exporter),
+	tracesdk.WithResource(resource.NewSchemaless(
+		semconv.ServiceNameKey.String(Name)),
+	))
+var opts = []grpc.ServerOption{
+		grpc.Middleware(
+			tracing.Server(tracing.WithTracerProvider(tp)),
+		),
+	}
+srv := grpc.NewServer(opts...)
+```
+main.go中增加trace_id
+```go
+logger := log.With(log.NewStdLogger(os.Stdout),
+		"ts", log.DefaultTimestamp,
+		"caller", log.DefaultCaller,
+		"service.id", id,
+		"service.name", Name,
+		"service.version", Version,
+		"trace_id", log.TraceID(),
+		"span_id", log.SpanID(),
+	)
+```
+日志打印trace_id
+```go
+log.WithContext(ctx).Errorf("创建xxx失败: %s", err)
+```
+
+
+
+
