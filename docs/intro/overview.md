@@ -61,6 +61,8 @@ Kratos 一套轻量级 Go 微服务框架，包含大量微服务相关框架及
 * [Wechat Group](https://github.com/go-kratos/kratos/issues/682)
 * [Discord Group](https://discord.gg/BWzJsUJ)
 * QQ Group: 716486124
+### WeChat
+<img src="/images/wechat.png" alt="kratos architecture" width="650px" />
 
 ### License
 Kratos is MIT licensed. See the [LICENSE](https://github.com/go-kratos/kratos/blob/main/LICENSE) file for details.
