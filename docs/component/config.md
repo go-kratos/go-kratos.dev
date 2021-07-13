@@ -49,19 +49,6 @@ data:
 
 ```
 
-Kratos 支持读取配置文件中的 [go template](https://golang.org/pkg/text/template/) ，并通过`env`获取环境变量，支持当对应变量不存在时使用默认值:
-
-```yaml
-http:
-  server:
-    # 使用环境变量 NAME 替换，若不存在，使用默认值 "service"
-    name: {{ env "NAME" "service" }}
-    # 使用环境变量 PORT 替换，若不存在，使用默认值 8080
-    port: {{ env "PORT" 8080 }}
-    # 使用环境变量 TIMEOUT 替换，无默认值
-    timeout: {{ env "TIMEOUT" }}
-```
-
 #### proto 声明
 ```protobuf
 syntax = "proto3";
@@ -108,7 +95,10 @@ message Data {
 ```
 
 ### 使用方式
-配置源可以指定多个，并且 config 会进行合并成 map[string]interface{}，然后通过 Scan 或者 Value 获取值内容；
+配置源可以指定多个，并且 config 会进行合并成 map[string]interface{}，然后通过 Scan 或者 Value 获取值内容；目前支持的配置源：
+
+- file
+- env
 
 ```go
 c := config.New(
@@ -145,4 +135,39 @@ if err := c.Scan(&bc); err != nil {
 c.Watch("service.name", func(key string, value config.Value) {
     // 值内容变更
 })
+```
+
+Kratos可以通过配置文件中的占位符来读取**环境变量**或者**已有字段**的Value
+
+```yaml
+service:
+  name: "kratos_app"
+http:
+  server:
+    # 使用 service.name 的值
+    name: "${service.name}"
+    # 使用环境变量 PORT 替换，若不存在，使用默认值 8080
+    port: "${PORT:8080}"
+    # 使用环境变量 TIMEOUT 替换，无默认值
+    timeout: "$TIMEOUT"
+```
+
+加载来自环境变量的配置源时**需要提前加载**，保证读取配置文件时对应环境变量已被加载
+
+```go
+c := config.New(
+    config.WithSource(
+        // 在file之前添加前缀为 KRATOS_ 的环境变量
+        env.NewSource("KRATOS_"),
+        // 添加配置文件
+        file.NewSource(path),
+    ))
+    
+// 加载配置源：
+if err := c.Load(); err != nil {
+    log.Fatal(err)
+}
+
+// 获取环境变量 KRATOS_PORT 的值
+port, err := c.Value("PORT").String()
 ```
