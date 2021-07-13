@@ -36,8 +36,6 @@ If you've never submitted code on github, follow these steps:
 
 ## Conventional Commits
 
-**Note: When you commit Pull Request, ensure the code uses correct coding specifications and has full test case. It is best to associate related issues in the information commited to the Pull Request to reduce the issues of the reviewers.**
-
 ```
 <type>[optional scope]: <description>
 
