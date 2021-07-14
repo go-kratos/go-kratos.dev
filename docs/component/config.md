@@ -19,7 +19,7 @@ keywords:
 - 用户可以自定义数据源实现。
 - 支持配置热加载，以及通过 Atomic 方式变更已有 Value。
 - 支持自定义数据源解码实现。
-- 支持通过 go template 获取环境变量
+- 支持通过通过占位符`$`获取环境变量或已有字段的值
 
 ### 通过 proto 定义配置
 在 Kratos 项目中，我们默认推荐通过 proto 进行定义配置文件，主要有以下几点好处：
@@ -112,6 +112,10 @@ c := config.New(
         // 自定义实现对应的数据源解析，如果是配置中心数据源也可以指定对应的 format 进行识别配置类型
         return yaml.Unmarshal(kv.Value, v)
     }),
+    config.WithResolver(func(map[string]interface{}) error {
+        // 默认 resolver 提供了对 ${key:default} 与 $key 两种占位符的处理
+        // 自定义加载配置数据后的处理方法
+    })
 )
 // 加载配置源：
 if err := c.Load(); err != nil {
