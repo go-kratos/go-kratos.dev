@@ -55,3 +55,7 @@ IDE中的这个提示不会影响项目的正常编译，如果您需要解决�
 1. git clone github.com/envoyproxy/protoc-gen-validate
 2. cd protoc-gen-validate
 3. make build
+
+### 如何控制 http 的返回值
+
+可以覆盖默认的 DefaultResponseEncoder, 通过 http.ReponseEncoder() 配置，注入到 http.Server() 中
