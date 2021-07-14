@@ -14,13 +14,16 @@ keywords:
 ---
 在 Kratos 项目中，配置源可以指定多个，并且 config 会进行合并成 key/value 。
 然后用户通过 Scan 或者 Value 获取对应键值内容，主要功能特性:
+
 - 默认实现了本地文件数据源。
 - 用户可以自定义数据源实现。
 - 支持配置热加载，以及通过 Atomic 方式变更已有 Value。
 - 支持自定义数据源解码实现。
+- 支持通过通过占位符`$`获取环境变量或已有字段的值
 
 ### 通过 proto 定义配置
 在 Kratos 项目中，我们默认推荐通过 proto 进行定义配置文件，主要有以下几点好处：
+
 - 可以定义统一的模板配置
 - 添加对应的配置校验
 - 更好地管理配置
@@ -92,7 +95,10 @@ message Data {
 ```
 
 ### 使用方式
-配置源可以指定多个，并且 config 会进行合并成 map[string]interface{}，然后通过 Scan 或者 Value 获取值内容；
+配置源可以指定多个，并且 config 会进行合并成 map[string]interface{}，然后通过 Scan 或者 Value 获取值内容；目前支持的配置源：
+
+- file
+- env
 
 ```go
 c := config.New(
@@ -106,6 +112,10 @@ c := config.New(
         // 自定义实现对应的数据源解析，如果是配置中心数据源也可以指定对应的 format 进行识别配置类型
         return yaml.Unmarshal(kv.Value, v)
     }),
+    config.WithResolver(func(map[string]interface{}) error {
+        // 默认 resolver 提供了对 ${key:default} 与 $key 两种占位符的处理
+        // 自定义加载配置数据后的处理方法
+    })
 )
 // 加载配置源：
 if err := c.Load(); err != nil {
@@ -129,4 +139,39 @@ if err := c.Scan(&bc); err != nil {
 c.Watch("service.name", func(key string, value config.Value) {
     // 值内容变更
 })
+```
+
+Kratos可以通过配置文件中的占位符来读取**环境变量**或者**已有字段**的Value
+
+```yaml
+service:
+  name: "kratos_app"
+http:
+  server:
+    # 使用 service.name 的值
+    name: "${service.name}"
+    # 使用环境变量 PORT 替换，若不存在，使用默认值 8080
+    port: "${PORT:8080}"
+    # 使用环境变量 TIMEOUT 替换，无默认值
+    timeout: "$TIMEOUT"
+```
+
+加载来自环境变量的配置源时**需要提前加载**，保证读取配置文件时对应环境变量已被加载
+
+```go
+c := config.New(
+    config.WithSource(
+        // 在file之前添加前缀为 KRATOS_ 的环境变量
+        env.NewSource("KRATOS_"),
+        // 添加配置文件
+        file.NewSource(path),
+    ))
+    
+// 加载配置源：
+if err := c.Load(); err != nil {
+    log.Fatal(err)
+}
+
+// 获取环境变量 KRATOS_PORT 的值
+port, err := c.Value("PORT").String()
 ```
