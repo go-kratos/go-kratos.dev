@@ -44,7 +44,7 @@ IDE中的这个提示不会影响项目的正常编译，如果您需要解决�
 
 ### 安装 kratos 工具后使用时终端提示 command not found: kratos
 
-环境变量没有配置，可以吧 go bin 目录配置到环境变量中即可，或者在 bin 目录下使用 kratos 工具
+环境变量没有配置，可以把 GOBIN 目录配置到环境变量中即可，或者在 GOBIN 目录下使用 kratos 工具
 
 ### proto 中引入了一些其他 proto 文件，生成代码时提示 not found
 
