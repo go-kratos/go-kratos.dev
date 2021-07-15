@@ -44,13 +44,13 @@ IDE中的这个提示不会影响项目的正常编译，如果您需要解决�
 
 ### 安装 kratos 工具后使用时终端提示 command not found: kratos
 
-环境变量没有配置，可以吧 go bin 目录配置到环境变量中即可，或者在 bin 目录下使用 kratos 工具
+环境变量没有配置，可以把 go bin 目录配置到环境变量中即可，或者在 bin 目录下使用 kratos 工具
 
 ### proto 中引入了一些其他 proto 文件，生成代码时提示 not found
 
 可以把缺失的文件放到项目的 third_party 中，或者定制 Makefile 将 proto 文件所在位置 添加到构建命令中
 
-### 使用 validate 生成参数校验代码时，工具生成的代码全部都是 `// no validation rules for xxxx` 但是已经配置了 校验规则
+使用 validate 生成参数校验代码时，工具生成的代码全部都是 `// no validation rules for xxxx` 但是已经配置了 校验规则
 
 1. git clone github.com/envoyproxy/protoc-gen-validate
 2. cd protoc-gen-validate
