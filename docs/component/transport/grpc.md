@@ -161,11 +161,12 @@ if info, ok := transport.FromServerContext(ctx); ok {
 
 #### `WithEndpoint()` 
 
-配置客户端使用的终端地址
+配置客户端使用的对端连接地址，如果不使用服务发现则为ip:port,如果使用服务发现则格式为discovery://\<authority\>/\<serviceName\>
+
 
 #### `WithTimeout()`
 
-配置客户端的超时设置
+配置客户端的请求默认超时时间，如果有链路超时优先使用链路超时时间
 
 #### `WithMiddleware()`
 
@@ -177,7 +178,7 @@ if info, ok := transport.FromServerContext(ctx); ok {
 
 #### `WithUnaryInterceptor()`
 
-配置客户端使用的 grpc 拦截器
+配置客户端使用的 grpc 原生拦截器
 
 #### `WithOptions()`
 
