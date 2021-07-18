@@ -72,8 +72,10 @@ conn, err := http.NewClient(
 )
 ```
 
-#### 在server 中只打印 trace_id 不采集数据
-grpc server internal/server/grpc.go配置
+Logging 中间件在server 中只打印 trace_id 不采集数据
+### 使用方法
+
+####  grpc-server internal/server/grpc.go
 ```go
 exporter, err := stdouttrace.New(stdouttrace.WithWriter(ioutil.Discard))
 if err != nil {
@@ -92,7 +94,7 @@ var opts = []grpc.ServerOption{
 	}
 srv := grpc.NewServer(opts...)
 ```
-main.go中增加trace_id
+#### 日志增加trace_id字段  cmd/项目名/main.go
 ```go
 logger := log.With(log.NewStdLogger(os.Stdout),
 		"ts", log.DefaultTimestamp,
@@ -104,7 +106,7 @@ logger := log.With(log.NewStdLogger(os.Stdout),
 		"span_id", log.SpanID(),
 	)
 ```
-日志打印trace_id
+#### 日志打印trace_id
 ```go
 log.WithContext(ctx).Errorf("创建xxx失败: %s", err)
 ```
