@@ -14,7 +14,7 @@ keywords:
 
 transporter/http 中基于 [gorilla/mux](https://github.com/gorilla/mux) HTTP路由框架实现了`Transporter`，用以注册 http 到 `kratos.Server()` 中。
 
-## server
+## Server
 
 ### 配置
 
@@ -163,6 +163,10 @@ if tr, ok := transport.FromServerContext(ctx); ok {
 
 #### `func (s *Server) ServeHTTP(res http.ResponseWriter, req *http.Request)`
 实现了标准库的HTTP Handler接口
+
+
+> 其他路由使用方法参考: https://github.com/go-kratos/kratos/tree/main/examples/http/middlewares
+> 在Kratos HTTP中使用[gin](https://github.com/gin-gonic/gin)框架: https://github.com/go-kratos/kratos/blob/main/examples/http/gin/main.go
 
 ## Client
 
