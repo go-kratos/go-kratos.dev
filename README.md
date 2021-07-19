@@ -4,12 +4,8 @@
 [go-kratos.dev](https://go-kratos.dev) website.
 
 
-# 贡献文档
-所有文档在`docs`目录中，使用Markdown格式撰写，欢迎提交Pull Request。侧边栏文档目录请在`sidebars.js`中进行配置。
-
-`main`分支更新将自动触发构建并部署。
-
-具体贡献方法请参考[文档维护](https://go-kratos.dev/docs/community/documentation)。
+# Contributing
+Refer to [Documentation Guide](https://go-kratos.dev/en/docs/community/documentation/)。
 
 
 # Running the development server
