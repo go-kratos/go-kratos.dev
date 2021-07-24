@@ -110,7 +110,6 @@ c := config.New(
         // kv.Value
         // kv.Format
         // 自定义实现对应的数据源解析，如果是配置中心数据源也可以指定对应的 format 进行识别配置类型
-        return yaml.Unmarshal(kv.Value, v)
     }),
     config.WithResolver(func(map[string]interface{}) error {
         // 默认 resolver 提供了对 ${key:default} 与 $key 两种占位符的处理
