@@ -94,6 +94,13 @@ message Data {
 }
 ```
 
+### 生成配置
+在项目根目录执行
+
+```shell
+make config
+```
+
 ### 使用方式
 配置源可以指定多个，并且 config 会进行合并成 map[string]interface{}，然后通过 Scan 或者 Value 获取值内容；目前支持的配置源：
 
