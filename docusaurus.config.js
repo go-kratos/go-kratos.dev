@@ -9,7 +9,6 @@ module.exports = {
   organizationName: 'go-kratos',
   projectName: 'go-kratos.dev',
   themeConfig: {
-    sidebarCollapsible: true,
     hideableSidebar: true,
     navbar: {
       title: 'Kratos',
@@ -105,6 +104,8 @@ module.exports = {
         docs: {
           sidebarPath: require.resolve('./sidebars.js'),
           editLocalizedFiles: true,
+          sidebarCollapsible: true,
+          sidebarCollapsed: false,
           editUrl:
             'https://github.com/go-kratos/go-kratos.dev/edit/main/',
         },
