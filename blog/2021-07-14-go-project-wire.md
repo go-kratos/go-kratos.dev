@@ -200,7 +200,7 @@ type redis struct {
 }
 
 func NewRedis(addr string) *redis {
-    return &redis{db: NewRedisClient(addr)}
+    return &redis{r: NewRedisClient(addr)}
 }
 
 func (r *redis) GetById(id string) string {
@@ -214,7 +214,7 @@ type mysql struct {
 }
 
 func NewMySQL(addr string) *redis {
-    return &mysql{db: NewMySQLClient(addr)}
+    return &mysql{m: NewMySQLClient(addr)}
 }
 
 func (m *mysql) GetById(id string) string {
