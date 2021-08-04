@@ -162,12 +162,12 @@ http:
     timeout: "$TIMEOUT"
 ```
 
-加载来自环境变量的配置源时**需要提前加载**，保证读取配置文件时对应环境变量已被加载
+加载来自环境变量的配置源时**无需要提前加载**，环境配置的解析会在所有 source 加载完成后进行
 
 ```go
 c := config.New(
     config.WithSource(
-        // 在file之前添加前缀为 KRATOS_ 的环境变量
+        // 添加前缀为 KRATOS_ 的环境变量
         env.NewSource("KRATOS_"),
         // 添加配置文件
         file.NewSource(path),
