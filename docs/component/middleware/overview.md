@@ -101,3 +101,62 @@ func Middleware1() middleware.Middleware {
 	}
 }
 ```
+
+### 定制中间件
+
+对特定路由定制中间件
+- server:`selector.Server(ms...)` 
+- client:`selector.Client(ms...)`
+
+匹配规则(多参数)
+- `Path(path...)`		路由匹配
+- `Regex(regex...)` 	正则匹配
+- `Prefix(prefix...)` 	前缀匹配
+
+**http server**
+
+```go
+http.Middleware(
+			selector.Server(recovery.Recovery(), tracing.Server(),testMiddleware).
+				Path("/hello/", "/hello/kratos").
+				Regex(`/test/[0-9]+`).
+				Prefix("/kratos/", "/go-kratos/", "/helloworld.Greeter/").
+				Build(),
+		)
+```
+
+**http client**
+
+```go
+http.WithMiddleware(
+			selector.Client(recovery.Recovery(), tracing.Server(),testMiddleware).
+				Path("/hello/", "/hello/kratos").
+				Regex(`/test/[0-9]+`).
+				Prefix("/kratos/", "/go-kratos/", "/helloworld.Greeter/").
+				Build(),
+		)
+```
+
+**grpc server**
+
+```go
+grpc.Middleware(
+			selector.Server(recovery.Recovery(), tracing.Server(),testMiddleware).
+				Path("/hello/", "/hello/kratos").
+				Regex(`/test/[0-9]+`).
+				Prefix("/kratos/", "/go-kratos/", "/helloworld.Greeter/").
+				Build(),
+		)
+```
+
+**grpc client**
+
+```go
+grpc.Middleware(
+			selector.Client(recovery.Recovery(), tracing.Server(),testMiddleware).
+				Path("/hello/", "/hello/kratos").
+				Regex(`/test/[0-9]+`).
+				Prefix("/kratos/", "/go-kratos/", "/helloworld.Greeter/").
+				Build(),
+		)
+```
