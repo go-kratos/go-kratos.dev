@@ -43,12 +43,7 @@ go get -u github.com/grpc-ecosystem/grpc-gateway/v2/protoc-gen-openapiv2
 ```
 
 #### 生成
-（推荐）在项目根目录下执行下列命令生成：
-```bash
-make swagger
-```
-
-或在项目根目录直接使用protoc命令，请注意修改命令最后的proto文件路径为实际路径
+在项目根目录直接使用protoc命令，请注意修改命令最后的proto文件路径为实际路径
 ```bash
 protoc --proto_path=. \
         --proto_path=./third_party \
