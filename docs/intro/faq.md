@@ -40,7 +40,7 @@ IDE中的这个提示不会影响项目的正常编译，如果您需要解决�
 ### 使用 `kratos client .` 后发现 http 没有被生成
 
 - 可以使用 make http
-- 可以 kratos proto client xxx --go-http_opt=omitempty=false
+- 可以 kratos proto client xxx -- --go-http_opt=omitempty=false
 
 ### 安装 kratos 工具后使用时终端提示 command not found: kratos
 
