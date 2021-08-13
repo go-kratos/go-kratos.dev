@@ -40,7 +40,7 @@ REQUEST  │ │ │ │  YOUR   │ │││  RESPONSE
          │ │ └─────────────┘││
          │ └────────────────┘│
          └───────────────────┘
-``` 
+```
 
 ### 使用中间件
 在`NewGRPCServer`和`NewHTTPServer`中通过`ServerOption`进行注册。
@@ -118,9 +118,9 @@ func Middleware1() middleware.Middleware {
 ```go
 http.Middleware(
 			selector.Server(recovery.Recovery(), tracing.Server(),testMiddleware).
-				Path("/hello/", "/hello/kratos").
-				Regex(`/test/[0-9]+`).
-				Prefix("/kratos/", "/go-kratos/", "/helloworld.Greeter/").
+				Path("/hello.Update/UpdateUser", "/hello.kratos/SayHello").
+				Regex(`/test.hello/Get[0-9]+`).
+				Prefix("/kratos.", "/go-kratos.", "/helloworld.Greeter/").
 				Build(),
 		)
 ```
@@ -130,9 +130,9 @@ http.Middleware(
 ```go
 http.WithMiddleware(
 			selector.Client(recovery.Recovery(), tracing.Server(),testMiddleware).
-				Path("/hello/", "/hello/kratos").
-				Regex(`/test/[0-9]+`).
-				Prefix("/kratos/", "/go-kratos/", "/helloworld.Greeter/").
+				Path("/hello.Update/UpdateUser", "/hello.kratos/SayHello").
+				Regex(`/test.hello/Get[0-9]+`).
+				Prefix("/kratos.", "/go-kratos.", "/helloworld.Greeter/").
 				Build(),
 		)
 ```
@@ -142,9 +142,9 @@ http.WithMiddleware(
 ```go
 grpc.Middleware(
 			selector.Server(recovery.Recovery(), tracing.Server(),testMiddleware).
-				Path("/hello/", "/hello/kratos").
-				Regex(`/test/[0-9]+`).
-				Prefix("/kratos/", "/go-kratos/", "/helloworld.Greeter/").
+				Path("/hello.Update/UpdateUser", "/hello.kratos/SayHello").
+				Regex(`/test.hello/Get[0-9]+`).
+				Prefix("/kratos.", "/go-kratos.", "/helloworld.Greeter/").
 				Build(),
 		)
 ```
@@ -154,9 +154,48 @@ grpc.Middleware(
 ```go
 grpc.Middleware(
 			selector.Client(recovery.Recovery(), tracing.Server(),testMiddleware).
-				Path("/hello/", "/hello/kratos").
-				Regex(`/test/[0-9]+`).
-				Prefix("/kratos/", "/go-kratos/", "/helloworld.Greeter/").
+				Path("/hello.Update/UpdateUser", "/hello.kratos/SayHello").
+				Regex(`/test.hello/Get[0-9]+`).
+				Prefix("/kratos.", "/go-kratos.", "/helloworld.Greeter/").
 				Build(),
 		)
 ```
+
+> **注意: 定制中间件是通过 operation 匹配，并不是http本身的路由！！！** 
+>
+> operation 是 http及grpc统一的grpc path
+
+**operation查找**
+
+grpc path在protobuf文件中查找,path为`/package.service/method`
+
+比如在如下protbuf文件中，我们要掉SayHello这个方法，那么operation就为`/helloworld.Greeter/SayHello`
+```protobuf
+syntax = "proto3";
+
+package helloworld;
+
+import "google/api/annotations.proto";
+
+option go_package = "github.com/go-kratos/kratos/examples/helloworld/helloworld";
+
+// The greeting service definition.
+service Greeter {
+  // Sends a greeting
+  rpc SayHello (HelloRequest) returns (HelloReply)  {
+        option (google.api.http) = {
+            get: "/helloworld/{name}",
+        };
+  }
+}
+// The request message containing the user's name.
+message HelloRequest {
+  string name = 1;
+}
+
+// The response message containing the greetings
+message HelloReply {
+  string message = 1;
+}
+```
+
