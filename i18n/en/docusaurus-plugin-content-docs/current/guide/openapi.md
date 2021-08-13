@@ -44,12 +44,7 @@ go get -u github.com/grpc-ecosystem/grpc-gateway/v2/protoc-gen-openapiv2
 ```
 
 #### Generation
-(Recommended) run the following command at the root of the project for generation:
-```bash
-make swagger
-```
-
-Or use the protoc command directly at the root of the project, note that modifying the final proto file path of the command is the actual path
+Use the protoc command directly at the root of the project, note that modifying the final proto file path of the command is the actual path
 ```bash
 protoc --proto_path=. \
         --proto_path=./third_party \
