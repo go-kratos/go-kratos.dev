@@ -13,7 +13,7 @@ keywords:
   - HTTP
 ---
 
-**Ent** 是 *Fackbook* 开源的一个简单易用的 Database 实体框架。
+**Ent** 是 *Facebook* 开源的一个简单易用的 Database 实体框架。
 
 它使构建和维护具有大型数据模型的应用程序变得容易，并坚持以下原则:
 
