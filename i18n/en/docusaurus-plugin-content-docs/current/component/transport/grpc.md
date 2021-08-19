@@ -265,7 +265,7 @@ func unaryClientInterceptor(ms []middleware.Middleware, timeout time.Duration) g
 #### Client Connection
 
 ```go
-	conn, err := gprc.DialInsecure(
+	conn, err := grpc.DialInsecure(
 		context.Background(),
 		grpc.WithEndpoint("127.0.0.1:9000"),
 	)
