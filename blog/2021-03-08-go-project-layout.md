@@ -77,7 +77,7 @@ github.com/go-kratos/kratos
 
 如果你尝试学习 Go，或者你正在为自己建立一个 PoC 或一个玩具项目，这个项目布局是没啥必要的。从一些非常简单的事情开始（一个 main.go 文件绰绰有余）。当有更多的人参与这个项目时，你将需要更多的结构，包括需要一个 Toolkit 来方便生成项目的模板，尽可能大家统一的工程目录布局。
 
-<img src="/images/ddd.jpg" alt="kratos ddd" width="500px" />
+<img src="/images/ddd.png" alt="kratos ddd" width="500px" />
 
 例如，通过 Kratos 工具生成一个 Go工程化项目 模板：
 
