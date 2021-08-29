@@ -59,7 +59,7 @@ func (l *stdLogger) Log(level Level, keyvals ...interface{}) error {
 	for i := 0; i < len(keyvals); i += 2 {
 		fmt.Fprintf(buf, " %s=%v", keyvals[i], keyvals[i+1])
 	}
-	l.log.Output(4, buf.String())~~~~
+	l.log.Output(4, buf.String())
 	buf.Reset()
 	l.pool.Put(buf)
 	return nil
