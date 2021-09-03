@@ -25,7 +25,6 @@ Kratos提供了丰富的示例代码/项目供参考
 
 #### HTTP
 * [gin](https://github.com/go-kratos/kratos/tree/main/examples/http/gin) 将gin作为router集成进Kratos项目的示例
-* [handler](https://github.com/go-kratos/kratos/tree/main/examples/http/handler) 注册handler提供http接口的最小化应用示例
 * [health](https://github.com/go-kratos/kratos/blob/main/examples/http/health/main.go) 添加健康检查接口的示例
 * [mux](https://github.com/go-kratos/kratos/tree/main/examples/http/mux) 将mux作为router集成进Kratos项目的示例
 * [static](https://github.com/go-kratos/kratos/tree/main/examples/http/static) 通过http提供静态文件服务的示例
