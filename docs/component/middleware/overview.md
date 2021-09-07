@@ -169,7 +169,7 @@ grpc.Middleware(
 
 gRPC path 的拼接规则为 `/包名.服务名/方法名`
 
-比如在如下 proto 文件中，我们要掉 SayHello 这个方法，那么 operation 就为 `/helloworld.Greeter/SayHello`
+比如在如下 proto 文件中，我们要调用 SayHello 这个方法，那么 operation 就为 `/helloworld.Greeter/SayHello`
 ```protobuf
 syntax = "proto3";
 
