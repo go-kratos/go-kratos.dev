@@ -112,6 +112,7 @@ func Middleware1() middleware.Middleware {
 - `Path(path...)`		路由匹配
 - `Regex(regex...)` 	正则匹配
 - `Prefix(prefix...)` 	前缀匹配
+- `Match(fn)`		    函数匹配,函数格式为`func(operation string) bool`,`operation`为path,函数返回值为`true`,匹配成功
 
 **http server**
 
@@ -133,7 +134,12 @@ http.WithMiddleware(
 				Path("/hello.Update/UpdateUser", "/hello.kratos/SayHello").
 				Regex(`/test.hello/Get[0-9]+`).
 				Prefix("/kratos.", "/go-kratos.", "/helloworld.Greeter/").
-				Build(),
+				Match(func(operation string) bool {
+					if strings.HasPrefix(operation, "/go-kratos.dev") || strings.HasSuffix(operation, "world") {
+						return true
+					}
+					return false
+				}).Build(),
 		)
 ```
 
