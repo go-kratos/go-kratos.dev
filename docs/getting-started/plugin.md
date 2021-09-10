@@ -28,7 +28,6 @@ Kratos提供了一系列插件帮助您增强微服务的功能、或与其它�
 
 #### 配置中心
 * [apollo](https://github.com/go-kratos/kratos/tree/main/contrib/config/apollo)
-* [consul](https://github.com/go-kratos/consul)
 * [etcd](https://github.com/go-kratos/etcd)
 * [kubernetes](https://github.com/go-kratos/kratos/tree/main/contrib/config/kubernetes)
 * [nacos](https://github.com/go-kratos/kratos/tree/main/contrib/config/nacos)
