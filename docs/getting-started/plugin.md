@@ -1,7 +1,7 @@
 ---
 id: plugin
-title: 插件中心
-description: Kratos 插件中心
+title: 社区插件
+description: Kratos 插件
 keywords:
   - Go 
   - Kratos
@@ -16,23 +16,26 @@ Kratos提供了一系列插件帮助您增强微服务的功能、或与其它�
 
 ### 分类
 #### 服务发现&服务注册
-* [consul](https://github.com/go-kratos/consul)
-* [etcd](https://github.com/go-kratos/etcd)
-* [kubernetes](https://github.com/go-kratos/kube)
-* [nacos](https://github.com/go-kratos/nacos)
+* [consul](https://github.com/go-kratos/kratos/tree/main/contrib/registry/consul)
+* [etcd](https://github.com/go-kratos/kratos/tree/main/contrib/registry/etcd)
+* [kubernetes](https://github.com/go-kratos/kratos/tree/main/contrib/registry/kubernetes)
+* [nacos](https://github.com/go-kratos/kratos/tree/main/contrib/registry/nacos)
+* [zookeeper](https://github.com/go-kratos/kratos/tree/main/contrib/registry/zookeeper)
 
 #### 日志
-* [fluent](https://github.com/go-kratos/fluent)
+* [fluent](https://github.com/go-kratos/kratos/tree/main/contrib/log/fluent)
+* [zap](https://github.com/go-kratos/kratos/tree/main/contrib/log/zap)
 
 #### 配置中心
+* [apollo](https://github.com/go-kratos/kratos/tree/main/contrib/config/apollo)
 * [consul](https://github.com/go-kratos/consul)
 * [etcd](https://github.com/go-kratos/etcd)
-* [kubernetes](https://github.com/go-kratos/kube)
-* [nacos](https://github.com/go-kratos/nacos)
+* [kubernetes](https://github.com/go-kratos/kratos/tree/main/contrib/config/kubernetes)
+* [nacos](https://github.com/go-kratos/kratos/tree/main/contrib/config/nacos)
 
 #### 监控告警
-* [datadog](https://github.com/go-kratos/datadog)
-* [prometheus](https://github.com/go-kratos/prometheus)
+* [datadog](https://github.com/go-kratos/kratos/tree/main/contrib/metrics/datadog)
+* [prometheus](https://github.com/go-kratos/kratos/tree/main/contrib/metrics/prometheus)
 * [sentry](https://github.com/go-kratos/sentry)
 
 #### API文档
