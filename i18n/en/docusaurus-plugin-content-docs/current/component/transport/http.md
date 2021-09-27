@@ -119,7 +119,7 @@ hs := http.NewServer()
 app := kratos.New(
 kratos.Name("kratos"),
 kratos.Version("v1.0.0"),
-kraotos.Server(hs),
+kratos.Server(hs),
 )
 ```
 

@@ -132,7 +132,7 @@ gs := grpc.NewServer()
 app := kratos.New(
 	kratos.Name("kratos"),
 	kratos.Version("v1.0.0"),
-	kraotos.Server(gs),
+	kratos.Server(gs),
 )
 ```
 
