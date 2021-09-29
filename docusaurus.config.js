@@ -129,6 +129,7 @@ module.exports = {
         language: ["en", "zh"],
       },
     ],
+    "./postcss-tailwind-loader"
   ],
   i18n: {
     defaultLocale: 'zh',
