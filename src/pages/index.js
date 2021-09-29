@@ -15,11 +15,12 @@ function Home() {
             title={translate({message: "A Go framework for microservices."})}
             description={translate({message: 'Kratos is a microservice-oriented governance framework implements by golang, which offers convenient capabilities to help you quickly build a bulletproof application from scratch.'})}>
             <div className="tailwind">
-                <header>
-                    <h1 className="hhhh">
-                        Hello World
-                    </h1>
+                <header className="container">
+                    <h1 className={"text-3xl text-red-500"}>标题示例 - H1 - This a headline.</h1>
                 </header>
+                <section className="container">
+                    <p>hello</p>
+                </section>
             </div>
         </Layout>
     );
