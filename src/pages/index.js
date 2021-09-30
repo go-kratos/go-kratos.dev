@@ -217,18 +217,20 @@ function Home() {
                     </div>
                 </section>
                 <section className="bg-gray-50 mt-64 h-60 sm:h-36 sm:mt-36">
-                    <div className={"px-8 max-w-screen-lg md:container xl:max-w-screen-lg"}>
+                    <div className={"section"}>
                         <div
                             className={"transform -translate-y-1/2 py-8 px-8 border-solid border border-gray-200 rounded-xl sm:bg-contribution bg-white bg-no-repeat bg-right-bottom"}>
                             <h2 className={"font-bold text-gray-500 text-xl"}>Contribution</h2>
                             <p className={"py-4 max-w-xl"}>Thank you for considering contribute to the Kratos framework.
                                 Every time you contribute, we will make us further.
                             </p>
-                            <img className={"py-4 sm:hidden mx-auto"} alt={"contribution"}
-                                 src={"/assets/contribution-mobile.png"}/>
-                            <a href={"/en/docs/community/contribution"}>
-                                <button className={"btn"}>Contribution Guide</button>
-                            </a>
+                            <div className={"flex flex-col items-center sm:flex-none sm:items-start"}>
+                                <img className={"py-4 sm:hidden"} alt={"contribution"}
+                                     src={"/assets/contribution-mobile.png"}/>
+                                <a  href={"/en/docs/community/contribution"}>
+                                    <button className={"btn"}>Contribution Guide</button>
+                                </a>
+                            </div>
                         </div>
                     </div>
                 </section>
