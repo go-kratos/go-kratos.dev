@@ -16,7 +16,7 @@ let features = [
     },
     {
         icon: "/assets/specified-api.png",
-        url: "http://localhost:3000/docs/component/api",
+        url: "/en/docs/component/api",
         title: "Specified API",
         description: "The API protocol uses Protobuf to define interfaces for HTTP/gRPC communication."
     },
