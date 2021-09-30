@@ -211,13 +211,13 @@ function Home() {
                 <section>
                     <div className="section py-8">
                         <h2 className={"font-bold text-4xl text-center py-8"}>What Kratos can do</h2>
-                        <div className={"grid grid-cols-1 md:grid-cols-4 gap-4 mx-8 md:mx-0"}>
+                        <div className={"grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mx-8 md:mx-0"}>
                             {features.map((x, i) => <Feature data={x} key={i}/>)}
                         </div>
                     </div>
                 </section>
                 <section className="bg-gray-50 mt-60 h-60 sm:h-36 sm:mt-36">
-                    <div className={"px-16 md:max-w-screen-lg md:container md:px-8"}>
+                    <div className={"px-16 max-w-screen-lg md:container md:px-8 xl:max-w-screen-lg"}>
                         <div
                             className={"transform -translate-y-1/2 py-8 px-8 border-solid border border-gray-200 rounded-xl sm:bg-contribution bg-white bg-no-repeat bg-right-bottom"}>
                             <h2 className={"font-bold text-gray-500 text-xl"}>Contribution</h2>
