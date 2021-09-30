@@ -88,7 +88,7 @@ function Home() {
     return (
         <Layout>
             <div className={"tailwind"}>
-                <header className={"py-16"}>
+                <header className={"py-32"}>
                     <div className={"grid grid-cols-1 gap-8 md:grid-cols-2 section"}>
                         <div>
                             <h2 className={"font-bold text-5xl"}>The Go Framework for microservices</h2>
@@ -177,7 +177,7 @@ function Home() {
                     </div>
                 </header>
                 <section className="bg-gray-50">
-                    <div className={"section py-8"}>
+                    <div className={"section py-48"}>
                         <h2 className={"text-gray-500 font-bold rounded-xl"}>Resource</h2>
                         <div className={"grid grid-cols-1 gap-8 md:grid-cols-2"}>
                             <div className={""}>
@@ -209,14 +209,14 @@ function Home() {
                     </div>
                 </section>
                 <section>
-                    <div className="section py-8">
-                        <h2 className={"font-bold text-4xl text-center py-8"}>What Kratos can do</h2>
+                    <div className="section py-24">
+                        <h2 className={"font-bold text-4xl text-center py-16"}>What Kratos can do</h2>
                         <div className={"grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4"}>
                             {features.map((x, i) => <Feature data={x} key={i}/>)}
                         </div>
                     </div>
                 </section>
-                <section className="bg-gray-50 mt-64 h-60 sm:h-36 sm:mt-36">
+                <section className="bg-gray-50 mt-64 h-60 sm:h-64 sm:mt-48">
                     <div className={"section"}>
                         <div
                             className={"transform -translate-y-1/2 py-8 px-8 border-solid border border-gray-200 rounded-xl sm:bg-contribution bg-white bg-no-repeat bg-right-bottom"}>
