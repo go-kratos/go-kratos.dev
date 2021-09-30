@@ -9,6 +9,10 @@ module.exports = {
   organizationName: 'go-kratos',
   projectName: 'go-kratos.dev',
   themeConfig: {
+    colorMode: {
+      defaultMode: 'light',
+      disableSwitch: true,
+    },
     hideableSidebar: true,
     navbar: {
       title: 'Kratos',
@@ -129,6 +133,7 @@ module.exports = {
         language: ["en", "zh"],
       },
     ],
+    "./postcss-tailwind-loader"
   ],
   i18n: {
     defaultLocale: 'zh',
