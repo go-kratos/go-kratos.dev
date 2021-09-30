@@ -13,6 +13,10 @@
     @tailwind screens;
 }
 
+.section {
+    @apply container max-w-screen-lg px-8;
+}
+
 :root {
     --ifm-color-primary: #57c6fa;
     --ifm-color-primary-dark: #36bbf9;
