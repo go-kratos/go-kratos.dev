@@ -74,7 +74,7 @@ function CommunityLink(props) {
 function Feature(props) {
     return (
         <a href={props.data.url}
-            className={"cursor-pointer py-8 px-8 flex justify-start flex-col items-center rounded-2xl border border-solid shadow hover:shadow-2xl border-gray-50 transition duration-150 ease-in-out"}>
+            className={"cursor-pointer py-8 px-8 flex justify-start flex-col items-center rounded-xl border border-solid shadow hover:shadow-2xl border-gray-50 transition duration-150 ease-in-out"}>
             <img className={"py-4"} alt={props.data.title} src={props.data.icon}/>
             <h3 className={"py-4 font-bold text-gray-700 text-lg"}>{props.data.title}</h3>
             <p className={"text-center text-sm text-gray-500"}>{props.data.description}</p>
@@ -211,13 +211,13 @@ function Home() {
                 <section>
                     <div className="section py-8">
                         <h2 className={"font-bold text-4xl text-center py-8"}>What Kratos can do</h2>
-                        <div className={"grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mx-8 md:mx-0"}>
+                        <div className={"grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4"}>
                             {features.map((x, i) => <Feature data={x} key={i}/>)}
                         </div>
                     </div>
                 </section>
-                <section className="bg-gray-50 mt-60 h-60 sm:h-36 sm:mt-36">
-                    <div className={"px-16 max-w-screen-lg md:container md:px-8 xl:max-w-screen-lg"}>
+                <section className="bg-gray-50 mt-64 h-60 sm:h-36 sm:mt-36">
+                    <div className={"px-8 max-w-screen-lg md:container xl:max-w-screen-lg"}>
                         <div
                             className={"transform -translate-y-1/2 py-8 px-8 border-solid border border-gray-200 rounded-xl sm:bg-contribution bg-white bg-no-repeat bg-right-bottom"}>
                             <h2 className={"font-bold text-gray-500 text-xl"}>Contribution</h2>
