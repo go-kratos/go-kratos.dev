@@ -1,7 +1,15 @@
 button.btn {
-    @apply text-sm mx-auto lg:mx-0 bg-gray-100 text-gray-600 font-bold rounded-xl my-6 px-6 py-3 focus:outline-none transform transition duration-300 ease-in-out;
+    @apply cursor-pointer text-sm mx-auto lg:mx-0 bg-gray-200 text-gray-600 font-bold rounded-xl my-6 px-6 py-3 focus:outline-none transform transition duration-300 ease-in-out;
+}
+
+button.btn:hover {
+    @apply bg-gray-100 text-gray-500;
 }
 
 button.btn-blue {
-    @apply text-white bg-kratos;
+    @apply text-white bg-kratos-500;
+}
+
+button.btn-blue:hover {
+    @apply text-white bg-kratos-400;
 }
