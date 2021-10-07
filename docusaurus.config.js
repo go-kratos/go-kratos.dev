@@ -12,7 +12,7 @@ module.exports = {
     colorMode: {
       defaultMode: 'light',
       disableSwitch: true,
-      respectPrefersColorScheme: "false",
+      respectPrefersColorScheme: false,
     },
     hideableSidebar: true,
     navbar: {
