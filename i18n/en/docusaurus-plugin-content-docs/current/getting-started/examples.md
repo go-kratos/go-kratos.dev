@@ -32,7 +32,7 @@ Kratos provides a wealth of sample code/projects for reference
 * [upload](https://github.com/go-kratos/kratos/tree/main/examples/http/upload) example of file upload.
 
 #### RPC
-* [helloworld](https://github.com/go-kratos/kratos/tree/main/examples/helloworld) example of file upload.
+* [helloworld](https://github.com/go-kratos/kratos/tree/main/examples/helloworld) example of remote calls using http and gRPC.
 
 #### Trace
 * [traces](https://github.com/go-kratos/kratos/tree/main/examples/traces) example of use jaeger for tracing.
