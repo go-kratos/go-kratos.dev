@@ -38,6 +38,7 @@ module.exports = {
             'component/middleware/recovery',
             'component/middleware/tracing',
             'component/middleware/validate',
+            'component/middleware/auth',
           ],
         },
         {
