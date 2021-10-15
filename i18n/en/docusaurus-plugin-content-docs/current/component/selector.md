@@ -3,16 +3,16 @@ id: selector
 title: Routing and Load Balancing
 description: The main interface for routing and load balancing is Selector, but a default Selector implementation is also provided in the same directory. This implementation can implement node weight calculation, route filtering, and load balancing algorithms by replacing NodeBuilder, Filter, Balancer, and Pluggable
 keywords:
-  -Go
-  -Kratos
-  -Framework
-  -Microservices
-  -Protobuf
-  -gRPC
-  -HTTP
-  -Balancer
-  -Route
-  -Selector
+  - Go
+  - Kratos
+  - Framework
+  - Microservices
+  - Protobuf
+  - gRPC
+  - HTTP
+  - Balancer
+  - Route
+  - Selector
 ---
 ### Interface implementation
 
