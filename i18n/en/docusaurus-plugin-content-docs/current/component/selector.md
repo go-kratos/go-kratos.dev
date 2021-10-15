@@ -34,9 +34,10 @@ type Rebalancer interface {
 }
 ```
 Supported implementations:
-* [wrr](https://github.com/go-kratos/wrr): Weighted round robin (Kratos Client built-in default algorithm)
-* [p2c](github.com/go-kratos/kratos/selector/p2c): Power of two choices
-* [random](github.com/go-kratos/kratos/selector/random): Random
+* [wrr](https://github.com/go-kratos/kratos/tree/main/selector/wrr) : Weighted round robin (Kratos Client built-in default algorithm)
+* [p2c](https://github.com/go-kratos/kratos/tree/main/selector/p2c) : Power of two choices
+* [random](https://github.com/go-kratos/kratos/tree/main/selector/random) : Random
+
 
 ### How to use
 
