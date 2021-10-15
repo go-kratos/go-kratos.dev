@@ -27,6 +27,7 @@ module.exports = {
         'component/registry',
         'component/encoding',
         'component/metadata',
+        'component/selector',
         {
           type: 'category',
           label: '中间件',
