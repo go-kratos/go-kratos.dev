@@ -12,11 +12,13 @@ keywords:
   - HTTP
 ---
 
-限流器器中间件，默认使用[bbr limiter](https://github.com/go-kratos/aegis/tree/main/ratelimit/bbr)算法
+限流器器中间件，用于服务端流量控制,默认使用[bbr limiter](https://github.com/go-kratos/aegis/tree/main/ratelimit/bbr)算法。
 
 ### 配置
 
-`WithLimiter`可以替换默认的限流算法
+#### `WithLimiter`
+
+替换默认的限流算法
 
 ```go
 // WithLimiter set Limiter implementation,
@@ -38,6 +40,7 @@ type Limiter interface {
 
 ### 使用方法
 
+#### 在 Server 中配置使用限流器
 ```go
 var opts = []http.ServerOption{
 	http.Middleware(
@@ -48,7 +51,9 @@ var opts = []http.ServerOption{
 srv := http.NewServer(opts...)
 ```
 
-当触发限流器时，会直接拒绝当前请求，并返回错误`ErrLimitExceed`
+#### 触发限流
+
+当触发限流器时，会直接拒绝当前请求，并返回错误`ErrLimitExceed`，定义如下：
 
 ```go
 // ErrLimitExceed is service unavailable due to rate limit exceeded.
