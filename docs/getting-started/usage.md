@@ -16,7 +16,7 @@ keywords:
 ### 安装
 
 ```bash
-go get -u github.com/go-kratos/kratos/cmd/kratos/v2@latest
+go install github.com/go-kratos/kratos/cmd/kratos/v2@latest
 ```
 
 ### 工具使用
