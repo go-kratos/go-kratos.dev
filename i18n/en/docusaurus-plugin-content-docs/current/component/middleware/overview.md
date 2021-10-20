@@ -5,29 +5,47 @@ title: Overview
 Kratos has a series of built-in middleware to deal with common purpose such as logging or metrics. You could also implement Middleware interface to develop your custom middleware to process common business such as the user authentication etc.
 
 ## Built-in Middleware
+
 Their codes are located in `middleware` directory.
 
 ### logging
+
 In `middleware/logging`, this middleware is for logging the request.
 
 ### metrics
+
 In `middleware/metrics`, this middleware is for enabling metric.
 
 ### recovery
+
 In `middleware/recovery`，, this middleware is for panic recovery.
 
 ### status
+
 In `middleware/status`, this middleware is for transformation of gRPC error.
 
 ### tracing
+
 In `middleware/tracing`, this middleware is for enabling trace.
 
 ### validate
+
 In `middleware/validate`, this middleware is for parameter validation.
 
-### 
+### auth
+
+In `middleware/auth`, this middleware is for authority check using JWT.
+
+### ratelimit
+
+In `middleware/ratelimit`, this middleware is for traffic control in server side.
+
+### circuitbreaker
+
+In `middleware/circuitbreaker`, this middleware is for breaker control in client side.
 
 ## Usage
+
 Register it with `ServerOption` in `NewGRPCServer` or `NewHTTPServer`.
 
 For example:
