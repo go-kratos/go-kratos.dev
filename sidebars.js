@@ -40,6 +40,8 @@ module.exports = {
             'component/middleware/tracing',
             'component/middleware/validate',
             'component/middleware/auth',
+            'component/middleware/ratelimit',
+            'component/middleware/circuitbreaker',
           ],
         },
         {
