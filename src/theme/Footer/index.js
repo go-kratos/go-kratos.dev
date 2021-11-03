@@ -130,7 +130,7 @@ function Footer() {
               <div className={"md:col-span-1 col-span-full"}>
                 <h2 className={"font-bold text-xl"}>Kratos</h2>
                   <p className={"text-gray-500 text-xs py-4"}>
-                      Kratos is a microservice framework with expressive,
+                      Kratos is a web application framework with expressive,
                       elegant syntax. We've already laid the foundation.
                   </p>
                   <div className={"py-4 inline-flex gap-2"}>
