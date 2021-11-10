@@ -126,7 +126,7 @@ con, _ := grpc.DialInsecure(
 
 In summary, one could get users' information by calling interface `jwt.FromContext(ctx)`.
 
-Under the hook, after processing by the middleware, the `claims` information would be stored into the context.
+Under the hook, after processing by the middleware, the `claims` information would be stored into the context. One should assert the `claims` as the type that is used to create the token before using it.
 
 Source code：
 

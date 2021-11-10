@@ -127,7 +127,7 @@ con, _ := grpc.DialInsecure(
 使用者可通过提供的接口 `jwt.FromContext(ctx)` 获取用户信息。
 
 带有 `JWT Token` 的请求，经过 `server` 侧的 `jwt` 中间件后，`token` 的 `claims` 会放进上下文 `context` 中。  
-此时使用者通过提供的接口 `jwt.FromContext(ctx)` 即可获取上下文中的 `claims` 对象，而一般用户信息是存储在 `claims` 里面的。
+此时使用者通过提供的接口 `jwt.FromContext(ctx)` 即可获取上下文中的 `claims` 对象，而一般用户信息是存储在 `claims` 里面的。使用者需要对 `claims` 断言后才能进一步处理，`claims` 类型的定义偏业务性质，和token签发的业务耦合。签发时使用的类型，这里就需要断言对应的类型。
 
 接口原型：
 
@@ -146,4 +146,8 @@ func FromContext(ctx context.Context) (token jwt.Claims, ok bool)
 `Token` 的签发发生在 `client` 侧，使用者确保 `client` 和 `server` 使用相同的 `Key` 和签名算法即可。签发时附带的用户信息或者其他信息可以通过 `WithClaims()` 来配置。
 
 参考源码：https://github.com/go-kratos/kratos/blob/9743ad8d32890258177e0335d1a0741e9d45833e/middleware/auth/jwt/jwt.go#L124
+
+
+
+
 
