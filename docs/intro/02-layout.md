@@ -52,7 +52,7 @@ kratos new <project-name>
 ├── go.mod
 ├── go.sum
 ├── internal  // 该服务所有不对外暴露的代码，通常的业务逻辑都在这下面，使用internal避免错误引用
-│   ├── biz   // 业务逻辑的组装层，类似 DDD 的 domain 层，data 类似 DDD 的 repo，repo 接口在这里定义，使用依赖倒置的原则。
+│   ├── biz   // 业务逻辑的组装层，类似 DDD 的 domain 层，data 类似 DDD 的 repo，而 repo 接口在这里定义，使用依赖倒置的原则。
 │   │   ├── README.md
 │   │   ├── biz.go
 │   │   └── greeter.go
