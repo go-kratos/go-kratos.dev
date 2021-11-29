@@ -25,9 +25,12 @@ type Discovery interface {
 }
 ```
 Implementations:
-[consul](https://github.com/go-kratos/consul)
-[etcd](https://github.com/go-kratos/etcd)
-[k8s](https://github.com/go-kratos/kube)
+* [consul](https://github.com/go-kratos/kratos/tree/main/contrib/registry/consul)
+* [discovery](https://github.com/go-kratos/kratos/tree/main/contrib/registry/discovery)
+* [etcd](https://github.com/go-kratos/kratos/tree/main/contrib/registry/etcd)
+* [kubernetes](https://github.com/go-kratos/kratos/tree/main/contrib/registry/kubernetes)
+* [nacos](https://github.com/go-kratos/kratos/tree/main/contrib/registry/nacos)
+* [zookeeper](https://github.com/go-kratos/kratos/tree/main/contrib/registry/zookeeper)
 
 ### Usage
 
