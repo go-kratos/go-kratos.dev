@@ -174,7 +174,7 @@ log.Infow("field_name", "some log")
 Import fluent sdk
 
 ```go
-import "github.com/go-kratos/fluent"
+import "github.com/go-kratos/kratos/contrib/log/fluent/v2"
 
 addr := "unix:///var/run/fluent/fluent.sock"
 logger,err := fluent.NewLogger(addr)
