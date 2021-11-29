@@ -34,10 +34,12 @@ type Discovery interface {
 }
 ```
 已支持的实现：
-* [consul](https://github.com/go-kratos/consul)
-* [etcd](https://github.com/go-kratos/etcd)
-* [kube](https://github.com/go-kratos/kube)
-* [nacos](https://github.com/go-kratos/nacos)
+* [consul](https://github.com/go-kratos/kratos/tree/main/contrib/registry/consul)
+* [discovery](https://github.com/go-kratos/kratos/tree/main/contrib/registry/discovery)
+* [etcd](https://github.com/go-kratos/kratos/tree/main/contrib/registry/etcd)
+* [kubernetes](https://github.com/go-kratos/kratos/tree/main/contrib/registry/kubernetes)
+* [nacos](https://github.com/go-kratos/kratos/tree/main/contrib/registry/nacos)
+* [zookeeper](https://github.com/go-kratos/kratos/tree/main/contrib/registry/zookeeper)
 
 
 ### 使用方式
