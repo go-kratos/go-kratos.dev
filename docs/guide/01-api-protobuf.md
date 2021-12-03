@@ -95,7 +95,7 @@ package my.package.v1;
 
 #### Message 和 字段命名
 使用驼峰命名法（首字母大写）命名 message，例子：SongServerRequest
-使用下划线命名字段，栗子：song_name
+使用下划线命名字段，例子：song_name
 ```protobuf
 message SongServerRequest {
   required string song_name = 1;
