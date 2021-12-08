@@ -148,7 +148,7 @@ if tr, ok := transport.FromServerContext(ctx); ok {
 ### Server Router
 
 #### `func (s *Server) Route(prefix string, filters ...FilterFunc) *Router`
-创建一个新的HTTP Server Router，同时可以传递kraots的HTTP Filter拦截器
+创建一个新的HTTP Server Router，同时可以传递kratos的HTTP Filter拦截器
 我们看下用法：
 ```go
 	r := s.Route("/v1")
