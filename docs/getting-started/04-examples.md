@@ -21,7 +21,9 @@ Kratos提供了丰富的示例代码/项目供参考
 #### 服务发现&服务注册
 * [consul](https://github.com/go-kratos/kratos/tree/main/examples/registry/consul) 使用consul插件，在server端进行服务注册和在client端进行服务注册的示例
 * [etcd](https://github.com/go-kratos/kratos/tree/main/examples/registry/etcd) 使用etcd插件，在server端进行服务注册和在client端进行服务注册的示例
-* [kube](https://github.com/go-kratos/kratos/tree/main/examples/registry/nacos) 使用kube(kubernetes)插件，在server端进行服务注册和在client端进行服务注册的示例
+* [nacos](https://github.com/go-kratos/kratos/tree/main/examples/registry/nacos) 使用nacos插件，在server端进行服务注册和在client端进行服务注册的示例
+* [discovery](https://github.com/go-kratos/kratos/tree/main/examples/registry/discovery) 使用discovery插件，在server端进行服务注册和在client端进行服务注册的示例
+* [zookeeper](https://github.com/go-kratos/kratos/tree/main/examples/registry/zookeeper) 使用zookeeper插件，在server端进行服务注册和在client端进行服务注册的示例
 
 #### HTTP
 * [gin](https://github.com/go-kratos/kratos/tree/main/examples/http/gin) 将gin作为router集成进Kratos项目的示例
