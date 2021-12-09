@@ -92,9 +92,9 @@ func initApp(*conf.Server, *conf.Data, log.Logger) (*kratos.App, error) {
     panic(wire.Build(server.ProviderSet, data.ProviderSet, biz.ProviderSet, service.ProviderSet, newApp))
 }
 ```
-在项目的 main 目录中，运行 go generate 进行生成编译期依赖注入代码：
+在项目的 main 目录中，运行 wire 进行生成编译期依赖注入代码：
 ```
-go generate ./...
+wire
 ```
 
 ## References
