@@ -17,7 +17,7 @@ keywords:
 
 Kratos 暴露了三种监控接口，分别是 Counter, Gauge, Observer。
 
-### Counter
+#### Counter
 
 ```go
 
