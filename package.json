@@ -13,9 +13,9 @@
     "write-translations": "docusaurus write-translations"
   },
   "dependencies": {
-    "@docusaurus/core": "2.0.0-beta.9",
-    "@docusaurus/preset-classic": "2.0.0-beta.9",
-    "@easyops-cn/docusaurus-search-local": "^0.19.1",
+    "@docusaurus/core": "2.0.0-beta.13",
+    "@docusaurus/preset-classic": "2.0.0-beta.13",
+    "@easyops-cn/docusaurus-search-local": "^0.21.3",
     "@mdx-js/react": "^1.6.21",
     "clsx": "^1.1.1",
     "nodejieba": "^2.5.1",
