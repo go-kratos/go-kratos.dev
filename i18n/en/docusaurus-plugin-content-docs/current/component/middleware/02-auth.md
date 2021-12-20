@@ -136,7 +136,7 @@ func FromContext(ctx context.Context) (token jwt.Claims, ok bool)
 
 ### White List Demo
 
-With `selector` middleware, one could setup white list. Ref: https://gist.github.com/Casper-Mars/b1a2ddb1cfd3db30522fac537c6bdc82 
+With `selector` middleware, one could setup white list. Ref: https://github.com/go-kratos/beer-shop/blob/a29eae57a9baeae9969e9a7d418ff677cf494a21/app/shop/interface/internal/server/http.go#L41
 
 ### Generate `JWT Token`
 
