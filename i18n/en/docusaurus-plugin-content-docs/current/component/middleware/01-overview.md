@@ -80,7 +80,118 @@ grpc.NewServer(opts...)
 
 
 ## Custom Middleware
-Implement `Middleware` interface.
 
-(TBD)
+Customized middleware for specific routes
+
+- server:`selector.Server(ms...)` 
+- client:`selector.Client(ms...)`
+
+Matching rule (multi parameter)
+
+- `Path(path...)`        path match
+- `Regex(regex...)`      regex match
+- `Prefix(prefix...)`    prefix path match
+- `Match(fn)`            function match, The function format is `func(ctx context.Context,operation string) bool`,
+  
+  `operation` is path,If the return value is `true`,match successful, `ctx` You can use `transport.FromServerContext(ctx)` or `transport.FromClientContext(ctx` get `Transporter`
+
+**http server**
+
+```go
+http.Middleware(
+            selector.Server(recovery.Recovery(), tracing.Server(),testMiddleware).
+                Path("/hello.Update/UpdateUser", "/hello.kratos/SayHello").
+                Regex(`/test.hello/Get[0-9]+`).
+                Prefix("/kratos.", "/go-kratos.", "/helloworld.Greeter/").
+                Build(),
+        )
+```
+
+**http client**
+
+```go
+http.WithMiddleware(
+            selector.Client(recovery.Recovery(), tracing.Server(),testMiddleware).
+                Path("/hello.Update/UpdateUser", "/hello.kratos/SayHello").
+                Regex(`/test.hello/Get[0-9]+`).
+                Prefix("/kratos.", "/go-kratos.", "/helloworld.Greeter/").
+                Match(func(ctx context.Context,operation string) bool {
+                    if strings.HasPrefix(operation, "/go-kratos.dev") || strings.HasSuffix(operation, "world") {
+                        return true
+                    }
+                    tr, ok := transport.FromClientContext(ctx)
+                    if !ok {
+                        return false
+				    }
+                    if tr.RequestHeader().Get("go-kratos") == "kratos" {
+					    return true
+				    }
+                    return false
+                }).Build(),
+        )
+```
+
+**grpc server**
+
+```go
+grpc.Middleware(
+            selector.Server(recovery.Recovery(), tracing.Server(),testMiddleware).
+                Path("/hello.Update/UpdateUser", "/hello.kratos/SayHello").
+                Regex(`/test.hello/Get[0-9]+`).
+                Prefix("/kratos.", "/go-kratos.", "/helloworld.Greeter/").
+                Build(),
+        )
+```
+
+**grpc client**
+
+```go
+grpc.Middleware(
+            selector.Client(recovery.Recovery(), tracing.Server(),testMiddleware).
+                Path("/hello.Update/UpdateUser", "/hello.kratos/SayHello").
+                Regex(`/test.hello/Get[0-9]+`).
+                Prefix("/kratos.", "/go-kratos.", "/helloworld.Greeter/").
+                Build(),
+        )
+```
+
+> **Note: the customized middleware matches through operation, not is the HTTP routing！！！** 
+> 
+> operation is the unified GRC path of HTTP and GRC
+
+**operation find**
+
+gRPC path's splicing rule is `/package.service/method`
+
+For example, in the following proto file，if we want to call the sayhello method, then the operation is `/helloworld.Greeter/SayHello`
+
+```protobuf
+syntax = "proto3";
+
+package helloworld;
+
+import "google/api/annotations.proto";
+
+option go_package = "github.com/go-kratos/kratos/examples/helloworld/helloworld";
+
+// The greeting service definition.
+service Greeter {
+  // Sends a greeting
+  rpc SayHello (HelloRequest) returns (HelloReply)  {
+        option (google.api.http) = {
+            get: "/helloworld/{name}",
+        };
+  }
+}
+// The request message containing the user's name.
+message HelloRequest {
+  string name = 1;
+}
+
+// The response message containing the greetings
+message HelloReply {
+  string message = 1;
+}
+```
+
 
