@@ -155,7 +155,7 @@ grpc.Middleware(
         )
 ```
 
-> **Note: the customized middleware matches through operation, not is the HTTP routing！！！** 
+> **Note: the customized middleware matches through `operation`, not is the HTTP routing！！！** 
 > 
 > operation is the unified GRC path of HTTP and GRC
 
