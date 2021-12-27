@@ -153,13 +153,13 @@ http.WithMiddleware(
                     if strings.HasPrefix(operation, "/go-kratos.dev") || strings.HasSuffix(operation, "world") {
                         return true
                     }
-                    tr, ok := transport.FromClientContext(ctx)
-				    if !ok {
-					    return false
-				    }
-                    if tr.RequestHeader().Get("go-kratos") == "kratos" {
-					    return true
-				    }
+                    tr, ok := transport.FromClientContext(ctx)
+                    if !ok {
+                        return false
+				    }
+                    if tr.RequestHeader().Get("go-kratos") == "kratos" {
+					    return true
+				    }
                     return false
                 }).Build(),
         )
