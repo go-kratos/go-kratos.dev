@@ -93,7 +93,7 @@ Matching rule (multi parameter)
 - `Prefix(prefix...)`    prefix path match
 - `Match(fn)`            function match, The function format is `func(ctx context.Context,operation string) bool`,
   
-  `operation` is path,If the return value is `true`,match successful, `ctx` You can use `transport.FromServerContext(ctx)` or `transport.FromClientContext(ctx` get `Transporter`
+  `operation` is path,If the return value is `true`,match successful, `ctx` for `transport.FromServerContext(ctx)` or `transport.FromClientContext(ctx` get `Transporter`
 
 **http server**
 
@@ -155,7 +155,7 @@ grpc.Middleware(
         )
 ```
 
-> **Note: the customized middleware matches through operation, not is the HTTP routing！！！** 
+> **Note: the customized middleware matches through `operation`, not is the HTTP routing！！！** 
 > 
 > operation is the unified GRC path of HTTP and GRC
 
