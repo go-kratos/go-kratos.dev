@@ -36,6 +36,11 @@ kratos version v2.0.0
 ```bash
 kratos new helloworld
 ```
+**在国内拉取失败, 可 -r 指定源**
+```bash
+kratos new helloworld -r https://gitee.com/go-kratos/kratos-layout.git
+```
+
 输出:
 ```bash
 helloworld

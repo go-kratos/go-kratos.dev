@@ -52,6 +52,8 @@ make install
 ```bash
 # 创建项目模板
 kratos new helloworld
+# 在国内拉取失败, 可 -r 指定源
+kratos new helloworld -r https://gitee.com/go-kratos/kratos-layout.git
 
 cd helloworld
 # 拉取项目依赖
