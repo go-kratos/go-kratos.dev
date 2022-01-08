@@ -22,4 +22,4 @@ jobs:
           timeout: 600
           debug: true
           force_update: true
-          static_list: "go-kratos.dev"
+          static_list: "go-kratos"
