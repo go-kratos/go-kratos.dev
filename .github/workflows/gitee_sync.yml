@@ -22,4 +22,5 @@ jobs:
           timeout: 600
           debug: true
           force_update: true
+          mappings: "go-kratos.dev=>go-kratos"
           static_list: "go-kratos.dev"
