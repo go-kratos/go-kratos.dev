@@ -98,6 +98,8 @@ Matching rule (multi parameter)
 **http server**
 
 ```go
+import "github.com/go-kratos/kratos/v2/middleware/selector"
+
 http.Middleware(
             selector.Server(recovery.Recovery(), tracing.Server(),testMiddleware).
                 Path("/hello.Update/UpdateUser", "/hello.kratos/SayHello").
@@ -110,6 +112,8 @@ http.Middleware(
 **http client**
 
 ```go
+import "github.com/go-kratos/kratos/v2/middleware/selector"
+
 http.WithMiddleware(
             selector.Client(recovery.Recovery(), tracing.Server(),testMiddleware).
                 Path("/hello.Update/UpdateUser", "/hello.kratos/SayHello").
@@ -134,6 +138,8 @@ http.WithMiddleware(
 **grpc server**
 
 ```go
+import "github.com/go-kratos/kratos/v2/middleware/selector"
+
 grpc.Middleware(
             selector.Server(recovery.Recovery(), tracing.Server(),testMiddleware).
                 Path("/hello.Update/UpdateUser", "/hello.kratos/SayHello").
@@ -146,6 +152,8 @@ grpc.Middleware(
 **grpc client**
 
 ```go
+import "github.com/go-kratos/kratos/v2/middleware/selector"
+
 grpc.Middleware(
             selector.Client(recovery.Recovery(), tracing.Server(),testMiddleware).
                 Path("/hello.Update/UpdateUser", "/hello.kratos/SayHello").
