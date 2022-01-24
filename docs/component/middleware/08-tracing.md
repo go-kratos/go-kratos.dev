@@ -16,32 +16,20 @@ Tracing 中间件使用 OpenTelemetry 实现了链路追踪。
 
 ### 配置
 
-Tracing 中间件中提供了两个配置方法 `WithTracerProvider()`，`WithPropagator()`。
+Tracing 中间件中提供了一个配置方法 `SetTracerProvider()`。
 
-#### `WithTracerProvider`
-
-```go
-func WithTracerProvider(provider trace.TracerProvider) Option {
-	return func(opts *options) {
-		opts.TracerProvider = provider
-	}
-}    
-```
-
-WithTracerProvider 用于设置 tracing 的链路追踪程序的提供者，该方法接收一个 trace.TracerProvider。
-
-#### `WithPropagator`
+#### `SetTracerProvider`
 
 ```go
-func WithPropagator(propagator propagation.TextMapPropagator) Option {
-	return func(opts *options) {
-		opts.Propagator = propagator
-	}
-}
+package otel
+...
+func SetTracerProvider(tp trace.TracerProvider) {
+    global.SetTracerProvider(tp)
+}   
 ```
 
+SetTracerProvider 用于设置 tracing 的链路追踪程序的提供者，该方法接收一个 trace.TracerProvider。
 
-WithPropagator 用于设置 tracing 的文本映射的传播器，该方法接收一个 propagation.TextMapPropagator。
 
 ### 使用方法
 
@@ -76,7 +64,7 @@ func NewGRPCServer(c *conf.Server, executor *service.ExecutorService) *grpc.Serv
 	var opts = []grpc.ServerOption{
 		grpc.Middleware(
 			middleware.Chain(
-				tracing.Server(tracing.WithTracerProvider(otel.GetTracerProvider())),
+				tracing.Server(),
 			),
 		),
 	}
@@ -110,11 +98,7 @@ func grpcCli() (*grpc.ClientConn, error) {
 	return grpc.DialInsecure(
 		context.Background(),
 		grpc.WithMiddleware(
-			tracing.Client(
-				tracing.WithTracerProvider(
-					otel.GetTracerProvider(),
-				),
-			),
+			tracing.Client(),
 		),
 	)
 }
