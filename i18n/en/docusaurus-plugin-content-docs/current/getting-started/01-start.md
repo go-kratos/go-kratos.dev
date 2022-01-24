@@ -19,13 +19,33 @@ go env -w GO111MODULE=on
 
 If you faced with network problem (especially you are in China Mainland), please [setup GOPROXY](https://goproxy.cn/)
 
-## Installation
+## Install Kratos tool
+
+>Choose one of the following three ways
+
+#### 1. go get installation
 
 ```bash
 # install kratos CLI tool
 go get -u github.com/go-kratos/kratos/cmd/kratos/v2@latest
 ```
+#### 2. go install installation
+```bash
+go install github.com/go-kratos/kratos/cmd/kratos/v2
+# For go version 1.16 or above,you need to specify the version number or use the latest version
+go install github.com/go-kratos/kratos/cmd/kratos/v2@latest
+```
+
+#### 3. Source code compilation and installation
+
+```bash
+git clone https://github.com/go-kratos/kratos
+cd kratos
+make install
+```
+
 ## Project Creation
+
 ```bash
 # create project's layout
 kratos new helloworld
@@ -33,12 +53,6 @@ kratos new helloworld
 cd helloworld
 # pull dependencies
 go mod download
-# generate proto template
-kratos proto add api/helloworld/helloworld.proto
-# generate proto code
-kratos proto client api/helloworld/helloworld.proto
-# generate server template
-kratos proto server api/helloworld/helloworld.proto -t internal/service
 ```
 ## Compilation and Running
 ```bash

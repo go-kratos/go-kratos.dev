@@ -29,20 +29,22 @@ go env -w GO111MODULE=on
 
 如果拉取依赖遇到网络问题，建议[配置GOPROXY](https://goproxy.cn/)
 
-### 安装
-安装 kratos 命令工具
-#### go get 安装
+### 安装 kratos 命令工具
+
+> 以下三种方式选其一
+
+#### 1. go get 安装
 
 ```bash
 go get -u github.com/go-kratos/kratos/cmd/kratos/v2@latest
 ```
-#### go install 安装
+#### 2. go install 安装
 ```bash
 go install github.com/go-kratos/kratos/cmd/kratos/v2
 # go 1.16版本以上需要指定版本号或使用最新版
 go install github.com/go-kratos/kratos/cmd/kratos/v2@latest
 ```
-#### 源码编译安装
+#### 3. 源码编译安装
 ```bash
 git clone https://github.com/go-kratos/kratos
 cd kratos
@@ -58,12 +60,6 @@ kratos new helloworld -r https://gitee.com/go-kratos/kratos-layout.git
 cd helloworld
 # 拉取项目依赖
 go mod download
-# 生成proto模板
-kratos proto add api/helloworld/helloworld.proto
-# 生成proto源码
-kratos proto client api/helloworld/helloworld.proto
-# 生成server模板
-kratos proto server api/helloworld/helloworld.proto -t internal/service
 ```
 ### 项目编译和运行
 ```bash

@@ -28,7 +28,7 @@ kratos -v
 ```
 输出:
 ```
-kratos version v2.0.0
+kratos version v2.1.4
 ```
 
 ### 创建项目
@@ -36,7 +36,8 @@ kratos version v2.0.0
 ```bash
 kratos new helloworld
 ```
-**在国内拉取失败, 可 -r 指定源**
+**在国内拉取失败, 可 `-r` 指定源**
+
 ```bash
 kratos new helloworld -r https://gitee.com/go-kratos/kratos-layout.git
 ```
