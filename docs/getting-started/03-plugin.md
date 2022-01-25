@@ -1,6 +1,6 @@
 ---
 id: plugin
-title: 社区插件
+title: 插件
 description: Kratos 插件
 keywords:
   - Go 

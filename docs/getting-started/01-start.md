@@ -1,6 +1,6 @@
 ---
 id: start
-title: 创建项目
+title: 项目初始化
 description: Kratos 微服务框架，快速创建项目代码，生成 Go 工程化项目
 keywords:
   - Go 
