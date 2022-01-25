@@ -1,6 +1,6 @@
 ---
 id: design
-title: 设计
+title: 设计理念
 description: 本篇文档阐述Kratos的设计理念，介绍Kratos项目的整体情况和主要组件
 keywords:
   - Go 
@@ -11,7 +11,6 @@ keywords:
   - Protobuf
   - gRPC
   - HTTP
-slug: /
 ---
 本篇文档阐述Kratos的设计理念，介绍Kratos项目的整体情况和主要组件。
 
