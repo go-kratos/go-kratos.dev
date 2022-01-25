@@ -26,10 +26,10 @@ Kratos是一个Go语言实现的微服务框架，说得更准确一点，它更
 * [gateway](https://github.com/go-kratos/gateway) 这个是我们刚刚起步，用Go开发的API Gateway，后续您可以使用它来作为您Kratos微服务的网关，用于微服务API的治理，项目正在施工中，欢迎关注。
 
 ## 仓库、文档和社区
-GitHub仓库：[https://github.com/go-kratos](https://github.com/go-kratos)
-文档：[https://go-kratos.dev/](https://go-kratos.dev/)
-微信群：[go-kratos 官方微信群](https://github.com/go-kratos/kratos/issues/682)
-Discord：[go-kratos](https://discord.com/invite/BWzJsUJ)
+* GitHub仓库：[https://github.com/go-kratos](https://github.com/go-kratos)
+* 文档：[https://go-kratos.dev/](https://go-kratos.dev/)
+* 微信群：[go-kratos 官方微信群](https://github.com/go-kratos/kratos/issues/682)
+* Discord：[go-kratos](https://discord.com/invite/BWzJsUJ)
 
 ## 为什么v2完全重新设计
 以前关注过kratos项目的可能知道，Kratos的[v1](https://github.com/go-kratos/kratos/tree/v1.0.x)版本已经开源了很久，也是个较为完善的框架。那么为什么不直接基于v1继续迭代，而是要推倒重来，推出完全重新设计的v2呢？
