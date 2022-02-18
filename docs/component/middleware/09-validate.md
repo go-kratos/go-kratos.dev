@@ -75,9 +75,9 @@ message Info {
 ```
 
 ### 生成代码
-生成代码时可以使用 kratos layout 提供的 Makefile 中的 make validate 命令，也可以直接使用 protoc。
+可以使用 kratos layout 提供的 Makefile 中的 `make api` 命令生成所有 protobuf 代码，也可以直接使用 `protoc`。
 ```bash
-make validate
+make api
 # 或者
 protoc --proto_path=. \
            --proto_path=./third_party \

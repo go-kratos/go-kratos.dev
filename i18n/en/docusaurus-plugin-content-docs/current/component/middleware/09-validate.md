@@ -74,9 +74,9 @@ message Info {
 ```
 
 ### Code Generation
-You could use `make validate` or `protoc` directly to generate validation code.
+You could use `make api` to generate all the protobuf code or `protoc` directly to generate validation code.
 ```bash
-make validate
+make api
 # or
 protoc --proto_path=. \
            --proto_path=./third_party \
