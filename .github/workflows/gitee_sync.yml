@@ -2,6 +2,7 @@ on:
   push:
     branches:
       - main
+      - gh-actions
 
 name: Sync to Gitee
 jobs:
