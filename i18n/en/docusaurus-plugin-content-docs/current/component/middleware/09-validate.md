@@ -18,7 +18,7 @@ Validate middleware uses proto-gen-validate generated code for parameter validat
 
 First you should install [proto-gen-validate](https://github.com/envoyproxy/protoc-gen-validate)
 ```bash
-go get -d github.com/envoyproxy/protoc-gen-validate
+go install github.com/envoyproxy/protoc-gen-validate@latest
 ```
 
 If any error appears in generation process or there are `// no validation rules for xxxx` in the generated codes, you could try `git clone github.com/envoyproxy/protoc-gen-validate` then run `make build`
@@ -74,17 +74,37 @@ message Info {
 ```
 
 ### Code Generation
-You could use `make validate` or `protoc` directly to generate validation code.
+
+1.Directly use the `protoc` command to generate
+
 ```bash
-make validate
-# or
 protoc --proto_path=. \
            --proto_path=./third_party \
            --go_out=paths=source_relative:. \
            --validate_out=paths=source_relative,lang=go:. \
            xxxx.proto
 ```
+2.Add the  `validate` command in Makefile
+
+```makefile
+.PHONY: validate
+# generate validate proto
+validate:
+	protoc --proto_path=. \
+           --proto_path=./third_party \
+           --go_out=paths=source_relative:. \
+           --validate_out=paths=source_relative,lang=go:. \
+           $(API_PROTO_FILES)
+```
+
+Execute command
+
+```bash
+make validate
+```
+
 ### Middleware
+
 We can inject the validate middleware into HTTP or gRPC, and the validate middleware automatically validates the parameters according to the rules written in the proto when request entering.
 
 #### HTTP
