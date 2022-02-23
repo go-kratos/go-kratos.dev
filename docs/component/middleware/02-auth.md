@@ -1,6 +1,6 @@
 ---
 id: auth
-title: 认证鉴权
+title: 认证
 keywords:
   - Go
   - Kratos
@@ -95,13 +95,22 @@ jwt.WithSigningMethod(jwtv4.SigningMethodHS256)
 
 #### `WithClaims()`
 
-用于配置 `JWT` 的 `claims`。适用于 `client`。
+用于配置 `JWT` 的 `claims`。
 
 例如：
 
+* 配置 `client` 的 `claims`：
+
 ```go
-claims := jwtv4.StandardClaims{}
-jwt.WithClaims(claims)
+claims := &jwtv4.StandardClaims{}
+jwt.WithClaims(func()jwtv4.Claims{return claims})
+```
+
+* 配置 `server` 的 `claims`：
+
+> 注意：`server` 的 `claims` 和 `client` 的配置方式有一定的区别，`server` 必须返回一个新对象。目的为了避免出现并发写的问题。
+```go
+jwt.WithClaims(func()jwtv4.Claims{return &jwtv4.StandardClaims{}})
 ```
 
 ### 简易Demo
