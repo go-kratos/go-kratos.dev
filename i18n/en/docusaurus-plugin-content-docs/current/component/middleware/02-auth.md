@@ -96,14 +96,25 @@ jwt.WithSigningMethod(jwtv4.SigningMethodHS256)
 
 #### `WithClaims()`
 
-Used to set the claims. Only work for `client`.
+Used to set the claims. 
 
 For examples：
 
+* For `client`:
+
 ```go
-claims := jwtv4.StandardClaims{}
-jwt.WithClaims(claims)
+claims := &jwtv4.StandardClaims{}
+jwt.WithClaims(func()jwtv4.Claims{return claims})
 ```
+
+* For `server`
+
+> Caution：`server` must return a new object in order to avoid concurrent write problems.
+
+```go
+jwt.WithClaims(func()jwtv4.Claims{return &jwtv4.StandardClaims{}})
+```
+
 
 ### Demo
 
