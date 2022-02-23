@@ -4,22 +4,23 @@ title: Overview
 slug: /
 ---
 
-Kratos is a microservice-oriented governance framework implements by golang, which offers convenient capabilities to help you quickly build a bulletproof application from scratch.
+Kratos is a microservice-oriented governance framework implemented by Golang, which offers convenient capabilities to help you quickly build a bulletproof application from scratch.
 
 
->The name is inspired by the game God of War which is based on Greek myths, tells the Kratos from mortals to become a God of War and launches the adventure of killing god.
+>The name is inspired by the game God of War which is based on Greek myths, tells the Kratos from mortals to become the God of War and launches the adventure of killing gods.
 
 
 ## Goals
 
-Kratos boosts your productivity. With the integration of excellent resources and further support, programmers can get rid of most issues might encounter in the field of distributed systems and software engineering such that they are allowed to focus on the release of businesses only. Additionally, for each programmer, Kratos is also an ideal one learning warehouse for many aspects of microservices to enrich their experiences and skills.
+Kratos boosts your productivity. With the integration of excellent resources and further support, programmers can get rid of most issues one may encounter in the field of distributed systems and software engineering such that they are allowed to focus on the release of businesses only. For each programmer, Kratos framwork is a cool learning warehouse where skill building and experience of microservices can be learned and referred.
+
 ### Principles
 
-* **Simple**: Appropriate design, plain and easy code.
-* **General**: Cover the various utilities for business development.
-* **Highly efficient**: Speeding up the efficiency of businesses upgrading.
-* **Stable**: The base libs validated in the production environment which have the characters of the high testability, high coverage as well as high security and reliability.
-* **Robust**: Eliminating misusing through high quality of the base libs.
+* **Simplicity**: Appropriate design, plain and easy code.
+* **Generality**: Cover the various utilities for business development.
+* **High efficiency**: Speeding up the efficiency of businesses upgrading.
+* **Stability**: The base libs are validated in the production environment which have the characters of the high testability, high coverage as well as high security and reliability.
+* **Robustness**: Eliminating misuse through high quality of the base libs.
 * **High-performance**: Optimal performance excluding the optimization of hacking in case of *unsafe*. 
 * **Expandability**: Properly designed interfaces, you can expand utilities such as base libs to meet your further requirements.
 * **Fault-tolerance**: Designed against failure, enhance the understanding and exercising of SRE within Kratos to achieve more robustness.
@@ -28,14 +29,14 @@ Kratos boosts your productivity. With the integration of excellent resources and
 ## Features
 * APIs: The communication protocol is based on the HTTP/gRPC through the definition of Protobuf.
 * Errors: Both the definitions of error code and the handle interfaces of code generation for tools are defined by the Enum of the Protobuf.
-* Metadata: In the protocol of HTTP/gRPC, the transmission of service atomic information are formalized by the Middleware.
+* Metadata: In the protocol of HTTP/gRPC, the transmission of service atomic information is formalized by the Middleware.
 * Config: Multiple data sources are supported for configurations and integrations such that dynamic configurations are offered through the manner of *Atomic* operations.
 * Logger: The standard log interfaces ease the integration of the third-party log libs and logs are collected through the *Fluentd*.
-* Metrics: *Prometheus* integrated by default. Furthermore, with the uniform metric interfaces, you can implement your own metric system more flexible.
+* Metrics: *Prometheus* integrated by default. Furthermore, with the uniform metric interfaces, you can implement your own metric system more flexibly.
 * Tracing: The OpenTelemetry is conformed to achieve the tracing of microservices chains.
 * Encoding: The selection of the content encoding is automatically supported by Accept and Content-Type.
 * Transport: The uniform plugins for Middleware are supported by HTTP/gRPC.
-* Registry: The interfaces of the centralized registry is able to be connected with various other centralized registries through plug-ins.
+* Registry: The interfaces of the centralized registry are able to be connected with various other centralized registries through plug-ins.
 
 ## Architecture
 
