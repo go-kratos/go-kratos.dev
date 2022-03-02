@@ -173,6 +173,7 @@ message HelloReply {
 ```
 
 ### References
+* https://google.aip.dev/
 * https://developers.google.com/protocol-buffers/docs/style
 * https://developers.google.com/protocol-buffers/docs/proto3
 * https://colobu.com/2017/03/16/Protobuf3-language-guide/
