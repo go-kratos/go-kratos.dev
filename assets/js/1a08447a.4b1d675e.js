@@ -1,0 +1,1 @@
+"use strict";(self.webpackChunkdocs=self.webpackChunkdocs||[]).push([[8999],{1941:function(e){e.exports=JSON.parse('{"title":"\u7b80\u4ecb","slug":"/category/\u7b80\u4ecb","permalink":"/docs/category/\u7b80\u4ecb","navigation":{"next":{"title":"\u7b80\u4ecb","permalink":"/docs/"}}}')}}]);
