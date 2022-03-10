@@ -79,7 +79,7 @@ conn, err := grpc.DialInsecure(
   grpc.WithDiscovery(r),
   // Due to the limitations of the gRPC framework, only the global balancer name can be used to inject the selector
   grpc.WithBalancerName(wrr.Name),
-  // Inject routing Filter through grpc.WithSelectFilter
-  grpc.WithSelectFilter(filter),
+  // Inject routing Filter through grpc.WithFilter
+  grpc.WithFilter(filter),
 )
 ```
