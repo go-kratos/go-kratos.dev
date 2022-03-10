@@ -78,7 +78,7 @@ conn, err := grpc.DialInsecure(
   grpc.WithDiscovery(r),
   // 由于gRPC框架的限制只能使用全局balancer name的方式来注入selector
   grpc.WithBalancerName(wrr.Name),
-  // 通过grpc.WithSelectFilter注入路由Filter
-  grpc.WithSelectFilter(filter),
+  // 通过grpc.WithFilter注入路由Filter
+  grpc.WithFilter(filter),
 )
 ```
