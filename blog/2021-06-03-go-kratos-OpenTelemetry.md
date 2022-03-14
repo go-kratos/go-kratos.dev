@@ -197,7 +197,7 @@ func (t *Tracer) End(ctx context.Context, span trace.Span, err error) {
 ```
 
 #### 如何使用
-tracing 中间件的使用示例可以从  [kratos/examples/traces](https://github.com/go-kratos/kratos/tree/main/examples/traces) ,该示例简单的实现了跨服务间的链路追踪,以下代码片段包含部分示例代码。
+tracing 中间件的使用示例可以从  [kratos/examples/traces](https://github.com/go-kratos/examples/tree/main/traces) ,该示例简单的实现了跨服务间的链路追踪,以下代码片段包含部分示例代码。
 ```go
 // https://github.com/go-kratos/kratos/blob/7f835db398c9d0332e69b81bad4c652b4b45ae2e/examples/traces/app/message/main.go#L38
 // 首先调用otel 库方法，得到一个 TracerProvider
@@ -340,4 +340,4 @@ func mongoTracer(ctx context.Context,tp trace.TracerProvider, command interface{
 - [OpenTelemetry 官网](https://opentelemetry.io/)
 - [KubeCon2019 OpenTelemetry分享](https://static.sched.com/hosted_files/kccncosschn19chi/03/OpenTelemetry_%20Overview%20%26%20Backwards%20Compatibility%20of%20OpenTracing%20%2B%20OpenCensus%20-%20Steve%20Flanders%2C%20Omnition.pdf)
 - [Kratos 框架](https://go-kratos.dev/docs/getting-started/start)
-- [traces 示例](https://github.com/go-kratos/kratos/tree/main/examples/traces)
+- [traces 示例](https://github.com/go-kratos/examples/tree/main/traces)
