@@ -27,11 +27,11 @@ IDE中的这个提示不会影响项目的正常编译，如果您需要解决�
 All you need to do is configurate some setting like this:
 <img src="/images/goland.png" width="650px" />
 
-### 4. 新版本发布后重新生成代码，发现无法运行，生成出来的代码有报错
+### 4. The code newly generated after the new release is unavailable, with system alarming errors.
 
-可以尝试以下步骤
+You can try to follow this:
 1. kratos upgrade
-2. 修改 go.mod 中的 kratos 依赖版本
+2. Modify the version of kratos in `go.mod` file
 3. go generate ./...
 
 ### 5. After invoke `kratos client`, there are no deserved http file.
