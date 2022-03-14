@@ -3,7 +3,7 @@ id: ent
 title: Ent
 ---
 
-Any ORM or library is supported in Kratos project for data accessing. Please refer to the [examples](https://github.com/go-kratos/kratos/tree/main/examples) for integration.
+Any ORM or library is supported in Kratos project for data accessing. Please refer to the [examples](https://github.com/go-kratos/examples/tree/main) for integration.
 
 **Ent** is an easy-to-use ORM which developed by *Facebook*. Here is a brief guide to use this library.
 
