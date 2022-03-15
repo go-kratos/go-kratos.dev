@@ -1,7 +1,7 @@
 ---
 id: plugin
 title: 插件
-description: Kratos 插件
+description: Kratos 提供了一系列插件帮助您增强微服务的功能、或与其它系统进行集成
 keywords:
   - Go 
   - Kratos

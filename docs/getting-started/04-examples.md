@@ -1,7 +1,7 @@
 ---
 id: examples
 title: 代码示例
-description: Kratos 代码示例
+description: Kratos 提供了丰富的示例代码/项目供参考
 keywords:
   - Go 
   - Kratos
@@ -53,17 +53,17 @@ Kratos提供了丰富的示例代码/项目供参考
 * [ws](https://github.com/go-kratos/kratos/tree/main/examples/ws) 提供WebSocket接口的样例
 
 #### 鉴权
-* [jwt](https://github.com/go-kratos/kratos/tree/main/examples/auth/jwt) 在http、grpc中使用JWT进行鉴权的示例
+* [jwt](https://github.com/go-kratos/kratos/tree/main/examples/auth/jwt) 在 HTTP、gRPC 中使用JWT进行鉴权的示例
 
 #### 日志
-* [zap](https://github.com/go-kratos/kratos/tree/main/examples/log) 使用zap日志库的示例
-* [logrus](https://github.com/go-kratos/kratos/tree/main/examples/log) 使用logrus日志库的示例
+* [zap](https://github.com/go-kratos/kratos/tree/main/examples/log) 使用 zap 日志库的示例
+* [logrus](https://github.com/go-kratos/kratos/tree/main/examples/log) 使用 logrus 日志库的示例
 
 
 #### 其他
 * [i18n](https://github.com/go-kratos/kratos/tree/main/examples/i18n) 国际化支持的示例
-* [selector](https://github.com/go-kratos/kratos/tree/main/examples/selector) 选择器示例，如指定版本、指定节点，负载均衡
-* [swagger](https://github.com/go-kratos/kratos/tree/main/examples/swagger) 使用swagger插件自动生成接口文档并提供在线服务的示例
+* [selector](https://github.com/go-kratos/kratos/tree/main/examples/selector) 选择器示例，可实现如指定版本、指定节点、白名单、负载均衡等
+* [swagger](https://github.com/go-kratos/kratos/tree/main/examples/swagger) 使用 swagger 插件自动生成接口文档并提供在线服务的示例
 * [header](https://github.com/go-kratos/kratos/tree/main/examples/header) 请求头处理示例
 
 
