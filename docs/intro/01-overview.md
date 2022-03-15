@@ -54,7 +54,7 @@ Kratos 一套轻量级 Go 微服务框架，包含大量微服务相关框架及
 ### Related
 
 * [Docs](https://go-kratos.dev/)
-* [Examples](https://github.com/go-kratos/kratos/tree/main/examples)
+* [Examples](https://github.com/go-kratos/examples/tree/main)
 * [Service Layout](https://github.com/go-kratos/kratos-layout)
 
 ### Community

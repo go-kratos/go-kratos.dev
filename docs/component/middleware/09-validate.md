@@ -126,4 +126,4 @@ grpcSrv := grpc.NewServer(
 
 ### References
 
-* https://github.com/go-kratos/kratos/tree/main/examples/validate
+* https://github.com/go-kratos/examples/tree/main/validate

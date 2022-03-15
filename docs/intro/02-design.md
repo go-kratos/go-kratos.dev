@@ -149,7 +149,7 @@ syntax = "proto3";
 package api.blog.v1;
 import "errors/errors.proto";
 
-option go_package = "github.com/go-kratos/kratos/examples/blog/api/v1;v1";
+option go_package = "github.com/go-kratos/examples/blog/api/v1;v1";
 
 enum ErrorReason {
   // 设置缺省错误码
@@ -262,6 +262,6 @@ Kratos提供了[限流ratelimit](https://go-kratos.dev/docs/component/middleware
 除了上述提到的插件外，我们还提供了一些其它插件，完整的插件列表请参考文档[社区插件](https://go-kratos.dev/docs/getting-started/plugin)
 
 ## 示例代码
-如果您看过文档后，对某些功能的使用仍有疑惑，或者是希望寻找一些用Kratos写项目的灵感，在仓库的[examples](https://github.com/go-kratos/kratos/tree/main/examples)目录下我们提供了很多代码供参考。
+如果您看过文档后，对某些功能的使用仍有疑惑，或者是希望寻找一些用Kratos写项目的灵感，在仓库的[examples](https://github.com/go-kratos/examples/tree/main)目录下我们提供了很多代码供参考。
 
 您也可以通过文档中的[示例代码清单](https://go-kratos.dev/docs/getting-started/examples)页面来查阅有哪些示例。
