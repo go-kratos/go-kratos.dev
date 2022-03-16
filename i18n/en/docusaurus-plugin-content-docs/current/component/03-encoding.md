@@ -11,7 +11,7 @@ keywords:
   - gRPC
   - HTTP
 ---
-We've abstracted the `Codec` interface to unify the serialization/deserialization logic for processing requests, and you can implement your own Codec to support more formats. The specific source code is in[encoding](https://github.com/go-kratos/kratos/tree/main/encoding)。
+We've abstracted the `Codec` interface to unify the serialization/deserialization logic for processing requests, and you can implement your own Codec to support more formats. The specific source code is in [encoding](https://github.com/go-kratos/kratos/tree/main/encoding)。
 
 These formats are battery-included.
 * json
