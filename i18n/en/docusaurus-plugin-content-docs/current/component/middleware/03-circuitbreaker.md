@@ -19,7 +19,7 @@ Circuit breaker middleware for providing client-side breaker functionality, with
 #### `WithGroup`
 
 breaker depends on `container/group` to implement the use of mutually independent breaker for different `Operation`.
-use `WithGroup` to configure a costom group to replace the default breaker algorithm：
+use `WithGroup` to configure a custom group to replace the default breaker algorithm：
 
 ```go
 // WithGroup with circuit breaker group.
