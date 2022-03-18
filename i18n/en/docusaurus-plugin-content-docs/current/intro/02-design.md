@@ -1,7 +1,7 @@
 ---
 id: design
 title: design
-description: 本篇文档阐述Kratos的设计理念，介绍Kratos项目的整体情况和主要组件
+description: This document describes the design philosophy of Kratos and introduces the overall situation and main components of the project.
 keywords:
   - Go 
   - Kratos
@@ -12,12 +12,12 @@ keywords:
   - gRPC
   - HTTP
 ---
-本篇文档阐述Kratos的设计理念，介绍Kratos项目的整体情况和主要组件。
+This document describes the design philosophy of Kratos and introduces the overall situation and main components of the project.
 
-## 设计哲学
-Kratos是一个Go语言实现的微服务框架，说得更准确一点，它更类似于一个使用Go构建微服务的工具箱，开发者可以按照自己的习惯选用或定制其中的的组件，来打造自己的微服务。也正是由于这样的原因，Kratos并不绑定于特定的基础设施，不限定于某种注册中心，或数据库ORM等，所以您可以十分轻松地将任意库集成进项目里，与Kratos共同运作。
+## Design Philosophy
+Kratos is a microservice framework implemented in Go language. To be more precise, it's more like a toolbox for building microservices in Go. Developers can choose or customize the components according to their own habits to create their own microservices. Kratos is not bound to a specific infrastructure, not limited to a certain registry, or database ORM. So that you can easily integrate any library into your project and work with Kratos.
 
-围绕这样的核心设计理念，我们设计了如下的项目生态：
+Around this core design concept, we have designed the following project ecology：
 
 * [kratos](https://github.com/go-kratos/kratos) Kratos框架核心，主要包含了基础的CLI工具，内置的HTTP/gRPC接口生成和服务生命周期管理，提供链路追踪、配置文件、日志、服务发现、监控等组件能力和相关接口定义。
 * [contrib](https://github.com/go-kratos/kratos/tree/main/contrib) 基于上述核心定义的基础接口，对配置文件、日志、服务发现、监控等服务进行具体实现所形成的一系列插件，可以直接使用它们，也可以参考它们的代码，做您需要的服务的适配，从而集成进kratos项目中来。
