@@ -24,30 +24,38 @@ type Discovery interface {
 	Watch(ctx context.Context, serviceName string) (Watcher, error)
 }
 ```
+
 Implementations:
 * [consul](https://github.com/go-kratos/kratos/tree/main/contrib/registry/consul)
 * [discovery](https://github.com/go-kratos/kratos/tree/main/contrib/registry/discovery)
 * [etcd](https://github.com/go-kratos/kratos/tree/main/contrib/registry/etcd)
 * [kubernetes](https://github.com/go-kratos/kratos/tree/main/contrib/registry/kubernetes)
 * [nacos](https://github.com/go-kratos/kratos/tree/main/contrib/registry/nacos)
+* [polaris](https://github.com/go-kratos/kratos/tree/main/contrib/registry/polaris)
 * [zookeeper](https://github.com/go-kratos/kratos/tree/main/contrib/registry/zookeeper)
 
 ### Usage
 
 #### Register a Service
+
 Create a Registrar(e.g. consul) and inject it to Kratos applications. Then the framework will do register and deregister automatically.
 
 ```go
-import consul "github.com/go-kratos/consul/registry"
-import	"github.com/hashicorp/consul/api"
+import (
+    consul "github.com/go-kratos/consul/registry"
+    "github.com/hashicorp/consul/api"
+)
 
-cli, err := api.NewClient(api.DefaultConfig())
+// new consul client
+client, err := api.NewClient(api.DefaultConfig())
 if err != nil {
 	panic(err)
 }
-reg := consul.New(cli)
+// new reg with consul client
+reg := consul.New(client)
 
 app := kratos.New(
+    // service-name
     kratos.Name(Name),
     kratos.Version(Version),
     kratos.Metadata(map[string]string{}),
@@ -56,23 +64,89 @@ app := kratos.New(
         hs,
         gs,
     ),
+    // with registrar
     kratos.Registrar(reg),
 )
 ```
 
+If use etcd or any other implementations, you can create a Registrar with other client.
+
+```go
+import (
+    "github.com/go-kratos/kratos/contrib/registry/etcd/v2"
+    clientv3 "go.etcd.io/etcd/client/v3"
+)
+
+// new etcd client
+client, err := clientv3.New(clientv3.Config{
+    Endpoints: []string{"127.0.0.1:2379"},
+})
+if err != nil {
+    panic(err)
+}
+// new reg with etcd client
+reg := etcd.New(client)
+
+app := kratos.New(
+    // service-name
+    kratos.Name(Name),
+    kratos.Version(Version),
+    kratos.Metadata(map[string]string{}),
+    kratos.Logger(logger),
+    kratos.Server(
+        hs,
+        gs,
+    ),
+    // with registrar
+    kratos.Registrar(reg),
+)
+```
 
 #### Service Discovery (gRPC)
+
 Create a Registrar(e.g. consul), create an Endpoint with url format as `<schema>://[namespace]/<service-name>`, then use `grc.WithDiscovery` and `grpc.WithEndpoint` as the options of the Dial method to get the gRPC connection.
 
 ```go
-import "github.com/go-kratos/kratos/transport/http"
-import "github.com/go-kratos/kratos/v2/transport/grpc"
+import (
+    "context"
 
-cli, err := api.NewClient(api.DefaultConfig())
+    consul "github.com/go-kratos/consul/registry"
+    "github.com/go-kratos/kratos/v2/transport/grpc"
+    "github.com/hashicorp/consul/api"
+)
+
+// new consul client
+client, err := api.NewClient(api.DefaultConfig())
 if err != nil {
 	panic(err)
 }
-dis := consul.New(cli)
+// new dis with consul client
+dis := consul.New(client)
+
+endpoint := "discovery://default/provider"
+conn, err := grpc.Dial(context.Background(), grpc.WithEndpoint(endpoint), grpc.WithDiscovery(dis))
+if err != nil {
+    panic(err)
+}
+```
+
+It is the same as Register, if use etcd or any other implementations, you can create a Discovery with other client.
+
+```go
+import (
+    "github.com/go-kratos/kratos/contrib/registry/etcd/v2"
+    clientv3 "go.etcd.io/etcd/client/v3"
+)
+
+// new etcd client
+client, err := clientv3.New(clientv3.Config{
+    Endpoints: []string{"127.0.0.1:2379"},
+})
+if err != nil {
+    panic(err)
+}
+// new dis with etcd client
+dis := etcd.New(client)
 
 endpoint := "discovery://default/provider"
 conn, err := grpc.Dial(context.Background(), grpc.WithEndpoint(endpoint), grpc.WithDiscovery(dis))
