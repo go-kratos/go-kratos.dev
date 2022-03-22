@@ -52,7 +52,7 @@ type Discovery interface {
 
 ```go
 import (
-    consul "github.com/go-kratos/consul/registry"
+    consul "github.com/go-kratos/kratos/contrib/registry/consul/v2"
     "github.com/hashicorp/consul/api"
 )
 
@@ -120,7 +120,7 @@ app := kratos.New(
 import (
     "context"
 
-    consul "github.com/go-kratos/consul/registry"
+    consul "github.com/go-kratos/kratos/contrib/registry/consul/v2"
     "github.com/go-kratos/kratos/v2/transport/grpc"
     "github.com/hashicorp/consul/api"
 )
