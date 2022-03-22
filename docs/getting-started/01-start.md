@@ -3,7 +3,7 @@ id: start
 title: 项目初始化
 description: Kratos 微服务框架，快速创建项目代码，生成 Go 工程化项目
 keywords:
-  - Go 
+  - Go
   - Kratos
   - Toolkit
   - Framework
@@ -31,25 +31,22 @@ go env -w GO111MODULE=on
 
 ### 安装 kratos 命令工具
 
-> 以下三种方式选其一
+> 以下两种方式选其一
 
-#### 1. go get 安装
+#### 1. go install 安装
 
-```bash
-go get -u github.com/go-kratos/kratos/cmd/kratos/v2@latest
-```
-#### 2. go install 安装
 ```bash
 go install github.com/go-kratos/kratos/cmd/kratos/v2
-# go 1.16版本以上需要指定版本号或使用最新版
-go install github.com/go-kratos/kratos/cmd/kratos/v2@latest
 ```
-#### 3. 源码编译安装
+
+#### 2. 源码编译安装
+
 ```bash
 git clone https://github.com/go-kratos/kratos
 cd kratos
 make install
 ```
+
 ### 创建项目
 ```bash
 # 创建项目模板

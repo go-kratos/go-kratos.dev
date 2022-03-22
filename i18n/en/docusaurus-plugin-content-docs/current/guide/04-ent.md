@@ -10,7 +10,7 @@ Any ORM or library is supported in Kratos project for data accessing. Please ref
 ### Install Ent
 
 ```bash
-go get entgo.io/ent/cmd/ent
+go install entgo.io/ent/cmd/ent
 ```
 
 ### Create Schema

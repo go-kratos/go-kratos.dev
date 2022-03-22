@@ -36,8 +36,6 @@ APIs 响应错误时可以直接使用 errors 包中的 New 方法来声明一�
 # 如果电脑中没有protoc-gen-go需要先安装
 # go install google.golang.org/protobuf/cmd/protoc-gen-go
 go install github.com/go-kratos/kratos/cmd/protoc-gen-go-errors/v2
-# 或者
-go get -u github.com/go-kratos/kratos/cmd/protoc-gen-go-errors/v2
 ```
 
 ### 错误定义
@@ -59,7 +57,7 @@ option java_package = "api.helloworld";
 enum ErrorReason {
   // 设置缺省错误码
   option (errors.default_code) = 500;
-  
+
   // 为某个枚举单独设置错误码
   USER_NOT_FOUND = 0 [(errors.code) = 404];
 

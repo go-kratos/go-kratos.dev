@@ -12,7 +12,11 @@ Generating the initialization codes by *Wire* can reduce the coupling among comp
 ### Installation
 
 ```bash
-go get github.com/google/wire/cmd/wire
+# Import into project
+go get -u github.com/google/wire
+
+# Install cmd
+go install github.com/google/wire/cmd/wire
 ```
 
 ### Terms
@@ -41,7 +45,7 @@ In Kratos project, there are four major modules, *server, service, biz and data*
 A *ProviderSet* should be provided in every module so that wire could scan them and generate the DI codes.
 
 First, you should define ProviderSet in the entry of every module.
-The 
+The
 ```go
 -data
 --data.go    // var ProviderSet = wire.NewSet(NewData, NewGreeterRepo)
