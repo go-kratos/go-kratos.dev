@@ -19,7 +19,7 @@ Circuit breaker middleware for providing client-side breaker functionality, with
 #### `WithGroup`
 
 breaker depends on `container/group` to implement the use of mutually independent breaker for different `Operation`.
-use `WithGroup` to configure a costom group to replace the default breaker algorithm：
+use `WithGroup` to configure a costom Breaker to replace the default breaker algorithm：
 
 ```go
 // WithGroup with circuit breaker group.
@@ -41,17 +41,41 @@ opt := &options{
 }
 ```
 
+**group.Group** is a `lazy load container` . The instance of **group.Group** should be implement the **CircuitBreaker** interface in `aegis/circuitbreaker` 
+
+```go
+// CircuitBreaker is a circuit breaker.
+type CircuitBreaker interface {
+	Allow() error // it means rejected when return error
+  MarkSuccess() 
+	MarkFailed() 
+}
+```
+
+
+
+### 
+
 ### Usage
 
 #### Use circuit breaker in client
 
 ```go
+// http
 conn, err := http.NewClient(
 	context.Background(),
 	http.WithMiddleware(
 		circuitbreaker.Client(),
 	),
 	http.WithEndpoint("127.0.0.1:8000"),
+)
+// grpc 
+conn,err := transgrpc.Dial(
+  context.Background(), 
+	grpc.WithMiddleware(
+		circuitbreaker.Client(),
+	),
+  grpc.WithEndpoint("127.0.0.1:9000"),
 )
 ```
 
