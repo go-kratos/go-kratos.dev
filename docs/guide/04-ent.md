@@ -3,7 +3,7 @@ id: ent
 title: Ent 数据库框架使用
 description: Ent 是 Facebook 开源的一个简单易用的 Database 实体框架
 keywords:
-  - Go 
+  - Go
   - Kratos
   - Toolkit
   - Framework
@@ -26,7 +26,7 @@ keywords:
 ### 安装工具
 
 ```bash
-go get entgo.io/ent/cmd/ent
+go install entgo.io/ent/cmd/ent
 ```
 
 ### 创建实体 Schema

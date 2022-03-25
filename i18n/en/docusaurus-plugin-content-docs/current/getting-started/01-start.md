@@ -21,22 +21,15 @@ If you faced with network problem (especially you are in China Mainland), please
 
 ## Install Kratos tool
 
->Choose one of the following three ways
+> You can do it either way.
 
-#### 1. go get installation
+#### 1. go install installation
 
-```bash
-# install kratos CLI tool
-go get -u github.com/go-kratos/kratos/cmd/kratos/v2@latest
-```
-#### 2. go install installation
 ```bash
 go install github.com/go-kratos/kratos/cmd/kratos/v2
-# For go version 1.16 or above,you need to specify the version number or use the latest version
-go install github.com/go-kratos/kratos/cmd/kratos/v2@latest
 ```
 
-#### 3. Source code compilation and installation
+#### 2. Source code compilation and installation
 
 ```bash
 git clone https://github.com/go-kratos/kratos
