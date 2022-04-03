@@ -1,7 +1,7 @@
 ---
 id: selector
 title: 路由与负载均衡
-description: 路由与负载均衡主要的接口是Selector，但在同目录下也提供了一个默认的Selector实现，该实现可以通过替换NodeBuilder、Filter、Balancer和来分别实现节点权重计算、路由过滤、负载均衡算法的可插拔
+description: 路由与负载均衡主要的接口是 Selector，但在同目录下也提供了一个默认的 Selector 实现，该实现可以通过替换 NodeBuilder、Filter、Balancer 来分别实现节点权重计算、路由过滤、负载均衡算法的可插拔
 keywords:
   - Go
   - Kratos
@@ -16,11 +16,11 @@ keywords:
 ---
 ### 接口实现 
 
-路由与负载均衡主要的接口是Selector，在同目录下也提供了一个默认的Selector实现，该实现可以通过替换NodeBuilder、Filter、Balancer和来分别实现节点权重计算算法、服务路由过滤策略、负载均衡算法的可插拔
+路由与负载均衡主要的接口是 Selector，在同目录下也提供了一个默认的 Selector 实现，该实现可以通过替换 NodeBuilder、Filter、Balancer 来分别实现节点权重计算算法、服务路由过滤策略、负载均衡算法的可插拔
 
 ```go
 type Selector interface {
-  // Selector 内部维护的服务节点列表通过Rebalancer接口来更新
+  // Selector 内部维护的服务节点列表通过 Rebalancer 接口来更新
   Rebalancer
 
   // Select nodes
@@ -46,16 +46,16 @@ type Rebalancer interface {
 import	"github.com/go-kratos/kratos/v2/selector/p2c"
 import	"github.com/go-kratos/kratos/v2/selector/filter"
 
-// 创建路由Filter：筛选版本号为"2.0.0"的实例
+// 创建路由 Filter：筛选版本号为"2.0.0"的实例
 filter :=  filter.Version("2.0.0")
-// 创建P2C负载均衡算法Selector，并将路由Filter注入
+// 创建 P2C 负载均衡算法 Selector，并将路由 Filter 注入
 selector := p2c.New(p2c.WithFilter(filter))
 
 hConn, err := http.NewClient(
   context.Background(),
   http.WithEndpoint("discovery:///helloworld"),
   http.WithDiscovery(r),
-  // 通过http.WithSelector将Selector注入HTTP client中
+  // 通过 http.WithSelector 将 Selector 注入 HTTP Client 中
   http.WithSelector(
     p2c.New(p2c.WithFilter(filter.Version("2.0.0"))),
   )
@@ -69,16 +69,16 @@ hConn, err := http.NewClient(
 import	"github.com/go-kratos/kratos/v2/selector/p2c"
 import	"github.com/go-kratos/kratos/v2/selector/filter"
 
-// 创建路由Filter：筛选版本号为"2.0.0"的实例
+// 创建路由 Filter：筛选版本号为"2.0.0"的实例
 filter :=  filter.Version("2.0.0")
 
 conn, err := grpc.DialInsecure(
   context.Background(),
   grpc.WithEndpoint("discovery:///helloworld"),
   grpc.WithDiscovery(r),
-  // 由于gRPC框架的限制只能使用全局balancer name的方式来注入selector
+  // 由于 gRPC 框架的限制，只能使用全局 balancer name 的方式来注入 selector
   grpc.WithBalancerName(wrr.Name),
-  // 通过grpc.WithFilter注入路由Filter
+  // 通过 grpc.WithFilter 注入路由 Filter
   grpc.WithFilter(filter),
 )
 ```
