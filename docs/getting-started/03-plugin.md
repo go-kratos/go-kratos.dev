@@ -19,6 +19,7 @@ Kratos提供了一系列插件帮助您增强微服务的功能、或与其它�
 * [consul](https://github.com/go-kratos/kratos/tree/main/contrib/registry/consul)
 * [discovery](https://github.com/go-kratos/kratos/tree/main/contrib/registry/discovery)
 * [etcd](https://github.com/go-kratos/kratos/tree/main/contrib/registry/etcd)
+* [eureka](https://github.com/go-kratos/kratos/tree/main/contrib/registry/eureka)
 * [kubernetes](https://github.com/go-kratos/kratos/tree/main/contrib/registry/kubernetes)
 * [nacos](https://github.com/go-kratos/kratos/tree/main/contrib/registry/nacos)
 * [polaris](https://github.com/go-kratos/kratos/tree/main/contrib/registry/polaris)
