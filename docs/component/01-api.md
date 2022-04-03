@@ -17,7 +17,7 @@ API 与用户的通信协议，通常是 REST API 和 RPC API 作为传输层协
 
 也就是通过定义 proto 即可使用 REST API 和 RPC API，通过类似 Google API 的仓库方式进行 API Schema 的管理。
 
-### 定义接口
+## 定义接口
 
 通过 Protobuf IDL 定义对应的 REST API 和 gRPC API：
 
@@ -62,7 +62,7 @@ message HelloReply {
   string message = 1;
 }
 ```
-### 生成接口
+## 生成接口
 
 ```shell
 # 生成 proto 模板
@@ -73,7 +73,7 @@ kratos proto client api/helloworld/v1/greeter.proto
 kratos proto server api/helloworld/v1/greeter.proto -t internal/service
 ```
 
-```apl
+```api
 client:
 |____api
 | |____helloworld
@@ -88,9 +88,9 @@ server:
 | | |____greeter.go
 ```
 
-### 注册接口
+## 注册接口
 
-**HTTP API** 是通过 protoc-gen-go-http 插件进行生成 http.Handler，然后可以注册到 HTTPServer 中：
+**HTTP API** 是通过 protoc-gen-go-http 插件进行生成 http.Handler，然后可以注册到 HTTP Server 中：
 
 ```go
 import "github.com/go-kratos/kratos/v2/transport/http"
@@ -100,7 +100,7 @@ srv := http.NewServer(http.Address(":8000"))
 srv.HandlePrefix("/", v1.NewGreeterHandler(greeter))
 ```
 
-**gRPC API** 是通过 protoc-gen-go-grpc 插件进行生成 gRPC Registrar，然后可以注册到 GRPCServer 中；
+**gRPC API** 是通过 protoc-gen-go-grpc 插件进行生成 gRPC Register，然后可以注册到 GRPC Server 中；
 
 ```go
 import "github.com/go-kratos/kratos/v2/transport/grpc"
