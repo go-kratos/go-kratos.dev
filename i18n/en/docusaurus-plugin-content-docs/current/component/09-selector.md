@@ -14,7 +14,7 @@ keywords:
   - Route
   - Selector
 ---
-### Interface implementation
+### Interface Implementation
 
 The main interface for routing and load balancing is Selector, and a default Selector implementation is also provided in the same directory. This implementation can implement node weight calculation algorithm, service routing filtering strategy, and load balancing algorithm by replacing NodeBuilder, Filter, Balancer, and Pluggable
 
@@ -56,7 +56,7 @@ hConn, err := http.NewClient(
   context.Background(),
   http.WithEndpoint("discovery:///helloworld"),
   http.WithDiscovery(r),
-  // Inject Selector into HTTP client through http.WithSelector
+  // Inject Selector into HTTP Client through http.WithSelector
   http.WithSelector(
     p2c.New(p2c.WithFilter(filter.Version("2.0.0"))),
   )
