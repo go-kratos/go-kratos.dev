@@ -14,11 +14,11 @@ keywords:
 ---
 The framework provides open API/Swagger use in two ways: 1. Provide swagger interface on service, 2. Use the protoc plug-in to generate the swagger.json file. Here are two ways to do this.
 
-### Method 1: Use plug-ins to provide the swagger API 
+### Method 1: Use plug-ins to provide the swagger API
 Plugin [swagger-api](https://github.com/go-kratos/swagger-api) provides a range of swagger-related APIs, as well as the corresponding UI interface.
 
 #### Installation
-First install this plugin.
+First, install the `swagger-api` plugin on your project.
 ```bash
 go get -u github.com/go-kratos/swagger-api
 ```
@@ -26,7 +26,7 @@ go get -u github.com/go-kratos/swagger-api
 Then initialize and register in newHTTPServer of `internal/server/http.go`, and try to put this route registration first to avoid match failed.
 
 ```go
-import	"github.com/go-kratos/swagger-api/openapiv2"
+import "github.com/go-kratos/swagger-api/openapiv2"
 
 openAPIhandler := openapiv2.NewHandler()
 srv.HandlePrefix("/q/", openAPIhandler)
@@ -38,9 +38,9 @@ Open `/q/swagger-ui/` in Web Browser in order to access Swagger UI
 The new project Makefile has been integrated by default with the commands associated with generating swagger.json, and here's how to use them
 
 #### Installation
-First, install the protoc plug-in
+First, install the protoc plug-in globally.
 ```bash
-go get -u github.com/grpc-ecosystem/grpc-gateway/v2/protoc-gen-openapiv2
+go install github.com/grpc-ecosystem/grpc-gateway/v2/protoc-gen-openapiv2
 ```
 
 #### Generation

@@ -23,10 +23,9 @@ Error in errors pacakge implements GRPCStatus() interface,The conversion between
 ```
 
 ### Installation
+
 ```bash
 go install github.com/go-kratos/kratos/cmd/protoc-gen-go-errors/v2
-# or
-go get -u github.com/go-kratos/kratos/cmd/protoc-gen-go-errors/v2
 ```
 
 ### Error Defination
@@ -47,7 +46,7 @@ option java_package = "api.helloworld";
 enum ErrorReason {
   // Set default error code.
   option (errors.default_code) = 500;
-  
+
   // Set the error code separately for an enumeration.
   USER_NOT_FOUND = 0 [(errors.code) = 404];
 

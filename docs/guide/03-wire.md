@@ -3,7 +3,7 @@ id: wire
 title: Wire 依赖注入
 description: Kratos 项目模块依赖注入，快速初始化 Go 项目模板，Go 依赖注入工具
 keywords:
-  - Go 
+  - Go
   - Kratos
   - Toolkit
   - Framework
@@ -22,7 +22,11 @@ keywords:
 ### 安装工具
 
 ```bash
-go get github.com/google/wire/cmd/wire
+# 导入到项目中
+go get -u github.com/google/wire
+
+# 安装命令
+go install github.com/google/wire/cmd/wire
 ```
 
 ### 工作原理

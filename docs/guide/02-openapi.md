@@ -18,14 +18,14 @@ keywords:
 [swagger-api](https://github.com/go-kratos/swagger-api)插件提供了一系列swagger相关的API，以及相应的UI界面
 
 #### 安装
-首先安装插件
+首先安装插件到项目中
 ```bash
 go get -u github.com/go-kratos/swagger-api
 ```
 
 然后在`internal/server/http.go`的NewHTTPServer中进行初始化和注册，请尽量将这个路由注册放在最前面，以免匹配不到。
 ```go
-import	"github.com/go-kratos/swagger-api/openapiv2"
+import "github.com/go-kratos/swagger-api/openapiv2"
 
 openAPIhandler := openapiv2.NewHandler()
 srv.HandlePrefix("/q/", openAPIhandler)
@@ -37,9 +37,9 @@ srv.HandlePrefix("/q/", openAPIhandler)
 新建项目Makefile中已经默认集成了生成swagger.json的相关命令，这里也介绍下具体的使用方式
 
 #### 安装
-首先安装protoc插件
+首先全局安装protoc插件
 ```bash
-go get -u github.com/grpc-ecosystem/grpc-gateway/v2/protoc-gen-openapiv2
+go install github.com/grpc-ecosystem/grpc-gateway/v2/protoc-gen-openapiv2
 ```
 
 #### 生成

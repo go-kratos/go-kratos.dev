@@ -109,7 +109,7 @@ message HelloReply {
 }
 ```
 
-需要注意，虽然Protobuf定义的API的可靠性更强，但字段结构灵活性相对JSON要弱一些，因此如果您有诸如文件上传接口，或者某些无法对应到proto的JSON结构需要使用，我门还提供了“逃生门”，在我们的Protobuf体系之外定义这些接口，实现为普通的http.Handler并且挂载到路由上，或者用struct来定义您的字段。可以参考我们的[upload例子](https://github.com/go-kratos/kratos/blob/main/examples/http/upload/main.go)进行实现。
+需要注意，虽然Protobuf定义的API的可靠性更强，但字段结构灵活性相对JSON要弱一些，因此如果您有诸如文件上传接口，或者某些无法对应到proto的JSON结构需要使用，我门还提供了“逃生门”，在我们的Protobuf体系之外定义这些接口，实现为普通的http.Handler并且挂载到路由上，或者用struct来定义您的字段。可以参考我们的[upload例子](https://github.com/go-kratos/examples/blob/main/http/upload/main.go)进行实现。
 
 ## 元信息传递
 服务之间的API调用，如果有某些元信息需要传递过去，而不是写在payload消息中，可以使用Metadata包进行字段设置和提取，具体细节参考[元信息传递文档](https://go-kratos.dev/docs/component/metadata)
