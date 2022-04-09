@@ -1,6 +1,6 @@
 ---
 id: design
-title: design
+title: Design
 description: This document describes the design philosophy of Kratos and introduces the overall situation and main components of the project.
 keywords:
   - Go 
@@ -25,10 +25,10 @@ Around this core design concept, we have designed the following project ecology�
 * [layout](https://github.com/go-kratos/kratos-layout) 我们设计的一个默认的项目模板，它包含一个参考了DDD和简洁架构设计的项目结构、Makefile脚本和Dockerfile文件。但这个项目模板不是必需的，您可以任意修改它，或使用自己设计的项目结构，Kratos依然可以正常工作。框架本身不对项目结构做任何假设和限制，您可以按照自己的想法来使用，具有很强的可定制性。
 * [gateway](https://github.com/go-kratos/gateway) 这个是我们刚刚起步，用Go开发的API Gateway，后续您可以使用它来作为您Kratos微服务的网关，用于微服务API的治理，项目正在施工中，欢迎关注。
 
-## 仓库、文档和社区
-* GitHub仓库：[https://github.com/go-kratos](https://github.com/go-kratos)
-* 文档：[https://go-kratos.dev/](https://go-kratos.dev/)
-* 微信群：[go-kratos 官方微信群](https://github.com/go-kratos/kratos/issues/682)
+## Community
+* GitHub：[https://github.com/go-kratos](https://github.com/go-kratos)
+* Documents：[https://go-kratos.dev/](https://go-kratos.dev/)
+* Wechat：[go-kratos Official WeChat Group](https://github.com/go-kratos/kratos/issues/682)
 * Discord：[go-kratos](https://discord.com/invite/BWzJsUJ)
 
 ## 为什么v2完全重新设计
@@ -48,34 +48,37 @@ Around this core design concept, we have designed the following project ecology�
 
 不破不立，v2是一次从内到外的彻底革新，我们无法在旧版本上修修补补，而是选择重新设计和开发新版本。而目前v2版本也已经在很多生产环境使用，我们也将持续迭代和完善这个框架，同时也更欢迎各位开发者参与进来，一起让它变得更好。
 
-## 数据库/缓存/消息队列/...
-正如前文提到的，Kratos框架不限制您使用任何第三方库来进行项目开发，因此您可以根据喜好来选择库进行集成。我们也会逐步针对更多被广泛使用的第三方库开发插件。
+## Database/Cache/Message Queue/...
 
-这里给出一些被广泛使用的库供参考：
+As mentioned earlier, the Kratos framework does not restrict you to use any third-party library for project development, so you can choose a library for integration according to your preference. We will also gradually develop plugins for more widely used third-party libraries.
 
-数据库：
-* [database/sql](https://pkg.go.dev/database/sql) 官方库
+Here is some popular libary:
+
+Database:
+* [database/sql](https://pkg.go.dev/database/sql)
 * [gorm](https://github.com/go-gorm/gorm) 
 * [ent](https://github.com/ent/ent)
 
-缓存：
+Cache:
 * [go-redis](https://github.com/go-redis/redis)
 * [redigo](https://github.com/gomodule/redigo)
 * [gomemcache](https://github.com/bradfitz/gomemcache)
 
-消息队列：
-* [sarama](https://github.com/Shopify/sarama) kafka客户端
+Message Queue:
+* [sarama](https://github.com/Shopify/sarama) kafka client
 * [kafka-go](https://github.com/segmentio/kafka-go)
 
-其它更多的优秀go库，可以在[awesome-go](https://github.com/avelino/awesome-go)这个仓库中找找。
+Want more？ Please visit [awesome-go](https://github.com/avelino/awesome-go)
 
-## CLI工具
-kratos命令目前主要用于从模板创建项目，维护依赖包版本等。具体请参考[文档](https://go-kratos.dev/docs/getting-started/usage)
+## CLI Tool
 
-## Protobuf定义API
-Kratos使用Protobuf进行API定义。Protobuf是由Google开发的一种语言中立的数据序列化协议。它有结构定义清晰、可扩展性好、体积小、性能优秀等特点，在众多公司和项目被广泛使用。
+CLI are currently mainly used to create projects from templates, maintain dependency package versions, etc. For more details please visit [Document](https://go-kratos.dev/docs/getting-started/usage)
 
-在使用Kratos的项目中，您将使用如下的IDL进行您的接口定义，并且通过`protoc`工具生成相应的`.pb.go`文件，其中包含根据定义生成的的服务端和客户端代码。随后您就可以在自己的项目内部注册服务端代码使用，或引用客户端代码进行远程调用。
+## API
+
+Kratos uses Protobuf for API definition. Protobuf is a language-neutral data serialization protocol developed by Google. It has the characteristics of clear structure definition, good scalability, small size, and excellent performance, and is widely used in many companies and projects.
+
+In a project using Kratos, you will use the following IDL for your interface definition, and use the `protoc` tool to generate the corresponding `.pb.go` file, which contains the server and client code generated according to the definition. Then you can register server-side code for use within your own project, or reference client-side code to make remote calls.
 
 Kratos默认仅生成gRPC接口的代码，如果需要生成HTTP代码，请在proto文件中使用`option (google.api.http)`来添加HTTP部分的定义后再进行生成。默认情况下，HTTP接口将使用JSON作为序列化格式，如果想使用其它序列化格式（form，XML等），请参考文档[序列化](https://go-kratos.dev/docs/component/encoding)进行相应的配置即可。
 
@@ -111,10 +114,10 @@ message HelloReply {
 
 需要注意，虽然Protobuf定义的API的可靠性更强，但字段结构灵活性相对JSON要弱一些，因此如果您有诸如文件上传接口，或者某些无法对应到proto的JSON结构需要使用，我门还提供了“逃生门”，在我们的Protobuf体系之外定义这些接口，实现为普通的http.Handler并且挂载到路由上，或者用struct来定义您的字段。可以参考我们的[upload例子](https://github.com/go-kratos/kratos/blob/main/examples/http/upload/main.go)进行实现。
 
-## 元信息传递
+## Metadata
 服务之间的API调用，如果有某些元信息需要传递过去，而不是写在payload消息中，可以使用Metadata包进行字段设置和提取，具体细节参考[元信息传递文档](https://go-kratos.dev/docs/component/metadata)
 
-## 错误处理
+## Error Handling
 Kratos的[errors](https://github.com/go-kratos/kratos/tree/main/errors)模块提供了error的封装。框架也预定义了一系列[标准错误](https://github.com/go-kratos/kratos/blob/main/errors/types.go)供使用。
 
 
@@ -197,7 +200,7 @@ if api.IsUserNotFound(err) {
 })
 ```
 
-## 配置文件
+## Configuration
 Kratos提供了统一的接口，支持配置文件的加载和变更订阅。
 
 通过实现[Source 和 Watcher](https://github.com/go-kratos/kratos/blob/main/config/source.go)即可实现任意配置源（本地或远程）的配置文件加载和变更订阅。
@@ -211,7 +214,7 @@ Kratos提供了统一的接口，支持配置文件的加载和变更订阅。
 * [nacos](https://github.com/go-kratos/kratos/tree/main/contrib/config/nacos)
 
 
-## 服务注册&服务发现
+## Registrar&Discovery
 Kratos定义了统一的注册接口，通过实现[Registrar和Discovery](https://github.com/go-kratos/kratos/blob/main/registry/registry.go)，您可以很轻松地将Kratos接入到您的注册中心中。
 
 您也可以直接使用我们已经实现好的插件：
@@ -224,7 +227,7 @@ Kratos定义了统一的注册接口，通过实现[Registrar和Discovery](https
 * [zookeeper](https://github.com/go-kratos/kratos/tree/main/contrib/registry/zookeeper)
 
 
-## 日志
+## Log
 Kratos的日志模块由两部分组成：
 
 1. [Logger](https://github.com/go-kratos/kratos/blob/main/log/log.go)：底层日志接口，用于快速适配各种日志库到框架中来，仅提供一个最简单的Log方法。
@@ -236,7 +239,7 @@ Kratos的日志模块由两部分组成：
 * [fluent](https://github.com/go-kratos/kratos/tree/main/contrib/log/fluent)
 * [zap](https://github.com/go-kratos/kratos/tree/main/contrib/log/zap)
 
-## 监控
+## Metrics
 监控告警方面，您可以通过实现[metrics相关接口](https://github.com/go-kratos/kratos/blob/main/metrics/metrics.go)将服务的统计数据上报给监控平台。
 
 也可以直接使用我们已经实现好的插件：
@@ -244,24 +247,26 @@ Kratos的日志模块由两部分组成：
 * [datadog](https://github.com/go-kratos/kratos/tree/main/contrib/metrics/datadog)
 * [prometheus](https://github.com/go-kratos/kratos/tree/main/contrib/metrics/prometheus)
 
-## 链路追踪
+## Tracing
 Kratos使用[OpenTelemetry](https://opentelemetry.io/)作为分布式链路追踪所使用的标准，您可以通过对client和server[配置tracing](https://go-kratos.dev/docs/component/middleware/tracing)来将服务接入到链路追踪平台（如[jaeger](https://www.jaegertracing.io/)等），从而对服务的接口调用关系，耗时，错误等进行追踪。
 
-## 负载均衡
+## Load Balancing
 Kratos内置了若干种[负载均衡算法](https://github.com/go-kratos/kratos/tree/main/selector)，如Weighted round robin（默认）、P2C，Random等，您可以通过[在client初始化时配置](https://go-kratos.dev/docs/component/selector)来使用他们。
 
-## 限流熔断
+## Ratelimit
 Kratos提供了[限流ratelimit](https://go-kratos.dev/docs/component/middleware/ratelimit)和[熔断circuitbreaker](https://go-kratos.dev/docs/component/middleware/circuitbreaker)中间件，用于微服务出现异常故障时自动对流量进行限制，提升服务的健壮性，避免雪崩。这两个中间件使用的算法，也可以在我们的可用性算法仓库[aegis](https://github.com/go-kratos/aegis)中找到，独立于Kratos直接使用。
 
-## 中间件
+## Middleware
 您可以通过Kratos的middleware机制，统一微服务接口的某些共同逻辑。上面提到的功能插件，您可以通过实现[Middleware](https://github.com/go-kratos/kratos/blob/main/middleware/middleware.go)编写Kratos能够使用的中间件。
 
 同时在仓库的[middleware](https://github.com/go-kratos/kratos/tree/main/middleware)目录下，我们也提供了一系列中间件供您使用。
 
-## 插件
-除了上述提到的插件外，我们还提供了一些其它插件，完整的插件列表请参考文档[社区插件](https://go-kratos.dev/docs/getting-started/plugin)
+## Plugins
 
-## 示例代码
-如果您看过文档后，对某些功能的使用仍有疑惑，或者是希望寻找一些用Kratos写项目的灵感，在[examples仓库](https://github.com/go-kratos/examples)的目录下我们提供了很多代码供参考。
+In addition to the plugins mentioned above, we also provide some other plugins. Please visit [Plugins](https://go-kratos.dev/docs/getting-started/plugin)
+
+## Examples
+
+If you still have doubts about the use of some components after reading the documentation, or want to find some inspiration for writing projects in Kratos, we provide a lot of code for reference in the [examples repository](https://github.com/go-kratos/examples) directory.
 
 您也可以通过文档中的[示例代码清单](https://go-kratos.dev/docs/getting-started/examples)页面来查阅有哪些示例。
