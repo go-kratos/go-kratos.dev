@@ -7,7 +7,7 @@ slug: /
 Kratos is a microservice-oriented governance framework implemented by Golang, which offers convenient capabilities to help you quickly build a bulletproof application from scratch.
 
 
->The name is inspired by the game God of War which is based on Greek myths, tells the Kratos from mortals to become the God of War and launches the adventure of killing gods.
+>The name is inspired by the game God of War which is based on Greek myths, tells the adventures of Kratos who became a god of war from a mortal and launched a god-killing slaughter.
 
 
 ## Goals
