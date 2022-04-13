@@ -131,13 +131,13 @@ Kratos的[errors](https://github.com/go-kratos/kratos/tree/main/errors)模块提
 在API返回的错误信息中，以HTTP接口为例，消息结构大概是长这个样子的：
 ```json
 {
-    // 错误码，跟 http-status 一致，并且在 grpc 中可以转换成 grpc-status
+    // Error code, which is the same as HTTP-status and can be converted to grPC-status in GRPC.
     "code": 500,
-    // 错误原因，定义为业务判定错误码
+    // The error cause is defined as the service decision error code. 
     "reason": "USER_NOT_FOUND",
-    // 错误信息，为用户可读的信息，可作为用户提示内容
+    // Error messages are user-readable and can be used as user prompts. 
     "message": "invalid argument error",
-    // 错误元信息，为错误添加附加可扩展信息
+    // Error meta-information, which adds additional extensible information for errors.
     "metadata": {"some-key": "some-value"}
 }
 ```
@@ -155,10 +155,10 @@ import "errors/errors.proto";
 option go_package = "github.com/go-kratos/kratos/examples/blog/api/v1;v1";
 
 enum ErrorReason {
-  // 设置缺省错误码
+  // default error code
   option (errors.default_code) = 500;
   
-  // 为某个枚举单独设置错误码
+  // custome error code
   USER_NOT_FOUND = 0 [(errors.code) = 404];
   CONTENT_MISSING = 1 [(errors.code) = 400];;
 }
@@ -167,6 +167,7 @@ enum ErrorReason {
 错误创建：
 ```go
 // 通过 errors.New() 响应错误
+// Created by errors.New()
 errors.New(500, "USER_NAME_EMPTY", "user name is empty")
 
 // 通过 proto 生成的代码响应错误，并且包名应替换为自己生成代码后的 package name
@@ -228,38 +229,39 @@ Kratos定义了统一的注册接口，通过实现[Registrar和Discovery](https
 
 
 ## Log
-Kratos的日志模块由两部分组成：
+Kratos' logging module consists of two parts:
 
-1. [Logger](https://github.com/go-kratos/kratos/blob/main/log/log.go)：底层日志接口，用于快速适配各种日志库到框架中来，仅提供一个最简单的Log方法。
-2. [Helper](https://github.com/go-kratos/kratos/blob/main/log/helper.go)：高级日志接口，提供了一系列带有日志等级和格式化方法的帮助函数，通常业务逻辑中建议使用这个，能够简化日志代码。
+1. [Logger](https://github.com/go-kratos/kratos/blob/main/log/log.go): Low-level logging interface. It is used to quickly adapt various log libraries to the framework. Provides only one of the simplest `Log` methods.
+2. [Helper](https://github.com/go-kratos/kratos/blob/main/log/helper.go): Advanced logging interface. A series of helper functions with log levels and formatting methods are provided. It is usually recommended to use this in business logic to simplify logging code.
 
 我们已经实现好的插件用于适配目前一些日志库，您也可以参考它们的代码来实现自己需要的日志库的适配：
 
-* [std](https://github.com/go-kratos/kratos/blob/main/log/std.go) 标准输出，Kratos内置
+* [std](https://github.com/go-kratos/kratos/blob/main/log/std.go) Kratos built-in stdout
 * [fluent](https://github.com/go-kratos/kratos/tree/main/contrib/log/fluent)
 * [zap](https://github.com/go-kratos/kratos/tree/main/contrib/log/zap)
 
 ## Metrics
-监控告警方面，您可以通过实现[metrics相关接口](https://github.com/go-kratos/kratos/blob/main/metrics/metrics.go)将服务的统计数据上报给监控平台。
+In terms of monitoring alarms, you can report service statistics to the monitoring platform by implementing [Metrics](https://github.com/go-kratos/kratos/blob/main/metrics/metrics.go).
 
-也可以直接使用我们已经实现好的插件：
+Here is some plugins ready for use:
 
 * [datadog](https://github.com/go-kratos/kratos/tree/main/contrib/metrics/datadog)
 * [prometheus](https://github.com/go-kratos/kratos/tree/main/contrib/metrics/prometheus)
 
 ## Tracing
-Kratos使用[OpenTelemetry](https://opentelemetry.io/)作为分布式链路追踪所使用的标准，您可以通过对client和server[配置tracing](https://go-kratos.dev/docs/component/middleware/tracing)来将服务接入到链路追踪平台（如[jaeger](https://www.jaegertracing.io/)等），从而对服务的接口调用关系，耗时，错误等进行追踪。
+Kratos uses [OpenTelemetry](https://opentelemetry.io/) as the standard for distributed link tracing. You can configure the [tracing middleware](https://go-kratos.dev/docs/component/middleware/tracing) when the client and server are initialized to connect the service to the link tracing platform (such as [jaeger](https://www.jaegertracing.io/), etc.). In this way, the interface calling relationship, time-consuming, errors, etc. of the service are tracked.
 
 ## Load Balancing
-Kratos内置了若干种[负载均衡算法](https://github.com/go-kratos/kratos/tree/main/selector)，如Weighted round robin（默认）、P2C，Random等，您可以通过[在client初始化时配置](https://go-kratos.dev/docs/component/selector)来使用他们。
+Kratos has several built-in load [balancing algorithms](https://github.com/go-kratos/kratos/tree/main/selector), such as Weighted round robin (default), P2C, Random, etc. You can use them by configuring them during [client initialization](https://go-kratos.dev/docs/component/selector).
 
 ## Ratelimit
-Kratos提供了[限流ratelimit](https://go-kratos.dev/docs/component/middleware/ratelimit)和[熔断circuitbreaker](https://go-kratos.dev/docs/component/middleware/circuitbreaker)中间件，用于微服务出现异常故障时自动对流量进行限制，提升服务的健壮性，避免雪崩。这两个中间件使用的算法，也可以在我们的可用性算法仓库[aegis](https://github.com/go-kratos/aegis)中找到，独立于Kratos直接使用。
+
+Kratos provides [Ratelimit](https://go-kratos.dev/docs/component/middleware/ratelimit) and [Circuitbreaker](https://go-kratos.dev/docs/component/middleware/circuitbreaker) middleware, which are used to automatically limit traffic when microservices fail abnormally, improve service robustness, and avoid avalanches. The algorithms used by these two middleware can also be found in our availability algorithm repository [Aegis](https://github.com/go-kratos/aegis). These algorithms can be used directly independently of Kratos.
 
 ## Middleware
-您可以通过Kratos的middleware机制，统一微服务接口的某些共同逻辑。上面提到的功能插件，您可以通过实现[Middleware](https://github.com/go-kratos/kratos/blob/main/middleware/middleware.go)编写Kratos能够使用的中间件。
+You can unify some common logic of the microservice interface through Kratos' middleware mechanism. For the function plugin mentioned above, you can write middleware that Kratos can use by implementing `Middleware`.
 
-同时在仓库的[middleware](https://github.com/go-kratos/kratos/tree/main/middleware)目录下，我们也提供了一系列中间件供您使用。
+You can find a series of middleware provided by us in the [middleware](https://github.com/go-kratos/kratos/tree/main/middleware) directory of the repository.
 
 ## Plugins
 
@@ -268,5 +270,3 @@ In addition to the plugins mentioned above, we also provide some other plugins. 
 ## Examples
 
 If you still have doubts about the use of some components after reading the documentation, or want to find some inspiration for writing projects in Kratos, we provide a lot of code for reference in the [examples repository](https://github.com/go-kratos/examples) directory.
-
-您也可以通过文档中的[示例代码清单](https://go-kratos.dev/docs/getting-started/examples)页面来查阅有哪些示例。
