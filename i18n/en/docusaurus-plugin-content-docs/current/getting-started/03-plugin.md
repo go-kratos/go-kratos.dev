@@ -19,16 +19,20 @@ Kratos offers a range of plug-ins to help you enhance the functionality of micro
 * [consul](https://github.com/go-kratos/kratos/tree/main/contrib/registry/consul)
 * [discovery](https://github.com/go-kratos/kratos/tree/main/contrib/registry/discovery)
 * [etcd](https://github.com/go-kratos/kratos/tree/main/contrib/registry/etcd)
+* [eureka](https://github.com/go-kratos/kratos/tree/main/contrib/registry/eureka)
 * [kubernetes](https://github.com/go-kratos/kratos/tree/main/contrib/registry/kubernetes)
 * [nacos](https://github.com/go-kratos/kratos/tree/main/contrib/registry/nacos)
+* [polaris](https://github.com/go-kratos/kratos/tree/main/contrib/registry/polaris)
 * [zookeeper](https://github.com/go-kratos/kratos/tree/main/contrib/registry/zookeeper)
 
 #### Logging
+* [aliyun](https://github.com/go-kratos/kratos/tree/main/contrib/log/aliyun)
 * [fluent](https://github.com/go-kratos/kratos/tree/main/contrib/log/fluent)
 * [zap](https://github.com/go-kratos/kratos/tree/main/contrib/log/zap)
 
 #### Configuration Center
 * [apollo](https://github.com/go-kratos/kratos/tree/main/contrib/config/apollo)
+* [consul](https://github.com/go-kratos/kratos/tree/main/contrib/config/consul)
 * [etcd](https://github.com/go-kratos/kratos/tree/main/contrib/config/etcd)
 * [kubernetes](https://github.com/go-kratos/kratos/tree/main/contrib/config/kubernetes)
 * [nacos](https://github.com/go-kratos/kratos/tree/main/contrib/config/nacos)
