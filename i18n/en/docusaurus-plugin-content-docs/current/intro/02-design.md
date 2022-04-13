@@ -80,7 +80,7 @@ Kratos uses Protobuf for API definition. Protobuf is a language-neutral data ser
 
 In a project using Kratos, you will use the following IDL for your interface definition, and use the `protoc` tool to generate the corresponding `.pb.go` file, which contains the server and client code generated according to the definition. Then you can register server-side code for use within your own project, or reference client-side code to make remote calls.
 
-Kratos默认仅生成gRPC接口的代码，如果需要生成HTTP代码，请在proto文件中使用`option (google.api.http)`来添加HTTP部分的定义后再进行生成。默认情况下，HTTP接口将使用JSON作为序列化格式，如果想使用其它序列化格式（form，XML等），请参考文档[序列化](https://go-kratos.dev/docs/component/encoding)进行相应的配置即可。
+Kratos only generates the code of the gRPC interface by default. If you need to generate HTTP code, please use `option (google.api.http)` in the proto file to add the definition of the HTTP part before generating it. By default, the HTTP interface will use JSON as the serialization format. If you want to use other serialization formats (form, XML, etc.), please refer to [Serialization](https://go-kratos.dev/docs/component/encoding).
 
 ```protobuf
 syntax = "proto3";
@@ -111,11 +111,11 @@ message HelloReply {
   string message = 1;
 }
 ```
-
-需要注意，虽然Protobuf定义的API的可靠性更强，但字段结构灵活性相对JSON要弱一些，因此如果您有诸如文件上传接口，或者某些无法对应到proto的JSON结构需要使用，我门还提供了“逃生门”，在我们的Protobuf体系之外定义这些接口，实现为普通的http.Handler并且挂载到路由上，或者用struct来定义您的字段。可以参考我们的[upload例子](https://github.com/go-kratos/kratos/blob/main/examples/http/upload/main.go)进行实现。
+It should be noted that although the API defined by Protobuf is more reliable, the flexibility of the field structure is weaker than that of JSON. Therefore, if you have a file upload interface, or some JSON structure that cannot correspond to proto. You can define these interfaces outside of our API-System, implement as normal `http.Handler` and mount it on the route, or just use `struct` to define your fields. Here is an example of [upload](https://github.com/go-kratos/kratos/blob/main/examples/http/upload/main.go).
 
 ## Metadata
-服务之间的API调用，如果有某些元信息需要传递过去，而不是写在payload消息中，可以使用Metadata包进行字段设置和提取，具体细节参考[元信息传递文档](https://go-kratos.dev/docs/component/metadata)
+
+For API calls between services, if there is some meta information that needs passing with no expected appearance in the payload message, you can use the Metadata package for field setting and extraction. For more detail, please refer to the [document](https://go-kratos.dev/docs/component/metadata)
 
 ## Error Handling
 Kratos的[errors](https://github.com/go-kratos/kratos/tree/main/errors)模块提供了error的封装。框架也预定义了一系列[标准错误](https://github.com/go-kratos/kratos/blob/main/errors/types.go)供使用。
