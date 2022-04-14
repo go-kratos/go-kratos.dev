@@ -19,11 +19,11 @@ Kratos is a microservice framework implemented in Go language. To be more precis
 
 Around this core design concept, we have designed the following project ecology：
 
-* [kratos](https://github.com/go-kratos/kratos) Kratos框架核心，主要包含了基础的CLI工具，内置的HTTP/gRPC接口生成和服务生命周期管理，提供链路追踪、配置文件、日志、服务发现、监控等组件能力和相关接口定义。
-* [contrib](https://github.com/go-kratos/kratos/tree/main/contrib) 基于上述核心定义的基础接口，对配置文件、日志、服务发现、监控等服务进行具体实现所形成的一系列插件，可以直接使用它们，也可以参考它们的代码，做您需要的服务的适配，从而集成进kratos项目中来。
-* [aegis](https://github.com/go-kratos/aegis) 我们将服务可用性相关的算法：如限流、熔断等算法放在了这个独立的项目里，几乎没有外部依赖，它更不依赖Kratos，您可以在直接在任意项目中使用。您也可以轻松将它集成到Kratos中使用，提高服务的可用性。
-* [layout](https://github.com/go-kratos/kratos-layout) 我们设计的一个默认的项目模板，它包含一个参考了DDD和简洁架构设计的项目结构、Makefile脚本和Dockerfile文件。但这个项目模板不是必需的，您可以任意修改它，或使用自己设计的项目结构，Kratos依然可以正常工作。框架本身不对项目结构做任何假设和限制，您可以按照自己的想法来使用，具有很强的可定制性。
-* [gateway](https://github.com/go-kratos/gateway) 这个是我们刚刚起步，用Go开发的API Gateway，后续您可以使用它来作为您Kratos微服务的网关，用于微服务API的治理，项目正在施工中，欢迎关注。
+* [kratos](https://github.com/go-kratos/kratos) Kratos framework core. It mainly includes basic CLI tools, HTTP/gRPC interface generation tools and service life cycle management. Provides components and interface definitions for link tracking, configuration, logging, service discovery, and monitoring.
+* [contrib](https://github.com/go-kratos/kratos/tree/main/contrib) A series of components such as configuration, logging, service discovery, monitoring, etc. You can use them directly. Or you can refer to their code to adapt the services you need to integrate them into the kratos project.
+* [aegis](https://github.com/go-kratos/aegis) We put the service availability algorithm (current limit, circuit breaker, etc.) in this independent project. It has few external dependencies, nor does it depend on Kratos. You can easily integrate it into Kratos to improve the usability of the service. Or you can use it directly in any project.
+* [layout](https://github.com/go-kratos/kratos-layout) A default project template we designed. It contains a project structure, Makefile script and Dockerfile with reference to DDD and clean architecture design. But this project template is not required. You can modify it however you want, or use a project structure of your own design and Kratos will still work. The framework is highly customizable and does not make any assumptions or restrictions on the project structure itself. You can use it according to your own ideas.
+* [gateway](https://github.com/go-kratos/gateway) This is the API Gateway we just started developing with Go. Later, you can use it as a gateway for your Kratos microservices for the governance of microservice APIs. The project is under construction, please pay attention.
 
 ## Community
 * GitHub：[https://github.com/go-kratos](https://github.com/go-kratos)
@@ -142,10 +142,9 @@ Kratos的[errors](https://github.com/go-kratos/kratos/tree/main/errors)模块提
 }
 ```
 
-
 在Kratos中您可以使用proto文件定义您的业务错误，并通过工具生成对应的处理逻辑和方法。（如使用layout中提供的`make errors`指令。）
 
-错误定义：
+Error Definition:
 ```protobuf
 syntax = "proto3";
 
@@ -164,7 +163,7 @@ enum ErrorReason {
 }
 ```
 
-错误创建：
+Error Creation:
 ```go
 // 通过 errors.New() 响应错误
 // Created by errors.New()
@@ -180,7 +179,7 @@ err = err.WithMetadata(map[string]string{
 })
 ```
 
-错误断言：
+Error Assertion:
 ```go
 err := wrong()
 
@@ -202,13 +201,18 @@ if api.IsUserNotFound(err) {
 ```
 
 ## Configuration
+
+Kratos provides a unified interface that supports loading a configuration file and subscribing to its changes.
+
 Kratos提供了统一的接口，支持配置文件的加载和变更订阅。
+
+Any configuration source (local or remote) can be adapted by implementing [Source and Watcher](https://github.com/go-kratos/kratos/blob/main/config/source.go)
 
 通过实现[Source 和 Watcher](https://github.com/go-kratos/kratos/blob/main/config/source.go)即可实现任意配置源（本地或远程）的配置文件加载和变更订阅。
 
-已经实现了下列插件：
+Here is some plugins ready for use:
 
-* [file](https://github.com/go-kratos/kratos/blob/main/config/file/file.go) 本地文件加载，Kratos内置
+* [file](https://github.com/go-kratos/kratos/blob/main/config/file/file.go) built-in
 * [apollo](https://github.com/go-kratos/kratos/tree/main/contrib/config/apollo)
 * [etcd](https://github.com/go-kratos/kratos/tree/main/contrib/config/etcd)
 * [kubernetes](https://github.com/go-kratos/kratos/tree/main/contrib/config/kubernetes)
@@ -216,9 +220,9 @@ Kratos提供了统一的接口，支持配置文件的加载和变更订阅。
 
 
 ## Registrar&Discovery
-Kratos定义了统一的注册接口，通过实现[Registrar和Discovery](https://github.com/go-kratos/kratos/blob/main/registry/registry.go)，您可以很轻松地将Kratos接入到您的注册中心中。
+Kratos defines a unified registration interface. By implementing [Registrar and Discovery](https://github.com/go-kratos/kratos/blob/main/registry/registry.go), you can easily connect Kratos to your registry.
 
-您也可以直接使用我们已经实现好的插件：
+Here is some plugins ready for use:
 
 * [consul](https://github.com/go-kratos/kratos/tree/main/contrib/registry/consul)
 * [discovery](https://github.com/go-kratos/kratos/tree/main/contrib/registry/discovery)
@@ -234,7 +238,7 @@ Kratos' logging module consists of two parts:
 1. [Logger](https://github.com/go-kratos/kratos/blob/main/log/log.go): Low-level logging interface. It is used to quickly adapt various log libraries to the framework. Provides only one of the simplest `Log` methods.
 2. [Helper](https://github.com/go-kratos/kratos/blob/main/log/helper.go): Advanced logging interface. A series of helper functions with log levels and formatting methods are provided. It is usually recommended to use this in business logic to simplify logging code.
 
-我们已经实现好的插件用于适配目前一些日志库，您也可以参考它们的代码来实现自己需要的日志库的适配：
+We have implemented plug-ins to for some current logging library. You can also refer to their code for the log library adaptation you need:
 
 * [std](https://github.com/go-kratos/kratos/blob/main/log/std.go) Kratos built-in stdout
 * [fluent](https://github.com/go-kratos/kratos/tree/main/contrib/log/fluent)
