@@ -31,22 +31,22 @@ Around this core design concept, we have designed the following project ecology�
 * Wechat：[go-kratos Official WeChat Group](https://github.com/go-kratos/kratos/issues/682)
 * Discord：[go-kratos](https://discord.com/invite/BWzJsUJ)
 
-## 为什么v2完全重新设计
-以前关注过kratos项目的可能知道，Kratos的[v1](https://github.com/go-kratos/kratos/tree/v1.0.x)版本已经开源了很久，也是个较为完善的框架。那么为什么不直接基于v1继续迭代，而是要推倒重来，推出完全重新设计的v2呢？
+## Why Kratos V2 was completely redesigned
+Those who have paid attention to the kratos project before may know that the v1 version of Kratos has been open source for a long time, and it is also a relatively complete framework. So why not continue to iterate directly based on v1, but start over and launch a completely redesigned v2?
 
-经验源自踩坑。
+A fall into a ditch makes you wiser.
 
-在业务不断迭代、项目不断膨胀的情况下，我们发现，过去的框架和项目结构设计，导致代码变更成本逐渐升高，而没有进行合理的抽象，导致更难进行模块的测试，也更难对第三方基础库进行适配和迁移，这在一定程度上拉低了生产力。
+We found that with the continuous iteration of the business and the continuous expansion of the project, the past framework and project structure design led to a gradual increase in the cost of code changes. And there is no reasonable abstraction, which makes it more difficult to test modules, and it is more difficult to adapt and migrate third-party basic libraries. This reduces productivity to some extent.
 
-因此，我们参考了大量的DDD和Clean Architecture等业界先进设计理念，重新设计了微服务的项目结构，并且这个结构随着我们的后续研究，会进一步进行迭代，让它成为微服务项目结构的最佳实践。
+Therefore, we have redesigned the project structure of microservices with reference to a large number of advanced design concepts in the industry such as DDD and Clean Architecture. And this structure will be further iterated with our follow-up research, making it the best practice for microservice project structure.
 
-没错，新版本的是从kratos-layout开始的。也许刚接触这个项目结构时会觉得不适应，但随着项目迭代，代码复杂度的提高，这个定义良好的结构，将使项目保持优秀的代码可读性、可测试性，以及令人满意的开发效率和可维护性。
+That's right, the new version starts with kratos-layout. Maybe you will feel uncomfortable when you are new to this project structure. But as the project iterates and the code complexity increases, this well-defined structure will keep the project excellent code readability, testability, and satisfactory development efficiency and maintainability.
 
-更重要的一点是，这一次我们想面向社区来设计和开发这个框架。让更多的开发者能够使用我们的框架来提高生产力，同时参与到我们的项目中来。
+More importantly, this time we want to design and develop this framework for the community. Get more developers to use our framework to be more productive while participating in our projects.
 
-所以我们把整个框架设计成为一个插座，我们希望整个框架轻量，插件化，可定制。对于几乎每一个微服务相关的功能模块，我们都设计了标准化接口，对于第三方库设计为插件，这样就能迅速把任意基础设施集成到使用Kratos的项目里，因此，无论您的公司使用何种基础设施，有何种规范，您都可以轻松将Kratos定制成与您的开发、生产环境相匹配的样子。
+So we designed the entire framework as a socket, and we hoped that the entire framework would be lightweight, plug-in, and customizable. For almost every functional module related to microservices, we have designed standardized interfaces, and designed plug-ins for third-party libraries. This makes it possible to quickly integrate arbitrary infrastructure into projects using Kratos. So, no matter what infrastructure your company uses or what specifications you have, you can easily customize Kratos to match your development and production environments.
 
-不破不立，v2是一次从内到外的彻底革新，我们无法在旧版本上修修补补，而是选择重新设计和开发新版本。而目前v2版本也已经在很多生产环境使用，我们也将持续迭代和完善这个框架，同时也更欢迎各位开发者参与进来，一起让它变得更好。
+Without destruction there can be no construction. The V2 is a complete overhaul from the inside out. We were unable to tinker on the old version and chose to redesign and develop the new version. At present, the v2 version has also been used in many production environments. We will also continue to iterate and improve this framework. At the same time, all developers are welcome to participate and make it better together.
 
 ## Database/Cache/Message Queue/...
 
@@ -118,17 +118,16 @@ It should be noted that although the API defined by Protobuf is more reliable, t
 For API calls between services, if there is some meta information that needs passing with no expected appearance in the payload message, you can use the Metadata package for field setting and extraction. For more detail, please refer to the [document](https://go-kratos.dev/docs/component/metadata)
 
 ## Error Handling
-Kratos的[errors](https://github.com/go-kratos/kratos/tree/main/errors)模块提供了error的封装。框架也预定义了一系列[标准错误](https://github.com/go-kratos/kratos/blob/main/errors/types.go)供使用。
+Kratos' [errors](https://github.com/go-kratos/kratos/tree/main/errors) module provides an error wrapper. The framework also pre-defines a set of [standard errors](https://github.com/go-kratos/kratos/blob/main/errors/types.go) for use.
 
+The design of error handling was settled after a long discussion. The main design concepts are as follows:
 
-错误处理这一块的设计也经过了很久的讨论才定下来，主要设计理念如下：
+1. `code` The semantics are similar to the HTTP Status Code (for example, 400 is used for parameter errors), and it is also used as a major type of error. The advantage is that the gateway layer can trigger corresponding policies (retry, current limit, fuse, etc.) according to this code.
+2. `reason` The specific error code of the service. A readable string that should be unique within the same service.
+3. `message` Messages are user-readable and can be used as user prompts.
+4. `metadata` Meta-information, which adds additional extensible information for errors.
 
-1. `code` 语义近似HTTP的Status Code（例如客户端传参数错误用400）同时也作为大类错误，在HTTP接口中的HTTP Code会使用它，好处是网关层可以根据这个code触发相应策略（重试、限流、熔断等）。
-2. `reason` 业务的具体错误码，为可读的字符串，能够表明，在同一个服务中应该唯一。
-3. `message` 用户可读的信息，可以在客户端（App、浏览器等）进行相应的展示给用户看。
-4. `metadata` 为一些附加信息，可以作为补充信息使用。
-
-在API返回的错误信息中，以HTTP接口为例，消息结构大概是长这个样子的：
+Taking the HTTP interface as an example, the structure of the returned error message is as follows:
 ```json
 {
     // Error code, which is the same as HTTP-status and can be converted to grPC-status in GRPC.
@@ -142,7 +141,7 @@ Kratos的[errors](https://github.com/go-kratos/kratos/tree/main/errors)模块提
 }
 ```
 
-在Kratos中您可以使用proto文件定义您的业务错误，并通过工具生成对应的处理逻辑和方法。（如使用layout中提供的`make errors`指令。）
+In Kratos, you can use proto files to define your business errors, and generate corresponding processing logic and methods through tools.(such as `make errors` used in layout)
 
 Error Definition:
 ```protobuf
@@ -165,14 +164,13 @@ enum ErrorReason {
 
 Error Creation:
 ```go
-// 通过 errors.New() 响应错误
 // Created by errors.New()
 errors.New(500, "USER_NAME_EMPTY", "user name is empty")
 
-// 通过 proto 生成的代码响应错误，并且包名应替换为自己生成代码后的 package name
+// Created by the code that is generated by proto
 api.ErrorUserNotFound("user %s not found", "kratos")
 
-// 传递metadata
+// Passing metadata
 err := errors.New(500, "USER_NAME_EMPTY", "user name is empty")
 err = err.WithMetadata(map[string]string{
     "foo": "bar",
@@ -183,18 +181,18 @@ Error Assertion:
 ```go
 err := wrong()
 
-// 通过 errors.Is() 断言
+// Asserte by errors.Is()
 if errors.Is(err,errors.BadRequest("USER_NAME_EMPTY","")) {
     // do something
 }
 
-// 通过判断 *Error.Reason 和 *Error.Code
+// Asserte by *Error.Reason and *Error.Code
 e := errors.FromError(err)
 if  e.Reason == "USER_NAME_EMPTY" && e.Code == 500 {
     // do something
 }
 
-// 通过 proto 生成的代码断言错误，并且包名应替换为自己生成代码后的 package name
+// Asserte by the code that is generated by proto
 if api.IsUserNotFound(err) {
         // do something
 })
@@ -202,13 +200,7 @@ if api.IsUserNotFound(err) {
 
 ## Configuration
 
-Kratos provides a unified interface that supports loading a configuration file and subscribing to its changes.
-
-Kratos提供了统一的接口，支持配置文件的加载和变更订阅。
-
-Any configuration source (local or remote) can be adapted by implementing [Source and Watcher](https://github.com/go-kratos/kratos/blob/main/config/source.go)
-
-通过实现[Source 和 Watcher](https://github.com/go-kratos/kratos/blob/main/config/source.go)即可实现任意配置源（本地或远程）的配置文件加载和变更订阅。
+Kratos provides a unified interface that supports loading a configuration file and subscribing to its changes.Any configuration source (local or remote) can be adapted by implementing [Source and Watcher](https://github.com/go-kratos/kratos/blob/main/config/source.go)
 
 Here is some plugins ready for use:
 
