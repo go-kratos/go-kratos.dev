@@ -5,29 +5,27 @@ title: Errors
 You can define errors in protos and generate enums with protoc-gen-go.
 
 
-Error in errors pacakge implements GRPCStatus() interface.
+Error in errors pacakge implements GRPCStatus() interface,The conversion between grpc and HTTP error code is realized, and the business reason is returned through errorinfo.
+
 ```json
 {
-    // Error code, this is consistent with grpc-status and will be convert to http-status in HTTP
-    "code": 3,
-    // Error message, is a human-readable message.
+    // The error code is consistent with HTTP status and can be converted into grpc status in grpc.
+    "code": 500,
+    // The error reason is defined as the business judgment error code.
+    "reason": "USER_NOT_FOUND",
+    // Error information is user-readable information and can be used as user prompt content.
     "message": "invalid argument error",
-    // Error details
-    "details": [
-        {
-            "@type": "type.googleapis.com/google.rpc.ErrorInfo",
-            // Error Reason, is the Error code in business logic.
-            "reason": "custom_error",
-            // Error domain, is the business domain.
-            "domain": "helloworld"
-        }
-    ]
+    // Error meta information, add additional extensible information for the error.
+    "metadata": {
+      "foo": "bar"
+    }
 }
 ```
 
 ### Installation
+
 ```bash
-go install google.golang.org/protobuf/cmd/protoc-gen-go
+go install github.com/go-kratos/kratos/cmd/protoc-gen-go-errors/v2
 ```
 
 ### Error Defination
@@ -37,19 +35,22 @@ api/helloworld/v1/helloworld.proto
 ```protobuf
 syntax = "proto3";
 
-package api.helloworld.v1;
+package api.kratos.v1;
+import "errors/errors.proto";
 
-// language-specified package name
-option go_package = "api/helloworld/v1;v1";
+// Define the package name for source code reference.
+option go_package = "kratos/api/helloworld;helloworld";
 option java_multiple_files = true;
-option java_package = "helloworld.v1";
-option objc_class_prefix = "APIHelloworldV1";
+option java_package = "api.helloworld";
 
 enum ErrorReason {
-  // Do not use this default value.
-  ERROR_REASON_UNSPECIFIED = 0;
-  // The request is calling a disabled service for a consumer.
-  SERVICE_DISABLED = 1;
+  // Set default error code.
+  option (errors.default_code) = 500;
+
+  // Set the error code separately for an enumeration.
+  USER_NOT_FOUND = 0 [(errors.code) = 404];
+
+  CONTENT_MISSING = 1 [(errors.code) = 400];
 }
 ```
 
@@ -58,23 +59,73 @@ enum ErrorReason {
 To generate code with protoc.
 
 ```bash
-protoc --go_out=. --go_opt=paths=source_relative api/helloworld/v1/error_reason.proto
+protoc --proto_path=. \
+         --proto_path=./third_party \
+         --go_out=paths=source_relative:. \
+         --go-errors_out=paths=source_relative:. \
+         $(API_PROTO_FILES)
+```
+
+Or use the makefile directive at the root of the project
+```
+make errors
+```
+
+After successful execution, will be generated in the api/helloworld directory a go file,The code is as follows.
+
+```
+package helloworld
+
+import (
+	fmt "fmt"
+	errors "github.com/go-kratos/kratos/v2/errors"
+)
+
+// This is a compile-time assertion to ensure that this generated file
+// is compatible with the kratos package it is being compiled against.
+const _ = errors.SupportPackageIsVersion1
+
+func IsUserNotFound(err error) bool {
+	if err == nil {
+		return false
+	}
+	e := errors.FromError(err)
+	return e.Reason == ErrorReason_USER_NOT_FOUND.String() && e.Code == 404
+}
+
+func ErrorUserNotFound(format string, args ...interface{}) *errors.Error {
+	return errors.New(404, ErrorReason_USER_NOT_FOUND.String(), fmt.Sprintf(format, args...))
+}
+
+func IsContentMissing(err error) bool {
+	if err == nil {
+		return false
+	}
+	e := errors.FromError(err)
+	return e.Reason == ErrorReason_CONTENT_MISSING.String() && e.Code == 400
+}
+
+func ErrorContentMissing(format string, args ...interface{}) *errors.Error {
+	return errors.New(400, ErrorReason_CONTENT_MISSING.String(), fmt.Sprintf(format, args...))
+}
 ```
 
 ### Usage
 ```go
-import "github.com/go-kratos/kratos/errors"
-import "<app>/api/helloworld/v1"
+import "kratos/api/helloworld"
 
-func doSomething() error {
-	return errors.BadRequest("hellworld", v1.SERVICE_DISABLED.String(), "service has been disabled")
+err := wrong()
+
+if errors.Is(err,errors.BadRequest("USER_NAME_EMPTY","")) {
+// do something
 }
 
-if err := doSomething(); errors.IsBadRequest(err) {
-	// TODO
+e := errors.FromError(err)
+if  e.Reason == "USER_NAME_EMPTY" && e.Code == 500 {
+// do something
 }
 
-if err := doSomething(); errors.Reason(err) == v1.SERVICE_DISABLED.String() {
-	// TODO
-}
+if helloworld.IsUserNotFound(err) {
+// do something
+})
 ```

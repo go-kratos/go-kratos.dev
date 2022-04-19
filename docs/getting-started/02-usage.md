@@ -14,67 +14,51 @@ keywords:
 ---
 
 ### 安装
-
+三种安装方式任选其一
+#### 1. go get 安装
 ```bash
+go get -u github.com/go-kratos/kratos/cmd/kratos/v2@latest
+```
+#### 2. go install 安装
+```bash
+go install github.com/go-kratos/kratos/cmd/kratos/v2
+# go 1.16版本以上需要指定版本号或使用最新版
 go install github.com/go-kratos/kratos/cmd/kratos/v2@latest
 ```
-
-### 工具使用
-
-#### 版本
-查看工具版本：
+#### 3. 源码编译安装
 ```bash
-kratos -v
+git clone https://github.com/go-kratos/kratos
+cd kratos
+make install
 ```
-输出:
-```
-kratos version v2.1.4
-```
+
+
 
 ### 创建项目
 通过 kratos 命令创建项目模板：
 ```bash
 kratos new helloworld
 ```
-**在国内拉取失败, 可 `-r` 指定源**
-
+使用 `-r` 指定源
 ```bash
+# 国内拉取失败可使用gitee源
 kratos new helloworld -r https://gitee.com/go-kratos/kratos-layout.git
+# 亦可使用自定义的模板
+kratos new helloworld -r xxx-layout.git
+# 同时也可以通过环境变量指定源
+KRATOS_LAYOUT_REPO=xxx-layout.git
+kratos new helloworld
+```
+使用 `-b` 指定分支
+```bash
+kratos new helloworld -b main
 ```
 
-输出:
-```bash
-helloworld
-|____api
-| |____helloworld
-| | |____v1
-| | | |____helloworld_grpc.pb.go
-| | | |____helloworld.proto
-| | | |____helloworld.pb.go
-| | | |____helloworld_http.pb.go
-| | |____errors
-| | | |____helloworld_errors.pb.go
-| | | |____helloworld.proto
-| | | |____helloworld.pb.go
-|____cmd
-| |____helloworld
-| | |____main.go
-|____internal
-| |____biz
-| | |____README.md
-| |____service
-| | |____README.md
-| | |____greeter.go
-| |____data
-| | |____README.md
-|____README.md
-|____Makefile
-|____LICENSE
-|____go.mod
-|____go.sum
-```
+
 
 ### 添加 Proto 文件
+> kratos-layout 项目中对 proto 文件进行了版本划分，放在了 v1 子目录下
+
 ```bash
 kratos proto add api/helloworld/demo.proto
 ```
@@ -87,16 +71,16 @@ syntax = "proto3";
 
 package api.helloworld;
 
-option go_package = "helloworld/api/api/helloworld;helloworld";
+option go_package = "helloworld/api/helloworld;helloworld";
 option java_multiple_files = true;
 option java_package = "api.helloworld";
 
 service Demo {
-    rpc CreateDemo (CreateDemoRequest) returns (CreateDemoReply);
-    rpc UpdateDemo (UpdateDemoRequest) returns (UpdateDemoReply);
-    rpc DeleteDemo (DeleteDemoRequest) returns (DeleteDemoReply);
-    rpc GetDemo (GetDemoRequest) returns (GetDemoReply);
-    rpc ListDemo (ListDemoRequest) returns (ListDemoReply);
+	rpc CreateDemo (CreateDemoRequest) returns (CreateDemoReply);
+	rpc UpdateDemo (UpdateDemoRequest) returns (UpdateDemoReply);
+	rpc DeleteDemo (DeleteDemoRequest) returns (DeleteDemoReply);
+	rpc GetDemo (GetDemoRequest) returns (GetDemoReply);
+	rpc ListDemo (ListDemoRequest) returns (ListDemoReply);
 }
 
 message CreateDemoRequest {}
@@ -116,11 +100,14 @@ message ListDemoReply {}
 ```
 
 ### 生成 Proto 代码
-可以通过 make api 直接生成，或者：
 ```bash
+# 可以直接通过 make 命令生成
+make api
+
+# 或使用 kratos cli 进行生成
 kratos proto client api/helloworld/demo.proto
 ```
-输出:
+会在proto文件同目录下生成:
 ```bash
 api/helloworld/demo.pb.go
 api/helloworld/demo_grpc.pb.go
@@ -131,9 +118,13 @@ api/helloworld/demo_http.pb.go
 ### 生成 Service 代码
 
 通过 proto文件，可以直接生成对应的 Service 实现代码：
+
+使用 `-t` 指定生成目录
 ```bash
 kratos proto server api/helloworld/demo.proto -t internal/service
 ```
+
+
 输出:  
 internal/service/demo.go
 
@@ -150,7 +141,7 @@ type DemoService struct {
 	pb.UnimplementedDemoServer
 }
 
-func NewDemoService() pb.DemoServer {
+func NewDemoService() *DemoService {
 	return &DemoService{}
 }
 
@@ -169,4 +160,47 @@ func (s *DemoService) GetDemo(ctx context.Context, req *pb.GetDemoRequest) (*pb.
 func (s *DemoService) ListDemo(ctx context.Context, req *pb.ListDemoRequest) (*pb.ListDemoReply, error) {
 	return &pb.ListDemoReply{}, nil
 }
+```
+
+### 运行项目
+- 如子目录下有多个项目则出现选择菜单
+```bash
+kratos run 
+```
+
+### 查看版本
+查看工具版本：
+```bash
+kratos -v
+```
+输出:
+```bash
+kratos version v2.2.0
+```
+
+### 工具升级
+将升级以下工具
+- Kratos与工具自身
+- protoc相关的生成插件
+```bash
+kratos upgrade
+```
+
+### 更新日志
+```bash
+# 等同于打印 https://github.com/go-kratos/kratos/releases/latest 的版本更新日志
+kratos changelog
+
+# 打印指定版本更新日志
+kratos changelog v2.1.4
+
+# 查看自上次版本发布后的更新日志
+kratos changelog dev
+```
+
+### 查看帮助
+任何命令下加 ` -h ` 查看帮助
+```bash
+kratos -h
+kratos new -h
 ```

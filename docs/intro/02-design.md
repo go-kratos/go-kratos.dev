@@ -109,7 +109,7 @@ message HelloReply {
 }
 ```
 
-需要注意，虽然Protobuf定义的API的可靠性更强，但字段结构灵活性相对JSON要弱一些，因此如果您有诸如文件上传接口，或者某些无法对应到proto的JSON结构需要使用，我门还提供了“逃生门”，在我们的Protobuf体系之外定义这些接口，实现为普通的http.Handler并且挂载到路由上，或者用struct来定义您的字段。可以参考我们的[upload例子](https://github.com/go-kratos/kratos/blob/main/examples/http/upload/main.go)进行实现。
+需要注意，虽然Protobuf定义的API的可靠性更强，但字段结构灵活性相对JSON要弱一些，因此如果您有诸如文件上传接口，或者某些无法对应到proto的JSON结构需要使用，我门还提供了“逃生门”，在我们的Protobuf体系之外定义这些接口，实现为普通的http.Handler并且挂载到路由上，或者用struct来定义您的字段。可以参考我们的[upload例子](https://github.com/go-kratos/examples/blob/main/http/upload/main.go)进行实现。
 
 ## 元信息传递
 服务之间的API调用，如果有某些元信息需要传递过去，而不是写在payload消息中，可以使用Metadata包进行字段设置和提取，具体细节参考[元信息传递文档](https://go-kratos.dev/docs/component/metadata)
@@ -149,7 +149,7 @@ syntax = "proto3";
 package api.blog.v1;
 import "errors/errors.proto";
 
-option go_package = "github.com/go-kratos/kratos/examples/blog/api/v1;v1";
+option go_package = "github.com/go-kratos/examples/blog/api/v1;v1";
 
 enum ErrorReason {
   // 设置缺省错误码
@@ -262,6 +262,7 @@ Kratos提供了[限流ratelimit](https://go-kratos.dev/docs/component/middleware
 除了上述提到的插件外，我们还提供了一些其它插件，完整的插件列表请参考文档[社区插件](https://go-kratos.dev/docs/getting-started/plugin)
 
 ## 示例代码
+
 如果您看过文档后，对某些功能的使用仍有疑惑，或者是希望寻找一些用Kratos写项目的灵感，在[examples仓库](https://github.com/go-kratos/examples)的目录下我们提供了很多代码供参考。
 
 您也可以通过文档中的[示例代码清单](https://go-kratos.dev/docs/getting-started/examples)页面来查阅有哪些示例。

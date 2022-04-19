@@ -44,7 +44,7 @@ func WithRequests(c metrics.Counter) Option {
 
 #### 使用 prometheus
 ```go
-// https://github.com/go-kratos/kratos/tree/main/examples/metrics
+// https://github.com/go-kratos/examples/tree/main/metrics
 _metricSeconds = prometheus.NewHistogramVec(prometheus.HistogramOpts{
 	Namespace: "server",
 	Subsystem: "requests",
@@ -123,4 +123,4 @@ conn, err := http.NewClient(
 ### References
 
 * https://prometheus.io/docs/concepts/metric_types/
-* https://github.com/go-kratos/kratos/tree/main/examples/metrics
+* https://github.com/go-kratos/examples/tree/main/metrics

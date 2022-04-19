@@ -59,4 +59,4 @@ Observer属于比较复杂的监控指标，对比以上两个提供了更多额
 ### References
 
 * https://prometheus.io/docs/concepts/metric_types/
-* https://github.com/go-kratos/kratos/tree/main/examples/metrics
+* https://github.com/go-kratos/examples/tree/main/metrics

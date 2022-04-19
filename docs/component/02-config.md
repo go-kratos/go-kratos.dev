@@ -347,4 +347,4 @@ make config
 读取配置项、监听配置变更和其它高级用法等使用方面的内容，与前文介绍的一致，这里就不再赘述。
 
 ## 扩展阅读
-* [config example](https://github.com/go-kratos/kratos/tree/main/examples/config) 样例代码
+* [config example](https://github.com/go-kratos/examples/tree/main/config) 样例代码

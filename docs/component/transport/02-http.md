@@ -165,7 +165,7 @@ if tr, ok := transport.FromServerContext(ctx); ok {
 实现了标准库的HTTP Handler接口
 
 
-> 其他路由使用方法参考: https://github.com/go-kratos/kratos/tree/main/examples/http/middlewares
+> 其他路由使用方法参考: https://github.com/go-kratos/examples/tree/main/http/middlewares
 
 > 在Kratos HTTP中使用[gin](https://github.com/gin-gonic/gin)框架: https://github.com/go-kratos/kratos/blob/main/examples/http/gin/main.go
 
