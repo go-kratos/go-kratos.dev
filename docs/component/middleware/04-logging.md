@@ -102,8 +102,8 @@ logger := log.With(log.NewStdLogger(os.Stdout),
 		"service.id", id,
 		"service.name", Name,
 		"service.version", Version,
-		"trace_id", log.TraceID(),
-		"span_id", log.SpanID(),
+		"trace_id", tracing.TraceID(),
+        "span_id", tracing.SpanID(),
 	)
 ```
 #### 日志打印trace_id
