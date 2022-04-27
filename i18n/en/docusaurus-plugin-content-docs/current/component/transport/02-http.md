@@ -139,7 +139,7 @@ if tr, ok := transport.FromServerContext(ctx); ok {
 kind = tr.Kind().String()
 operation = tr.Operation()
 // Assert that HTTP transport can get special information
-if ht,ok := tr.(*http.Tranport);ok{
+if ht,ok := tr.(*http.Transport);ok{
 fmt.Println(ht.Request())
 }
 }

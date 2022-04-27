@@ -139,9 +139,9 @@ if tr, ok := transport.FromServerContext(ctx); ok {
 	kind = tr.Kind().String()
 	operation = tr.Operation()
 	// 断言成HTTP的Transport可以拿到特殊信息
-	if ht,ok := tr.(*http.Tranport);ok{
+	if ht,ok := tr.(*http.Transport);ok{
 		fmt.Println(ht.Request())
-	} 
+	}
 }
 ```
 
@@ -185,7 +185,7 @@ if tr, ok := transport.FromServerContext(ctx); ok {
 #### `WithMiddleware(m ...middleware.Middleware) ClientOption`
 配置客户端使用的 kratos client中间件
 
-#### `WithEndpoint(endpoint string) ClientOption` 
+#### `WithEndpoint(endpoint string) ClientOption`
 配置客户端使用的对端连接地址，如果不使用服务发现则为ip:port,如果使用服务发现则格式为discovery://\<authority\>/\<serviceName\>,这里\<authority\>可以默认填空
 
 #### `WithDiscovery(d registry.Discovery) ClientOption`
