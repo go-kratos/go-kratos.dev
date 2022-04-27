@@ -45,7 +45,7 @@ Kratos boosts your productivity. With the integration of excellent resources and
 ## Related
 
 * [Docs](https://go-kratos.dev/)
-* [Examples](https://github.com/go-kratos/examples/tree/main)
+* [Examples](https://github.com/go-kratos/examples)
 * [Service Layout](https://github.com/go-kratos/kratos-layout)
 
 ## Community
