@@ -44,7 +44,7 @@ kratos new helloworld
 kratos new helloworld -b main
 ```
 
-使用 `--nomod` 添加服务, 共同 `go.mod` ,大仓模式
+使用 `--nomod` 添加服务, 共用 `go.mod` ,大仓模式
 
 ```bash
 kratos new helloworld
