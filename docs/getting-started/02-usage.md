@@ -14,32 +14,20 @@ keywords:
 ---
 
 ### 安装
-三种安装方式任选其一
-#### 1. go get 安装
+
 ```bash
-go get -u github.com/go-kratos/kratos/cmd/kratos/v2@latest
-```
-#### 2. go install 安装
-```bash
-go install github.com/go-kratos/kratos/cmd/kratos/v2
-# go 1.16版本以上需要指定版本号或使用最新版
 go install github.com/go-kratos/kratos/cmd/kratos/v2@latest
 ```
-#### 3. 源码编译安装
-```bash
-git clone https://github.com/go-kratos/kratos
-cd kratos
-make install
-```
-
-
 
 ### 创建项目
 通过 kratos 命令创建项目模板：
+
 ```bash
 kratos new helloworld
 ```
+
 使用 `-r` 指定源
+
 ```bash
 # 国内拉取失败可使用gitee源
 kratos new helloworld -r https://gitee.com/go-kratos/kratos-layout.git
@@ -49,12 +37,114 @@ kratos new helloworld -r xxx-layout.git
 KRATOS_LAYOUT_REPO=xxx-layout.git
 kratos new helloworld
 ```
+
 使用 `-b` 指定分支
+
 ```bash
 kratos new helloworld -b main
 ```
 
+使用 `--nomod` 添加服务, 共用 `go.mod` ,大仓模式
 
+```bash
+kratos new helloworld
+cd helloworld
+kratos new app/user --nomod
+```
+
+输出:
+
+```bash
+.
+├── Dockerfile
+├── LICENSE
+├── Makefile
+├── README.md
+├── api
+│   └── helloworld
+│       └── v1
+│           ├── error_reason.pb.go
+│           ├── error_reason.proto
+│           ├── greeter.pb.go
+│           ├── greeter.proto
+│           ├── greeter_grpc.pb.go
+│           └── greeter_http.pb.go
+├── app
+│   └── user
+│       ├── Dockerfile
+│       ├── Makefile
+│       ├── cmd
+│       │   └── user
+│       │       ├── main.go
+│       │       ├── wire.go
+│       │       └── wire_gen.go
+│       ├── configs
+│       │   └── config.yaml
+│       ├── internal
+│       │   ├── biz
+│       │   │   ├── biz.go
+│       │   │   └── greeter.go
+│       │   ├── conf
+│       │   │   ├── conf.pb.go
+│       │   │   └── conf.proto
+│       │   ├── data
+│       │   │   ├── data.go
+│       │   │   └── greeter.go
+│       │   ├── server
+│       │   │   ├── grpc.go
+│       │   │   ├── http.go
+│       │   │   └── server.go
+│       │   └── service
+│       │       ├── greeter.go
+│       │       └── service.go
+│       └── openapi.yaml
+├── cmd
+│   └── helloworld
+│       ├── main.go
+│       ├── wire.go
+│       └── wire_gen.go
+├── configs
+│   └── config.yaml
+├── go.mod
+├── go.sum
+├── internal
+│   ├── biz
+│   │   ├── README.md
+│   │   ├── biz.go
+│   │   └── greeter.go
+│   ├── conf
+│   │   ├── conf.pb.go
+│   │   └── conf.proto
+│   ├── data
+│   │   ├── README.md
+│   │   ├── data.go
+│   │   └── greeter.go
+│   ├── server
+│   │   ├── grpc.go
+│   │   ├── http.go
+│   │   └── server.go
+│   └── service
+│       ├── README.md
+│       ├── greeter.go
+│       └── service.go
+├── openapi.yaml
+└── third_party
+    ├── README.md
+    ├── errors
+    │   └── errors.proto
+    ├── google
+    │   ├── api
+    │   │   ├── annotations.proto
+    │   │   ├── client.proto
+    │   │   ├── field_behavior.proto
+    │   │   ├── http.proto
+    │   │   └── httpbody.proto
+    │   └── protobuf
+    │       └── descriptor.proto
+    └── validate
+        ├── README.md
+        └── validate.proto
+```
 
 ### 添加 Proto 文件
 > kratos-layout 项目中对 proto 文件进行了版本划分，放在了 v1 子目录下
@@ -62,6 +152,7 @@ kratos new helloworld -b main
 ```bash
 kratos proto add api/helloworld/demo.proto
 ```
+
 输出:
 
 api/helloworld/demo.proto
