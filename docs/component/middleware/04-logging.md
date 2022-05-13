@@ -35,10 +35,10 @@ srv := grpc.NewServer(opts...)
 
 ```go
 logger := log.DefaultLogger
-conn, err := transgrpc.DialInsecure(
+conn, err := grpc.DialInsecure(
 	context.Background(),
 	grpc.WithEndpoint("127.0.0.1:9000"),
-	 grpc.WithMiddleware(
+	grpc.WithMiddleware(
 		logging.Client(logger),
 	),
 )
