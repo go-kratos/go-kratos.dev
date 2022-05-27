@@ -213,7 +213,7 @@ type mysql struct {
     m *MySQLClient
 }
 
-func NewMySQL(addr string) *redis {
+func NewMySQL(addr string) *mysql {
     return &mysql{m: NewMySQLClient(addr)}
 }
 
