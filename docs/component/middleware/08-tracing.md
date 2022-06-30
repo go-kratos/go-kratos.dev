@@ -123,7 +123,7 @@ import (
 
 // 设置全局trace
 func initTracer(url string) error {
-	// 穿件 Jaeger exporter
+	// 创建 Jaeger exporter
 	exp, err := jaeger.New(jaeger.WithCollectorEndpoint(jaeger.WithEndpoint(url)))
 	if err != nil {
 		return err
