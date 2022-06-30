@@ -16,19 +16,33 @@ Tracing 中间件使用 OpenTelemetry 实现了链路追踪。
 
 ### 配置
 
-Tracing 中间件中提供了一个配置方法 `SetTracerProvider()`。
+有两种方法可用于使用`WithTracerProvider()` and `WithPropagator()`进行配置。
 
-#### `SetTracerProvider`
+#### `WithTracerProvider`
 
 ```go
-package otel
-...
-func SetTracerProvider(tp trace.TracerProvider) {
-    global.SetTracerProvider(tp)
-}   
+func WithTracerProvider(provider trace.TracerProvider) Option {
+    return func(opts *options) {
+        opts.TracerProvider = provider
+    }
+}    
 ```
 
-SetTracerProvider 用于设置 tracing 的链路追踪程序的提供者，该方法接收一个 trace.TracerProvider。
+`WithTracerProvider` 用于设置 provider，它接收的参数为 `trace.TracerProvider`。
+
+#### `WithPropagator`
+
+```go
+func WithPropagator(propagator propagation.TextMapPropagator) Option {
+    return func(opts *options) {
+        opts.Propagator = propagator
+    }
+}
+```
+
+`WithPropagator` 用于设置 text map propagator，它接收的参数为 `propagation.TextMapPropagator`。
+
+Tracing 中间件中提供了一个配置方法 `SetTracerProvider()`。
 
 
 ### 使用方法
@@ -38,63 +52,102 @@ SetTracerProvider 用于设置 tracing 的链路追踪程序的提供者，该�
 ```go
 package server
 
-func initTracer() func() {
-	// 创建一个 jaeger 的 pipeline,其他收集方式可以查看 opentelemetry 文档
-	flush, err := jaeger.InstallNewPipeline(
-		jaeger.WithCollectorEndpoint("http://localhost:14268/api/traces"),
-		jaeger.WithSDKOptions(
-			sdktrace.WithSampler(sdktrace.AlwaysSample()),
-			sdktrace.WithResource(resource.NewWithAttributes(
-				semconv.ServiceNameKey.String("kratos-trace"),
-				attribute.String("exporter", "jaeger"),
-				attribute.Float64("float", 312.23),
-			)),
-		),
-	)
+import (
+	"github.com/go-kratos/kratos/v2/middleware/tracing"
+	"github.com/go-kratos/kratos/v2/transport/grpc"
+
+	"go.opentelemetry.io/otel"
+	"go.opentelemetry.io/otel/attribute"
+	"go.opentelemetry.io/otel/exporters/jaeger"
+	"go.opentelemetry.io/otel/sdk/resource"
+	tracesdk "go.opentelemetry.io/otel/sdk/trace"
+	semconv "go.opentelemetry.io/otel/semconv/v1.4.0"
+)
+
+// 设置全局trace
+func initTracer(url string) error {
+	// 创建 Jaeger exporter
+	exp, err := jaeger.New(jaeger.WithCollectorEndpoint(jaeger.WithEndpoint(url)))
 	if err != nil {
-		log.Fatal(err)
+		return err
 	}
-	return flush
+	tp := tracesdk.NewTracerProvider(
+		// 将基于父span的采样率设置为100%
+		tracesdk.WithSampler(tracesdk.ParentBased(tracesdk.TraceIDRatioBased(1.0))),
+		// 始终确保再生成中批量处理
+		tracesdk.WithBatcher(exp),
+		// 在资源中记录有关此应用程序的信息
+		tracesdk.WithResource(resource.NewSchemaless(
+			semconv.ServiceNameKey.String("kratos-trace"),
+			attribute.String("exporter", "jaeger"),
+			attribute.Float64("float", 312.23),
+		)),
+	)
+	otel.SetTracerProvider(tp)
+	return nil
 }
+
 // NewGRPCServer new a gRPC server.
 func NewGRPCServer(c *conf.Server, executor *service.ExecutorService) *grpc.Server {
-	flush := initTracer()
-	defer flush()
+	err := initTracer("http://localhost:14268/api/traces")
+	if err != nil {
+		panic(err)
+	}
 	//tr := otel.Tracer("component-main")
 	var opts = []grpc.ServerOption{
 		grpc.Middleware(
-			middleware.Chain(
-				tracing.Server(),
-			),
+			tracing.Server(),
 		),
 	}
-   // ...
+	// ...
 }
 ```
 
 #### client 中使用 tracing 采集数据
 
 ```go
+package client
 
-func initTracer() func() {
-	// 创建一个 jaeger 的 pipeline,其他收集方式可以查看 opentelemetry 文档
-	flush, err := jaeger.InstallNewPipeline(
-		jaeger.WithCollectorEndpoint("http://localhost:14268/api/traces"),
-		jaeger.WithSDKOptions(
-			sdktrace.WithSampler(sdktrace.AlwaysSample()),
-			sdktrace.WithResource(resource.NewWithAttributes(
-				semconv.ServiceNameKey.String("kratos-trace"),
-				attribute.String("exporter", "jaeger"),
-				attribute.Float64("float", 312.23),
-			)),
-		),
-	)
+import (
+	"context"
+
+	"github.com/go-kratos/kratos/v2/middleware/tracing"
+	"github.com/go-kratos/kratos/v2/transport/grpc"
+
+	"go.opentelemetry.io/otel"
+	"go.opentelemetry.io/otel/attribute"
+	"go.opentelemetry.io/otel/exporters/jaeger"
+	"go.opentelemetry.io/otel/sdk/resource"
+	tracesdk "go.opentelemetry.io/otel/sdk/trace"
+	semconv "go.opentelemetry.io/otel/semconv/v1.4.0"
+	googlegrpc "google.golang.org/grpc"
+)
+
+// 设置全局trace
+func initTracer(url string) error {
+	// 穿件 Jaeger exporter
+	exp, err := jaeger.New(jaeger.WithCollectorEndpoint(jaeger.WithEndpoint(url)))
 	if err != nil {
-		log.Fatal(err)
+		return err
 	}
-	return flush
+	tp := tracesdk.NewTracerProvider(
+		// 将基于父span的采样率设置为100%
+		tracesdk.WithSampler(tracesdk.ParentBased(tracesdk.TraceIDRatioBased(1.0))),
+		// 始终确保再生成中批量处理
+		tracesdk.WithBatcher(exp),
+		// 在资源中记录有关此应用程序的信息
+		tracesdk.WithResource(resource.NewSchemaless(
+			semconv.ServiceNameKey.String("kratos-trace"),
+			attribute.String("exporter", "jaeger"),
+			attribute.Float64("float", 312.23),
+		)),
+	)
+	otel.SetTracerProvider(tp)
+	return nil
 }
-func grpcCli() (*grpc.ClientConn, error) {
+
+func grpcCli() (*googlegrpc.ClientConn, error) {
+	// 如果本项目没有初始化initTracer 请初始化
 	return grpc.DialInsecure(
 		context.Background(),
 		grpc.WithMiddleware(
