@@ -42,8 +42,6 @@ func WithPropagator(propagator propagation.TextMapPropagator) Option {
 
 `WithPropagator` 用于设置 text map propagator，它接收的参数为 `propagation.TextMapPropagator`。
 
-Tracing 中间件中提供了一个配置方法 `SetTracerProvider()`。
-
 
 ### 使用方法
 
