@@ -49,71 +49,106 @@ func WithPropagator(propagator propagation.TextMapPropagator) Option {
 ```go
 package server
 
-func initTracer() func() {
-	// create a jaeger pipeline
-	flush, err := jaeger.InstallNewPipeline(
-		jaeger.WithCollectorEndpoint("http://localhost:14268/api/traces"),
-		jaeger.WithSDKOptions(
-			sdktrace.WithSampler(sdktrace.AlwaysSample()),
-			sdktrace.WithResource(resource.NewWithAttributes(
-				semconv.ServiceNameKey.String("kratos-trace"),
-				attribute.String("exporter", "jaeger"),
-				attribute.Float64("float", 312.23),
-			)),
-		),
-	)
+import (
+	"github.com/go-kratos/kratos/v2/middleware/tracing"
+	"github.com/go-kratos/kratos/v2/transport/grpc"
+
+	"go.opentelemetry.io/otel"
+	"go.opentelemetry.io/otel/attribute"
+	"go.opentelemetry.io/otel/exporters/jaeger"
+	"go.opentelemetry.io/otel/sdk/resource"
+	tracesdk "go.opentelemetry.io/otel/sdk/trace"
+	semconv "go.opentelemetry.io/otel/semconv/v1.4.0"
+)
+
+// Set global trace provider
+func initTracer(url string) error {
+	// Create the Jaeger exporter
+	exp, err := jaeger.New(jaeger.WithCollectorEndpoint(jaeger.WithEndpoint(url)))
 	if err != nil {
-		log.Fatal(err)
+		return err
 	}
-	return flush
+	tp := tracesdk.NewTracerProvider(
+		// Set the sampling rate based on the parent span to 100%
+		tracesdk.WithSampler(tracesdk.ParentBased(tracesdk.TraceIDRatioBased(1.0))),
+		// Always be sure to batch in production.
+		tracesdk.WithBatcher(exp),
+		// Record information about this application in an Resource.
+		tracesdk.WithResource(resource.NewSchemaless(
+			semconv.ServiceNameKey.String("kratos-trace"),
+			attribute.String("exporter", "jaeger"),
+			attribute.Float64("float", 312.23),
+		)),
+	)
+	otel.SetTracerProvider(tp)
+	return nil
 }
+
 // NewGRPCServer new a gRPC server.
 func NewGRPCServer(c *conf.Server, executor *service.ExecutorService) *grpc.Server {
-	flush := initTracer()
-	defer flush()
+	err := initTracer("http://localhost:14268/api/traces")
+	if err != nil {
+		panic(err)
+	}
 	//tr := otel.Tracer("component-main")
 	var opts = []grpc.ServerOption{
 		grpc.Middleware(
-			middleware.Chain(
-				tracing.Server(tracing.WithTracerProvider(otel.GetTracerProvider())),
-			),
+			tracing.Server(),
 		),
 	}
-   // ...
+	// ...
 }
 ```
 
 #### Tracing for Client
 
 ```go
+package client
 
-func initTracer() func() {
-	// create a jaeger pipeline
-	flush, err := jaeger.InstallNewPipeline(
-		jaeger.WithCollectorEndpoint("http://localhost:14268/api/traces"),
-		jaeger.WithSDKOptions(
-			sdktrace.WithSampler(sdktrace.AlwaysSample()),
-			sdktrace.WithResource(resource.NewWithAttributes(
-				semconv.ServiceNameKey.String("kratos-trace"),
-				attribute.String("exporter", "jaeger"),
-				attribute.Float64("float", 312.23),
-			)),
-		),
-	)
+import (
+	"context"
+
+	"github.com/go-kratos/kratos/v2/middleware/tracing"
+	"github.com/go-kratos/kratos/v2/transport/grpc"
+
+	"go.opentelemetry.io/otel"
+	"go.opentelemetry.io/otel/attribute"
+	"go.opentelemetry.io/otel/exporters/jaeger"
+	"go.opentelemetry.io/otel/sdk/resource"
+	tracesdk "go.opentelemetry.io/otel/sdk/trace"
+	semconv "go.opentelemetry.io/otel/semconv/v1.4.0"
+	googlegrpc "google.golang.org/grpc"
+)
+
+// Set global trace provider
+func initTracer(url string) error {
+	// Create the Jaeger exporter
+	exp, err := jaeger.New(jaeger.WithCollectorEndpoint(jaeger.WithEndpoint(url)))
 	if err != nil {
-		log.Fatal(err)
+		return err
 	}
-	return flush
+	tp := tracesdk.NewTracerProvider(
+		// Set the sampling rate based on the parent span to 100%
+		tracesdk.WithSampler(tracesdk.ParentBased(tracesdk.TraceIDRatioBased(1.0))),
+		// Always be sure to batch in production.
+		tracesdk.WithBatcher(exp),
+		// Record information about this application in an Resource.
+		tracesdk.WithResource(resource.NewSchemaless(
+			semconv.ServiceNameKey.String("kratos-trace"),
+			attribute.String("exporter", "jaeger"),
+			attribute.Float64("float", 312.23),
+		)),
+	)
+	otel.SetTracerProvider(tp)
+	return nil
 }
-func grpcCli() (*grpc.ClientConn, error) {
+
+func grpcCli() (*googlegrpc.ClientConn, error) {
+	// If the project does not initialize initTracer, please initialize.
 	return grpc.DialInsecure(
 		context.Background(),
 		grpc.WithMiddleware(
-			tracing.Client(
-				tracing.WithTracerProvider(
-					otel.GetTracerProvider(),
-				),
-			),
+			tracing.Client(),
 		),
 	)
 }
