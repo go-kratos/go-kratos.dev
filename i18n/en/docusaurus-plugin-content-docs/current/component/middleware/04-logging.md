@@ -60,11 +60,11 @@ conn, err := http.NewClient(
 
 The Logging middleware only prints `trace_id` in the server and does not collect data.
 
-#### grpc-server
+### Use in the project
+
+#### grpc-server internal/server/grpc.go
 
 ```go
-// internal/server/grpc.go
-
 exporter, err := stdouttrace.New(stdouttrace.WithWriter(ioutil.Discard))
 if err != nil {
 	fmt.Printf("creating stdout exporter: %v", err)
@@ -87,11 +87,9 @@ var opts = []grpc.ServerOption{
 srv := grpc.NewServer(opts...)
 ```
 
-Add the `trace_id` field to the output log
+Add the `trace_id` field to the output log, cmd/project_name/main.go.
 
 ```go
-// cmd/project_name/main.go
-
 logger := log.With(
   log.NewStdLogger(os.Stdout),
   "ts", log.DefaultTimestamp,

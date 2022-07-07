@@ -79,6 +79,7 @@ log.LevelFatal
 * [std](https://github.com/go-kratos/kratos/blob/main/log/std.go) 标准输出，Kratos内置
 * [fluent](https://github.com/go-kratos/kratos/tree/main/contrib/log/fluent) 输出到fluentd
 * [zap](https://github.com/go-kratos/kratos/tree/main/contrib/log/zap) 适配了uber的[zap](https://github.com/uber-go/zap)日志库
+* [aliyun](https://github.com/go-kratos/kratos/blob/main/contrib/log/aliyun) 输出到阿里云日志
 
 ## 使用
 Kratos日志库使用十分简单，和大部分日志库类似。
@@ -89,6 +90,20 @@ Kratos日志库使用十分简单，和大部分日志库类似。
 ### stdLogger
 框架内置实现了[stdLogger](https://github.com/go-kratos/kratos/blob/main/log/std.go)，能够打印到标准输出。使用`NewStdLogger`方法传入一个`io.Writer`即可。
 
+```go
+// 输出到控制台
+l := log.DefaultLogged
+l.Log(log.LevelInfo, "stdout_key", "stdout_value")
+
+// 输出到 ./test.log 文件
+f, err := os.OpenFile("test.log", os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0666)
+if err != nil {
+    return
+}
+l = log.NewStdLogger(f)
+l.Log(log.LevelInfo, "file_key", "file_value")
+```
+
 ### 初始化
 首先你需要创建一个Logger，这里可以选：自带的std打印到标准输出，或者在contrib下面找一个已经实现好的适配，或者用自己实现的Logger。
 ```go
@@ -96,7 +111,7 @@ import "github.com/go-kratos/kratos/v2/log"
 
 h := NewHelper(yourlogger)
 
-//用默认logger可以直接用
+// 用默认logger可以直接用
 h := NewHelper(log.DefaultLogger)
 ```
 
@@ -225,9 +240,53 @@ newHelper := h.WithContext(ctx)
 我们在[middleware/logging](https://github.com/go-kratos/kratos/blob/main/middleware/logging/logging.go)提供了一个日志中间件，使用它可以记录server端或client端每个请求的路由、参数、耗时等信息。使用时建议配合Filter对请求参数日志进行脱敏，避免敏感信息泄漏。
 
 这个middleware的代码也十分清晰地展示了如何在中间件里获取和处理请求和返回信息，具有很大的参考价值，您可以基于它的代码实现自己的日志中间件等。
+、
+### 全局日志
 
+如果您在项目中，只想使用简单的日志功能，全局可以随时打印，我们提供了全局日志。
+
+```go
+import "github.com/go-kratos/kratos/v2/log"
+
+log.Info("info")
+log.Warn("warn")
+```
+
+以上为使用默认 `log.DefaultLogger` 标准输出。您也可以在contrib下面找一个已经实现好的适配，或者用自己实现的Logger，使用`log.SetLogger` 设置全局日志的logger。
+
+```go
+// 使用zap日志设置全局logger
+
+import (
+	"os"
+
+	"go.uber.org/zap"
+	"go.uber.org/zap/zapcore"
+
+	kratoszap "github.com/go-kratos/kratos/contrib/log/zap/v2"
+	"github.com/go-kratos/kratos/v2/log"
+)
+
+f, err := os.OpenFile("test.log", os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0666)
+if err != nil {
+    return
+}
+writeSyncer := zapcore.AddSync(f)
+
+encoder := zapcore.NewJSONEncoder(zap.NewProductionEncoderConfig())
+core := zapcore.NewCore(encoder, writeSyncer, zapcore.DebugLevel)
+z := zap.New(core)
+
+logger := kratoszap.NewLogger(z)
+log.SetLogger(logger)
+
+// 打印日志
+log.Info("info")
+log.Debug("debug")
+```
 
 ## kratos-layout
+
 在我们的默认项目模板中，我们在[cmd/server/main.go](https://github.com/go-kratos/kratos-layout/blob/cf30efc32d78338e8e4739d3288feeba426388a5/cmd/server/main.go#L49)的`main()`函数，即程序入口处初始化了logger实例，并注入了一些全局的日志值，它们会被打到所有输出的日志中。
 
 您可以修改这里使用的logger，来进行自定义打印的值，或者更换为自己需要的logger实现。

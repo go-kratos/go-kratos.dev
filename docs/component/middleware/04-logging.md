@@ -73,7 +73,7 @@ conn, err := http.NewClient(
 ```
 
 Logging 中间件在server 中只打印 trace_id 不采集数据
-### 使用方法
+### 在项目中使用
 
 ####  grpc-server internal/server/grpc.go
 ```go
@@ -110,7 +110,6 @@ logger := log.With(log.NewStdLogger(os.Stdout),
 ```go
 log.WithContext(ctx).Errorf("创建xxx失败: %s", err)
 ```
-
 
 
 
