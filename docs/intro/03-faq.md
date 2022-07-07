@@ -52,7 +52,7 @@ IDE中的这个提示不会影响项目的正常编译，如果您需要解决�
 
 ### 8、使用 validate 生成参数校验代码时，工具生成的代码全部都是 `// no validation rules for xxxx` 但是已经配置了 校验规则
 
-1. git clone github.com/envoyproxy/protoc-gen-validate.git
+1. git clone git@github.com:envoyproxy/protoc-gen-validate.git
 2. cd protoc-gen-validate
 3. make build
 
