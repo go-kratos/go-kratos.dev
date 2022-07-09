@@ -14,7 +14,6 @@ module.exports = {
       disableSwitch: true,
       respectPrefersColorScheme: false,
     },
-    hideableSidebar: true,
     navbar: {
       title: 'Kratos',
       logo: {
