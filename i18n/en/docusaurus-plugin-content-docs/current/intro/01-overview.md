@@ -26,7 +26,7 @@ We aim to provide a comprehensive microservices development technique. Based on 
 * **Toolchain**:  Includes an extensive toolchain, such as the generation of the cache layer, the lint tool, and so forth.
 
 ## Features
-* APIs: Protocol defined by Protobuf can be transport in HTTP/gRPC.
+* APIs: Messages defined by Protobuf are using HTTP/gRPC for transport.
 * Errors: Both the definitions of error code and the handle interfaces of code generation for tools are defined by the Enum of the Protobuf.
 * Metadata:	In the HTTP/gRPC protocol, use the uniform metadata transfer method.
 * Config: Multiple data sources are supported for configurations and dynamic configurations (use *atomic* operations).
