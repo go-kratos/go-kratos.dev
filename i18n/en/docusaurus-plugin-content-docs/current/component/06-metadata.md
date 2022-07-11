@@ -31,7 +31,7 @@ Finally you can use `NewClientContext` or `FromServerContext` from Metadata pack
 
 #### Configuration
 ```go
-// https://github.com/go-kratos/kratos/tree/main/examples/metadata
+// https://github.com/go-kratos/examples/tree/main/metadata
 
 // Register the metadata middleware to gRPC or HTTP's server or client
 

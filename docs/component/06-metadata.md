@@ -30,7 +30,7 @@ keywords:
 
 #### 注册元信息中间件
 ```go
-// https://github.com/go-kratos/kratos/tree/main/examples/metadata
+// https://github.com/go-kratos/examples/tree/main/metadata
 
 // 注册元信息中间件到 gRPC 或 HTTP 的 server 或 client 中
 
