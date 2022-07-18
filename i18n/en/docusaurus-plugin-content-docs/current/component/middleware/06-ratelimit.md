@@ -24,18 +24,18 @@ Used to replace the default limiter algorithm
 // WithLimiter set Limiter implementation,
 // default is bbr limiter
 func WithLimiter(limiter ratelimit.Limiter) Option {
-	return func(o *options) {
-		o.limiter = limiter
-	}
+    return func(o *options) {
+        o.limiter = limiter
+    }
 }
 ```
 
-The costom limiter nneds to implement the `Limiter` interface of [aegis/ratelimit](https://github.com/go-kratos/aegis/blob/main/ratelimit/ratelimit.go).
+The custom limiter needs to implement the `Limiter` interface of [aegis/ratelimit](https://github.com/go-kratos/aegis/blob/main/ratelimit/ratelimit.go).
 
 ```go
 // Limiter is a rate limiter.
 type Limiter interface {
-	Allow() (DoneFunc, error)
+    Allow() (DoneFunc, error)
 }
 ```
 
@@ -45,9 +45,12 @@ type Limiter interface {
 
 ```go
 var opts = []http.ServerOption{
-	http.Middleware(
-		ratelimit.Server(),
-	),
+    http.Middleware(
+        // default is bbr limiter
+        ratelimit.Server(),
+        // custom limiter
+        //ratelimit.Server(ratelimit.WithLimiter(limiter)),
+    ),
 }
 
 srv := http.NewServer(opts...)
@@ -55,7 +58,7 @@ srv := http.NewServer(opts...)
 
 #### Trigger rate limiter
 
-When the rate limiter is triggered, the current request is rejected directly and and error `ErrLimitExceed` will be returned，as defined below：
+When the rate limiter is triggered, the current request is rejected directly and error `ErrLimitExceed` will be returned, as defined below:
 
 ```go
 // ErrLimitExceed is service unavailable due to rate limit exceeded.
