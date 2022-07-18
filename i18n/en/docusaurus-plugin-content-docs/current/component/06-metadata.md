@@ -12,20 +12,22 @@ keywords:
   - HTTP
 ---
 
-Microservices interact through HTTP and gRPC API, so the service architecture needs to be used for uniform Metadata transport.
-Currently, you could also carry a Metadata pass in gRPC, The metadata will be put into HTTP Header, and then upstream will receive the corresponding Metadata Information.
-So it's also designed to be delivered via HTTP Header, first wrapped in a key/value structure in a framework through a metadata package, and then carried to Transport Header.
+Microservices interact with each other via HTTP and gRPC API, so the service architecture should use unified Metadata transmission.  
+At present, It is possible for gRPC to carry Metadata, by putting Metadata in HTTP Header, so the upstream can receive the corresponding Metadata information.
+Therefore, in Kratos, it is also carried by HTTP Header. In the framework, it is packaged in key/value structure, and carried in Transport Header.
 
 ### Default Metadata Convention
 
 - x-md-global-xxx，will be transported globally, e.g. mirror/color/criticality
 - x-md-local-xxx，will be transported locally, e.g. caller
 
-You could also set your custom key prefix in  middleware/metadata for constant metadata.
+It is also possible to customize the key prefix in middleware/metadata for constant metadata.
 
 ### Usage
-First, the middleware/metadata plug-in should be configured to client/server, and then you can customize the transport key prefix, or the metadata constant, such as caller.
-Finally, it can be configured or obtained through `NewClientContext` or `FromServerContext` in the metadata package.
+First, you need to configure corresponding middleware/metadata plug-ins for the client/server. 
+Then you can customize the key prefix or metadata constant, e.g. caller.
+Finally you can use `NewClientContext` or `FromServerContext` from Metadata package to configure or get the metadata.
+
 
 #### Configuration
 ```go
