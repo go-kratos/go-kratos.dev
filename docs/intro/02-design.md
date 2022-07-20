@@ -15,7 +15,7 @@ keywords:
 本篇文档阐述Kratos的设计理念，介绍Kratos项目的整体情况和主要组件。
 
 ## 设计哲学
-Kratos是一个Go语言实现的微服务框架，说得更准确一点，它更类似于一个使用Go构建微服务的工具箱，开发者可以按照自己的习惯选用或定制其中的的组件，来打造自己的微服务。也正是由于这样的原因，Kratos并不绑定于特定的基础设施，不限定于某种注册中心，或数据库ORM等，所以您可以十分轻松地将任意库集成进项目里，与Kratos共同运作。
+Kratos是一个Go语言实现的微服务框架，说得更准确一点，它更类似于一个使用Go构建微服务的工具箱，开发者可以按照自己的习惯选用或定制其中的组件，来打造自己的微服务。也正是由于这样的原因，Kratos并不绑定于特定的基础设施，不限定于某种注册中心，或数据库ORM等，所以您可以十分轻松地将任意库集成进项目里，与Kratos共同运作。
 
 围绕这样的核心设计理念，我们设计了如下的项目生态：
 
@@ -75,7 +75,7 @@ kratos命令目前主要用于从模板创建项目，维护依赖包版本等�
 ## Protobuf定义API
 Kratos使用Protobuf进行API定义。Protobuf是由Google开发的一种语言中立的数据序列化协议。它有结构定义清晰、可扩展性好、体积小、性能优秀等特点，在众多公司和项目被广泛使用。
 
-在使用Kratos的项目中，您将使用如下的IDL进行您的接口定义，并且通过`protoc`工具生成相应的`.pb.go`文件，其中包含根据定义生成的的服务端和客户端代码。随后您就可以在自己的项目内部注册服务端代码使用，或引用客户端代码进行远程调用。
+在使用Kratos的项目中，您将使用如下的IDL进行您的接口定义，并且通过`protoc`工具生成相应的`.pb.go`文件，其中包含根据定义生成的服务端和客户端代码。随后您就可以在自己的项目内部注册服务端代码使用，或引用客户端代码进行远程调用。
 
 Kratos默认仅生成gRPC接口的代码，如果需要生成HTTP代码，请在proto文件中使用`option (google.api.http)`来添加HTTP部分的定义后再进行生成。默认情况下，HTTP接口将使用JSON作为序列化格式，如果想使用其它序列化格式（form，XML等），请参考文档[序列化](https://go-kratos.dev/docs/component/encoding)进行相应的配置即可。
 
@@ -109,7 +109,7 @@ message HelloReply {
 }
 ```
 
-需要注意，虽然Protobuf定义的API的可靠性更强，但字段结构灵活性相对JSON要弱一些，因此如果您有诸如文件上传接口，或者某些无法对应到proto的JSON结构需要使用，我门还提供了“逃生门”，在我们的Protobuf体系之外定义这些接口，实现为普通的http.Handler并且挂载到路由上，或者用struct来定义您的字段。可以参考我们的[upload例子](https://github.com/go-kratos/examples/blob/main/http/upload/main.go)进行实现。
+需要注意，虽然Protobuf定义的API的可靠性更强，但字段结构灵活性相对JSON要弱一些，因此如果您有诸如文件上传接口，或者某些无法对应到proto的JSON结构需要使用，我们还提供了“逃生门”，在我们的Protobuf体系之外定义这些接口，实现为普通的http.Handler并且挂载到路由上，或者用struct来定义您的字段。可以参考我们的[upload例子](https://github.com/go-kratos/examples/blob/main/http/upload/main.go)进行实现。
 
 ## 元信息传递
 服务之间的API调用，如果有某些元信息需要传递过去，而不是写在payload消息中，可以使用Metadata包进行字段设置和提取，具体细节参考[元信息传递文档](https://go-kratos.dev/docs/component/metadata)
