@@ -146,7 +146,7 @@ func FromContext(ctx context.Context) (token jwt.Claims, ok bool)
 
 ### 白名单参考方案
 
-结合 `selector` 中间件使用实现白名单机制。可参考：https://github.com/go-kratos/beer-shop/blob/a29eae57a9baeae9969e9a7d418ff677cf494a21/app/shop/interface/internal/server/http.go#L41
+结合 `selector` 中间件使用实现白名单机制。可参考[此处](https://github.com/go-kratos/beer-shop/blob/b12402ebc618c4563e69757e65a6db4dd767a869/app/shop/interface/internal/server/http.go#L26)。
 
 ### 签发 `JWT Token`
 
