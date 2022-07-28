@@ -178,25 +178,25 @@ app := kratos.New(
 #### Use kratos middleware in HTTP server
 
 ```go
-	hs := http.NewServer(
-		http.Address(":8000"),
-		http.Middleware(
-			logging.Server(),
-		),
-	)
+hs := http.NewServer(
+  http.Address(":8000"),
+  http.Middleware(
+    logging.Server(),
+  ),
+)
 ```
 
 #### Handling http requests in middleware
 
 ```go
-	if tr, ok := transport.FromServerContext(ctx); ok {
-		kind = tr.Kind().String()
-		operation = tr.Operation()
-		// Assert that HTTP transport can get special information
-		if ht, ok := tr.(*http.Transport); ok {
-			fmt.Println(ht.Request())
-		}
-	}
+if tr, ok := transport.FromServerContext(ctx); ok {
+  kind = tr.Kind().String()
+  operation = tr.Operation()
+  // Assert that HTTP transport can get special information
+  if ht, ok := tr.(*http.Transport); ok {
+    fmt.Println(ht.Request())
+  }
+}
 ```
 
 ### Server Router
