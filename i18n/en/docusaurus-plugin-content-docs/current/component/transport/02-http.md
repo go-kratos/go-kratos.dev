@@ -169,9 +169,9 @@ Pass in opts configuration and start HTTP Server
 ```go
 hs := http.NewServer()
 app := kratos.New(
-  kratos.Name("kratos"),
-  kratos.Version("v1.0.0"),
-  kratos.Server(hs),
+	kratos.Name("kratos"),
+	kratos.Version("v1.0.0"),
+	kratos.Server(hs),
 )
 ```
 
@@ -179,10 +179,10 @@ app := kratos.New(
 
 ```go
 hs := http.NewServer(
-  http.Address(":8000"),
-  http.Middleware(
-    logging.Server(),
-  ),
+	http.Address(":8000"),
+	http.Middleware(
+		logging.Server(),
+	),
 )
 ```
 
@@ -190,12 +190,12 @@ hs := http.NewServer(
 
 ```go
 if tr, ok := transport.FromServerContext(ctx); ok {
-  kind = tr.Kind().String()
-  operation = tr.Operation()
-  // Assert that HTTP transport can get special information
-  if ht, ok := tr.(*http.Transport); ok {
-    fmt.Println(ht.Request())
-  }
+	kind = tr.Kind().String()
+	operation = tr.Operation()
+	// Assert that HTTP transport can get special information
+	if ht, ok := tr.(*http.Transport); ok {
+		fmt.Println(ht.Request())
+	}
 }
 ```
 
@@ -346,8 +346,8 @@ func WithTLSConfig(c *tls.Config) ClientOption {
 
 ```go
 conn, err := http.NewClient(
-  context.Background(),
-  http.WithEndpoint("127.0.0.1:8000"),
+	context.Background(),
+	http.WithEndpoint("127.0.0.1:8000"),
 )
 ```
 
@@ -355,11 +355,11 @@ conn, err := http.NewClient(
 
 ```go
 conn, err := http.NewClient(
-  context.Background(),
-  http.WithEndpoint("127.0.0.1:9000"),
-  http.WithMiddleware(
-    recovery.Recovery(),
-  ),
+	context.Background(),
+	http.WithEndpoint("127.0.0.1:9000"),
+	http.WithMiddleware(
+		recovery.Recovery(),
+	),
 )
 ```
 
@@ -367,8 +367,8 @@ conn, err := http.NewClient(
 
 ```go
 conn, err := http.NewClient(
-  context.Background(),
-  http.WithEndpoint("discovery:///helloworld"),
-  http.WithDiscovery(r),
+	context.Background(),
+	http.WithEndpoint("discovery:///helloworld"),
+	http.WithDiscovery(r),
 )
 ```
