@@ -49,21 +49,22 @@ Let's see how the default RequestDecoder in kratos is implemented:
 
 ```go
 func DefaultRequestDecoder(r *http.Request, v interface{}) error {
-  // Extract the corresponding decoder from the Content-Type of the Request Header
-  codec, ok := CodecForRequest(r, "Content-Type")
-  // If the corresponding decoder cannot be found, an error will be reported at this time
-if !ok {
-return errors.BadRequest("CODEC", r.Header.Get("Content-Type"))
+	// Extract the corresponding decoder from the Content-Type of the Request Header
+	codec, ok := CodecForRequest(r, "Content-Type")
+	// If the corresponding decoder cannot be found, an error will be reported at this time
+	if !ok {
+		return errors.BadRequest("CODEC", r.Header.Get("Content-Type"))
+	}
+	data, err := ioutil.ReadAll(r.Body)
+	if err != nil {
+		return errors.BadRequest("CODEC", err.Error())
+	}
+	if err = codec.Unmarshal(data, v); err != nil {
+		return errors.BadRequest("CODEC", err.Error())
+	}
+	return nil
 }
-data, err := ioutil.ReadAll(r.Body)
-if err != nil {
-return errors.BadRequest("CODEC", err.Error())
-}
-if err = codec.Unmarshal(data, v); err != nil {
-return errors.BadRequest("CODEC", err.Error())
-}
-return nil
-}
+
 ```
 
 Then if we want to extend or replace the parsing implementation corresponding to Content-Type, we can use http.RequestDecoder() to replace Kratos’s default RequestDecoder,
@@ -76,17 +77,17 @@ Let's see how the default ResponseEncoder in kratos is implemented:
 
 ```go
 func DefaultResponseEncoder(w http.ResponseWriter, r *http.Request, v interface{}) error {
-  // Extract the corresponding encoder from the Accept of Request Header
-  // If not found, ignore the error and use the default json encoder
-codec, _ := CodecForRequest(r, "Accept")
-data, err := codec.Marshal(v)
-if err != nil {
-return err
-  }
-  // Write the scheme of the encoder in the Response Header
-w.Header().Set("Content-Type", httputil.ContentType(codec.Name()))
-w.Write(data)
-return nil
+	// Extract the corresponding encoder from the Accept of Request Header
+	// If not found, ignore the error and use the default json encoder
+	codec, _ := CodecForRequest(r, "Accept")
+	data, err := codec.Marshal(v)
+	if err != nil {
+		return err
+	}
+	// Write the scheme of the encoder in the Response Header
+	w.Header().Set("Content-Type", httputil.ContentType(codec.Name()))
+	w.Write(data)
+	return nil
 }
 ```
 
@@ -100,20 +101,21 @@ Let's see how the default ErrorEncoder in kratos is implemented:
 
 ```go
 func DefaultErrorEncoder(w http.ResponseWriter, r *http.Request, err error) {
-  // Get error and convert it into kratos Error entity
-  se := errors.FromError(err)
-  // Extract the corresponding encoder from the Accept of Request Header
-codec, _ := CodecForRequest(r, "Accept")
-body, err := codec.Marshal(se)
-if err != nil {
-w.WriteHeader(http.StatusInternalServerError)
-return
+	// Get error and convert it into kratos Error entity
+	se := errors.FromError(err)
+	// Extract the corresponding encoder from the Accept of Request Header
+	codec, _ := CodecForRequest(r, "Accept")
+	body, err := codec.Marshal(se)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+	w.Header().Set("Content-Type", httputil.ContentType(codec.Name()))
+	// Set HTTP Status Code
+	w.WriteHeader(int(se.Code))
+	w.Write(body)
 }
-  w.Header().Set("Content-Type", httputil.ContentType(codec.Name()))
-  // Set HTTP Status Code
-w.WriteHeader(int(se.Code))
-w.Write(body)
-}
+
 ```
 
 #### `TLSConfig(c *tls.Config) ServerOption`
@@ -124,9 +126,9 @@ Let's see how the default TLSConfig in kratos is implemented:
 ```go
 // TLSConfig with TLS config.
 func TLSConfig(c *tls.Config) ServerOption {
- return func(o *Server) {
-  o.tlsConf = c
- }
+	return func(o *Server) {
+		o.tlsConf = c
+	}
 }
 ```
 
@@ -139,9 +141,9 @@ Configure the StrictSlash of the kratos order the router to redirect URL routes 
 // If true, when the path pattern is "/path/", accessing "/path" will
 // redirect to the former and vice versa.
 func StrictSlash(strictSlash bool) ServerOption {
- return func(o *Server) {
-  o.strictSlash = strictSlash
- }
+	return func(o *Server) {
+		o.strictSlash = strictSlash
+	}
 }
 ```
 
@@ -152,9 +154,9 @@ Configure the Listener of the kratos implement a generic network listener for st
 ```go
 // Listener with server lis
 func Listener(lis net.Listener) ServerOption {
- return func(s *Server) {
-  s.lis = lis
- }
+	return func(s *Server) {
+		s.lis = lis
+	}
 }
 ```
 
@@ -167,34 +169,34 @@ Pass in opts configuration and start HTTP Server
 ```go
 hs := http.NewServer()
 app := kratos.New(
-kratos.Name("kratos"),
-kratos.Version("v1.0.0"),
-kratos.Server(hs),
+  kratos.Name("kratos"),
+  kratos.Version("v1.0.0"),
+  kratos.Server(hs),
 )
 ```
 
 #### Use kratos middleware in HTTP server
 
 ```go
-hs := http.NewServer(
-http.Address(":8000"),
-http.Middleware(
-logging.Server(),
-),
-)
+	hs := http.NewServer(
+		http.Address(":8000"),
+		http.Middleware(
+			logging.Server(),
+		),
+	)
 ```
 
 #### Handling http requests in middleware
 
 ```go
-if tr, ok := transport.FromServerContext(ctx); ok {
-kind = tr.Kind().String()
-operation = tr.Operation()
-// Assert that HTTP transport can get special information
-if ht,ok := tr.(*http.Transport);ok{
-fmt.Println(ht.Request())
-}
-}
+	if tr, ok := transport.FromServerContext(ctx); ok {
+		kind = tr.Kind().String()
+		operation = tr.Operation()
+		// Assert that HTTP transport can get special information
+		if ht, ok := tr.(*http.Transport); ok {
+			fmt.Println(ht.Request())
+		}
+	}
 ```
 
 ### Server Router
@@ -260,14 +262,14 @@ Let's look at the default encoder:
 
 ```go
 func DefaultRequestEncoder(ctx context.Context, contentType string, in interface{}) ([]byte, error) {
-// Obtain the encoder type through the externally configured contentType
-name := httputil.ContentSubtype(contentType)
-// Get the actual encoder
-body, err := encoding.GetCodec(name).Marshal(in)
-if err != nil {
-return nil, err
-}
-return body, err
+	// Obtain the encoder type through the externally configured contentType
+	name := httputil.ContentSubtype(contentType)
+	// Get the actual encoder
+	body, err := encoding.GetCodec(name).Marshal(in)
+	if err != nil {
+		return nil, err
+	}
+	return body, err
 }
 ```
 
@@ -278,14 +280,14 @@ Let's see how the default decoder in kratos is implemented:
 
 ```go
 func DefaultResponseDecoder(ctx context.Context, res *http.Response, v interface{}) error {
-defer res.Body.Close()
-data, err := ioutil.ReadAll(res.Body)
-if err != nil {
-return err
-}
-// Here you get the corresponding decoder according to the Content-Type in the Response Header
-// Then proceed to Unmarshal
-return CodecForResponse(res).Unmarshal(data, v)
+	defer res.Body.Close()
+	data, err := ioutil.ReadAll(res.Body)
+	if err != nil {
+		return err
+	}
+	// Here you get the corresponding decoder according to the Content-Type in the Response Header
+	// Then proceed to Unmarshal
+	return CodecForResponse(res).Unmarshal(data, v)
 }
 ```
 
@@ -296,24 +298,24 @@ Let's take a look at how the default error decoder in kratos is implemented:
 
 ```go
 func DefaultErrorDecoder(ctx context.Context, res *http.Response) error {
-// HTTP Status Code is the highest priority
-if res.StatusCode >= 200 && res.StatusCode <= 299 {
-return nil
-}
-defer res.Body.Close()
-data, err := ioutil.ReadAll(res.Body)
-if err == nil {
-e := new(errors.Error)
-// Here you get the corresponding response decoder according to the Content-Type in the Response Header
-// Then parse out the main content of the error
-if err = CodecForResponse(res).Unmarshal(data, e); err == nil {
-// HTTP Status Code is the highest priority
-e.Code = int32(res.StatusCode)
-return e
-}
-}
-// If no valid Response Body is returned, the HTTP Status Code shall prevail
-return errors.Errorf(res.StatusCode, errors.UnknownReason, err.Error())
+	// HTTP Status Code is the highest priority
+	if res.StatusCode >= 200 && res.StatusCode <= 299 {
+		return nil
+	}
+	defer res.Body.Close()
+	data, err := ioutil.ReadAll(res.Body)
+	if err == nil {
+		e := new(errors.Error)
+		// Here you get the corresponding response decoder according to the Content-Type in the Response Header
+		// Then parse out the main content of the error
+		if err = CodecForResponse(res).Unmarshal(data, e); err == nil {
+			// HTTP Status Code is the highest priority
+			e.Code = int32(res.StatusCode)
+			return e
+		}
+	}
+	// If no valid Response Body is returned, the HTTP Status Code shall prevail
+	return errors.Errorf(res.StatusCode, errors.UnknownReason, err.Error())
 }
 ```
 
@@ -332,9 +334,9 @@ Configure the client's tls config
 ```go
 // WithTLSConfig with tls config.
 func WithTLSConfig(c *tls.Config) ClientOption {
- return func(o *clientOptions) {
-  o.tlsConf = c
- }
+	return func(o *clientOptions) {
+		o.tlsConf = c
+	}
 }
 ```
 
@@ -344,8 +346,8 @@ func WithTLSConfig(c *tls.Config) ClientOption {
 
 ```go
 conn, err := http.NewClient(
-context.Background(),
-http.WithEndpoint("127.0.0.1:8000"),
+  context.Background(),
+  http.WithEndpoint("127.0.0.1:8000"),
 )
 ```
 
@@ -353,11 +355,11 @@ http.WithEndpoint("127.0.0.1:8000"),
 
 ```go
 conn, err := http.NewClient(
-context.Background(),
-http.WithEndpoint("127.0.0.1:9000"),
+  context.Background(),
+  http.WithEndpoint("127.0.0.1:9000"),
   http.WithMiddleware(
-recovery.Recovery(),
-),
+    recovery.Recovery(),
+  ),
 )
 ```
 
@@ -365,7 +367,8 @@ recovery.Recovery(),
 
 ```go
 conn, err := http.NewClient(
-context.Background(),
-http.WithEndpoint("discovery:///helloworld"),
-http.WithDiscovery(r),
+  context.Background(),
+  http.WithEndpoint("discovery:///helloworld"),
+  http.WithDiscovery(r),
 )
+```

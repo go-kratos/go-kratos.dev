@@ -49,20 +49,20 @@ transporter/http 中基于 [gorilla/mux](https://github.com/gorilla/mux) HTTP路
 
 ```go
 func DefaultRequestDecoder(r *http.Request, v interface{}) error {
-  // 从Request Header的Content-Type中提取出对应的解码器
-  codec, ok := CodecForRequest(r, "Content-Type")
-  // 如果找不到对应的解码器此时会报错
- if !ok {
-  return errors.BadRequest("CODEC", r.Header.Get("Content-Type"))
- }
- data, err := ioutil.ReadAll(r.Body)
- if err != nil {
-  return errors.BadRequest("CODEC", err.Error())
- }
- if err = codec.Unmarshal(data, v); err != nil {
-  return errors.BadRequest("CODEC", err.Error())
- }
- return nil
+	// 从Request Header的Content-Type中提取出对应的解码器
+	codec, ok := CodecForRequest(r, "Content-Type")
+	// 如果找不到对应的解码器此时会报错
+	if !ok {
+		return errors.BadRequest("CODEC", r.Header.Get("Content-Type"))
+	}
+	data, err := ioutil.ReadAll(r.Body)
+	if err != nil {
+		return errors.BadRequest("CODEC", err.Error())
+	}
+	if err = codec.Unmarshal(data, v); err != nil {
+		return errors.BadRequest("CODEC", err.Error())
+	}
+	return nil
 }
 ```
 
@@ -76,17 +76,17 @@ func DefaultRequestDecoder(r *http.Request, v interface{}) error {
 
 ```go
 func DefaultResponseEncoder(w http.ResponseWriter, r *http.Request, v interface{}) error {
-  // 通过Request Header的Accept中提取出对应的编码器
-  // 如果找不到则忽略报错，并使用默认json编码器
- codec, _ := CodecForRequest(r, "Accept")
- data, err := codec.Marshal(v)
- if err != nil {
-  return err
-  }
-  // 在Response Header中写入编码器的scheme
- w.Header().Set("Content-Type", httputil.ContentType(codec.Name()))
- w.Write(data)
- return nil
+	// 通过Request Header的Accept中提取出对应的编码器
+	// 如果找不到则忽略报错，并使用默认json编码器
+	codec, _ := CodecForRequest(r, "Accept")
+	data, err := codec.Marshal(v)
+	if err != nil {
+		return err
+	}
+	// 在Response Header中写入编码器的scheme
+	w.Header().Set("Content-Type", httputil.ContentType(codec.Name()))
+	w.Write(data)
+	return nil
 }
 ```
 
@@ -100,19 +100,19 @@ func DefaultResponseEncoder(w http.ResponseWriter, r *http.Request, v interface{
 
 ```go
 func DefaultErrorEncoder(w http.ResponseWriter, r *http.Request, err error) {
-  // 拿到error并转换成kratos Error实体
-  se := errors.FromError(err)
-  // 通过Request Header的Accept中提取出对应的编码器
- codec, _ := CodecForRequest(r, "Accept")
- body, err := codec.Marshal(se)
- if err != nil {
-  w.WriteHeader(http.StatusInternalServerError)
-  return
- }
-  w.Header().Set("Content-Type", httputil.ContentType(codec.Name()))
-  // 设置HTTP Status Code
- w.WriteHeader(int(se.Code))
- w.Write(body)
+	// 拿到error并转换成kratos Error实体
+	se := errors.FromError(err)
+	// 通过Request Header的Accept中提取出对应的编码器
+	codec, _ := CodecForRequest(r, "Accept")
+	body, err := codec.Marshal(se)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+	w.Header().Set("Content-Type", httputil.ContentType(codec.Name()))
+	// 设置HTTP Status Code
+	w.WriteHeader(int(se.Code))
+	w.Write(body)
 }
 ```
 
@@ -124,10 +124,11 @@ func DefaultErrorEncoder(w http.ResponseWriter, r *http.Request, err error) {
 ```go
 // TLSConfig with TLS config.
 func TLSConfig(c *tls.Config) ServerOption {
- return func(o *Server) {
-  o.tlsConf = c
- }
+	return func(o *Server) {
+		o.tlsConf = c
+	}
 }
+
 ```
 
 #### `StrictSlash(strictSlash bool) ServerOption`
@@ -140,9 +141,9 @@ func TLSConfig(c *tls.Config) ServerOption {
 // If true, when the path pattern is "/path/", accessing "/path" will
 // redirect to the former and vice versa.
 func StrictSlash(strictSlash bool) ServerOption {
- return func(o *Server) {
-  o.strictSlash = strictSlash
- }
+	return func(o *Server) {
+		o.strictSlash = strictSlash
+	}
 }
 ```
 
@@ -154,9 +155,9 @@ func StrictSlash(strictSlash bool) ServerOption {
 ```go
 // Listener with server lis
 func Listener(lis net.Listener) ServerOption {
- return func(s *Server) {
-  s.lis = lis
- }
+	return func(s *Server) {
+		s.lis = lis
+	}
 }
 ```
 
@@ -169,9 +170,9 @@ func Listener(lis net.Listener) ServerOption {
 ```go
 hs := http.NewServer()
 app := kratos.New(
- kratos.Name("kratos"),
- kratos.Version("v1.0.0"),
- kratos.Server(hs),
+  kratos.Name("kratos"),
+  kratos.Version("v1.0.0"),
+  kratos.Server(hs),
 )
 ```
 
@@ -179,10 +180,10 @@ app := kratos.New(
 
 ```go
 hs := http.NewServer(
- http.Address(":8000"),
- http.Middleware(
-  logging.Server(),
- ),
+  http.Address(":8000"),
+  http.Middleware(
+    logging.Server(),
+  ),
 )
 ```
 
@@ -190,12 +191,12 @@ hs := http.NewServer(
 
 ```go
 if tr, ok := transport.FromServerContext(ctx); ok {
- kind = tr.Kind().String()
- operation = tr.Operation()
- // 断言成HTTP的Transport可以拿到特殊信息
- if ht,ok := tr.(*http.Transport);ok{
-  fmt.Println(ht.Request())
- }
+  kind = tr.Kind().String()
+  operation = tr.Operation()
+  // 断言成HTTP的Transport可以拿到特殊信息
+  if ht, ok := tr.(*http.Transport); ok {
+    fmt.Println(ht.Request())
+  }
 }
 ```
 
@@ -207,8 +208,8 @@ if tr, ok := transport.FromServerContext(ctx); ok {
 我们看下用法：
 
 ```go
- r := s.Route("/v1")
- r.GET("/helloworld/{name}", _Greeter_SayHello0_HTTP_Handler(srv))
+r := s.Route("/v1")
+r.GET("/helloworld/{name}", _Greeter_SayHello0_HTTP_Handler(srv))
 ```
 
 #### `func (s *Server) Handle(path string, h http.Handler)`
@@ -262,14 +263,14 @@ if tr, ok := transport.FromServerContext(ctx); ok {
 
 ```go
 func DefaultRequestEncoder(ctx context.Context, contentType string, in interface{}) ([]byte, error) {
- // 通过外部配置的contentType获取encoder类型
- name := httputil.ContentSubtype(contentType)
- // 拿到实际的encoder
- body, err := encoding.GetCodec(name).Marshal(in)
- if err != nil {
-  return nil, err
- }
- return body, err
+	// 通过外部配置的contentType获取encoder类型
+	name := httputil.ContentSubtype(contentType)
+	// 拿到实际的encoder
+	body, err := encoding.GetCodec(name).Marshal(in)
+	if err != nil {
+		return nil, err
+	}
+	return body, err
 }
 ```
 
@@ -280,14 +281,14 @@ func DefaultRequestEncoder(ctx context.Context, contentType string, in interface
 
 ```go
 func DefaultResponseDecoder(ctx context.Context, res *http.Response, v interface{}) error {
- defer res.Body.Close()
- data, err := ioutil.ReadAll(res.Body)
- if err != nil {
-  return err
- }
- // 这里根据Response Header中的Content-Type拿到对应的decoder
- // 然后进行Unmarshal
- return CodecForResponse(res).Unmarshal(data, v)
+	defer res.Body.Close()
+	data, err := ioutil.ReadAll(res.Body)
+	if err != nil {
+		return err
+	}
+	// 这里根据Response Header中的Content-Type拿到对应的decoder
+	// 然后进行Unmarshal
+	return CodecForResponse(res).Unmarshal(data, v)
 }
 ```
 
@@ -298,24 +299,24 @@ func DefaultResponseDecoder(ctx context.Context, res *http.Response, v interface
 
 ```go
 func DefaultErrorDecoder(ctx context.Context, res *http.Response) error {
- // HTTP Status Code 为最高优先级
- if res.StatusCode >= 200 && res.StatusCode <= 299 {
-  return nil
- }
- defer res.Body.Close()
- data, err := ioutil.ReadAll(res.Body)
- if err == nil {
-  e := new(errors.Error)
-  // 这里根据Response Header中的Content-Type拿到对应的response decoder
-  // 然后解析出error主体内容
-  if err = CodecForResponse(res).Unmarshal(data, e); err == nil {
-   // HTTP Status Code 为最高优先级
-   e.Code = int32(res.StatusCode)
-   return e
-  }
- }
- // 如果没有返回合法的Response Body则直接以HTTP Status Code为准
- return errors.Errorf(res.StatusCode, errors.UnknownReason, err.Error())
+	// HTTP Status Code 为最高优先级
+	if res.StatusCode >= 200 && res.StatusCode <= 299 {
+		return nil
+	}
+	defer res.Body.Close()
+	data, err := ioutil.ReadAll(res.Body)
+	if err == nil {
+		e := new(errors.Error)
+		// 这里根据Response Header中的Content-Type拿到对应的response decoder
+		// 然后解析出error主体内容
+		if err = CodecForResponse(res).Unmarshal(data, e); err == nil {
+			// HTTP Status Code 为最高优先级
+			e.Code = int32(res.StatusCode)
+			return e
+		}
+	}
+	// 如果没有返回合法的Response Body则直接以HTTP Status Code为准
+	return errors.Errorf(res.StatusCode, errors.UnknownReason, err.Error())
 }
 ```
 
@@ -334,31 +335,32 @@ func DefaultErrorDecoder(ctx context.Context, res *http.Response) error {
 ```go
 // WithTLSConfig with tls config.
 func WithTLSConfig(c *tls.Config) ClientOption {
- return func(o *clientOptions) {
-  o.tlsConf = c
- }
+	return func(o *clientOptions) {
+		o.tlsConf = c
+	}
 }
+```
 
 ### Client使用方式
 
 #### 创建客户端连接
 
 ```go
- conn, err := http.NewClient(
+conn, err := http.NewClient(
   context.Background(),
   http.WithEndpoint("127.0.0.1:8000"),
- )
+)
 ```
 
 #### 使用中间件
 
 ```go
 conn, err := http.NewClient(
- context.Background(),
- http.WithEndpoint("127.0.0.1:9000"),
-   http.WithMiddleware(
+  context.Background(),
+  http.WithEndpoint("127.0.0.1:9000"),
+  http.WithMiddleware(
     recovery.Recovery(),
- ),
+  ),
 )
 ```
 
@@ -366,8 +368,8 @@ conn, err := http.NewClient(
 
 ```go
 conn, err := http.NewClient(
- context.Background(),
- http.WithEndpoint("discovery:///helloworld"),
- http.WithDiscovery(r),
+  context.Background(),
+  http.WithEndpoint("discovery:///helloworld"),
+  http.WithDiscovery(r),
 )
 ```
