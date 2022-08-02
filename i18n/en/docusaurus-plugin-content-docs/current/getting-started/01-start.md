@@ -26,7 +26,7 @@ If you faced with network problem (especially you are in China Mainland), please
 #### 1. go install installation
 
 ```bash
-go install github.com/go-kratos/kratos/cmd/kratos/v2
+go install github.com/go-kratos/kratos/cmd/kratos/v2@latest
 ```
 
 #### 2. Source code compilation and installation
