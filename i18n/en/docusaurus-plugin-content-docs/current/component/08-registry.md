@@ -104,7 +104,7 @@ app := kratos.New(
 
 #### Service Discovery (gRPC)
 
-Create a Registrar(e.g. consul), create an Endpoint with url format as `<schema>://[namespace]/<service-name>`, then use `grc.WithDiscovery` and `grpc.WithEndpoint` as the options of the Dial method to get the gRPC connection.
+Create a Registrar(e.g. consul), create an Endpoint with url format as `<schema>://[authority]/<service-name>`, then use `grc.WithDiscovery` and `grpc.WithEndpoint` as the options of the Dial method to get the gRPC connection.
 
 ```go
 import (
@@ -123,7 +123,7 @@ if err != nil {
 // new dis with consul client
 dis := consul.New(client)
 
-endpoint := "discovery://default/provider"
+endpoint := "discovery:///provider"
 conn, err := grpc.Dial(context.Background(), grpc.WithEndpoint(endpoint), grpc.WithDiscovery(dis))
 if err != nil {
     panic(err)
@@ -148,7 +148,7 @@ if err != nil {
 // new dis with etcd client
 dis := etcd.New(client)
 
-endpoint := "discovery://default/provider"
+endpoint := "discovery:///provider"
 conn, err := grpc.Dial(context.Background(), grpc.WithEndpoint(endpoint), grpc.WithDiscovery(dis))
 if err != nil {
     panic(err)
