@@ -114,7 +114,7 @@ BREAKING CHANGE:
 - Breaking Change
 - Dependencies
 - Bug Fixes
-- Ohters
+- Others
 
 ### 示例
 通过 `kratos changelog dev` 生成的文本，只需简单修改即可作为 **release** 版本发布的说明
