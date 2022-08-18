@@ -49,16 +49,12 @@ import	"github.com/go-kratos/kratos/v2/selector/filter"
 // 创建路由 Filter：筛选版本号为"2.0.0"的实例
 filter :=  filter.Version("2.0.0")
 // 创建 P2C 负载均衡算法 Selector，并将路由 Filter 注入
-selector := p2c.New(p2c.WithFilter(filter))
-
+selector.SetGlobalSelector(wrr.NewBuilder)
 hConn, err := http.NewClient(
   context.Background(),
   http.WithEndpoint("discovery:///helloworld"),
   http.WithDiscovery(r),
-  // 通过 http.WithSelector 将 Selector 注入 HTTP Client 中
-  http.WithSelector(
-    p2c.New(p2c.WithFilter(filter.Version("2.0.0"))),
-  )
+  http.WithNodeFilter(filter)
 )
 ```
 
@@ -71,14 +67,14 @@ import	"github.com/go-kratos/kratos/v2/selector/filter"
 
 // 创建路由 Filter：筛选版本号为"2.0.0"的实例
 filter :=  filter.Version("2.0.0")
-
+// 由于 gRPC 框架的限制，只能使用全局 balancer name 的方式来注入 selector
+selector.SetGlobalSelector(wrr.NewBuilder)
 conn, err := grpc.DialInsecure(
   context.Background(),
   grpc.WithEndpoint("discovery:///helloworld"),
   grpc.WithDiscovery(r),
-  // 由于 gRPC 框架的限制，只能使用全局 balancer name 的方式来注入 selector
-  grpc.WithBalancerName(wrr.Name),
+
   // 通过 grpc.WithFilter 注入路由 Filter
-  grpc.WithFilter(filter),
+  grpc.WithNodeFilter(filter),
 )
 ```
