@@ -45,7 +45,7 @@ Kratos 使用 Github Issues 来管理问题。 如果您希望提交 bug 报告�
 
 **注意在您提交 PR 请求时首先保证代码使用了正确的编码规范，并有完整的测试用例，提交 PR 的信息中最好关联相关的 issue，以减轻审核人员的工作负担。**
 
-遵循 [Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0/#summary) 来规范化 commit message
+遵循 [Conventional Commits](https://www.conventionalcommits.org/zh-hans/v1.0.0//#summary) 来规范化 commit message
 
 ```
 <type>[optional scope]: <description>
