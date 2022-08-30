@@ -49,8 +49,8 @@ keywords:
 - 内容要完整，需要充分体现组件的功能，并附带简要的示例或者示例的链接。力求达到用户看文档即可答疑。
 - 代码的缩进，一定要设置为空格缩进再复制。
 - 层级目录采用 [Google AIP](https://google.aip.dev/121) 结构。
-- 对于中文内容部分，数字和英文两边是中文要加空格，具体参照[中文文案排版](https://github.com/sparanoid/chinese-copywriting-guidelines)。
-- 在 commit 前尽量减少 diff，以减轻 review 的负担。推荐使用 **Prettier** 之类的 formatter 进行格式化。
+- 对于中文内容，**数字与中文**、**中英文**之间需要添加空格，具体参照[中文文案排版](https://github.com/sparanoid/chinese-copywriting-guidelines)。推荐使用 **Prettier** 之类的 formatter 进行格式化。
+- 在 commit 前尽量减少 diff，以减轻 review 的负担。
 - 因为各个平台默认的 EOL 不相同，为了防止 commit 时出现大面积的 diff，请统一将编辑器的 **End Of Line(EOL)** 选项改为 **LF(\n)**。
 - Kratos 统一写法。K 大写。
 - 翻译完自己读一遍，要通顺，要能理解。不追求严格一致，可以意译。review 的时候也会检验。不会翻译的词汇可以不翻译，review 的时候会查看。翻译完还是要自己先 review 一遍，不要出现遗漏段落。
