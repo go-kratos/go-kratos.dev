@@ -49,6 +49,8 @@ Please refer to the advanced use of document translation [Docusaurus: i18n - Usi
 
 - The contents remain intact, with functional components fully represented. Simple examples or their links should be attached. Such efforts shall be made to guide the users and offer them answers as they read this materials.
 - For code indentation, it needs to set space indent before duplication.
-- The hierarchical directory should take the form of Google AIP.
-- What is lined with the numeral and the English is the Chinese characters with space.
+- The hierarchical directory should take the form of [Google AIP](https://google.aip.dev/121).
+- What is lined with the numeral and the English is the Chinese characters with space,more [Chinese Copywriting Guidelines](https://github.com/sparanoid/chinese-copywriting-guidelines).Recommand to use formatter such as **Prettier** to format.
+- Reduce the diff before commit to ease the workload of the auditor.
+- It's different to **End Of Line(EOL)** in multi-platforms.You can set to **End Of Line(EOL)** config to **LF(\n)** in editor to prevent a large number of errors in commit.
 - Kratos shall begin with a capital letter “K”.
