@@ -46,7 +46,7 @@ opt := &options{
 // CircuitBreaker is a circuit breaker.
 type CircuitBreaker interface {
 	Allow() error // 判断请求是否允许发送,如果返回 error 则表示请求被拒绝
-  MarkSuccess() // 标记请求成功
+  	MarkSuccess() // 标记请求成功
 	MarkFailed() // 标记请求失败
 }
 ```
