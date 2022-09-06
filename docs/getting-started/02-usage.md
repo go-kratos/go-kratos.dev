@@ -44,7 +44,7 @@ kratos new helloworld
 kratos new helloworld -b main
 ```
 
-使用 `--nomod` 添加服务, 共用 `go.mod` ,大仓模式
+使用 `--nomod` 添加服务，共用 `go.mod` ，大仓模式
 
 ```bash
 kratos new helloworld
@@ -208,7 +208,7 @@ api/helloworld/demo_http.pb.go
 
 ### 生成 Service 代码
 
-通过 proto文件，可以直接生成对应的 Service 实现代码：
+通过 proto 文件，可以直接生成对应的 Service 实现代码：
 
 使用 `-t` 指定生成目录
 ```bash
