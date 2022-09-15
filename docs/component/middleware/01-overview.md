@@ -17,7 +17,7 @@ Kratos 内置了一系列的 middleware（中间件）用于处理 logging、 me
 
 ### 内置中间件
 
-相关代码均可以在`middleware`目录下找到。
+相关代码均可以在 `middleware` 目录下找到。
 
 - logging: 用于请求日志的记录。
 - metrics: 用于启用 metric。
@@ -201,7 +201,7 @@ grpc.Middleware(
 
 **operation 查找**
 
-gRPC path 的拼接规则为 `/包名.服务名/方法名(/package.Server/Method)`
+gRPC path 的拼接规则为 `/包名.服务名/方法名(/package.Service/Method)`
 
 比如在如下 proto 文件中，我们要调用 SayHello 这个方法，那么 operation 就为 `/helloworld.Greeter/SayHello`
 
