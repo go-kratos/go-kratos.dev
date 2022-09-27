@@ -112,10 +112,10 @@ Customized middleware for specific routes
 
 Matching rule (multi parameter)
 
-- `Path(path...)` path match
-- `Regex(regex...)` regex match
-- `Prefix(prefix...)` prefix path match
-- `Match(fn)` function match, The function format is `func(ctx context.Context,operation string) bool`,
+- `Path(path...)`: path match
+- `Regex(regex...)`: regex match
+- `Prefix(prefix...)`: prefix path match
+- `Match(fn)`: function match, The function format is `func(ctx context.Context,operation string) bool`,
 
   `operation` is path,If the return value is `true`,match successful, `ctx` for `transport.FromServerContext(ctx)` or `transport.FromClientContext(ctx` get `Transporter)`
 
