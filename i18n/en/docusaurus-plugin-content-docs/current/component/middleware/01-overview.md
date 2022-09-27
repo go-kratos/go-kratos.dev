@@ -105,19 +105,17 @@ func Middleware1() middleware.Middleware {
 
 ## Custom Middleware
 
-Customized middleware for specific routes
+Customized middleware for specific routes:
 
-- server:`selector.Server(ms...)`
-- client:`selector.Client(ms...)`
+- server: `selector.Server(ms...)`
+- client: `selector.Client(ms...)`
 
-Matching rule (multi parameter)
+Matching rule (multi parameter):
 
 - `Path(path...)`: path match
 - `Regex(regex...)`: regex match
 - `Prefix(prefix...)`: prefix path match
-- `Match(fn)`: function match, The function format is `func(ctx context.Context,operation string) bool`,
-
-  `operation` is path,If the return value is `true`,match successful, `ctx` for `transport.FromServerContext(ctx)` or `transport.FromClientContext(ctx` get `Transporter)`
+- `Match(fn)`: function match, The function format is `func(ctx context.Context,operation string) bool`. `operation` is path,If the return value is `true`,match successful, `ctx` for `transport.FromServerContext(ctx)` or `transport.FromClientContext(ctx` get `Transporter)`.
 
 **http server**
 
