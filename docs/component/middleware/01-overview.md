@@ -24,10 +24,10 @@ Kratos 内置了一系列的 middleware（中间件）用于处理 logging、 me
 - `recovery`: 用于 recovery panic。
 - `tracing`: 用于启用 trace。
 - `validate`: 用于处理参数校验。
-- `metadata`: 用于启用元信息传递
-- `auth`: 用于提供基于 JWT 的认证请求
-- `ratelimit`: 用于服务端流量限制
-- `circuitbreaker`: 用于客户端熔断控制
+- `metadata`: 用于启用元信息传递。
+- `auth`: 用于提供基于 JWT 的认证请求。
+- `ratelimit`: 用于服务端流量限制。
+- `circuitbreaker`: 用于客户端熔断控制。
 
 ### 生效顺序
 
@@ -51,7 +51,7 @@ REQUEST  │ │ │ │  YOUR   │ │││  RESPONSE
 
 ### 使用中间件
 
-在`NewGRPCServer`和`NewHTTPServer`中通过`ServerOption`进行注册。
+在 `NewGRPCServer` 和 `NewHTTPServer` 中通过 `ServerOption` 进行注册。  
 如
 
 ```go
@@ -84,7 +84,7 @@ grpc.NewServer(opts...)
 ### 自定义中间件
 
 需要实现 `Middleware` 接口。  
-中间件中您可以使用 `tr, ok := transport.FromServerContext(ctx)` 获得 **Transporter** 实例以便访问接口相关的元信息
+中间件中您可以使用 `tr, ok := transport.FromServerContext(ctx)` 获得 **Transporter** 实例以便访问接口相关的元信息。
 
 基本的代码模板：
 
@@ -123,9 +123,7 @@ func Middleware1() middleware.Middleware {
 - `Path(path...)`: 路由匹配
 - `Regex(regex...)`: 正则匹配
 - `Prefix(prefix...)`: 前缀匹配
-- `Match(fn)`: 函数匹配,函数格式为`func(ctx context.Context,operation string) bool`,
-
-  `operation`为 path,函数返回值为`true`,匹配成功, `ctx`可使用`transport.FromServerContext(ctx)` 或者`transport.FromClientContext(ctx`获取 `Transporter)`
+- `Match(fn)`: 函数匹配，函数格式为`func(ctx context.Context,operation string) bool`。 `operation`为 path，函数返回值为`true`，匹配成功，`ctx`可使用`transport.FromServerContext(ctx)` 或者 `transport.FromClientContext(ctx`获取 `Transporter)`。
 
 **http server**
 
@@ -197,13 +195,13 @@ grpc.Middleware(
 
 > **注意: 定制中间件是通过 operation 匹配，并不是 http 本身的路由！！！**
 >
-> operation 是 HTTP 及 gRPC 统一的 gRPC path
+> operation 是 HTTP 及 gRPC 统一的 gRPC path。
 
 **operation 查找**
 
-gRPC path 的拼接规则为 `/包名.服务名/方法名(/package.Service/Method)`
+gRPC path 的拼接规则为 `/包名.服务名/方法名(/package.Service/Method)`。
 
-比如在如下 proto 文件中，我们要调用 SayHello 这个方法，那么 operation 就为 `/helloworld.Greeter/SayHello`
+比如在如下 proto 文件中，我们要调用 SayHello 这个方法，那么 operation 就为 `/helloworld.Greeter/SayHello`。
 
 ```protobuf
 syntax = "proto3";
