@@ -187,13 +187,13 @@ grpc.Middleware(
 
 > **Note: the customized middleware matches through `operation`, not is the HTTP routing ! ! ! **
 >
-> operation is the unified GRC path of HTTP and GRC
+> operation is the unified GRC path of HTTP and GRC.
 
 **operation find**
 
-gRPC path's splicing rule is `/package.Service/Method`
+gRPC path's splicing rule is `/package.Service/Method`.
 
-For example, in the following proto file，if we want to call the sayhello method, then the operation is `/helloworld.Greeter/SayHello`
+For example, in the following proto file，if we want to call the sayhello method, then the operation is `/helloworld.Greeter/SayHello`.
 
 ```protobuf
 syntax = "proto3";
