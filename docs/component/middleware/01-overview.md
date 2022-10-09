@@ -19,6 +19,7 @@ Kratos 内置了一系列的 middleware（中间件）用于处理 logging、 me
 
 相关代码均可以在 `middleware` 目录下找到。
 
+<<<<<<< HEAD
 - `logging`: 用于请求日志的记录。
 - `metrics`: 用于启用 metric。
 - `recovery`: 用于 recovery panic。
@@ -28,6 +29,17 @@ Kratos 内置了一系列的 middleware（中间件）用于处理 logging、 me
 - `auth`: 用于提供基于 JWT 的认证请求。
 - `ratelimit`: 用于服务端流量限制。
 - `circuitbreaker`: 用于客户端熔断控制。
+=======
+- logging: 用于请求日志的记录。
+- metrics: 用于启用 metric。
+- recovery: 用于 recovery panic。
+- tracing: 用于启用 trace。
+- validate: 用于处理参数校验。
+- metadata: 用于启用元信息传递
+- auth: 用于提供基于 JWT 的认证请求
+- ratelimit: 用于服务端流量限制
+- circuitbreaker: 用于客户端熔断控制
+>>>>>>> main
 
 ### 生效顺序
 
@@ -199,7 +211,11 @@ grpc.Middleware(
 
 **operation 查找**
 
+<<<<<<< HEAD
 gRPC path 的拼接规则为 `/包名.服务名/方法名(/package.Service/Method)`。
+=======
+gRPC path 的拼接规则为 `/包名.服务名/方法名(/package.Service/Method)`
+>>>>>>> main
 
 比如在如下 proto 文件中，我们要调用 SayHello 这个方法，那么 operation 就为 `/helloworld.Greeter/SayHello`。
 
