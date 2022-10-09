@@ -13,13 +13,12 @@ keywords:
   - HTTP
 ---
 
-Kratos 内置了一系列的 middleware（中间件）用于处理 logging、 metrics 等通用场景。您也可以通过实现 Middleware 接口，开发自定义 middleware，进行通用的业务处理，比如用户登录鉴权等。
+Kratos 内置了一系列的 middleware（中间件）用于处理 logging、 metrics 等通用场景。您也可以通过实现 **Middleware** 接口，开发自定义 middleware，进行通用的业务处理，比如用户登录鉴权等。
 
-### 内置中间件
+## 内置中间件
 
 相关代码均可以在 `middleware` 目录下找到。
 
-<<<<<<< HEAD
 - `logging`: 用于请求日志的记录。
 - `metrics`: 用于启用 metric。
 - `recovery`: 用于 recovery panic。
@@ -29,19 +28,8 @@ Kratos 内置了一系列的 middleware（中间件）用于处理 logging、 me
 - `auth`: 用于提供基于 JWT 的认证请求。
 - `ratelimit`: 用于服务端流量限制。
 - `circuitbreaker`: 用于客户端熔断控制。
-=======
-- logging: 用于请求日志的记录。
-- metrics: 用于启用 metric。
-- recovery: 用于 recovery panic。
-- tracing: 用于启用 trace。
-- validate: 用于处理参数校验。
-- metadata: 用于启用元信息传递
-- auth: 用于提供基于 JWT 的认证请求
-- ratelimit: 用于服务端流量限制
-- circuitbreaker: 用于客户端熔断控制
->>>>>>> main
 
-### 生效顺序
+## 生效顺序
 
 一个请求进入时的处理顺序为 Middleware 注册的顺序，而响应返回的处理顺序为注册顺序的倒序，即先进后出(FILO)。
 
@@ -61,10 +49,11 @@ REQUEST  │ │ │ │  YOUR   │ │││  RESPONSE
          └───────────────────┘
 ```
 
-### 使用中间件
+## 使用中间件
 
 在 `NewGRPCServer` 和 `NewHTTPServer` 中通过 `ServerOption` 进行注册。  
-如
+
+例如：
 
 ```go
 // http
@@ -93,9 +82,10 @@ var opts = []grpc.ServerOption{
 grpc.NewServer(opts...)
 ```
 
-### 自定义中间件
+## 自定义中间件
 
 需要实现 `Middleware` 接口。  
+
 中间件中您可以使用 `tr, ok := transport.FromServerContext(ctx)` 获得 **Transporter** 实例以便访问接口相关的元信息。
 
 基本的代码模板：
@@ -123,7 +113,7 @@ func Middleware1() middleware.Middleware {
 }
 ```
 
-### 定制中间件
+## 定制中间件
 
 对特定路由定制中间件：
 
@@ -211,11 +201,7 @@ grpc.Middleware(
 
 **operation 查找**
 
-<<<<<<< HEAD
 gRPC path 的拼接规则为 `/包名.服务名/方法名(/package.Service/Method)`。
-=======
-gRPC path 的拼接规则为 `/包名.服务名/方法名(/package.Service/Method)`
->>>>>>> main
 
 比如在如下 proto 文件中，我们要调用 SayHello 这个方法，那么 operation 就为 `/helloworld.Greeter/SayHello`。
 
