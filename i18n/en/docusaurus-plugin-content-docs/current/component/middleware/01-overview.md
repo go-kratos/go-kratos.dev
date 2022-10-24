@@ -2,53 +2,49 @@
 id: overview
 title: Overview
 ---
-Kratos has a series of built-in middleware to deal with common purpose such as logging or metrics. You could also implement Middleware interface to develop your custom middleware to process common business such as the user authentication etc.
+
+Kratos has a series of built-in middleware to deal with common purpose such as logging or metrics. You could also implement **Middleware** interface to develop your custom middleware to process common business such as the user authentication etc.
 
 ## Built-in Middleware
 
 Their codes are located in `middleware` directory.
 
-### logging
+- `logging`: This middleware is for logging the request.
+- `metrics`: This middleware is for enabling metric.
+- `recovery`: This middleware is for panic recovery.
+- `tracing`: This middleware is for enabling trace.
+- `validate`: This middleware is for parameter validation.
+- `metadata`: This middleware is for enabling metadata transmission.
+- `auth`: This middleware is for authority check using JWT.
+- `ratelimit`: This middleware is for traffic control in server side.
+- `circuitbreaker`: This middleware is for breaker control in client side.
 
-In `middleware/logging`, this middleware is for logging the request.
+## Effective Sequence
 
-### metrics
+The execution sequence of the request is the sequence of Middleware registration, and the execution sequence of the response returned is the reverse of the registration sequence.That is a First In, Last Out (FILO).
 
-In `middleware/metrics`, this middleware is for enabling metric.
-
-### recovery
-
-In `middleware/recovery`，, this middleware is for panic recovery.
-
-### status
-
-In `middleware/status`, this middleware is for transformation of gRPC error.
-
-### tracing
-
-In `middleware/tracing`, this middleware is for enabling trace.
-
-### validate
-
-In `middleware/validate`, this middleware is for parameter validation.
-
-### auth
-
-In `middleware/auth`, this middleware is for authority check using JWT.
-
-### ratelimit
-
-In `middleware/ratelimit`, this middleware is for traffic control in server side.
-
-### circuitbreaker
-
-In `middleware/circuitbreaker`, this middleware is for breaker control in client side.
+```
+         ┌───────────────────┐
+         │MIDDLEWARE 1       │
+         │ ┌────────────────┐│
+         │ │MIDDLEWARE 2    ││
+         │ │ ┌─────────────┐││
+         │ │ │MIDDLEWARE 3 │││
+         │ │ │ ┌─────────┐ │││
+REQUEST  │ │ │ │  YOUR   │ │││  RESPONSE
+   ──────┼─┼─┼─▷ HANDLER ○─┼┼┼───▷
+         │ │ │ └─────────┘ │││
+         │ │ └─────────────┘││
+         │ └────────────────┘│
+         └───────────────────┘
+```
 
 ## Usage
 
 Register it with `ServerOption` in `NewGRPCServer` or `NewHTTPServer`.
 
 For example:
+
 ```go
 // http
 // define opts
@@ -62,8 +58,6 @@ var opts = []http.ServerOption{
 // create server
 http.NewServer(opts...)
 
-
-
 //grpc
 var opts = []grpc.ServerOption{
 		grpc.Middleware(
@@ -73,27 +67,55 @@ var opts = []grpc.ServerOption{
 			logging.Server(),
 		),
 	}
+
 // create server
 grpc.NewServer(opts...)
-
 ```
 
+## Modify Middleware
+
+Need to implement the `Middleware` interface.
+
+In the middleware, you can use `tr, ok := transport.FromServerContext(ctx)` to get the **Transporter** instance to access metadata about the interface.
+
+Example:
+
+```go
+import (
+    "context"
+
+    "github.com/go-kratos/kratos/v2/middleware"
+    "github.com/go-kratos/kratos/v2/transport"
+)
+
+func Middleware1() middleware.Middleware {
+    return func(handler middleware.Handler) middleware.Handler {
+        return func(ctx context.Context, req interface{}) (reply interface{}, err error) {
+            if tr, ok := transport.FromServerContext(ctx); ok {
+                // Do something on entering
+                defer func() {
+                // Do something on exiting
+                 }()
+            }
+            return handler(ctx, req)
+        }
+    }
+}
+```
 
 ## Custom Middleware
 
-Customized middleware for specific routes
+Customized middleware for specific routes:
 
-- server:`selector.Server(ms...)` 
-- client:`selector.Client(ms...)`
+- server: `selector.Server(ms...)`
+- client: `selector.Client(ms...)`
 
-Matching rule (multi parameter)
+Matching rule (multi parameter):
 
-- `Path(path...)`        path match
-- `Regex(regex...)`      regex match
-- `Prefix(prefix...)`    prefix path match
-- `Match(fn)`            function match, The function format is `func(ctx context.Context,operation string) bool`,
-  
-  `operation` is path,If the return value is `true`,match successful, `ctx` for `transport.FromServerContext(ctx)` or `transport.FromClientContext(ctx` get `Transporter`
+- `Path(path...)`: path match
+- `Regex(regex...)`: regex match
+- `Prefix(prefix...)`: prefix path match
+- `Match(fn)`: function match, The function format is `func(ctx context.Context,operation string) bool`. `operation` is path,If the return value is `true`,match successful, `ctx` for `transport.FromServerContext(ctx)` or `transport.FromClientContext(ctx` get `Transporter)`.
 
 **http server**
 
@@ -163,15 +185,15 @@ grpc.Middleware(
         )
 ```
 
-> **Note: the customized middleware matches through `operation`, not is the HTTP routing！！！** 
-> 
-> operation is the unified GRC path of HTTP and GRC
+> **Note: the customized middleware matches through `operation`, not is the HTTP routing ! ! ! **
+>
+> operation is the unified GRC path of HTTP and GRC.
 
 **operation find**
 
-gRPC path's splicing rule is `/package.service/method`
+gRPC path's splicing rule is `/package.Service/Method`.
 
-For example, in the following proto file，if we want to call the sayhello method, then the operation is `/helloworld.Greeter/SayHello`
+For example, in the following proto file，if we want to call the sayhello method, then the operation is `/helloworld.Greeter/SayHello`.
 
 ```protobuf
 syntax = "proto3";
@@ -201,5 +223,3 @@ message HelloReply {
   string message = 1;
 }
 ```
-
-
