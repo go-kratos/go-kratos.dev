@@ -97,7 +97,7 @@ jwt.WithSigningMethod(jwtv4.SigningMethodHS256)
 
 用于配置 `JWT` 的 `claims`。
 
-例如：
+例：
 
 - 配置 `client` 的 `claims`：
 
