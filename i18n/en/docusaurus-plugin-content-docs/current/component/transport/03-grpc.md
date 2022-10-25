@@ -17,71 +17,93 @@ Our transporter/grpc is developed upon [gRPC](https://www.grpc.io/), and impleme
 
 ### Options
 
-#### `Network()`
+#### `Network(network string) ServerOption `
 
 To set communication protocol such as tcp.
 
-#### `Address()`
+#### `Address(addr string) ServerOption`
 
 To set server's listening address.
 
-#### `Timeout()`
+#### `Timeout(timeout time.Duration) ServerOption`
 
 To set the server-side timeout.
 
-#### `Logger()`
+#### `Logger(logger log.Logger) ServerOption`
 
 To set logger.
 
-#### `Middleware()`
+#### `Middleware(m ...middleware.Middleware) ServerOption`
 
 To set middleware for gRPC server.
 
-#### `UnaryInterceptor()`
+#### `TLSConfig(c *tls.Config) ServerOption`
+
+To set TLS config.
+
+#### `UnaryInterceptor(in ...grpc.UnaryServerInterceptor) ServerOption`
 
 To set interceptors for gRPC server.
 
-#### `Options()`
+#### `StreamInterceptor(in ...grpc.StreamServerInterceptor) ServerOption`
 
-To set some extra `grpc.ServerOption`
+To set stream interceptors for gRPC server.
+
+#### `Options(opts ...grpc.ServerOption) ServerOption`
+
+To set some extra `grpc.ServerOption`.
 
 ### Implementation Details
 
 #### `NewServer()`
 ```go
 func NewServer(opts ...ServerOption) *Server {
-  // grpc server default configuration
+  	// grpc server default configuration
 	srv := &Server{
 		network: "tcp",
 		address: ":0",
 		timeout: 1 * time.Second,
 		health:  health.NewServer(),
-		log:     log.NewHelper(log.DefaultLogger),
+		log:     log.NewHelper(log.GetLogger()),
 	}
-  // apply opts
+  	// apply opts
 	for _, o := range opts {
 		o(srv)
 	}
-  // convert middleware to grpc interceptor
-	var ints = []grpc.UnaryServerInterceptor{
+  	// convert middleware to grpc interceptor
+	unaryInts := []grpc.UnaryServerInterceptor{
 		srv.unaryServerInterceptor(),
 	}
-
-	if len(srv.ints) > 0 {
-		ints = append(ints, srv.ints...)
+	streamInts := []grpc.StreamServerInterceptor{
+		srv.streamServerInterceptor(),
 	}
 
-  // convert UnaryInterceptor to ServerOption
+	if len(srv.unaryInts) > 0 {
+		unaryInts = append(unaryInts, srv.unaryInts...)
+	}
+	if len(srv.streamInts) > 0 {
+		streamInts = append(streamInts, srv.streamInts...)
+	}
+
+  	// convert UnaryInterceptor and StreamInterceptor to ServerOption
 	var grpcOpts = []grpc.ServerOption{
-		grpc.ChainUnaryInterceptor(ints...),
+		grpc.ChainUnaryInterceptor(unaryInts...),
+		grpc.ChainStreamInterceptor(streamInts...),
 	}
+	// convert LTS config to ServerOption
+	if srv.tlsConf != nil {
+		grpcOpts = append(grpcOpts, grpc.Creds(credentials.NewTLS(srv.tlsConf)))
+	}
+	// convert srv.grpcOpts to ServerOption
 	if len(srv.grpcOpts) > 0 {
 		grpcOpts = append(grpcOpts, srv.grpcOpts...)
 	}
-  // create grpc server
+  	// create grpc server
 	srv.Server = grpc.NewServer(grpcOpts...)
-  // create metadata server
+  	// create metadata server
 	srv.metadata = apimd.NewServer(srv.Server)
+	// set lis and endpoint
+	srv.err = srv.listenAndEndpoint()
 	// register these internal API
 	grpc_health_v1.RegisterHealthServer(srv.Server, srv.health)
 	apimd.RegisterMetadataServer(srv.Server, srv.metadata)
@@ -95,30 +117,37 @@ func NewServer(opts ...ServerOption) *Server {
 ```go
 func (s *Server) unaryServerInterceptor() grpc.UnaryServerInterceptor {
 	return func(ctx context.Context, req interface{}, info *grpc.UnaryServerInfo, handler grpc.UnaryHandler) (interface{}, error) {
-    // merge two ctx
+    	// merge two ctx
 		ctx, cancel := ic.Merge(ctx, s.ctx)
 		defer cancel()
-    // get metadata from ctx
+    	// get metadata from ctx
 		md, _ := grpcmd.FromIncomingContext(ctx)
-    // bind some information into ctx
+    	// bind some information into ctx
+		replyHeader := grpcmd.MD{}
 		ctx = transport.NewServerContext(ctx, &Transport{
-			endpoint:  s.endpoint.String(),
-			operation: info.FullMethod,
-			header:    headerCarrier(md),
+			endpoint:    s.endpoint.String(),
+			operation:   info.FullMethod,
+			reqHeader:   headerCarrier(md),
+			replyHeader: headerCarrier(replyHeader),
 		})
-    // set timeout
+    	// set timeout
 		if s.timeout > 0 {
 			ctx, cancel = context.WithTimeout(ctx, s.timeout)
 			defer cancel()
 		}
-    // middleware
+    	// middleware
 		h := func(ctx context.Context, req interface{}) (interface{}, error) {
 			return handler(ctx, req)
 		}
 		if len(s.middleware) > 0 {
 			h = middleware.Chain(s.middleware...)(h)
 		}
-		return h(ctx, req)
+		// execute handler
+		reply, err := h(ctx, req)
+		if len(replyHeader) > 0 {
+			_ = grpc.SetHeader(ctx, replyHeader)
+		}
+		return reply, err
 	}
 }
 ```
@@ -154,33 +183,37 @@ if info, ok := transport.FromServerContext(ctx); ok {
 }
 ```
 
-## client
+## Client
 
 ### Options
 
-#### `WithEndpoint()` 
+#### `WithEndpoint(endpoint string) ClientOption` 
 
 To set the endpoint which the client will connect to.
 
-#### `WithTimeout()`
+#### `WithTimeout(timeout time.Duration) ClientOption`
 
 To set the client-side timeout.
 
-#### `WithMiddleware()`
+#### `WithMiddleware(m ...middleware.Middleware) ClientOption`
 
 To set middleware.
 
-#### `WithDiscovery()`
+#### `WithDiscovery(d registry.Discovery) ClientOption`
 
 To set the discovery for gRPC client.
 
-#### `WithUnaryInterceptor()`
+#### `WithTLSConfig(c *tls.Config) ClientOption`
+
+To set TLS config.
+
+#### `WithUnaryInterceptor(in ...grpc.UnaryClientInterceptor) ClientOption`
 
 To set interceptors for gRPC client.
 
-#### `WithOptions()`
+#### `WithOptions(opts ...grpc.DialOption) ClientOption`
 
-To set some extra `grpc.ClientOption`
+To set some extra `grpc.ClientOption`.
 
 ### Implementation Details
 
@@ -189,31 +222,43 @@ To set some extra `grpc.ClientOption`
 func dial(ctx context.Context, insecure bool, opts ...ClientOption) (*grpc.ClientConn, error) {
 	// default options
   options := clientOptions{
-		timeout: 500 * time.Millisecond,
+		timeout:      2000 * time.Millisecond,
+		balancerName: wrr.Name,
+		logger:       log.GetLogger(),
 	}
-  // apply opts
+  	// apply opts
 	for _, o := range opts {
 		o(&options)
 	}
-  // convert middleware to grpc interceptor
-	var ints = []grpc.UnaryClientInterceptor{
-		unaryClientInterceptor(options.middleware, options.timeout),
+  	// convert middleware to grpc interceptor
+	ints := []grpc.UnaryClientInterceptor{
+		unaryClientInterceptor(options.middleware, options.timeout, options.filters),
 	}
 	if len(options.ints) > 0 {
 		ints = append(ints, options.ints...)
 	}
-	var grpcOpts = []grpc.DialOption{
-    // client side balancer
-		grpc.WithBalancerName(roundrobin.Name),
+	// client side balancer
+	grpcOpts := []grpc.DialOption{
+		grpc.WithDefaultServiceConfig(fmt.Sprintf(`{"LoadBalancingPolicy": "%s"}`, options.balancerName)),
 		grpc.WithChainUnaryInterceptor(ints...),
 	}
 	if options.discovery != nil {
-    // To use service discovery
-		grpcOpts = append(grpcOpts, grpc.WithResolvers(discovery.NewBuilder(options.discovery)))
+    	// To use service discovery
+		grpcOpts = append(grpcOpts,
+			grpc.WithResolvers(
+				discovery.NewBuilder(
+					options.discovery,
+					discovery.WithInsecure(insecure),
+					discovery.WithLogger(options.logger),
+				)))
 	}
 	if insecure {
-    // to disable transport security for connection
-		grpcOpts = append(grpcOpts, grpc.WithInsecure())
+    	// to disable transport security for connection
+		grpcOpts = append(grpcOpts, grpc.WithTransportCredentials(grpcinsecure.NewCredentials()))
+	}
+	// TLS config
+	if options.tlsConf != nil {
+		grpcOpts = append(grpcOpts, grpc.WithTransportCredentials(credentials.NewTLS(options.tlsConf)))
 	}
 	if len(options.grpcOpts) > 0 {
 		grpcOpts = append(grpcOpts, options.grpcOpts...)
@@ -227,25 +272,27 @@ func dial(ctx context.Context, insecure bool, opts ...ClientOption) (*grpc.Clien
 ```go
 func unaryClientInterceptor(ms []middleware.Middleware, timeout time.Duration) grpc.UnaryClientInterceptor {
 	return func(ctx context.Context, method string, req, reply interface{}, cc *grpc.ClientConn, invoker grpc.UnaryInvoker, opts ...grpc.CallOption) error {
-    // bind some information into ctx
+    	// bind some information into ctx
 		ctx = transport.NewClientContext(ctx, &Transport{
 			endpoint:  cc.Target(),
 			operation: method,
-			header:    headerCarrier{},
+			reqHeader: headerCarrier{},
+			filters:   filters,
 		})
 		if timeout > 0 {
-      // set the timeout
+      		// set the timeout
 			var cancel context.CancelFunc
 			ctx, cancel = context.WithTimeout(ctx, timeout)
 			defer cancel()
 		}
-    // middleware 
+    	// middleware 
 		h := func(ctx context.Context, req interface{}) (interface{}, error) {
 			if tr, ok := transport.FromClientContext(ctx); ok {
-				keys := tr.Header().Keys()
+				header := tr.RequestHeader()
+				keys := header.Keys()
 				keyvals := make([]string, 0, len(keys))
 				for _, k := range keys {
-					keyvals = append(keyvals, k, tr.Header().Get(k))
+					keyvals = append(keyvals, k, header.Get(k))
 				}
 				ctx = grpcmd.AppendToOutgoingContext(ctx, keyvals...)
 			}
@@ -276,9 +323,11 @@ func unaryClientInterceptor(ms []middleware.Middleware, timeout time.Duration) g
 ```go
 conn, err := grpc.DialInsecure(
 	context.Background(),
-	transport.WithEndpoint("127.0.0.1:9000"),
-  	transport.WithMiddleware(
+	grpc.WithEndpoint("127.0.0.1:9000"),
+	grpc.WithTimeout(3600 * time.Second),
+  	grpc.WithMiddleware(
 		  recovery.Recovery(),
+		  validate.Validator(),
 	),
 )
 ```

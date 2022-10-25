@@ -192,7 +192,6 @@ if info, ok := transport.FromServerContext(ctx); ok {
 
 配置客户端使用的对端连接地址，如果不使用服务发现则为ip:port,如果使用服务发现则格式为discovery://\<authority\>/\<serviceName\>
 
-
 #### `WithTimeout(timeout time.Duration) ClientOption`
 
 配置客户端的请求默认超时时间，如果有链路超时优先使用链路超时时间
@@ -203,7 +202,11 @@ if info, ok := transport.FromServerContext(ctx); ok {
 
 #### `WithDiscovery(d registry.Discovery) ClientOption`
 
-配置客户端使用的服务发现 
+配置客户端使用的服务发现
+
+#### `WithTLSConfig(c *tls.Config) ClientOption`
+
+配置客户端使用的 TLS 配置
 
 #### `WithUnaryInterceptor(in ...grpc.UnaryClientInterceptor) ClientOption`
 
@@ -220,31 +223,43 @@ if info, ok := transport.FromServerContext(ctx); ok {
 func dial(ctx context.Context, insecure bool, opts ...ClientOption) (*grpc.ClientConn, error) {
 	// 默认配置
 	options := clientOptions{
-		timeout: 500 * time.Millisecond,
+		timeout:      2000 * time.Millisecond,
+		balancerName: wrr.Name,
+		logger:       log.GetLogger(),
 	}
 	// 遍历 opts
 	for _, o := range opts {
 		o(&options)
 	}
 	// 将 kratos 中间件转化成 grpc 拦截器
-	var ints = []grpc.UnaryClientInterceptor{
-		unaryClientInterceptor(options.middleware, options.timeout),
+	ints := []grpc.UnaryClientInterceptor{
+		unaryClientInterceptor(options.middleware, options.timeout, options.filters),
 	}
 	if len(options.ints) > 0 {
 		ints = append(ints, options.ints...)
 	}
-	var grpcOpts = []grpc.DialOption{
-    // 负载均衡
-		grpc.WithBalancerName(roundrobin.Name),
+	// 负载均衡
+	grpcOpts := []grpc.DialOption{
+		grpc.WithDefaultServiceConfig(fmt.Sprintf(`{"LoadBalancingPolicy": "%s"}`, options.balancerName)),
 		grpc.WithChainUnaryInterceptor(ints...),
 	}
 	if options.discovery != nil {
-    // 如果存在服务发现配置，就配置 grpc 的 Resolvers
-		grpcOpts = append(grpcOpts, grpc.WithResolvers(discovery.NewBuilder(options.discovery)))
+    	// 如果存在服务发现配置，就配置 grpc 的 Resolvers
+		grpcOpts = append(grpcOpts,
+			grpc.WithResolvers(
+				discovery.NewBuilder(
+					options.discovery,
+					discovery.WithInsecure(insecure),
+					discovery.WithLogger(options.logger),
+				)))
 	}
 	if insecure {
-    // 跳过证书验证
-		grpcOpts = append(grpcOpts, grpc.WithInsecure())
+    	// 跳过证书验证
+		grpcOpts = append(grpcOpts, grpc.WithTransportCredentials(grpcinsecure.NewCredentials()))
+	}
+	// TLS 配置
+	if options.tlsConf != nil {
+		grpcOpts = append(grpcOpts, grpc.WithTransportCredentials(credentials.NewTLS(options.tlsConf)))
 	}
 	if len(options.grpcOpts) > 0 {
 		grpcOpts = append(grpcOpts, options.grpcOpts...)
@@ -253,7 +268,7 @@ func dial(ctx context.Context, insecure bool, opts ...ClientOption) (*grpc.Clien
 }
 ```
 
-#### 
+#### `unaryClientInterceptor()`
 
 ```go
 func unaryClientInterceptor(ms []middleware.Middleware, timeout time.Duration) grpc.UnaryClientInterceptor {
@@ -262,10 +277,11 @@ func unaryClientInterceptor(ms []middleware.Middleware, timeout time.Duration) g
 		ctx = transport.NewClientContext(ctx, &Transport{
 			endpoint:  cc.Target(),
 			operation: method,
-			header:    headerCarrier{},
+			reqHeader: headerCarrier{},
+			filters:   filters,
 		})
 		if timeout > 0 {
-      	// timeout 如果大于 0，就重新设置一下 ctx 的超时时间
+      		// timeout 如果大于 0，就重新设置一下 ctx 的超时时间
 			var cancel context.CancelFunc
 			ctx, cancel = context.WithTimeout(ctx, timeout)
 			defer cancel()
@@ -273,10 +289,11 @@ func unaryClientInterceptor(ms []middleware.Middleware, timeout time.Duration) g
     	// 中间件处理
 		h := func(ctx context.Context, req interface{}) (interface{}, error) {
 			if tr, ok := transport.FromClientContext(ctx); ok {
-				keys := tr.Header().Keys()
+				header := tr.RequestHeader()
+				keys := header.Keys()
 				keyvals := make([]string, 0, len(keys))
 				for _, k := range keys {
-					keyvals = append(keyvals, k, tr.Header().Get(k))
+					keyvals = append(keyvals, k, header.Get(k))
 				}
 				ctx = grpcmd.AppendToOutgoingContext(ctx, keyvals...)
 			}
@@ -296,7 +313,7 @@ func unaryClientInterceptor(ms []middleware.Middleware, timeout time.Duration) g
 #### 创建客户端连接
 
 ```go
-	conn, err := grpc.DialInsecure(
+conn, err := grpc.DialInsecure(
 		context.Background(),
 		grpc.WithEndpoint("127.0.0.1:9000"),
 	)
