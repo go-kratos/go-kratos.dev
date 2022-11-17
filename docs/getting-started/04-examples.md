@@ -28,7 +28,7 @@ Kratos提供了丰富的示例代码/项目供参考
 * [zookeeper](https://github.com/go-kratos/examples/tree/main/registry/zookeeper) 使用 zookeeper 插件，在 server 端进行服务注册和在 client 端进行服务注册的示例
 
 #### HTTP
-* [core](https://github.com/go-kratos/examples/tree/main/http/cors) 使用框架自带 router 的示例
+* [cors](https://github.com/go-kratos/examples/tree/main/http/cors) 跨域设置示例
 * [gin](https://github.com/go-kratos/examples/tree/main/http/gin) 将 gin 作为 router 集成进 Kratos 项目的示例
 * [mux](https://github.com/go-kratos/examples/tree/main/http/mux) 将 mux 作为 router 集成进 Kratos 项目的示例
 * [echo](https://github.com/go-kratos/examples/tree/main/http/echo) 将 echo 作为 router 集成进 Kratos 项目的示例
