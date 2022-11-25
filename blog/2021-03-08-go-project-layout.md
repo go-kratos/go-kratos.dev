@@ -123,7 +123,7 @@ application
 
 ### 应用类型
 
-微服务中的 app 服务类型主要分为4类：interface、service、job、admin，应用 cmd 目录负责程序的：启动、关闭、配置初始化等。
+微服务中的 app 服务类型主要分为5类：interface、service、job、admin、task，应用 cmd 目录负责程序的：启动、关闭、配置初始化等。
 
 * interface: 对外的 BFF 服务，接受来自用户的请求，比如暴露了 HTTP/gRPC 接口。
 * service: 对内的微服务，仅接受来自内部其他服务或者网关的请求，比如暴露了gRPC 接口只对内服务。
