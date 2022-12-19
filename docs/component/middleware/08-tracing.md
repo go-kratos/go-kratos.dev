@@ -72,7 +72,7 @@ func initTracer(url string) error {
 	tp := tracesdk.NewTracerProvider(
 		// 将基于父span的采样率设置为100%
 		tracesdk.WithSampler(tracesdk.ParentBased(tracesdk.TraceIDRatioBased(1.0))),
-		// 始终确保再生成中批量处理
+		// 始终确保在生产中批量处理
 		tracesdk.WithBatcher(exp),
 		// 在资源中记录有关此应用程序的信息
 		tracesdk.WithResource(resource.NewSchemaless(
