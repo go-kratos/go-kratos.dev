@@ -226,7 +226,7 @@ r.GET("/helloworld/{name}", _Greeter_SayHello0_HTTP_Handler(srv))
 
 > 其他路由使用方法参考: <https://github.com/go-kratos/examples/tree/main/http/middlewares>
 
-> 在Kratos HTTP中使用[gin](https://github.com/gin-gonic/gin)框架: <https://github.com/go-kratos/kratos/blob/main/examples/http/gin/main.go>
+> 在Kratos HTTP中使用[gin](https://github.com/gin-gonic/gin)框架: <https://github.com/go-kratos/examples/blob/main/http/gin/main.go>
 
 ## Client
 
