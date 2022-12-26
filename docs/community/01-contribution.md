@@ -24,11 +24,11 @@ Kratos 使用 Github Issues 来管理问题。 如果您希望提交 bug 报告�
 ## 新增功能
 
 为了准确的区分用户提出的需求是否为大多数用户的需求或合理需求，分为 提案流程、向社区征集意见、社区采纳提案，作为新功能实现 这三个步骤来进行。  
-提案流程为了尽可能的简单，将流程分为 **Proposal**、**Feature** 和 **PR** 三个阶段，其中 **Proposal**、**Feature** 为 issue，**PR** 为具体的功能实现。具体流程如下：
+提案流程为了尽可能的简单，将流程分为 **Feature**、**Proposal** 和 **PR** 三个阶段，其中 **Feature**、**Proposal** 为 issue，**PR** 为具体的功能实现。具体流程如下：
 
-- 为了方便社区正确的理解提案的需求，Proposal issue 中需要详细的描述功能的需求，和相关的参考资料或文献。
-- 当大多数社区用户赞同这个提案时，将会创建一个 Feature issue 来关联 Proposal issue，Feature issue 中需要详细的描述功能的实现方式，以及功能演示，作为最后功能实现的参考。
-- 当功能实现完毕后，发起合并请求（PR）并关联 Proposal issue 和 Feature issue，合并完成后，关闭所有 issue。
+- 为了方便社区正确的理解提案的需求，Feature issue 中需要详细的描述功能的需求，和相关的参考资料或文献。
+- 当大多数社区用户赞同这个提案时，将会创建一个 Proposal issue 来关联 Feature issue，Proposal issue 中需要详细的描述功能的实现方式，以及功能演示，作为最后功能实现的参考。
+- 当功能实现完毕后，发起合并请求（PR）并关联 Feature issue 和 Proposal issue，合并完成后，关闭所有 issue。
 
 ## 如何提交代码
 
