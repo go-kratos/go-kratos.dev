@@ -24,11 +24,11 @@ When submitting a bug report, use the issue template we provide to clearly descr
 ## Adding new features
 
 In order to accurately distinguish whether the needs put forward by users are the needs or reasonable needs of most users, solicit opinions from the community through the proposal process, and the proposals adopted by the community will be realized as new feature.  
-In order to make the proposal process as simple as possible, the process includes three stages: **Proposal**, **Feature** and **PR**, in which **Proposal**, **Feature** is issue and **PR** is the specific function implementation.
+In order to make the proposal process as simple as possible, the process includes three stages: **Feature**, **Proposal** and **PR**, in which **Feature**, **Proposal** is issue and **PR** is the specific function implementation.
 
-- In order to facilitate the community to correctly understand the requirements of the proposal, the proposal issue needs to describe the functional requirements and relevant references or literature in detail.
-- When most community users agree with this proposal, they will create a Feature issue associated with the Proposal issue.The Feature issue needs to describe the implementation method and function demonstration in detail as a reference for the final function implementation.
-- After the function is implemented, a merge request will be initiated to associate the proposal issue and feature issue.
+- In order to facilitate the community to correctly understand the requirements of the feature, the feature issue needs to describe the functional requirements and relevant references or literature in detail.
+- When most community users agree with this feature, they will create a Proposal issue associated with the Feature issue.The Proposal issue needs to describe the implementation method and function demonstration in detail as a reference for the final function implementation.
+- After the function is implemented, a merge request will be initiated to associate the feature issue and proposal issue.
   After the merge is completed, Close all issues.
 
 ## How to submit code
