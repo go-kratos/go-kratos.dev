@@ -19,7 +19,7 @@ API 接口统一以 HTTP/GRPC 为基础，并通过 Protobuf 进行协议定义�
 
 ## 目录结构
 
-API 接口可以定义到项目，或者在统一仓库中管理 Proto，类似 googleapis、envoy-api、istio-api；
+API 接口可以定义到项目，或者在统一仓库中管理 Proto，类似 `googleapis`、`envoy-api`、`istio-api`；
 
 项目中定义 Proto，以 api 为包名根目录：
 
@@ -79,18 +79,18 @@ option objc_class_prefix = "<PackageNameVersion>";
 
 ## Version
 
-该版本号为标注不兼容版本，并且会在<package_name>中进行区分，当接口需要重构时一般会更新不兼容结构。
+该版本号为标注不兼容版本，并且会在 `<package_name>` 中进行区分，当接口需要重构时一般会更新不兼容结构。
 
 ## Import
 
 - 业务 proto 依赖，以根目录进行引入对应依赖的 proto。
-- third_party，主要为依赖的第三方 proto，比如 protobuf、google rpc、google apis、gogo 定义。
+- third_party，主要为依赖的第三方 proto，比如 `protobuf`、`google rpc`、`google apis`、`gogo` 定义。
 
 ## 命名规范
 
 ### 目录结构
 
-包名为小写，并且同目录结构一致，例如：my/package/v2/
+包名为小写，并且同目录结构一致，例如：`my/package/v2/`。
 
 ```protobuf
 package my.package.v2;
@@ -98,7 +98,7 @@ package my.package.v2;
 
 ### 文件结构
 
-文件应该命名为：`lower_snake_case.proto`
+文件应该命名为：`lower_snake_case.proto`。
 所有 Proto 应按下列方式排列:
 
 1. License header (if applicable)
