@@ -172,9 +172,9 @@ service FooService {
 
 ## Comment
 
-- Service，描述清楚服务的作用
-- Method，描述清楚接口的功能特性
-- Field，描述清楚字段准确的信息
+- **Service**，描述清楚服务的作用
+- **Method**，描述清楚接口的功能特性
+- **Field**，描述清楚字段准确的信息
 
 ## Examples
 

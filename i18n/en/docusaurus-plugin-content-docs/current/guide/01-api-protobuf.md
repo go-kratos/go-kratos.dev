@@ -159,9 +159,9 @@ service FooService {
 
 ## Comment
 
-- Service describes the functions of this service.
-- Method describe the functions of this API.
-- Field describe the information of this field.
+- **Service** describes the functions of this service.
+- **Method** describe the functions of this API.
+- **Field** describe the information of this field.
 
 ## Examples
 
