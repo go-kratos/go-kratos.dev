@@ -18,7 +18,7 @@ kratos-demo：
 |____api // The definition of service's API
 | |____kratos
 | | |____demo
-| | | |____v2
+| | | |____v1
 | | | | |____demo.proto
 ```
 
@@ -29,7 +29,7 @@ kratos-apis:
 |____api // The definition of service's API
 | |____kratos
 | | |____demo
-| | | |____v2
+| | | |____v1
 | | | | |____demo.proto
 |____annotations // the options annotations
 |____third_party // third-party protos
@@ -39,7 +39,7 @@ kratos-apis:
 
 The name of the package (APP_ID) will be used for generate the request path of gRPC API or the path for proto importing.
 
-- `my.package.v2` is the API's directory, which defines the API of the services.
+- `my.package.v1` is the API's directory, which defines the API of the services.
 
 For example.
 
@@ -80,10 +80,10 @@ This version is for incompatible version and always used with `<package_name>`. 
 
 ### Directory Structure
 
-The package name should be lower-case, consist with the project directory structure, e.g., `my/package/v2/`.
+The package name should be lower-case, consist with the project directory structure, e.g., `my/package/v1/`.
 
 ```protobuf
-package my.package.v2;
+package my.package.v1;
 ```
 
 ### File Structure
@@ -170,13 +170,13 @@ Service API Definition (demo.proto)
 ```protobuf
 syntax = "proto3";
 
-package kratos.demo.v2;
+package kratos.demo.v1;
 
 // specifying the package names for importing from multiple programming language
-option go_package = "github.com/go-kratos/kratos/demo/v2";
+option go_package = "github.com/go-kratos/kratos/demo/v1";
 option java_multiple_files = true;
-option java_package = "com.github.kratos.demo.v2";
-option objc_class_prefix = "KratosDemoV2";
+option java_package = "com.github.kratos.demo.v1";
+option objc_class_prefix = "KratosDemoV1";
 
 // Definition of the service
 service Greeter {

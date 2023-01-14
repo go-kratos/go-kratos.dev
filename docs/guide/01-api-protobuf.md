@@ -28,7 +28,7 @@ kratos-demo：
 |____api // 服务API定义
 | |____kratos
 | | |____demo
-| | | |____v2
+| | | |____v1
 | | | | |____demo.proto
 ```
 
@@ -39,7 +39,7 @@ kratos-apis:
 |____api // 服务API定义
 | |____kratos
 | | |____demo
-| | | |____v2
+| | | |____v1
 | | | | |____demo.proto
 |____annotations // 注解定义options
 |____third_party // 第三方引用
@@ -49,7 +49,7 @@ kratos-apis:
 
 包名为应用的标识（APP_ID），用于生成 gRPC 请求路径，或者 Proto 之间进行引用 Message。
 
-- `my.package.v2`，为 API 目录，定义 service 相关接口，用于提供业务使用。
+- `my.package.v1`，为 API 目录，定义 service 相关接口，用于提供业务使用。
 
 例如：
 
@@ -90,10 +90,10 @@ option objc_class_prefix = "<PackageNameVersion>";
 
 ### 目录结构
 
-包名为小写，并且同目录结构一致，例如：`my/package/v2/`。
+包名为小写，并且同目录结构一致，例如：`my/package/v1/`。
 
 ```protobuf
-package my.package.v2;
+package my.package.v1;
 ```
 
 ### 文件结构
@@ -183,13 +183,13 @@ API Service 接口定义(demo.proto)
 ```protobuf
 syntax = "proto3";
 
-package kratos.demo.v2;
+package kratos.demo.v1;
 
 // 多语言特定包名，用于源代码引用
-option go_package = "github.com/go-kratos/kratos/demo/v2";
+option go_package = "github.com/go-kratos/kratos/demo/v1";
 option java_multiple_files = true;
-option java_package = "com.github.kratos.demo.v2";
-option objc_class_prefix = "KratosDemoV2";
+option java_package = "com.github.kratos.demo.v1";
+option objc_class_prefix = "KratosDemoV1";
 
 // 描述该服务的信息
 service Greeter {
