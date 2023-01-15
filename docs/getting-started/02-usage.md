@@ -150,21 +150,21 @@ kratos new app/user --nomod
 > kratos-layout 项目中对 proto 文件进行了版本划分，放在了 v1 子目录下
 
 ```bash
-kratos proto add api/helloworld/demo.proto
+kratos proto add api/helloworld/v1/demo.proto
 ```
 
 输出:
 
-api/helloworld/demo.proto
+api/helloworld/v1/demo.proto
 
 ```protobuf
 syntax = "proto3";
 
-package api.helloworld;
+package api.helloworld.v1;
 
-option go_package = "helloworld/api/helloworld;helloworld";
+option go_package = "helloworld/api/helloworld/v1;v1";
 option java_multiple_files = true;
-option java_package = "api.helloworld";
+option java_package = "api.helloworld.v1";
 
 service Demo {
 	rpc CreateDemo (CreateDemoRequest) returns (CreateDemoReply);
@@ -196,14 +196,14 @@ message ListDemoReply {}
 make api
 
 # 或使用 kratos cli 进行生成
-kratos proto client api/helloworld/demo.proto
+kratos proto client api/helloworld/v1/demo.proto
 ```
 会在proto文件同目录下生成:
 ```bash
-api/helloworld/demo.pb.go
-api/helloworld/demo_grpc.pb.go
+api/helloworld/v1/demo.pb.go
+api/helloworld/v1/demo_grpc.pb.go
 # 注意 http 代码只会在 proto 文件中声明了 http 时才会生成
-api/helloworld/demo_http.pb.go
+api/helloworld/v1/demo_http.pb.go
 ```
 
 ### 生成 Service 代码
@@ -212,7 +212,7 @@ api/helloworld/demo_http.pb.go
 
 使用 `-t` 指定生成目录
 ```bash
-kratos proto server api/helloworld/demo.proto -t internal/service
+kratos proto server api/helloworld/v1/demo.proto -t internal/service
 ```
 
 
