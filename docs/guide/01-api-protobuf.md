@@ -61,7 +61,7 @@ package <package_name>.<version>;
 ### go_package
 
 ```protobuf
-option go_package = "github.com/go-kratos/kratos/<package_name>/<version>";
+option go_package = "github.com/go-kratos/kratos/<package_name>;<version>";
 ```
 
 ### java_package
@@ -186,7 +186,7 @@ syntax = "proto3";
 package kratos.demo.v1;
 
 // 多语言特定包名，用于源代码引用
-option go_package = "github.com/go-kratos/kratos/demo/v1";
+option go_package = "github.com/go-kratos/kratos/demo/v1;v1";   // ';' 后面的 <version> 是为了生成对应代码
 option java_multiple_files = true;
 option java_package = "com.github.kratos.demo.v1";
 option objc_class_prefix = "KratosDemoV1";
