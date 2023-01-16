@@ -34,8 +34,8 @@ APIs 响应错误时可以直接使用 errors 包中的 New 方法来声明一�
 ### 安装工具
 ```bash
 # 如果电脑中没有protoc-gen-go需要先安装
-# go install google.golang.org/protobuf/cmd/protoc-gen-go
-go install github.com/go-kratos/kratos/cmd/protoc-gen-go-errors/v2
+# go install google.golang.org/protobuf/cmd/protoc-gen-go@latest
+go install github.com/go-kratos/kratos/cmd/protoc-gen-go-errors/v2@latest
 ```
 
 ### 错误定义
