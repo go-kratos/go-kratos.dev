@@ -29,11 +29,11 @@ cd helloworld
 # 拉取项目依赖
 go mod download
 # 生成proto模板
-kratos proto add api/helloworld/helloworld.proto
+kratos proto add api/helloworld/v1/helloworld.proto
 # 生成proto源码
-kratos proto client api/helloworld/helloworld.proto
+kratos proto client api/helloworld/v1/helloworld.proto
 # 生成server模板
-kratos proto server api/helloworld/helloworld.proto -t internal/service
+kratos proto server api/helloworld/v1/helloworld.proto -t internal/service
 ```
 
 执行命令后,会在当前目录下生成一个 service 工程,工程骨架如下,具体的工程骨架说明可以访问 [layout](https://go-kratos.dev/docs/intro/layout)
