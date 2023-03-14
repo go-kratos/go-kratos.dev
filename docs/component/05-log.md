@@ -240,7 +240,7 @@ newHelper := h.WithContext(ctx)
 我们在[middleware/logging](https://github.com/go-kratos/kratos/blob/main/middleware/logging/logging.go)提供了一个日志中间件，使用它可以记录server端或client端每个请求的路由、参数、耗时等信息。使用时建议配合Filter对请求参数日志进行脱敏，避免敏感信息泄漏。
 
 这个middleware的代码也十分清晰地展示了如何在中间件里获取和处理请求和返回信息，具有很大的参考价值，您可以基于它的代码实现自己的日志中间件等。
-、
+
 ### 全局日志
 
 如果您在项目中，只想使用简单的日志功能，全局可以随时打印，我们提供了全局日志。
