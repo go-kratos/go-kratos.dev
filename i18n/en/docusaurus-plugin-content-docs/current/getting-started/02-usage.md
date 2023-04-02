@@ -186,6 +186,7 @@ Output:
 ```bash
 api/helloworld/demo.pb.go
 api/helloworld/demo_grpc.pb.go
+# Attention: The http code will only be generated if http is declared in the proto file.  
 api/helloworld/demo_http.pb.go
 ```
 
