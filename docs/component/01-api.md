@@ -96,8 +96,8 @@ server:
 import "github.com/go-kratos/kratos/v2/transport/http"
 
 greeter := &GreeterService{}
-srv := http.NewServer(http.Address(":8000"))
-srv.HandlePrefix("/", v1.NewGreeterHandler(greeter))
+srv := http.NewServer(http.Address(":9000"))
+v1.RegisterGreeterHTTPServer(srv, greeter)
 ```
 
 **gRPC API** 是通过 protoc-gen-go-grpc 插件进行生成 gRPC Register，然后可以注册到 GRPC Server 中；
@@ -109,7 +109,6 @@ greeter := &GreeterService{}
 srv := grpc.NewServer(grpc.Address(":9000"))
 v1.RegisterGreeterServer(srv, greeter)
 ```
-
 
 
 
