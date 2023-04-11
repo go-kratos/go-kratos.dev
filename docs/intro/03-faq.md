@@ -59,3 +59,21 @@ IDE中的这个提示不会影响项目的正常编译，如果您需要解决�
 ### 9、如何控制 http 的返回值
 
 可以覆盖默认的 DefaultResponseEncoder, 通过 http.ResponseEncoder() 配置，注入到 http.Server() 中
+
+### 10、如何控制 http 返回的字段0值忽略字段和使用proto的message字段作为http的返回字段
+
+可以在http的main.go中引入
+```
+import (
+  "github.com/go-kratos/kratos/v2/encoding/json"
+  "google.golang.org/protobuf/encoding/protojson"
+)
+```
+设置
+```
+json.MarshalOptions = protojson.MarshalOptions{
+	EmitUnpopulated: true, //默认值不忽略
+	UseProtoNames:   true, //使用proto name返回http字段
+}
+```
+
