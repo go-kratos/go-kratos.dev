@@ -62,18 +62,22 @@ IDE中的这个提示不会影响项目的正常编译，如果您需要解决�
 
 ### 10、如何控制 http 返回的字段0值忽略字段和使用proto的message字段作为http的返回字段
 
-可以在http的main.go中引入
+可以在http服务的main.go中引入
 ```
 import (
   "github.com/go-kratos/kratos/v2/encoding/json"
   "google.golang.org/protobuf/encoding/protojson"
 )
 ```
-设置
+在init方法中设置json.MarshalOptions
 ```
-json.MarshalOptions = protojson.MarshalOptions{
-	EmitUnpopulated: true, //默认值不忽略
-	UseProtoNames:   true, //使用proto name返回http字段
+func init() {
+	flag.StringVar(&flagconf, "conf", "../../configs", "config path, eg: -conf config.yaml")
+	//增加这段代码
+	json.MarshalOptions = protojson.MarshalOptions{
+		EmitUnpopulated: true, //默认值不忽略
+		UseProtoNames:   true, //使用proto name返回http字段
+	}
 }
 ```
 
