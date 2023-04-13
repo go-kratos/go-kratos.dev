@@ -19,10 +19,29 @@ keywords:
 - [protoc](https://github.com/protocolbuffers/protobuf)
 - [protoc-gen-go](https://github.com/protocolbuffers/protobuf-go)
 
+其中 protoc 工具可以通过以下命令快速安装：
+```bash
+yum install protobuf-compiler
+# 或
+apt update
+apt install protobuf-compiler
+```
+
 建议开启GO111MODULE
 ```bash
 go env -w GO111MODULE=on
 ```
+
+可以使用以下命令完成剩余所需工具的安装：
+```bash
+go install github.com/go-kratos/kratos/cmd/kratos/v2@latest
+go install google.golang.org/protobuf/cmd/protoc-gen-go@latest
+go install google.golang.org/grpc/cmd/protoc-gen-go-grpc@latest
+go install github.com/go-kratos/kratos/cmd/protoc-gen-go-http/v2@latest
+go install github.com/google/gnostic/cmd/protoc-gen-openapi@latest
+go install github.com/google/wire/cmd/wire@latest
+```
+
 
 ### kratos 命令工具
 
