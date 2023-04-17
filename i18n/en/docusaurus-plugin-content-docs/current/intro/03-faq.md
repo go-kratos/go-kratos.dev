@@ -56,3 +56,33 @@ make build
 ### 9. Custom Http return value
 
 You can write a custom `ResponseEncoder` and set to `http.Server()` by using `http.ResponseEncoder()`
+
+### 10. How to control the http return field 0 value ignore field and use proto's message field as the http return field
+
+You can import it in the `main.go` of the http service
+
+```
+import (
+  "github.com/go-kratos/kratos/v2/encoding/json"
+  "google.golang.org/protobuf/encoding/protojson"
+)
+```
+
+Set `json.MarshalOptions` in the init method
+
+```
+func init() {
+    flag.StringVar(&flagconf, "conf", "../../configs", "config path, eg: -conf config.yaml")
+    //Add this code
+    json.MarshalOptions = protojson.MarshalOptions{
+        EmitUnpopulated: true, //Default value not ignored
+        UseProtoNames:   true, //Use proto name to return http field
+    }
+}
+```
+
+
+
+
+
+
