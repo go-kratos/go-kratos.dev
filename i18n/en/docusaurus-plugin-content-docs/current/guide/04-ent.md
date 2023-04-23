@@ -10,13 +10,13 @@ Any ORM or library is supported in Kratos project for data accessing. Please ref
 ### Install Ent
 
 ```bash
-go install entgo.io/ent/cmd/ent
+go install entgo.io/ent/cmd/ent@latest
 ```
 
 ### Create Schema
 
 ```bash
-ent init User
+ent new User
 ```
 
 This command will generate schema in `project/ent/schema/` directory.
@@ -68,6 +68,7 @@ func (User) Fields() []ent.Field {
 Run `go generate`:
 ```
 go generate ./ent
+# ent generate ./ent/schema
 ```
 
 ### Create DB Connection Client
