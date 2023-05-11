@@ -22,6 +22,7 @@ Kratos provides a wealth of sample code/projects for reference
 #### Configuration
 
 - [config](https://github.com/go-kratos/examples/tree/main/config) example of using config to parse configuration files
+- [apollo](https://github.com/go-kratos/examples/tree/main/config/apollo) exmaple of getting configuration from apollo
 
 #### Service Discovery and Registration
 
@@ -54,7 +55,11 @@ Kratos provides a wealth of sample code/projects for reference
 
 - [ws](https://github.com/go-kratos/examples/tree/main/ws) example of file WebSocket.
 
-#### log
+#### Authentication
+
+- [jwt](https://github.com/go-kratos/examples/tree/main/auth/jwt) emxaple of use JWT authentication in HTTP, gRPC.
+
+#### Log
 
 - [zap](https://github.com/go-kratos/examples/tree/main/log) example of use Zap.
 - [logrus](https://github.com/go-kratos/examples/tree/main/log) example of use logrus.
@@ -64,7 +69,7 @@ Kratos provides a wealth of sample code/projects for reference
 - [i18n](https://github.com/go-kratos/examples/tree/main/i18n) example of internationalization support.
 - [header](https://github.com/go-kratos/examples/tree/main/header) example of header.
 - [selector](https://github.com/go-kratos/examples/tree/main/selector) example of Selector. Selection by Load Balancing and Filter
-- [swagger](https://github.com/go-kratos/examples/tree/main/swagger) example of use Swagger automaticlly genereate interface documentation and provide online services. 
+- [swagger](https://github.com/go-kratos/examples/tree/main/swagger) example of use Swagger automaticlly genereate interface documentation and provide online services.
 
 ### Complete Projects
 
