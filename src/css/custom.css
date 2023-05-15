@@ -24,6 +24,13 @@
     --ifm-color-primary-lighter: #88d7fb;
     --ifm-color-primary-lightest: #b9e7fd;
     --doc-sidebar-width: 240px;
+    filter:grayscale(100%);
+    -webkit-filter:grayscale(100%);
+    -moz-filter:grayscale(100%);
+    -ms-filter:grayscale(100%);
+    -o-filter:grayscale(100%);
+   filter:progid:DXImageTransform.Microsoft.BasicImage(grayscale=1);
+    -webkit-filter:grayscale(1)
 }
 
 
