@@ -81,8 +81,30 @@ func init() {
 }
 ```
 
+### 11、Controls the name and number of the enum (enumeration type) returned by http
 
+You can import it in the `main.go` of the http service
 
+```
+import (
+  "github.com/go-kratos/kratos/v2/encoding/json"
+  "google.golang.org/protobuf/encoding/protojson"
+)
+```
+
+Set `json.MarshalOptions` in the init method
+
+```
+func init() {
+    flag.StringVar(&flagconf, "conf", "../../configs", "config path, eg: -conf config.yaml")
+    // Add this code
+    json.MarshalOptions = protojson.MarshalOptions{
+        UseEnumNumbers: true, // UseEnumNumbers emits enum values as numbers.
+    }
+}
+```
+
+For more control over http return content, please refer to the documentation: https://pkg.go.dev/google.golang.org/protobuf@v1.30.0/encoding/protojson#MarshalOptions
 
 
 
