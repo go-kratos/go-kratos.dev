@@ -81,3 +81,24 @@ func init() {
 }
 ```
 
+### 11、控制 http 返回 enum（枚举类型）的名称和数字
+
+可以在http服务的main.go中引入
+```
+import (
+  "github.com/go-kratos/kratos/v2/encoding/json"
+  "google.golang.org/protobuf/encoding/protojson"
+)
+```
+在init方法中设置json.MarshalOptions
+```
+func init() {
+	...
+	//增加这段代码
+	json.MarshalOptions = protojson.MarshalOptions{
+		UseEnumNumbers: true, // 将枚举值作为数字发出，默认为枚举值的字符串
+	}
+}
+```
+
+更多控制 http 返回内容，请参考文档：https://pkg.go.dev/google.golang.org/protobuf@v1.30.0/encoding/protojson#MarshalOptions
