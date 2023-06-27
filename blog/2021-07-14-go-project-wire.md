@@ -255,10 +255,10 @@ redis:
 
 ```go
 type RedisConfig struct {
-	Network      string             `json:"network,omitempty"`
-	Addr         string             `json:"addr,omitempty"`
-	ReadTimeout  *duration.Duration `json:"read_timeout,omitempty"`
-	WriteTimeout *duration.Duration `json:"write_timeout,omitempty"`
+ Network      string             `json:"network,omitempty"`
+ Addr         string             `json:"addr,omitempty"`
+ ReadTimeout  *duration.Duration `json:"read_timeout,omitempty"`
+ WriteTimeout *duration.Duration `json:"write_timeout,omitempty"`
 }
 ```
 
@@ -359,11 +359,11 @@ wire 的主要问题是，~~看文档学不会~~。反正我最初看完文档�
 
 首先要实现一个`wire.go`的文件，里面定义好 Injector。
 
-```
+```go
 // +build wireinject
 
 func initApp() (*App) {
-	panic(wire.Build(GetRedisConf, NewRedis, SomeProviderSet, NewApp))
+ panic(wire.Build(GetRedisConf, NewRedis, SomeProviderSet, NewApp))
 }
 ```
 
@@ -463,7 +463,7 @@ Provider 就是初始化方法，你需要自己实现，比如 NewApp，NewRedi
 
 它生成的代码其实就是类似我们之前需要手写的这个
 
-```
+```go
 func initApp() *App {  // injector
     c := GetRedisConf() // provider
     r := NewRedis(c)  // provider
@@ -481,8 +481,8 @@ wire 还有更多功能，比如 cleanup, bind 等等，请参考官方文档来
 最后，其实多折腾几次，就会使用了，希望本文能对您起到一定程度上的帮助。
 
 ## 相关文献
-- https://github.com/google/wire
-- https://go-kratos.dev/docs/getting-started/wire
-- https://github.com/go-kratos/kratos-layout
-- https://farer.org
 
+- [https://github.com/google/wire](https://github.com/google/wire)
+- [https://go-kratos.dev/docs/guide/wire](https://go-kratos.dev/docs/guide/wire)
+- [https://github.com/go-kratos/kratos-layout](https://github.com/go-kratos/kratos-layout)
+- [https://farer.org](https://farer.org)
