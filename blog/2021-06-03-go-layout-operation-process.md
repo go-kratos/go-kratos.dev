@@ -25,7 +25,7 @@ tags: [go, golang, 工程化, 运行原理, 源码分析]
 - protoc-gen-go
 
 ```bash
-  # 创建项目模板
+# 创建项目模板
 kratos new helloworld
 
 cd helloworld
@@ -186,7 +186,7 @@ func (a *App) Run() error {
   "version", a.opts.version,
  )
  g, ctx := errgroup.WithContext(a.ctx)
-        // 遍历通过 kratos.Server() 声明的服务实例
+ // 遍历通过 kratos.Server() 声明的服务实例
  for _, srv := range a.opts.servers {
   srv := srv
                 // 执行两个goroutine, 用于处理服务启动和退出
@@ -198,7 +198,7 @@ func (a *App) Run() error {
    return srv.Start() // 调用实例的运行方法
   })
  }
-        // 判断是否调用 kratos.Registrar() 配置了注册发现中心
+ // 判断是否调用 kratos.Registrar() 配置了注册发现中心
  if a.opts.registrar != nil {
   // 将实例注册到注册中心
   if err := a.opts.registrar.Register(a.opts.ctx, a.instance); err != nil 
@@ -216,7 +216,7 @@ func (a *App) Run() error {
    case <-ctx.Done():
     return ctx.Err()
    case <-c:
-                        // 调用 kratos.App 的停止方法
+    // 调用 kratos.App 的停止方法
     a.Stop()
    }
   }

@@ -482,7 +482,7 @@ wire 还有更多功能，比如 cleanup, bind 等等，请参考官方文档来
 
 ## 相关文献
 
-- <https://github.com/google/wire>
-- <https://go-kratos.dev/docs/guide/wire>
-- <https://github.com/go-kratos/kratos-layout>
-- <https://farer.org>
+- [https://github.com/google/wire](https://github.com/google/wire)
+- [https://go-kratos.dev/docs/guide/wire](https://go-kratos.dev/docs/guide/wire)
+- [https://github.com/go-kratos/kratos-layout](https://github.com/go-kratos/kratos-layout)
+- [https://farer.org](https://farer.org)

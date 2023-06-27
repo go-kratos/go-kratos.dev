@@ -73,9 +73,9 @@ kratos 的链路追踪中间件由三个文件组成 **carrie.go**,**tracer.go**
 ```go
 // Server returns a new server middleware for OpenTelemetry.
 func Server(opts ...Option) middleware.Middleware {
-        // 调用 tracer.go 中的 NewTracer 传入了一个 SpanKindServer 和配置项
+ // 调用 tracer.go 中的 NewTracer 传入了一个 SpanKindServer 和配置项
  tracer := NewTracer(trace.SpanKindServer, opts...)
-        // ... 省略代码
+ // ... 省略代码
 }
 ```
 
@@ -97,9 +97,9 @@ func NewTracer(kind trace.SpanKind, opts ...Option) *Tracer {
  */
  if options.Propagators != nil {
   otel.SetTextMapPropagator(options.Propagators)
- } else { otel.SetTextMapPropagator(propagation.NewCompositeTextMapPropagator(propagation.Baggage{}, propagation.TraceContext{}))
+ } else { 
+  otel.SetTextMapPropagator(propagation.NewCompositeTextMapPropagator(propagation.Baggage{}, propagation.TraceContex{}))
  }
-
 
  var name string
  // 判断当前中间件的类型，是 server 还是 client
@@ -124,6 +124,7 @@ var (
  operation string
  carrier   propagation.TextMapCarrier
 )
+
 // 判断请求类型
 if info, ok := http.FromServerContext(ctx); ok {
  // HTTP
@@ -146,10 +147,10 @@ if info, ok := http.FromServerContext(ctx); ok {
   carrier = MetadataCarrier(md)
  }
 }
+
 // 调用 tracer.Start 方法
 ctx, span := tracer.Start(ctx, component, operation, carrier)
 // ... 省略代码
-}
 ```
 
 4. 调用 **tracing.go** 中的 **Start** 方法
