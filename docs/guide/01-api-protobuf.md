@@ -193,24 +193,24 @@ option objc_class_prefix = "KratosDemoV1";
 
 // 描述该服务的信息
 service Greeter {
-    // 描述该方法的功能
-    rpc SayHello (HelloRequest) returns (HelloReply);
+  // 描述该方法的功能
+  rpc SayHello (HelloRequest) returns (HelloReply);
 }
 // Hello请求参数
 message HelloRequest {
-    // 用户名字
-    string name = 1;
+  // 用户名字
+  string name = 1;
 }
 // Hello返回结果
 message HelloReply {
-    // 结果信息
-    string message = 1;
+  // 结果信息
+  string message = 1;
 }
 ```
 
 ## References
 
-- https://google.aip.dev/
-- https://protobuf.dev/programming-guides/style/
-- https://protobuf.dev/programming-guides/proto3/
-- https://colobu.com/2017/03/16/Protobuf3-language-guide/
+- [https://google.aip.dev/](https://google.aip.dev/)
+- [https://protobuf.dev/programming-guides/style/](https://protobuf.dev/programming-guides/style/)
+- [https://protobuf.dev/programming-guides/proto3/](https://protobuf.dev/programming-guides/proto3/)
+- [https://colobu.com/2017/03/16/Protobuf3-language-guide/](https://colobu.com/2017/03/16/Protobuf3-language-guide/)

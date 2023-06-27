@@ -96,13 +96,15 @@ func initApp(*conf.Server, *conf.Data, log.Logger) (*kratos.App, error) {
     panic(wire.Build(server.ProviderSet, data.ProviderSet, biz.ProviderSet, service.ProviderSet, newApp))
 }
 ```
+
 在项目的 main 目录中，运行 wire 进行生成编译期依赖注入代码：
+
 ```
 wire
 ```
 
 ## References
 
-* https://blog.golang.org/wire
-* https://github.com/google/wire
-* https://medium.com/@dche423/master-wire-cn-d57de86caa1b
+* [https://blog.golang.org/wire](https://blog.golang.org/wire)
+* [https://github.com/google/wire](https://github.com/google/wire)
+* [https://medium.com/@dche423/master-wire-cn-d57de86caa1b](https://medium.com/@dche423/master-wire-cn-d57de86caa1b)
