@@ -26,6 +26,8 @@ keywords:
 IDE中的这个提示不会影响项目的正常编译，如果您需要解决这个报错，请将项目中的thrid_party目录加入Protobuf的custom include paths下。请参照如下文档操作：
 
 * [GoLand](https://github.com/ksprojects/protobuf-jetbrains-plugin#configuration)
+* GoLand(新)
+<img src='/images/goland-protobuf.png' width="650px" />
 * [VSCode](https://github.com/zxh0/vscode-proto3#extension-settings)
 
 ### 3、如何使用 goland 进行开发
