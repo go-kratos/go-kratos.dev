@@ -27,6 +27,7 @@ Kratos定义了标准化的[Source和Watcher接口](https://github.com/go-kratos
 * [etcd](https://github.com/go-kratos/kratos/tree/main/contrib/config/etcd)
 * [kubernetes](https://github.com/go-kratos/kratos/tree/main/contrib/config/kubernetes)
 * [nacos](https://github.com/go-kratos/kratos/tree/main/contrib/config/nacos)
+* [polaris](https://github.com/go-kratos/kratos/tree/main/contrib/config/polaris)
 
 如果上述的配置加载方式无法涵盖您的环境，您也可以通过实现接口来适配您自己的配置加载方式。
 
