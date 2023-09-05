@@ -12,50 +12,31 @@ keywords:
   - gRPC
   - HTTP
 ---
-The framework provides open API/Swagger use in two ways: 1. Provide swagger interface on service, 2. Use the protoc plug-in to generate the swagger.json file. Here are two ways to do this.
-
-### Method 1: Use plug-ins to provide the swagger API
-Plugin [swagger-api](https://github.com/go-kratos/swagger-api) provides a range of swagger-related APIs, as well as the corresponding UI interface.
-
-#### Installation
-First, install the `swagger-api` plugin on your project.
-```bash
-go get -u github.com/go-kratos/swagger-api
-```
-
-Then initialize and register in newHTTPServer of `internal/server/http.go`, and try to put this route registration first to avoid match failed.
-
-```go
-import "github.com/go-kratos/swagger-api/openapiv2"
-
-openAPIhandler := openapiv2.NewHandler()
-srv.HandlePrefix("/q/", openAPIhandler)
-```
-#### Usage
-Open `/q/swagger-ui/` in Web Browser in order to access Swagger UI
-
-### Method 2: Use protoc to generate swagger.json
-The new project Makefile has been integrated by default with the commands associated with generating swagger.json, and here's how to use them
+### Use protoc to generate openapi.yaml
+The new project Makefile has been integrated by default with the commands associated with generating openapi.yaml, and here's how to use them
 
 #### Installation
 First, install the protoc plug-in globally.
 ```bash
-go install github.com/grpc-ecosystem/grpc-gateway/v2/protoc-gen-openapiv2
+go install github.com/google/gnostic/cmd/protoc-gen-openapi@latest
 ```
 
 #### Generation
-Use the protoc command directly at the root of the project, note that modifying the final proto file path of the command is the actual path
+If you're using kratos-layout, execute this command directly to generate.
+```bash
+make api
+```
+
+Or you can use the protoc command directly at the root of the project, note that modifying the final proto file path of the command is the actual path
 ```bash
 protoc --proto_path=. \
         --proto_path=./third_party \
-        --openapiv2_out . \
-        --openapiv2_opt logtostderr=true \
-        --openapiv2_opt json_names_for_fields=false \
+        --openapi_out=fq_schema_naming=true,default_response=false:. \
         api/helloworld/v1/greeter.proto
 ```
 
 #### Usage
-Once the above command has been executed successfully, the corresponding swagger.json file will be generated in the directory where your proto file is located.
+Once the above command has been executed successfully, the corresponding openapi.yaml file will be generated in the directory where your proto file is located.
 You can import it into any platform that supports the Open API specification for browsing, such as:
 * [Swagger UI](https://github.com/swagger-api/swagger-ui)
 * [Swagger Editor](https://editor.swagger.io/)
