@@ -135,6 +135,7 @@ It is the same as Register, if use etcd or any other implementations, you can cr
 ```go
 import (
     "github.com/go-kratos/kratos/contrib/registry/etcd/v2"
+    "github.com/go-kratos/kratos/v2/transport/grpc"
     clientv3 "go.etcd.io/etcd/client/v3"
 )
 
@@ -148,6 +149,7 @@ if err != nil {
 // new dis with etcd client
 dis := etcd.New(client)
 
+// This Dial need to use DialInsecure() or use grpc.WithTransportCredentials in Dial option
 endpoint := "discovery:///provider"
 conn, err := grpc.Dial(context.Background(), grpc.WithEndpoint(endpoint), grpc.WithDiscovery(dis))
 if err != nil {
