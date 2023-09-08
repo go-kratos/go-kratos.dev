@@ -1,7 +1,7 @@
 ---
 id: log
 title: Logger
-description: ratos contains only the simplest Log interface for business-adapted log access. When your business logic needs to use custom logs inside the kratos framework, you only need to implement the Log method simply.
+description: Kratos contains only the simplest Log interface for business-adapted log access. When your business logic needs to use custom logs inside the kratos framework, you only need to implement the Log method simply.
 keywords:
   - Go
   - Kratos
