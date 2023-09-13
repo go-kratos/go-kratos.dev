@@ -117,16 +117,17 @@ First, you need to create a Logger, here you can choose: the built-in std print 
 ```go
 import "github.com/go-kratos/kratos/v2/log"
 
-h := NewHelper(yourlogger)
+h := log.NewHelper(yourlogger)
 
 // You can use the default logger directly
-h := NewHelper(log.DefaultLogger)
+h := log.NewHelper(log.DefaultLogger)
 ```
 
-Or find a plugin in [contrib/log](https://github.com/go-kratos/kratos/tree/main/contrib/log)里 to use, for example, here we want to use fluentd:
+Or find a plugin in [contrib/log](https://github.com/go-kratos/kratos/tree/main/contrib/log) to use, for example, here we want to use fluentd:
 
 ```go
 import "github.com/go-kratos/kratos/contrib/log/fluent/v2"
+import "github.com/go-kratos/kratos/v2/log"
 
 logger, err := fluent.NewLogger("unix:///var/run/fluent/fluent.sock")
 if err != nil {
