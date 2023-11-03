@@ -46,13 +46,13 @@ Supported implementations:
 ### HTTP Client
 
 ```go
-import "github.com/go-kratos/kratos/v2/selector/p2c"
+import "github.com/go-kratos/kratos/v2/selector/wrr"
 import "github.com/go-kratos/kratos/v2/selector/filter"
 
 // Create a route Filter: filter instances with version number "2.0.0".
 filter := filter.Version("2.0.0")
 // Create P2C load balancing algorithm Selector, and inject routing Filter.
-selctor.SetGlobalSelector(wrr.NewBuilder)
+selctor.SetGlobalSelector(wrr.NewBuilder())
 
 hConn, err := http.NewClient(
   http.WithEndpoint("discovery:///helloworld"),
@@ -64,13 +64,13 @@ hConn, err := http.NewClient(
 ### gRPC Client
 
 ```go
-import "github.com/go-kratos/kratos/v2/selector/p2c"
+import "github.com/go-kratos/kratos/v2/selector/wrr"
 import "github.com/go-kratos/kratos/v2/selector/filter"
 
 // Create a route Filter: filter instances with version number "2.0.0".
 filter := filter.Version("2.0.0")
 // Due to the limitations of the gRPC framework, only the global balancer name can be used to inject Selector.
-selector.SetGlobalSelector(wrr.NewBuilder)
+selector.SetGlobalSelector(wrr.NewBuilder())
 
 conn, err := grpc.DialInsecure(
   context.Background(),
