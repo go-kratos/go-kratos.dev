@@ -206,7 +206,7 @@ http:
     name: "${service.name}"
     # 使用环境变量 PORT 替换，若不存在，使用默认值 8080
     port: "${PORT:8080}"
-    # 使用环境变量 TIMEOUT 替换，无默认值
+    # 不支持该格式，会被当作普通字符串处理
     timeout: "$TIMEOUT"
 ```
 
