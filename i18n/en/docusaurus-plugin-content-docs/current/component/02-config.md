@@ -204,7 +204,7 @@ http:
     name: "${service.name}"
     # Replace with the environment variable PORT, if it does not exist, use the default value 8080
     port: "${PORT:8080}"
-    # Replace with the environment variable TIMEOUT, no default value
+    # This format is not supported and will be treated as a regular string
     timeout: "$TIMEOUT"
 ```
 
