@@ -18,7 +18,7 @@ keywords:
 ### Dockerfile
 
 ```docker
-FROM golang:1.16 AS builder
+FROM golang:1.19 AS builder
 
 COPY . /src
 WORKDIR /src
