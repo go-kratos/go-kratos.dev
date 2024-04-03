@@ -34,7 +34,7 @@ go install github.com/envoyproxy/protoc-gen-validate@latest
 // 参数必须大于 0
 int64 id = 1 [(validate.rules).int64 = {gt: 0}];
 // 参数必须在 0 到 120 之间
-int32 age = 2 [(validate.rules).int64 = {gt:0, lte: 120}];
+int32 age = 2 [(validate.rules).int32 = {gt:0, lte: 120}];
 // 参数是 1 或 2 或 3
 uint32 code = 3 [(validate.rules).uint32 = {in: [1,2,3]}];
 // 参数不能是 0 或 99.99
