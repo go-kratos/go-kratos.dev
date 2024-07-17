@@ -49,6 +49,8 @@ go mod download
 ```
 ## Compilation and Running
 ```bash
+# installation dependency
+go get github.com/google/wire/cmd/wire@latest
 # generate all codes of proto and wire etc.
 go generate ./...
 
