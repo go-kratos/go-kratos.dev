@@ -105,7 +105,7 @@ c := config.New(
     config.WithSource(
         file.NewSource(path),
     )
-）
+)
 ```
 
 If you want to use an external configuration center, you can find one in [contrib/config](https://github.com/go-kratos/kratos/tree/main/contrib/config). Taking Consul as an example:
