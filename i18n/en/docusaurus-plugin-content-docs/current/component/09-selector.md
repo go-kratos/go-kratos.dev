@@ -52,7 +52,7 @@ import "github.com/go-kratos/kratos/v2/selector/filter"
 // Create a route Filter: filter instances with version number "2.0.0".
 filter := filter.Version("2.0.0")
 // Create P2C load balancing algorithm Selector, and inject routing Filter.
-selctor.SetGlobalSelector(wrr.NewBuilder())
+selector.SetGlobalSelector(wrr.NewBuilder())
 
 hConn, err := http.NewClient(
   http.WithEndpoint("discovery:///helloworld"),
