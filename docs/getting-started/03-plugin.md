@@ -36,6 +36,7 @@ Kratos提供了一系列插件帮助您增强微服务的功能、或与其它�
 * [etcd](https://github.com/go-kratos/kratos/tree/main/contrib/config/etcd)
 * [kubernetes](https://github.com/go-kratos/kratos/tree/main/contrib/config/kubernetes)
 * [nacos](https://github.com/go-kratos/kratos/tree/main/contrib/config/nacos)
+* [polaris](https://github.com/go-kratos/kratos/tree/main/contrib/config/polaris)
 
 #### 监控告警
 * [datadog](https://github.com/go-kratos/kratos/tree/main/contrib/metrics/datadog)
