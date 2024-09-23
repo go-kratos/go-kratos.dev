@@ -92,7 +92,7 @@ Kratos日志库使用十分简单，和大部分日志库类似。
 
 ```go
 // 输出到控制台
-l := log.DefaultLogged
+l := log.DefaultLogger
 l.Log(log.LevelInfo, "stdout_key", "stdout_value")
 
 // 输出到 ./test.log 文件
