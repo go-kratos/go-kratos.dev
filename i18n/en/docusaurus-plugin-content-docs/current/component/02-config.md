@@ -105,7 +105,7 @@ c := config.New(
     config.WithSource(
         file.NewSource(path),
     ),
-）
+)
 
 ```
 
