@@ -106,6 +106,7 @@ c := config.New(
         file.NewSource(path),
     ),
 ）
+
 ```
 
 If you want to use an external configuration center, you can find one in [contrib/config](https://github.com/go-kratos/kratos/tree/main/contrib/config). Taking Consul as an example:
@@ -204,7 +205,7 @@ http:
     name: "${service.name}"
     # Replace with the environment variable PORT, if it does not exist, use the default value 8080
     port: "${PORT:8080}"
-    # Replace with the environment variable TIMEOUT, no default value
+    # This format is not supported and will be treated as a regular string
     timeout: "$TIMEOUT"
 ```
 

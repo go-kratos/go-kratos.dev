@@ -87,7 +87,7 @@ make errors
 
 执行成功之后，会在 api/helloworld 目录下生成 helloworld_errors.pb.go 文件，代码如下：
 
-```
+```go
 package helloworld
 
 import (

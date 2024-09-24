@@ -59,6 +59,8 @@ go mod download
 ### 代码生成与运行
 #### 生成
 ```bash
+# 安装依赖
+go get github.com/google/wire/cmd/wire@latest
 # 生成所有proto源码、wire等等
 go generate ./...
 ```

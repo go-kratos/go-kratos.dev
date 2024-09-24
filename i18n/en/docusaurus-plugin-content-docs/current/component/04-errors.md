@@ -73,7 +73,7 @@ make errors
 
 After successful execution, will be generated in the api/helloworld directory a go file,The code is as follows.
 
-```
+```go
 package helloworld
 
 import (

@@ -33,7 +33,7 @@ Here are some examples of parameter validation for several common situations, yo
 // id must be greater than 0
 int64 id = 1 [(validate.rules).int64 = {gt: 0}];
 // age must be in the range (0, 120]
-int32 age = 2 [(validate.rules).int64 = {gt:0, lte: 120}];
+int32 age = 2 [(validate.rules).int32 = {gt:0, lte: 120}];
 // code must be either 1, 2, or 3
 uint32 code = 3 [(validate.rules).uint32 = {in: [1,2,3]}];
 // score cannot be 0 nor 0.99
