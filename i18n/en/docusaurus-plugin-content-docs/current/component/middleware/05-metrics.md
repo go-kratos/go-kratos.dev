@@ -40,7 +40,7 @@ func WithRequests(c metrics.Counter) Option {
 
 The `Counter` counter used to set the metrics middleware statistics request count.
 
-### Usage
+### Usage (kratos < 2.8.0)
 
 #### Prometheus
 ```go
@@ -62,8 +62,6 @@ _metricRequests = prometheus.NewCounterVec(prometheus.CounterOpts{
 }, []string{"kind", "operation", "code", "reason"})
 	
 prometheus.MustRegister(_metricSeconds, _metricRequests)
-
-httpSrv.Handle("/metrics", promhttp.Handler())
 ```
 #### To configure metrics in servers
 
@@ -93,6 +91,7 @@ httpSrv := http.NewServer(
 		),
 	),
 )
+httpSrv.Handle("/metrics", promhttp.Handler())
 ```
 
 #### To configure metrics in clients
@@ -123,9 +122,98 @@ conn, err := http.NewClient(
 )
 ```
 
+### Usage (kratos >= 2.8.0)
 
+Since version [v2.8.0](https://github.com/go-kratos/kratos/releases/tag/v2.8.0), kratos uses otel.Metrics. Way to export metrics to prometheus is as follows:
+
+#### Prometheus
+```go
+import (
+	"github.com/go-kratos/kratos/v2/middleware/metrics"
+	"go.opentelemetry.io/otel/exporters/prometheus"
+	"go.opentelemetry.io/otel/metric"
+	sdkmetric "go.opentelemetry.io/otel/sdk/metric"
+)
+
+// Detailed reference https://github.com/go-kratos/examples/tree/main/metrics
+func init() {
+	exporter, err := prometheus.New()
+	if err != nil {
+		panic(err)
+	}
+	provider := sdkmetric.NewMeterProvider(sdkmetric.WithReader(exporter))
+	meter := provider.Meter(Name)
+
+	_metricRequests, err = metrics.DefaultRequestsCounter(meter, metrics.DefaultServerRequestsCounterName)
+	if err != nil {
+		panic(err)
+	}
+
+	_metricSeconds, err = metrics.DefaultSecondsHistogram(meter, metrics.DefaultServerSecondsHistogramName)
+	if err != nil {
+		panic(err)
+	}
+}
+```
+
+#### To configure metrics in servers
+```go
+import (
+	"github.com/prometheus/client_golang/prometheus/promhttp"
+)
+
+// grpc service
+grpcSrv := grpc.NewServer(
+	grpc.Address(":9000"),
+	grpc.Middleware(
+		metrics.Server(
+			metrics.WithSeconds(_metricSeconds),
+			metrics.WithRequests(_metricRequests),
+		),
+	),
+)
+
+// http service
+httpSrv := http.NewServer(
+	http.Address(":8000"),
+	http.Middleware(
+		metrics.Server(
+			metrics.WithSeconds(_metricSeconds),
+			metrics.WithRequests(_metricRequests),
+		),
+	),
+)
+httpSrv.Handle("/metrics", promhttp.Handler())
+```
+
+#### To configure metrics in clients
+```go
+// grpc client
+conn, err := grpc.DialInsecure(
+	context.Background(),
+	grpc.WithEndpoint("127.0.0.1:9000"),
+	grpc.WithMiddleware(
+		metrics.Client(
+			metrics.WithSeconds(_metricSeconds),
+			metrics.WithRequests(_metricRequests),
+		),
+	),
+)
+
+// http client
+conn, err := http.NewClient(
+	context.Background(),
+	http.WithEndpoint("127.0.0.1:8000"),
+	http.WithMiddleware(
+		metrics.Client(
+			metrics.WithSeconds(_metricSeconds),
+			metrics.WithRequests(_metricRequests),
+		),
+	),
+)
+```
 
 ### References
-
 * https://prometheus.io/docs/concepts/metric_types/
 * https://github.com/go-kratos/examples/tree/main/metrics
+* https://pkg.go.dev/go.opentelemetry.io/otel/exporters/prometheus
