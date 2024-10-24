@@ -3,7 +3,7 @@ id: usage
 title: CLI工具
 description: Kratos 工具使用，创建 Protobuf 模板，创建 Go 工程项目，创建 Service 模板
 keywords:
-  - Go 
+  - Go
   - Kratos
   - Toolkit
   - Framework
@@ -20,6 +20,7 @@ go install github.com/go-kratos/kratos/cmd/kratos/v2@latest
 ```
 
 ### 创建项目
+
 通过 kratos 命令创建项目模板：
 
 ```bash
@@ -147,6 +148,7 @@ kratos new app/user --nomod
 ```
 
 ### 添加 Proto 文件
+
 > kratos-layout 项目中对 proto 文件进行了版本划分，放在了 v1 子目录下
 
 ```bash
@@ -191,6 +193,7 @@ message ListDemoReply {}
 ```
 
 ### 生成 Proto 代码
+
 ```bash
 # 可以直接通过 make 命令生成
 make api
@@ -198,7 +201,9 @@ make api
 # 或使用 kratos cli 进行生成
 kratos proto client api/helloworld/v1/demo.proto
 ```
-会在proto文件同目录下生成:
+
+会在 proto 文件同目录下生成:
+
 ```bash
 api/helloworld/v1/demo.pb.go
 api/helloworld/v1/demo_grpc.pb.go
@@ -211,10 +216,10 @@ api/helloworld/v1/demo_http.pb.go
 通过 proto 文件，可以直接生成对应的 Service 实现代码：
 
 使用 `-t` 指定生成目录
+
 ```bash
 kratos proto server api/helloworld/v1/demo.proto -t internal/service
 ```
-
 
 输出:  
 internal/service/demo.go
@@ -254,30 +259,40 @@ func (s *DemoService) ListDemo(ctx context.Context, req *pb.ListDemoRequest) (*p
 ```
 
 ### 运行项目
+
 - 如子目录下有多个项目则出现选择菜单
+
 ```bash
-kratos run 
+kratos run
 ```
 
 ### 查看版本
+
 查看工具版本：
+
 ```bash
 kratos -v
 ```
+
 输出:
+
 ```bash
 kratos version v2.2.0
 ```
 
 ### 工具升级
+
 将升级以下工具
-- Kratos与工具自身
-- protoc相关的生成插件
+
+- Kratos 与工具自身
+- protoc 相关的生成插件
+
 ```bash
 kratos upgrade
 ```
 
 ### 更新日志
+
 ```bash
 # 等同于打印 https://github.com/go-kratos/kratos/releases/latest 的版本更新日志
 kratos changelog
@@ -285,12 +300,14 @@ kratos changelog
 # 打印指定版本更新日志
 kratos changelog v2.1.4
 
-# 查看自上次版本发布后的更新日志
+# 查看从 latest 版本发布后至今的更新日志
 kratos changelog dev
 ```
 
 ### 查看帮助
-任何命令下加 ` -h ` 查看帮助
+
+任何命令下加 `-h` 查看帮助
+
 ```bash
 kratos -h
 kratos new -h
