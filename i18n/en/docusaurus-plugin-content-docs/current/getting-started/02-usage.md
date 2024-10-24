@@ -274,7 +274,7 @@ kratos changelog
 # Print the update log of the specified version
 kratos changelog v2.1.4
 
-# View the changelog since the lastest release
+# View the changelog since the latest release to now
 kratos changelog dev
 ```
 
