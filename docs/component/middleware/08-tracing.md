@@ -155,8 +155,16 @@ func grpcCli() (*googlegrpc.ClientConn, error) {
 }
 ```
 
+#### 自动采集数据
+
+如果不想手动修改代码，您还可以使用一些框架进行OpenTelemetry数据的自动采集，比如[Alibaba Go Auto Instrumentation](https://github.com/alibaba/opentelemetry-go-auto-instrumentation) (后续将正式捐赠至[OpenTelemetry官方](https://github.com/open-telemetry/opentelemetry-go-compile-instrumentation))。
+
+您可以参考[文档](https://github.com/alibaba/opentelemetry-go-auto-instrumentation/blob/main/README.md)来编译您的Kratos应用。
+
 ### References
 
 * https://opentelemetry.io/
 * https://github.com/open-telemetry/opentelemetry-go/tree/main/example
 * https://pkg.go.dev/go.opentelemetry.io/otel
+* https://github.com/alibaba/opentelemetry-go-auto-instrumentation
+* https://github.com/open-telemetry/opentelemetry-go-compile-instrumentation
