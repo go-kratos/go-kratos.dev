@@ -154,8 +154,17 @@ func grpcCli() (*googlegrpc.ClientConn, error) {
 }
 ```
 
+#### Automatic Data Collection
+
+If you don't want to modify the code manually, you can also use Agent for automatic collection of OpenTelemetry data, such as [Alibaba Go Auto Instrumentation](https://github.com/alibaba/opentelemetry-go-auto-instrumentation) (which will later be officially donated to [OpenTelemetry Official Repository](https://github.com/open-telemetry/opentelemetry-go-compile-instrumentation)).
+
+You can refer to the [documentation](https://github.com/alibaba/opentelemetry-go-auto-instrumentation/blob/main/README.md) to compile your Kratos application.
+
 ### References
 
 * https://opentelemetry.io/
 * https://github.com/open-telemetry/opentelemetry-go/tree/main/example
 * https://pkg.go.dev/go.opentelemetry.io/otel
+* https://github.com/alibaba/opentelemetry-go-auto-instrumentation
+* https://github.com/open-telemetry/opentelemetry-go-compile-instrumentation
+
