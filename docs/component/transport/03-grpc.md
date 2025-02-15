@@ -216,6 +216,14 @@ if info, ok := transport.FromServerContext(ctx); ok {
 
 配置一些额外的 grpc.ClientOption
 
+#### `WithHealthCheck(healthCheck bool) ClientOption`
+
+配置是否开启健康检查
+
+#### `WithNodeFilter(filters ...selector.NodeFilter) ClientOption`
+
+配置过滤某些不希望被请求的节点
+
 ### 主要的实现细节
 
 #### `dial()`
