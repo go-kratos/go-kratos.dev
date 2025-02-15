@@ -215,6 +215,14 @@ To set interceptors for gRPC client.
 
 To set some extra `grpc.ClientOption`.
 
+#### `WithHealthCheck(healthCheck bool) ClientOption`
+
+To enable or disable the health check.
+
+#### `WithNodeFilter(filters ...selector.NodeFilter) ClientOption`
+
+Set filtering to exclude nodes that should not be requested.
+
 ### Implementation Details
 
 #### `dial()`
