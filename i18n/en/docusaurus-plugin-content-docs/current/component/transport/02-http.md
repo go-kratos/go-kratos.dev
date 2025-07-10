@@ -223,9 +223,9 @@ The prefix matching method adds the prefix to the route and uses the standard HT
 
 Implemented the HTTP Handler interface of the standard library
 
-> Reference for other routing usage methods: <https://github.com/go-kratos/examples/tree/main/http/middlewares>
+> Reference for other routing usage methods: [https://github.com/go-kratos/examples/tree/main/http/middlewares](https://github.com/go-kratos/examples/tree/main/http/middlewares)
 
-> Use [gin](https://github.com/gin-gonic/gin) framework in Kratos HTTP: <https://github.com/go-kratos/kratos/blob/main/examples/http/gin/main.go>
+> Use [gin](https://github.com/gin-gonic/gin) framework in Kratos HTTP: [https://github.com/go-kratos/kratos/blob/main/examples/http/gin/main.go](https://github.com/go-kratos/kratos/blob/main/examples/http/gin/main.go)
 
 ## Client
 

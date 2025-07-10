@@ -96,8 +96,8 @@ module.exports = {
       copyright: `Copyright © ${new Date().getFullYear()} go-kratos.dev`,
     },
     prism: {
-      theme: require('prism-react-renderer/themes/github'),
-      darkTheme: require('prism-react-renderer/themes/dracula'),
+      theme: require('prism-react-renderer').themes.github,
+      darkTheme: require('prism-react-renderer').themes.dracula,
       additionalLanguages: ['protobuf', 'toml', 'docker', 'yaml'],
     },
   },
@@ -125,14 +125,17 @@ module.exports = {
       },
     ],
   ],
-  plugins: [
+  themes: [
     [
       require.resolve("@easyops-cn/docusaurus-search-local"),
       {
         hashed: true,
         language: ["en", "zh"],
+        searchResultLimits: 8,
       },
     ],
+  ],
+  plugins: [
     "./postcss-tailwind-loader"
   ],
   i18n: {
