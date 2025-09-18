@@ -111,7 +111,7 @@ message HelloReply {
   string message = 1;
 }
 ```
-It should be noted that although the API defined by Protobuf is more reliable, the flexibility of the field structure is weaker than that of JSON. Therefore, if you have a file upload interface, or some JSON structure that cannot correspond to proto. You can define these interfaces outside of our API-System, implement as normal `http.Handler` and mount it on the route, or just use `struct` to define your fields. Here is an example of [upload](https://github.com/go-kratos/kratos/blob/main/examples/http/upload/main.go).
+It should be noted that although the API defined by Protobuf is more reliable, the flexibility of the field structure is weaker than that of JSON. Therefore, if you have a file upload interface, or some JSON structure that cannot correspond to proto. You can define these interfaces outside of our API-System, implement as normal `http.Handler` and mount it on the route, or just use `struct` to define your fields. Here is an example of [upload](https://github.com/go-kratos/examples/blob/main/http/upload/main.go).
 
 ## Metadata
 

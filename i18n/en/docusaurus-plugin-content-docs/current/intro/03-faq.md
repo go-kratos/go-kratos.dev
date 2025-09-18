@@ -18,7 +18,7 @@ This issue is mainly caused by the improperly installation of protoc. The docume
 
 
 ### 2. There are errors from IDE show `import "google/api/annotations.proto";` with red wavy line 
-You can append `thrid_party` directory to custom protobuf`s include paths. Please follow these doc:
+You can append `third_party` directory to custom protobuf`s include paths. Please follow these doc:
 
 * [GoLand](https://github.com/ksprojects/protobuf-jetbrains-plugin#configuration) 
 * [VSCode](https://github.com/zxh0/vscode-proto3#extension-settings)
