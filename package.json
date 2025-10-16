@@ -1,47 +1,20 @@
 {
-  "name": "docs",
-  "version": "0.0.0",
-  "private": true,
+  "name": "",
+  "type": "module",
+  "version": "0.0.1",
   "scripts": {
-    "docusaurus": "docusaurus",
-    "start": "docusaurus start",
-    "build": "docusaurus build",
-    "swizzle": "docusaurus swizzle",
-    "deploy": "docusaurus deploy",
-    "serve": "docusaurus serve",
-    "clear": "docusaurus clear",
-    "write-translations": "docusaurus write-translations"
+    "dev": "astro dev",
+    "start": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
+    "astro": "astro"
   },
   "dependencies": {
-    "@docusaurus/core": "^3.8.1",
-    "@docusaurus/preset-classic": "^3.8.1",
-    "@easyops-cn/docusaurus-search-local": "^0.51.1",
-    "@mdx-js/react": "^3.1.0",
-    "clsx": "^1.1.1",
-    "nodejieba": "2.5.2",
-    "react": "^19.1.0",
-    "react-dom": "^19.1.0"
-  },
-  "browserslist": {
-    "production": [
-      ">0.5%",
-      "not dead",
-      "not op_mini all"
-    ],
-    "development": [
-      "last 1 chrome version",
-      "last 1 firefox version",
-      "last 1 safari version"
-    ]
-  },
-  "devDependencies": {
-    "@tailwindcss/typography": "^0.4.1",
-    "autoprefixer": "^10.3.6",
-    "postcss": "^8.3.8",
-    "postcss-cli": "^9.0.0",
-    "postcss-import": "^12.0.0",
-    "postcss-nested": "^5.0.6",
-    "postcss-preset-env": "^6.7.0",
-    "tailwindcss": "^2.2.16"
+    "@astrojs/starlight": "^0.36.0",
+    "astro": "^5.6.1",
+    "sharp": "^0.34.2",
+    "starlight-auto-sidebar": "^0.1.2",
+    "starlight-sidebar-topics": "^0.6.1",
+    "starlight-sidebar-topics-dropdown": "^0.5.1"
   }
 }

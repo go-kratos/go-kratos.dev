@@ -1,0 +1,275 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="ALL" />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="a411a141-324f-43e2-84e0-0fbf5947d875" name="更改" comment="">
+      <change afterPath="$PROJECT_DIR$/src/components/Sidebar.astro" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.github/workflows/documentation.yml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.github/workflows/gitee_sync.yml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/LICENSE" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/babel.config.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/blog/2021-03-08-go-project-layout.md" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/blog/2021-06-03-go-kratos-OpenTelemetry.md" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/blog/2021-06-03-go-layout-operation-process.md" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/blog/2021-07-14-go-project-wire.md" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/community/01-contribution.md" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/community/02-documentation.md" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/community/03-contributors.md" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/community/03-enterprise.md" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/community/_category_.yml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/component/01-api.md" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/component/02-config.md" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/component/03-encoding.md" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/component/04-errors.md" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/component/05-log.md" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/component/06-metadata.md" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/component/07-metrics.md" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/component/08-registry.md" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/component/09-selector.md" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/component/_category_.yml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/component/middleware/01-overview.md" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/component/middleware/02-auth.md" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/component/middleware/03-circuitbreaker.md" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/component/middleware/04-logging.md" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/component/middleware/05-metrics.md" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/component/middleware/06-ratelimit.md" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/component/middleware/07-recovery.md" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/component/middleware/08-tracing.md" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/component/middleware/09-validate.md" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/component/middleware/_category_.yml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/component/transport/01-overview.md" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/component/transport/02-http.md" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/component/transport/03-grpc.md" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/component/transport/_category_.yml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/devops/01-docker.md" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/devops/_category_.yml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/getting-started/01-start.md" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/getting-started/02-usage.md" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/getting-started/03-plugin.md" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/getting-started/04-examples.md" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/getting-started/_category_.yml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/guide/01-api-protobuf.md" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/guide/02-openapi.md" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/guide/03-wire.md" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/guide/04-ent.md" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/guide/_category_.yml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/intro/01-overview.md" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/intro/02-design.md" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/intro/03-faq.md" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/intro/04-layout.md" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/intro/_category_.yml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/docusaurus.config.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/i18n/en/code.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/i18n/en/docusaurus-plugin-content-docs/current.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/i18n/en/docusaurus-plugin-content-docs/current/community/01-contribution.md" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/i18n/en/docusaurus-plugin-content-docs/current/community/02-documentation.md" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/i18n/en/docusaurus-plugin-content-docs/current/community/03-contributors.md" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/i18n/en/docusaurus-plugin-content-docs/current/component/01-api.md" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/i18n/en/docusaurus-plugin-content-docs/current/component/02-config.md" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/i18n/en/docusaurus-plugin-content-docs/current/component/03-encoding.md" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/i18n/en/docusaurus-plugin-content-docs/current/component/04-errors.md" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/i18n/en/docusaurus-plugin-content-docs/current/component/05-log.md" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/i18n/en/docusaurus-plugin-content-docs/current/component/06-metadata.md" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/i18n/en/docusaurus-plugin-content-docs/current/component/07-metrics.md" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/i18n/en/docusaurus-plugin-content-docs/current/component/08-registry.md" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/i18n/en/docusaurus-plugin-content-docs/current/component/09-selector.md" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/i18n/en/docusaurus-plugin-content-docs/current/component/middleware/01-overview.md" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/i18n/en/docusaurus-plugin-content-docs/current/component/middleware/02-auth.md" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/i18n/en/docusaurus-plugin-content-docs/current/component/middleware/03-circuitbreaker.md" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/i18n/en/docusaurus-plugin-content-docs/current/component/middleware/04-logging.md" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/i18n/en/docusaurus-plugin-content-docs/current/component/middleware/05-metrics.md" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/i18n/en/docusaurus-plugin-content-docs/current/component/middleware/06-ratelimit.md" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/i18n/en/docusaurus-plugin-content-docs/current/component/middleware/07-recovery.md" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/i18n/en/docusaurus-plugin-content-docs/current/component/middleware/08-tracing.md" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/i18n/en/docusaurus-plugin-content-docs/current/component/middleware/09-validate.md" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/i18n/en/docusaurus-plugin-content-docs/current/component/transport/01-overview.md" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/i18n/en/docusaurus-plugin-content-docs/current/component/transport/02-http.md" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/i18n/en/docusaurus-plugin-content-docs/current/component/transport/03-grpc.md" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/i18n/en/docusaurus-plugin-content-docs/current/devops/01-docker.md" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/i18n/en/docusaurus-plugin-content-docs/current/getting-started/01-start.md" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/i18n/en/docusaurus-plugin-content-docs/current/getting-started/02-usage.md" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/i18n/en/docusaurus-plugin-content-docs/current/getting-started/03-plugin.md" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/i18n/en/docusaurus-plugin-content-docs/current/getting-started/04-examples.md" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/i18n/en/docusaurus-plugin-content-docs/current/guide/01-api-protobuf.md" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/i18n/en/docusaurus-plugin-content-docs/current/guide/02-openapi.md" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/i18n/en/docusaurus-plugin-content-docs/current/guide/03-wire.md" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/i18n/en/docusaurus-plugin-content-docs/current/guide/04-ent.md" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/i18n/en/docusaurus-plugin-content-docs/current/intro/01-overview.md" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/i18n/en/docusaurus-plugin-content-docs/current/intro/02-design.md" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/i18n/en/docusaurus-plugin-content-docs/current/intro/03-faq.md" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/i18n/en/docusaurus-plugin-content-docs/current/intro/04-layout.md" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/i18n/en/docusaurus-theme-classic/footer.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/i18n/en/docusaurus-theme-classic/navbar.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/i18n/zh/code.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/i18n/zh/docusaurus-plugin-content-blog/options.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/i18n/zh/docusaurus-plugin-content-docs/current.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/i18n/zh/docusaurus-theme-classic/footer.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/i18n/zh/docusaurus-theme-classic/navbar.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/package.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/postcss-tailwind-loader.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/sidebars.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/css/custom.css" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/pages/index.css" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/pages/index.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/theme/Footer/index.css" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/theme/Footer/index.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/static/.nojekyll" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/static/CNAME" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/static/assets/bars-solid.svg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/static/assets/contribution-mobile.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/static/assets/contribution.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/static/assets/discord.svg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/static/assets/facebook.svg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/static/assets/geekbang.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/static/assets/github.svg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/static/assets/kratos-ui.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/static/assets/light-bulb.svg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/static/assets/link.svg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/static/assets/logo.svg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/static/assets/microservices.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/static/assets/plug-able.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/static/assets/plus-solid.svg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/static/assets/search.svg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/static/assets/specified-api.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/static/assets/twitter.svg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/static/images/arch.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/static/images/contributors/1.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/static/images/contributors/10.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/static/images/contributors/11.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/static/images/contributors/12.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/static/images/contributors/13.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/static/images/contributors/14.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/static/images/contributors/15.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/static/images/contributors/16.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/static/images/contributors/17.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/static/images/contributors/18.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/static/images/contributors/2.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/static/images/contributors/3.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/static/images/contributors/4.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/static/images/contributors/5.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/static/images/contributors/6.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/static/images/contributors/7.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/static/images/contributors/8.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/static/images/contributors/9.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/static/images/ddd.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/static/images/ent.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/static/images/enterprise/yunzhanghu.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/static/images/goland-protobuf.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/static/images/goland.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/static/images/wechat.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/static/images/wire.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/static/img/android-chrome-192x192.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/static/img/android-chrome-512x512.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/static/img/api.svg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/static/img/apple-touch-icon.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/static/img/favicon-16x16.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/static/img/favicon-32x32.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/static/img/favicon.ico" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/static/img/layout.svg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/static/img/logo.svg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/static/img/plugin.svg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/static/img/site.webmanifest" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/static/js/custom.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tailwind.config.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/yarn.lock" beforeDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Astro Component" />
+      </list>
+    </option>
+  </component>
+  <component name="GOROOT" url="file://$PROJECT_DIR$/../go/pkg/mod/golang.org/toolchain@v0.0.1-go1.24.6.darwin-arm64" />
+  <component name="Git.Settings">
+    <option name="RECENT_BRANCH_BY_REPOSITORY">
+      <map>
+        <entry key="$PROJECT_DIR$" value="main" />
+      </map>
+    </option>
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="GitHubPullRequestSearchHistory">{
+  &quot;lastFilter&quot;: {
+    &quot;state&quot;: &quot;OPEN&quot;,
+    &quot;assignee&quot;: &quot;shenqidebaozi&quot;
+  }
+}</component>
+  <component name="GithubPullRequestsUISettings">{
+  &quot;selectedUrlAndAccountId&quot;: {
+    &quot;url&quot;: &quot;https://github.com/go-kratos/go-kratos.dev.git&quot;,
+    &quot;accountId&quot;: &quot;e61059a1-59c7-4855-be0c-db5e8563da50&quot;
+  }
+}</component>
+  <component name="ProjectColorInfo">{
+  &quot;associatedIndex&quot;: 4
+}</component>
+  <component name="ProjectId" id="33HNfMDG8n14oDDpLCdbHlH7ylQ" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "ModuleVcsDetector.initialDetectionPerformed": "true",
+    "RunOnceActivity.GoLinterPluginOnboarding": "true",
+    "RunOnceActivity.GoLinterPluginStorageMigration": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252": "true",
+    "RunOnceActivity.git.unshallow": "true",
+    "RunOnceActivity.go.formatter.settings.were.checked": "true",
+    "RunOnceActivity.go.migrated.go.modules.settings": "true",
+    "RunOnceActivity.go.modules.go.list.on.any.changes.was.set": "true",
+    "git-widget-placeholder": "refactor",
+    "go.import.settings.migrated": "true",
+    "go.sdk.automatically.set": "true",
+    "last_opened_file_path": "/Users/baozhecheng",
+    "node.js.detected.package.eslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "nodejs_package_manager_path": "yarn",
+    "ts.external.directory.path": "/Users/baozhecheng/Applications/GoLand.app/Contents/plugins/javascript-plugin/jsLanguageServicesImpl/external"
+  }
+}]]></component>
+  <component name="RecentsManager">
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/src/content/docs/zh-cn/project" />
+    </key>
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/src/components" />
+      <recent name="$PROJECT_DIR$/src/pages" />
+    </key>
+  </component>
+  <component name="SharedIndexes">
+    <attachedChunks>
+      <set>
+        <option value="bundled-gosdk-f466f9b0953e-3d2cccfc42a2-org.jetbrains.plugins.go.sharedIndexes.bundled-GO-252.26199.158" />
+        <option value="bundled-js-predefined-d6986cc7102b-9c94529fcfe0-JavaScript-GO-252.26199.158" />
+      </set>
+    </attachedChunks>
+  </component>
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="默认任务">
+      <changelist id="a411a141-324f-43e2-84e0-0fbf5947d875" name="更改" comment="" />
+      <created>1758970139122</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1758970139122</updated>
+    </task>
+    <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="3" />
+  </component>
+  <component name="VgoProject">
+    <settings-migrated>true</settings-migrated>
+  </component>
+</project>
