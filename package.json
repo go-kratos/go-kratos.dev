@@ -16,5 +16,8 @@
     "starlight-auto-sidebar": "^0.1.2",
     "starlight-sidebar-topics": "^0.6.1",
     "starlight-sidebar-topics-dropdown": "^0.5.1"
+  },
+  "devDependencies": {
+    "postcss": "^8.5.6"
   }
 }

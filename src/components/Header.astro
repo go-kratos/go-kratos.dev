@@ -1,13 +1,10 @@
-
 ---
 import config from 'virtual:starlight/user-config';
-
 import LanguageSelect from 'virtual:starlight/components/LanguageSelect';
 import Search from 'virtual:starlight/components/Search';
 import SiteTitle from 'virtual:starlight/components/SiteTitle';
 import SocialIcons from 'virtual:starlight/components/SocialIcons';
 import ThemeSelect from 'virtual:starlight/components/ThemeSelect';
-
 /**
  * Render the `Search` component if Pagefind is enabled or the default search component has been overridden.
  */
@@ -18,11 +15,12 @@ const shouldRenderSearch =
 <div class="header">
 	<div class="title-wrapper sl-flex">
 		<SiteTitle />
-    <div class="nav">
-      <a class="nav-title">Kratos</a>
-      <a class="nav-title">Blades</a>
-      <a class="nav-title">Blog</a>       
-    </div>
+        <div id="main-menu" class="nav-links">
+            <a href="/">Home</a>
+            <a href="/kratos/">Kratos</a>
+            <a href="/blades/">Blades</a>
+            <a href="/blog/">Blog</a>
+        </div>
 	</div>
 	<div class="sl-flex print:hidden">
 		{shouldRenderSearch && <Search />}
@@ -53,17 +51,7 @@ const shouldRenderSearch =
 			padding: 0.25rem;
 			margin: -0.25rem;
 			min-width: 0;
-    }
-    .nav{
-      display:flex;
-      align-items:center;
-      margin: 2rem;
-      gap: 1rem;
-      color: #393939;
-    }
-    .nav-title:hover{
-      cursor: pointer;
-    }
+		}
 
 		.right-group,
 		.social-icons {

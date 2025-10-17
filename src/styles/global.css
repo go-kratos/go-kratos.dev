@@ -1,0 +1,41 @@
+:root {
+  --sl-content-width: 70rem;
+}
+
+/* nav styles */
+.nav-links {
+  width: 100%;
+  display: none;
+  margin: 0;
+}
+
+.nav-links a {
+  display: block;
+  text-align: center;
+  padding: 10px 0;
+  text-decoration: none;
+  font-size: 1.2rem;
+  font-weight: bold;
+  #color: #1f2328;
+  color: var(--sl-color-white);
+}
+
+.nav-links a:hover,
+.nav-links a:focus {
+  background: var(--sl-color-gray-5);
+}
+
+@media screen and (min-width: 636px) {
+  .nav-links {
+    margin-left: 5em;
+    display: block;
+    position: static;
+    width: auto;
+    background: none;
+  }
+
+  .nav-links a {
+    display: inline-block;
+    padding: 15px 20px;
+  }
+}
