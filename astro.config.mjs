@@ -1,7 +1,8 @@
 // @ts-check
+import {defineConfig} from 'astro/config';
 import starlight from '@astrojs/starlight';
-import { defineConfig } from 'astro/config';
-import starlightSidebarTopics from 'starlight-sidebar-topics';
+import starlightSidebarTopics from 'starlight-sidebar-topics'
+import starlightAutoSidebar from 'starlight-auto-sidebar'
 
 
 // https://astro.build/config
@@ -21,10 +22,6 @@ export default defineConfig({
                     label: '简体中文',
                     lang: 'zh-CN',
                 }
-            },
-            components: {
-              // 重写默认的 `SocialIcons` 组件。
-              Header: './src/components/Header.astro',
             },
             plugins: [
                 starlightSidebarTopics([
