@@ -1,8 +1,7 @@
 // @ts-check
-import {defineConfig} from 'astro/config';
 import starlight from '@astrojs/starlight';
-import starlightSidebarTopics from 'starlight-sidebar-topics'
-import starlightAutoSidebar from 'starlight-auto-sidebar'
+import { defineConfig } from 'astro/config';
+import starlightSidebarTopics from 'starlight-sidebar-topics';
 
 
 // https://astro.build/config
@@ -22,6 +21,10 @@ export default defineConfig({
                     label: '简体中文',
                     lang: 'zh-CN',
                 }
+            },
+            components: {
+                // 重写默认的 `Header` 组件。
+                Header: './src/components/Header.astro',
             },
             plugins: [
                 starlightSidebarTopics([
