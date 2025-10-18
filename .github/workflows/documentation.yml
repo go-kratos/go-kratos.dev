@@ -22,6 +22,8 @@ jobs:
         uses: actions/checkout@v4
       - name: Install, build, and upload your site
         uses: withastro/action@v3
+        with:
+          package-manager: pnpm@latest
           # with:
           # path: . # 存储库中 Astro 项目的根位置。（可选）
           # node-version: 20 # 用于构建站点的特定 Node.js 版本，默认为 20。（可选）
