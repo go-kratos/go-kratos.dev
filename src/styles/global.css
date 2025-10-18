@@ -5,7 +5,7 @@
 @import "tailwindcss/utilities.css" layer(utilities);
 
 :root {
-  --sl-nav-height: 3.8rem;
+  --sl-nav-height: 3.5rem;
   --sl-content-margin-inline: 1rem;
   --sl-content-pad-x: 3rem;
   --sl-sidebar-pad-x: 1.25rem;
