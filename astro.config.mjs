@@ -6,17 +6,11 @@ import starlightBlog from 'starlight-blog'
 
 import tailwindcss from "@tailwindcss/vite";
 
-const site = 'https://go-kratos.dev';
 // https://astro.build/config
 export default defineConfig({
-  site: site,
+  site: 'https://go-kratos.dev',
   base: "/",
   output: 'static',
-  markdown: {
-    shikiConfig: {
-      langAlias: { dotprompt: 'handlebars' },
-    },
-  },
   integrations: [
     starlight({
       title: "",
