@@ -18,6 +18,7 @@
   width: 100%;
   display: none;
   margin: 0;
+  overflow: hidden;
 }
 
 .nav-links a {
@@ -32,6 +33,7 @@
 
 .nav-links a:hover,
 .nav-links a:focus {
+  overflow: hidden;
   background: var(--sl-color-gray-5);
 }
 
