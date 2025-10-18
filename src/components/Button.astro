@@ -1,0 +1,42 @@
+---
+interface Props {
+  variant?: 'primary' | 'secondary';
+  href: string;
+}
+
+const { variant = 'primary', href } = Astro.props;
+
+const baseStyles = 'inline-flex items-center px-6 py-2 text-sm border rounded-full min-h-[2.75rem]';
+
+const variants = {
+  primary: 'btn-primary text-black',
+  secondary: 'btn-secondary font-light'
+} as const;
+
+const buttonClasses = `${baseStyles} ${variants[variant]}`;
+
+---
+
+<a class={buttonClasses} href={href}>
+  <slot />
+</a>
+
+<style>
+  .btn-primary {
+    background-color: var(--genkit-primary);
+    border-color: var(--genkit-primary);
+  }
+  
+  .btn-primary:hover {
+    background-color: var(--genkit-primary-hover);
+  }
+  
+  .btn-secondary {
+    background-color: var(--surface-primary);
+    color: var(--text-primary);
+  }
+  
+  .btn-secondary:hover {
+    background-color: var(--surface-elevated);
+  }
+</style>

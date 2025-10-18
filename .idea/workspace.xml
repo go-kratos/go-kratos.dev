@@ -1,0 +1,202 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="ALL" />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="a411a141-324f-43e2-84e0-0fbf5947d875" name="更改" comment="feat: use astro">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/astro.config.mjs" beforeDir="false" afterPath="$PROJECT_DIR$/astro.config.mjs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/package.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pnpm-lock.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/pnpm-lock.yaml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/content.config.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/content.config.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/content/docs/docs/blades/index.md" beforeDir="false" afterPath="$PROJECT_DIR$/src/content/docs/zh-cn/docs/blades/index.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/content/docs/docs/community/_category_.yml" beforeDir="false" afterPath="$PROJECT_DIR$/src/content/docs/zh-cn/docs/community/_category_.yml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/content/docs/docs/community/contribution.md" beforeDir="false" afterPath="$PROJECT_DIR$/src/content/docs/zh-cn/docs/community/contribution.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/content/docs/docs/community/contributors.md" beforeDir="false" afterPath="$PROJECT_DIR$/src/content/docs/zh-cn/docs/community/contributors.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/content/docs/docs/community/documentation.md" beforeDir="false" afterPath="$PROJECT_DIR$/src/content/docs/zh-cn/docs/community/documentation.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/content/docs/docs/community/enterprise.md" beforeDir="false" afterPath="$PROJECT_DIR$/src/content/docs/zh-cn/docs/community/enterprise.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/content/docs/docs/component/api.md" beforeDir="false" afterPath="$PROJECT_DIR$/src/content/docs/zh-cn/docs/component/api.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/content/docs/docs/component/config.md" beforeDir="false" afterPath="$PROJECT_DIR$/src/content/docs/zh-cn/docs/component/config.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/content/docs/docs/component/encoding.md" beforeDir="false" afterPath="$PROJECT_DIR$/src/content/docs/zh-cn/docs/component/encoding.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/content/docs/docs/component/errors.md" beforeDir="false" afterPath="$PROJECT_DIR$/src/content/docs/zh-cn/docs/component/errors.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/content/docs/docs/component/log.md" beforeDir="false" afterPath="$PROJECT_DIR$/src/content/docs/zh-cn/docs/component/log.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/content/docs/docs/component/metadata.md" beforeDir="false" afterPath="$PROJECT_DIR$/src/content/docs/zh-cn/docs/component/metadata.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/content/docs/docs/component/metrics.md" beforeDir="false" afterPath="$PROJECT_DIR$/src/content/docs/zh-cn/docs/component/metrics.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/content/docs/docs/component/middleware/auth.md" beforeDir="false" afterPath="$PROJECT_DIR$/src/content/docs/zh-cn/docs/component/middleware/auth.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/content/docs/docs/component/middleware/circuitbreaker.md" beforeDir="false" afterPath="$PROJECT_DIR$/src/content/docs/zh-cn/docs/component/middleware/circuitbreaker.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/content/docs/docs/component/middleware/logging.md" beforeDir="false" afterPath="$PROJECT_DIR$/src/content/docs/zh-cn/docs/component/middleware/logging.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/content/docs/docs/component/middleware/metrics.md" beforeDir="false" afterPath="$PROJECT_DIR$/src/content/docs/zh-cn/docs/component/middleware/metrics.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/content/docs/docs/component/middleware/overview.md" beforeDir="false" afterPath="$PROJECT_DIR$/src/content/docs/zh-cn/docs/component/middleware/overview.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/content/docs/docs/component/middleware/ratelimit.md" beforeDir="false" afterPath="$PROJECT_DIR$/src/content/docs/zh-cn/docs/component/middleware/ratelimit.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/content/docs/docs/component/middleware/recovery.md" beforeDir="false" afterPath="$PROJECT_DIR$/src/content/docs/zh-cn/docs/component/middleware/recovery.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/content/docs/docs/component/middleware/tracing.md" beforeDir="false" afterPath="$PROJECT_DIR$/src/content/docs/zh-cn/docs/component/middleware/tracing.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/content/docs/docs/component/middleware/validate.md" beforeDir="false" afterPath="$PROJECT_DIR$/src/content/docs/zh-cn/docs/component/middleware/validate.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/content/docs/docs/component/registry.md" beforeDir="false" afterPath="$PROJECT_DIR$/src/content/docs/zh-cn/docs/component/registry.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/content/docs/docs/component/selector.md" beforeDir="false" afterPath="$PROJECT_DIR$/src/content/docs/zh-cn/docs/component/selector.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/content/docs/docs/component/transport/_category_.yml" beforeDir="false" afterPath="$PROJECT_DIR$/src/content/docs/zh-cn/docs/component/transport/_category_.yml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/content/docs/docs/component/transport/grpc.md" beforeDir="false" afterPath="$PROJECT_DIR$/src/content/docs/zh-cn/docs/component/transport/grpc.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/content/docs/docs/component/transport/http.md" beforeDir="false" afterPath="$PROJECT_DIR$/src/content/docs/zh-cn/docs/component/transport/http.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/content/docs/docs/component/transport/overview.md" beforeDir="false" afterPath="$PROJECT_DIR$/src/content/docs/zh-cn/docs/component/transport/overview.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/content/docs/docs/devops/docker.md" beforeDir="false" afterPath="$PROJECT_DIR$/src/content/docs/zh-cn/docs/devops/docker.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/content/docs/docs/getting-started/examples.md" beforeDir="false" afterPath="$PROJECT_DIR$/src/content/docs/zh-cn/docs/getting-started/examples.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/content/docs/docs/getting-started/plugin.md" beforeDir="false" afterPath="$PROJECT_DIR$/src/content/docs/zh-cn/docs/getting-started/plugin.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/content/docs/docs/getting-started/start.md" beforeDir="false" afterPath="$PROJECT_DIR$/src/content/docs/zh-cn/docs/getting-started/start.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/content/docs/docs/getting-started/usage.md" beforeDir="false" afterPath="$PROJECT_DIR$/src/content/docs/zh-cn/docs/getting-started/usage.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/content/docs/docs/guide/api-protobuf.md" beforeDir="false" afterPath="$PROJECT_DIR$/src/content/docs/zh-cn/docs/guide/api-protobuf.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/content/docs/docs/guide/ent.md" beforeDir="false" afterPath="$PROJECT_DIR$/src/content/docs/zh-cn/docs/guide/ent.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/content/docs/docs/guide/openapi.md" beforeDir="false" afterPath="$PROJECT_DIR$/src/content/docs/zh-cn/docs/guide/openapi.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/content/docs/docs/guide/wire.md" beforeDir="false" afterPath="$PROJECT_DIR$/src/content/docs/zh-cn/docs/guide/wire.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/content/docs/docs/index.md" beforeDir="false" afterPath="$PROJECT_DIR$/src/content/docs/zh-cn/docs/index.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/content/docs/docs/intro/design.md" beforeDir="false" afterPath="$PROJECT_DIR$/src/content/docs/zh-cn/docs/intro/design.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/content/docs/docs/intro/faq.md" beforeDir="false" afterPath="$PROJECT_DIR$/src/content/docs/zh-cn/docs/intro/faq.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/content/docs/docs/intro/index.md" beforeDir="false" afterPath="$PROJECT_DIR$/src/content/docs/zh-cn/docs/intro/index.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/content/docs/docs/intro/layout.md" beforeDir="false" afterPath="$PROJECT_DIR$/src/content/docs/zh-cn/docs/intro/layout.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/content/docs/en/docs/blades/index.md" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/content/docs/en/docs/community/contribution.md" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/content/docs/en/docs/community/contributors.md" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/content/docs/en/docs/community/documentation.md" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/content/docs/en/docs/component/api.md" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/content/docs/en/docs/component/config.md" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/content/docs/en/docs/component/encoding.md" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/content/docs/en/docs/component/errors.md" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/content/docs/en/docs/component/log.md" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/content/docs/en/docs/component/metadata.md" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/content/docs/en/docs/component/metrics.md" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/content/docs/en/docs/component/middleware/auth.md" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/content/docs/en/docs/component/middleware/circuitbreaker.md" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/content/docs/en/docs/component/middleware/logging.md" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/content/docs/en/docs/component/middleware/metrics.md" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/content/docs/en/docs/component/middleware/overview.md" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/content/docs/en/docs/component/middleware/ratelimit.md" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/content/docs/en/docs/component/middleware/recovery.md" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/content/docs/en/docs/component/middleware/tracing.md" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/content/docs/en/docs/component/middleware/validate.md" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/content/docs/en/docs/component/registry.md" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/content/docs/en/docs/component/selector.md" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/content/docs/en/docs/component/transport/grpc.md" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/content/docs/en/docs/component/transport/http.md" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/content/docs/en/docs/component/transport/overview.md" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/content/docs/en/docs/devops/docker.md" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/content/docs/en/docs/getting-started/examples.md" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/content/docs/en/docs/getting-started/plugin.md" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/content/docs/en/docs/getting-started/start.md" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/content/docs/en/docs/getting-started/usage.md" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/content/docs/en/docs/guide/api-protobuf.md" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/content/docs/en/docs/guide/ent.md" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/content/docs/en/docs/guide/openapi.md" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/content/docs/en/docs/guide/wire.md" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/content/docs/en/docs/intro/_meta.yml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/content/docs/en/docs/intro/design.md" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/content/docs/en/docs/intro/faq.md" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/content/docs/en/docs/intro/index.md" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/content/docs/en/docs/intro/layout.md" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/content/docs/zh-cn/kratos/index.md" beforeDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Astro Component" />
+      </list>
+    </option>
+  </component>
+  <component name="GOROOT" url="file://$PROJECT_DIR$/../go/pkg/mod/golang.org/toolchain@v0.0.1-go1.24.6.darwin-arm64" />
+  <component name="Git.Settings">
+    <option name="RECENT_BRANCH_BY_REPOSITORY">
+      <map>
+        <entry key="$PROJECT_DIR$" value="main" />
+      </map>
+    </option>
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="GitHubPullRequestSearchHistory">{
+  &quot;lastFilter&quot;: {
+    &quot;state&quot;: &quot;OPEN&quot;,
+    &quot;assignee&quot;: &quot;shenqidebaozi&quot;
+  }
+}</component>
+  <component name="GithubPullRequestsUISettings">{
+  &quot;selectedUrlAndAccountId&quot;: {
+    &quot;url&quot;: &quot;git@github.com:go-kratos/go-kratos.dev.git&quot;,
+    &quot;accountId&quot;: &quot;e61059a1-59c7-4855-be0c-db5e8563da50&quot;
+  }
+}</component>
+  <component name="ProjectColorInfo">{
+  &quot;associatedIndex&quot;: 4
+}</component>
+  <component name="ProjectId" id="33HNfMDG8n14oDDpLCdbHlH7ylQ" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "ModuleVcsDetector.initialDetectionPerformed": "true",
+    "RunOnceActivity.GoLinterPluginOnboarding": "true",
+    "RunOnceActivity.GoLinterPluginStorageMigration": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252": "true",
+    "RunOnceActivity.git.unshallow": "true",
+    "RunOnceActivity.go.formatter.settings.were.checked": "true",
+    "RunOnceActivity.go.migrated.go.modules.settings": "true",
+    "RunOnceActivity.go.modules.go.list.on.any.changes.was.set": "true",
+    "git-widget-placeholder": "astro 上的 #230",
+    "go.import.settings.migrated": "true",
+    "go.sdk.automatically.set": "true",
+    "last_opened_file_path": "/Users/baozhecheng/go-kratos.dev/src/assets/images",
+    "node.js.detected.package.eslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "nodejs_package_manager_path": "yarn",
+    "ts.external.directory.path": "/Users/baozhecheng/Applications/GoLand.app/Contents/plugins/javascript-plugin/jsLanguageServicesImpl/external"
+  }
+}]]></component>
+  <component name="RecentsManager">
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/src/assets/images" />
+      <recent name="$PROJECT_DIR$/src/content/docs" />
+      <recent name="$PROJECT_DIR$/src/content/docs/zh-cn/blog/kratos" />
+      <recent name="$PROJECT_DIR$/src/content/docs/blog/kratos" />
+      <recent name="$PROJECT_DIR$/src/content/docs/blog" />
+    </key>
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/src/content/docs" />
+      <recent name="$PROJECT_DIR$/src/content/docs/docs" />
+      <recent name="$PROJECT_DIR$/src/content/docs/zh-cn/docs" />
+      <recent name="$PROJECT_DIR$/src/content/docs/docs/zh-CN" />
+      <recent name="$PROJECT_DIR$/src/content/docs/en/docs" />
+    </key>
+  </component>
+  <component name="SharedIndexes">
+    <attachedChunks>
+      <set>
+        <option value="bundled-gosdk-f466f9b0953e-146d08934cbf-org.jetbrains.plugins.go.sharedIndexes.bundled-GO-252.26830.102" />
+        <option value="bundled-js-predefined-d6986cc7102b-3aa1da707db6-JavaScript-GO-252.26830.102" />
+      </set>
+    </attachedChunks>
+  </component>
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="默认任务">
+      <changelist id="a411a141-324f-43e2-84e0-0fbf5947d875" name="更改" comment="" />
+      <created>1758970139122</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1758970139122</updated>
+    </task>
+    <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="3" />
+  </component>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="feat: use astro" />
+    <option name="LAST_COMMIT_MESSAGE" value="feat: use astro" />
+  </component>
+  <component name="VgoProject">
+    <settings-migrated>true</settings-migrated>
+  </component>
+</project>

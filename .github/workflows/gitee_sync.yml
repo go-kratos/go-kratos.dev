@@ -15,13 +15,13 @@ jobs:
       - name: Mirror Github to Gitee
         uses: Yikun/hub-mirror-action@v1.3
         with:
-          src: github/go-kratos
-          dst: gitee/go-kratos
+          src: github/go-docs
+          dst: gitee/go-docs
           dst_key: ${{ secrets.GITEE_PRIVATE_KEY }}
           dst_token: ${{ secrets.GITEE_TOKEN }}
           account_type: org
           timeout: 600
           debug: true
           force_update: true
-          mappings: "go-kratos.dev=>go-kratos"
-          static_list: "go-kratos.dev"
+          mappings: "go-docs.dev=>go-docs"
+          static_list: "go-docs.dev"
