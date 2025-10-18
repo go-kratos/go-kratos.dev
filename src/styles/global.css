@@ -4,11 +4,13 @@
 @import "tailwindcss/theme.css" layer(theme);
 @import "tailwindcss/utilities.css" layer(utilities);
 
-/*
 :root {
-  --sl-content-width: 70rem;
+  --sl-content-margin-inline: 1rem;
+  --sl-content-pad-x: 3rem;
+  --sl-sidebar-pad-x: 1.25rem;
+  --sl-sidebar-width: 20rem;
+  --sl-content-width: 54rem;
 }
-*/
 
 /* nav styles */
 .nav-links {
