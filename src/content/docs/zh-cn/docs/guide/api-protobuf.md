@@ -24,7 +24,7 @@ API 接口可以定义到项目，或者在统一仓库中管理 Proto，类似 
 项目中定义 Proto，以 api 为包名根目录：
 
 ```bash
-docs-demo：
+kratos-demo：
 |____api // 服务API定义
 | |____kratos
 | | |____demo
@@ -35,7 +35,7 @@ docs-demo：
 在统一仓库中管理 Proto，以仓库为包名根目录：
 
 ```bash
-docs-apis:
+kratos-apis:
 |____api // 服务API定义
 | |____kratos
 | | |____demo
@@ -61,14 +61,14 @@ package <package_name>.<version>;
 ### go_package
 
 ```protobuf
-option go_package = "github.com/go-docs/docs/<package_name>;<version>";
+option go_package = "github.com/go-kratos/kratos/<package_name>;<version>";
 ```
 
 ### java_package
 
 ```protobuf
 option java_multiple_files = true;
-option java_package = "com.github.docs.<package_name>.<version>";
+option java_package = "com.github.kratos.<package_name>.<version>";
 ```
 
 ### objc_class_prefix
@@ -186,9 +186,9 @@ syntax = "proto3";
 package kratos.demo.v1;
 
 // 多语言特定包名，用于源代码引用
-option go_package = "github.com/go-docs/docs/demo/v1;v1";   // ';' 后面的 <version> 是为了生成对应代码
+option go_package = "github.com/go-kratos/kratos/demo/v1;v1";   // ';' 后面的 <version> 是为了生成对应代码
 option java_multiple_files = true;
-option java_package = "com.github.docs.demo.v1";
+option java_package = "com.github.kratos.demo.v1";
 option objc_class_prefix = "KratosDemoV1";
 
 // 描述该服务的信息

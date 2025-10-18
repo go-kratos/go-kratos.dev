@@ -16,7 +16,7 @@ keywords:
 ### 安装
 
 ```bash
-go install github.com/go-docs/docs/cmd/docs/v2@latest
+go install github.com/go-kratos/kratos/cmd/kratos/v2@latest
 ```
 
 ### 创建项目
@@ -24,33 +24,33 @@ go install github.com/go-docs/docs/cmd/docs/v2@latest
 通过 kratos 命令创建项目模板：
 
 ```bash
-docs new helloworld
+kratos new helloworld
 ```
 
 使用 `-r` 指定源
 
 ```bash
 # 国内拉取失败可使用gitee源
-docs new helloworld -r https://gitee.com/go-kratos/kratos-layout.git
+kratos new helloworld -r https://gitee.com/go-kratos/kratos-layout.git
 # 亦可使用自定义的模板
-docs new helloworld -r xxx-layout.git
+kratos new helloworld -r xxx-layout.git
 # 同时也可以通过环境变量指定源
 KRATOS_LAYOUT_REPO=xxx-layout.git
-docs new helloworld
+kratos new helloworld
 ```
 
 使用 `-b` 指定分支
 
 ```bash
-docs new helloworld -b main
+kratos new helloworld -b main
 ```
 
 使用 `--nomod` 添加服务，共用 `go.mod` ，大仓模式
 
 ```bash
-docs new helloworld
+kratos new helloworld
 cd helloworld
-docs new app/user --nomod
+kratos new app/user --nomod
 ```
 
 输出:
@@ -152,7 +152,7 @@ docs new app/user --nomod
 > kratos-layout 项目中对 proto 文件进行了版本划分，放在了 v1 子目录下
 
 ```bash
-docs proto add api/helloworld/v1/demo.proto
+kratos proto add api/helloworld/v1/demo.proto
 ```
 
 输出:
@@ -198,8 +198,8 @@ message ListDemoReply {}
 # 可以直接通过 make 命令生成
 make api
 
-# 或使用 docs cli 进行生成
-docs proto client api/helloworld/v1/demo.proto
+# 或使用 kratos cli 进行生成
+kratos proto client api/helloworld/v1/demo.proto
 ```
 
 会在 proto 文件同目录下生成:
@@ -218,7 +218,7 @@ api/helloworld/v1/demo_http.pb.go
 使用 `-t` 指定生成目录
 
 ```bash
-docs proto server api/helloworld/v1/demo.proto -t internal/service
+kratos proto server api/helloworld/v1/demo.proto -t internal/service
 ```
 
 输出:  
@@ -263,7 +263,7 @@ func (s *DemoService) ListDemo(ctx context.Context, req *pb.ListDemoRequest) (*p
 - 如子目录下有多个项目则出现选择菜单
 
 ```bash
-docs run
+kratos run
 ```
 
 ### 查看版本
@@ -271,13 +271,13 @@ docs run
 查看工具版本：
 
 ```bash
-docs -v
+kratos -v
 ```
 
 输出:
 
 ```bash
-docs version v2.2.0
+kratos version v2.2.0
 ```
 
 ### 工具升级
@@ -288,20 +288,20 @@ docs version v2.2.0
 - protoc 相关的生成插件
 
 ```bash
-docs upgrade
+kratos upgrade
 ```
 
 ### 更新日志
 
 ```bash
 # 等同于打印 https://github.com/go-kratos/kratos/releases/latest 的版本更新日志
-docs changelog
+kratos changelog
 
 # 打印指定版本更新日志
-docs changelog v2.1.4
+kratos changelog v2.1.4
 
 # 查看从 latest 版本发布后至今的更新日志
-docs changelog dev
+kratos changelog dev
 ```
 
 ### 查看帮助
@@ -309,6 +309,6 @@ docs changelog dev
 任何命令下加 `-h` 查看帮助
 
 ```bash
-docs -h
-docs new -h
+kratos -h
+kratos new -h
 ```

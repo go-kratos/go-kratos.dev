@@ -51,14 +51,14 @@ package <package_name>.<version>;
 ### go_package
 
 ```protobuf
-option go_package = "github.com/go-docs/docs/<package_name>;<version>";
+option go_package = "github.com/go-kratos/kratos/<package_name>;<version>";
 ```
 
 ### java_package
 
 ```protobuf
 option java_multiple_files = true;
-option java_package = "com.github.docs.<package_name>.<version>";
+option java_package = "com.github.kratos.<package_name>.<version>";
 ```
 
 ### objc_class_prefix
@@ -173,9 +173,9 @@ syntax = "proto3";
 package kratos.demo.v1;
 
 // specifying the package names for importing from multiple programming language
-option go_package = "github.com/go-docs/docs/demo/v1;v1";   //the name after ; is for relative code generation
+option go_package = "github.com/go-kratos/kratos/demo/v1;v1";   //the name after ; is for relative code generation
 option java_multiple_files = true;
-option java_package = "com.github.docs.demo.v1";
+option java_package = "com.github.kratos.demo.v1";
 option objc_class_prefix = "KratosDemoV1";
 
 // Definition of the service

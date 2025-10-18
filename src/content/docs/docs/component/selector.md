@@ -46,8 +46,8 @@ Supported implementations:
 ### HTTP Client
 
 ```go
-import "github.com/go-docs/docs/v2/selector/wrr"
-import "github.com/go-docs/docs/v2/selector/filter"
+import "github.com/go-kratos/kratos/v2/selector/wrr"
+import "github.com/go-kratos/kratos/v2/selector/filter"
 
 // Create a route Filter: filter instances with version number "2.0.0".
 filter := filter.Version("2.0.0")
@@ -64,8 +64,8 @@ hConn, err := http.NewClient(
 ### gRPC Client
 
 ```go
-import "github.com/go-docs/docs/v2/selector/wrr"
-import "github.com/go-docs/docs/v2/selector/filter"
+import "github.com/go-kratos/kratos/v2/selector/wrr"
+import "github.com/go-kratos/kratos/v2/selector/filter"
 
 // Create a route Filter: filter instances with version number "2.0.0".
 filter := filter.Version("2.0.0")

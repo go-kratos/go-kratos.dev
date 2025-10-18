@@ -170,7 +170,7 @@ func Listener(lis net.Listener) ServerOption {
 ```go
 hs := http.NewServer()
 app := kratos.New(
-  kratos.Name("docs"),
+  kratos.Name("kratos"),
   kratos.Version("v1.0.0"),
   kratos.Server(hs),
 )

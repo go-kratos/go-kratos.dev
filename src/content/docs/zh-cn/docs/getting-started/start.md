@@ -33,18 +33,18 @@ kratos 是与 Kratos 框架配套的脚手架工具，kratos 能够
 - 使用开发过程中常用的命令
 - 极大提高开发效率，减轻心智负担
 
-详细使用请参照 [CLI工具](usage.md)
+详细使用请参照 [CLI工具](02-usage.md)
 
-为使接下来的步骤能够顺利进行，需要 [安装 kratos 命令工具](usage.md#安装)
+为使接下来的步骤能够顺利进行，需要 [安装 kratos 命令工具](02-usage.md#安装)
 
 
 ### 创建项目
 ```bash
 # 使用默认模板创建项目
-docs new helloworld
+kratos new helloworld
 
 # 如在国内环境拉取失败, 可 -r 指定源
-docs new helloworld -r https://gitee.com/go-kratos/kratos-layout.git
+kratos new helloworld -r https://gitee.com/go-kratos/kratos-layout.git
 
 # 进入项目目录
 cd helloworld
@@ -67,7 +67,7 @@ go generate ./...
 #### 运行
 ```bash
 # 运行项目
-docs run
+kratos run
 
 # 输出
 INFO msg=config loaded: config.yaml format: yaml # 默认载入 configs/config.yaml 配置文件

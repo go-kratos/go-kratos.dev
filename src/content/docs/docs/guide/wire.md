@@ -63,7 +63,7 @@ cmd
 -wire.go
 -wire_gen.go
 
-// main.go creates the docs application for lifecycle management.
+// main.go creates the kratos application for lifecycle management.
 func newApp(logger log.Logger, hs *http.Server, gs *grpc.Server, greeter *service.GreeterService) *kratos.App {
     pb.RegisterGreeterServer(gs, greeter)
     pb.RegisterGreeterHTTPServer(hs, greeter)

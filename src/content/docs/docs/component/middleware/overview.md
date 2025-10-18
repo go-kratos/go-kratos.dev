@@ -84,8 +84,8 @@ Example:
 import (
     "context"
 
-    "github.com/go-docs/docs/v2/middleware"
-    "github.com/go-docs/docs/v2/transport"
+    "github.com/go-kratos/kratos/v2/middleware"
+    "github.com/go-kratos/kratos/v2/transport"
 )
 
 func Middleware1() middleware.Middleware {
@@ -120,13 +120,13 @@ Matching rule (multi parameter):
 **http server**
 
 ```go
-import "github.com/go-docs/docs/v2/middleware/selector"
+import "github.com/go-kratos/kratos/v2/middleware/selector"
 
 http.Middleware(
             selector.Server(recovery.Recovery(), tracing.Server(),testMiddleware).
-                Path("/hello.Update/UpdateUser", "/hello.docs/SayHello").
+                Path("/hello.Update/UpdateUser", "/hello.kratos/SayHello").
                 Regex(`/test.hello/Get[0-9]+`).
-                Prefix("/docs.", "/go-docs.", "/helloworld.Greeter/").
+                Prefix("/kratos.", "/go-kratos.", "/helloworld.Greeter/").
                 Build(),
         )
 ```
@@ -134,22 +134,22 @@ http.Middleware(
 **http client**
 
 ```go
-import "github.com/go-docs/docs/v2/middleware/selector"
+import "github.com/go-kratos/kratos/v2/middleware/selector"
 
 http.WithMiddleware(
             selector.Client(recovery.Recovery(), tracing.Server(),testMiddleware).
-                Path("/hello.Update/UpdateUser", "/hello.docs/SayHello").
+                Path("/hello.Update/UpdateUser", "/hello.kratos/SayHello").
                 Regex(`/test.hello/Get[0-9]+`).
-                Prefix("/docs.", "/go-docs.", "/helloworld.Greeter/").
+                Prefix("/kratos.", "/go-kratos.", "/helloworld.Greeter/").
                 Match(func(ctx context.Context,operation string) bool {
-                    if strings.HasPrefix(operation, "/go-docs.dev") || strings.HasSuffix(operation, "world") {
+                    if strings.HasPrefix(operation, "/go-kratos.dev") || strings.HasSuffix(operation, "world") {
                         return true
                     }
                     tr, ok := transport.FromClientContext(ctx)
                     if !ok {
                         return false
 				    }
-                    if tr.RequestHeader().Get("go-docs") == "docs" {
+                    if tr.RequestHeader().Get("go-kratos") == "kratos" {
 					    return true
 				    }
                     return false
@@ -160,13 +160,13 @@ http.WithMiddleware(
 **grpc server**
 
 ```go
-import "github.com/go-docs/docs/v2/middleware/selector"
+import "github.com/go-kratos/kratos/v2/middleware/selector"
 
 grpc.Middleware(
             selector.Server(recovery.Recovery(), tracing.Server(),testMiddleware).
-                Path("/hello.Update/UpdateUser", "/hello.docs/SayHello").
+                Path("/hello.Update/UpdateUser", "/hello.kratos/SayHello").
                 Regex(`/test.hello/Get[0-9]+`).
-                Prefix("/docs.", "/go-docs.", "/helloworld.Greeter/").
+                Prefix("/kratos.", "/go-kratos.", "/helloworld.Greeter/").
                 Build(),
         )
 ```
@@ -174,13 +174,13 @@ grpc.Middleware(
 **grpc client**
 
 ```go
-import "github.com/go-docs/docs/v2/middleware/selector"
+import "github.com/go-kratos/kratos/v2/middleware/selector"
 
 grpc.Middleware(
             selector.Client(recovery.Recovery(), tracing.Server(),testMiddleware).
-                Path("/hello.Update/UpdateUser", "/hello.docs/SayHello").
+                Path("/hello.Update/UpdateUser", "/hello.kratos/SayHello").
                 Regex(`/test.hello/Get[0-9]+`).
-                Prefix("/docs.", "/go-docs.", "/helloworld.Greeter/").
+                Prefix("/kratos.", "/go-kratos.", "/helloworld.Greeter/").
                 Build(),
         )
 ```
@@ -202,7 +202,7 @@ package helloworld;
 
 import "google/api/annotations.proto";
 
-option go_package = "github.com/go-docs/examples/helloworld/helloworld";
+option go_package = "github.com/go-kratos/examples/helloworld/helloworld";
 
 // The greeting service definition.
 service Greeter {

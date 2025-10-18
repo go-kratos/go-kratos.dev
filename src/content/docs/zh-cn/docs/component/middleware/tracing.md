@@ -79,7 +79,7 @@ func initTracer(endpoint string) error {
 		tracesdk.WithBatcher(exporter),
 		// 在资源中记录有关此应用程序的信息
 		tracesdk.WithResource(resource.NewSchemaless(
-			semconv.ServiceNameKey.String("docs-trace"),
+			semconv.ServiceNameKey.String("kratos-trace"),
 			attribute.String("exporter", "otlp"),
 			attribute.Float64("float", 312.23),
 		)),
@@ -141,7 +141,7 @@ func initTracer(endpoint string) error {
 		tracesdk.WithBatcher(exporter),
 		// 在资源中记录有关此应用程序的信息
 		tracesdk.WithResource(resource.NewSchemaless(
-			semconv.ServiceNameKey.String("docs-trace"),
+			semconv.ServiceNameKey.String("kratos-trace"),
 			attribute.String("exporter", "otlp"),
 			attribute.Float64("float", 312.23),
 		)),

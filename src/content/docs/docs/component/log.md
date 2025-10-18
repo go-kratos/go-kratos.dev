@@ -1,7 +1,7 @@
 ---
 id: log
 title: Logger
-description: Kratos contains only the simplest Log interface for business-adapted log access. When your business logic needs to use custom logs inside the docs framework, you only need to implement the Log method simply.
+description: Kratos contains only the simplest Log interface for business-adapted log access. When your business logic needs to use custom logs inside the kratos framework, you only need to implement the Log method simply.
 keywords:
   - Go
   - Kratos
@@ -115,7 +115,7 @@ l.Log(log.LevelInfo, "file_key", "file_value")
 First, you need to create a Logger, here you can choose: the built-in std print to standard output, or find an already implemented adaptation under contrib, or use your own implemented Logger.
 
 ```go
-import "github.com/go-docs/docs/v2/log"
+import "github.com/go-kratos/kratos/v2/log"
 
 h := log.NewHelper(yourlogger)
 
@@ -126,8 +126,8 @@ h := log.NewHelper(log.DefaultLogger)
 Or find a plugin in [contrib/log](https://github.com/go-kratos/kratos/tree/main/contrib/log) to use, for example, here we want to use fluentd:
 
 ```go
-import "github.com/go-docs/docs/contrib/log/fluent/v2"
-import "github.com/go-docs/docs/v2/log"
+import "github.com/go-kratos/kratos/contrib/log/fluent/v2"
+import "github.com/go-kratos/kratos/v2/log"
 
 logger, err := fluent.NewLogger("unix:///var/run/fluent/fluent.sock")
 if err != nil {
@@ -244,7 +244,7 @@ h := NewHelper(
 h.Log(log.LevelDebug, "msg", "test debug")
 h.Info("hello")
 h.Infow("password", "123456")
-h.Infow("username", "docs")
+h.Infow("username", "kratos")
 h.Warn("warn log")
 ```
 
@@ -266,7 +266,7 @@ The code of this middleware also clearly shows how to obtain and process request
 If you are in a project and just want to use a simple log function that can be printed at any time in the global, we provide a global log.
 
 ```go
-import "github.com/go-docs/docs/v2/log"
+import "github.com/go-kratos/kratos/v2/log"
 
 log.Info("info")
 log.Warn("warn")
@@ -283,8 +283,8 @@ import (
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
 
-	kratoszap "github.com/go-docs/docs/contrib/log/zap/v2"
-	"github.com/go-docs/docs/v2/log"
+	kratoszap "github.com/go-kratos/kratos/contrib/log/zap/v2"
+	"github.com/go-kratos/kratos/v2/log"
 )
 
 f, err := os.OpenFile("test.log", os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0666)

@@ -67,7 +67,7 @@ prometheus.MustRegister(_metricSeconds, _metricRequests)
 
 ```go
 import (
-	prom "github.com/go-docs/docs/contrib/metrics/prometheus/v2"
+	prom "github.com/go-kratos/kratos/contrib/metrics/prometheus/v2"
 )
 
 // grpc service
@@ -128,7 +128,7 @@ kratos 从 [v2.8.0](https://github.com/go-kratos/kratos/releases/tag/v2.8.0) 开
 #### 使用 prometheus
 ```go
 import (
-	"github.com/go-docs/docs/v2/middleware/metrics"
+	"github.com/go-kratos/kratos/v2/middleware/metrics"
 	"go.opentelemetry.io/otel/exporters/prometheus"
 	"go.opentelemetry.io/otel/metric"
 	sdkmetric "go.opentelemetry.io/otel/sdk/metric"

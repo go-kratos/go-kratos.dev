@@ -6,40 +6,40 @@ title: Usage
 ## Installation
 
 ```bash
-go install github.com/go-docs/docs/cmd/docs/v2@latest
+go install github.com/go-kratos/kratos/cmd/kratos/v2@latest
 ```
 
 ## Project Creation
 
 To create a new project:
 ```bash
-docs new helloworld
+kratos new helloworld
 ```
 
 Use `-r` to specify the source
 
 ```bash
 # If pull fails in China, you can use gitee source.
-docs new helloworld -r https://gitee.com/go-kratos/kratos-layout.git
+kratos new helloworld -r https://gitee.com/go-kratos/kratos-layout.git
 # You can also use custom templates
-docs new helloworld -r xxx-layout.git
+kratos new helloworld -r xxx-layout.git
 # You can also specify the source through the environment variable
 KRATOS_LAYOUT_REPO=xxx-layout.git
-docs new helloworld
+kratos new helloworld
 ```
 
 Use `-b` to specify the branch
 
 ```bash
-docs new helloworld -b main
+kratos new helloworld -b main
 ```
 
 Use `--nomod` to add services and working together using ` go.mod `, large warehouse mode
 
 ```bash
-docs new helloworld
+kratos new helloworld
 cd helloworld
-docs new app/user --nomod
+kratos new app/user --nomod
 ```
 
 Output:
@@ -139,7 +139,7 @@ Output:
 ## Adding Proto files
 
 ```bash
-docs proto add api/helloworld/demo.proto
+kratos proto add api/helloworld/demo.proto
 ```
 Output:
 
@@ -180,7 +180,7 @@ message ListDemoReply {}
 
 ## Generate Proto Codes
 ```bash
-docs proto client api/helloworld/demo.proto
+kratos proto client api/helloworld/demo.proto
 ```
 Output:
 ```bash
@@ -193,7 +193,7 @@ api/helloworld/demo_http.pb.go
 ## Generate Service Codes
 kratos can generate the bootstrap codes from the proto file.
 ```bash
-docs proto server api/helloworld/demo.proto -t internal/service
+kratos proto server api/helloworld/demo.proto -t internal/service
 ```
 Output:
 internal/service/demo.go
@@ -237,7 +237,7 @@ func (s *DemoService) ListDemo(ctx context.Context, req *pb.ListDemoRequest) (*p
 - If there are multiple items under the subdirectory, the selection menu appears
 
 ```bash
-docs run
+kratos run
 ```
 
 ## View Version
@@ -245,7 +245,7 @@ docs run
 To show the tool version
 
 ```bash
-docs -v
+kratos -v
 ```
 
 Output:
@@ -262,20 +262,20 @@ The following tools will be upgraded
 - Protoc related build plugins
 
 ```bash
-docs upgrade
+kratos upgrade
 ```
 
 ## Changelog
 
 ```bash
 # Equivalent to printing the version changelog of https://github.com/go-kratos/kratos/releases/latest 
-docs changelog
+kratos changelog
 
 # Print the update log of the specified version
-docs changelog v2.1.4
+kratos changelog v2.1.4
 
 # View the changelog since the latest release to now
-docs changelog dev
+kratos changelog dev
 ```
 
 ## View help
@@ -283,6 +283,6 @@ docs changelog dev
 Add `-h` to any command for help
 
 ```bash
-docs -h
-docs new -h
+kratos -h
+kratos new -h
 ```

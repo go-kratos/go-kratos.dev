@@ -71,7 +71,7 @@ func NewServer(opts ...ServerOption) *Server {
 	for _, o := range opts {
 		o(srv)
 	}
-  	// docs middleware 转换成 grpc 拦截器，并处理一些细节
+  	// kratos middleware 转换成 grpc 拦截器，并处理一些细节
 	unaryInts := []grpc.UnaryServerInterceptor{
 		srv.unaryServerInterceptor(),
 	}
@@ -160,7 +160,7 @@ func (s *Server) unaryServerInterceptor() grpc.UnaryServerInterceptor {
 ```go
 gs := grpc.NewServer()
 app := kratos.New(
-	kratos.Name("docs"),
+	kratos.Name("kratos"),
 	kratos.Version("v1.0.0"),
 	kratos.Server(gs),
 )
@@ -239,7 +239,7 @@ func dial(ctx context.Context, insecure bool, opts ...ClientOption) (*grpc.Clien
 	for _, o := range opts {
 		o(&options)
 	}
-	// 将 docs 中间件转化成 grpc 拦截器
+	// 将 kratos 中间件转化成 grpc 拦截器
 	ints := []grpc.UnaryClientInterceptor{
 		unaryClientInterceptor(options.middleware, options.timeout, options.filters),
 	}

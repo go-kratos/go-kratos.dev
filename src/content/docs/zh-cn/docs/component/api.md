@@ -30,9 +30,9 @@ package helloworld.v1;
 
 import "google/api/annotations.proto";
 
-option go_package = "github.com/go-docs/service-layout/api/helloworld/v1;v1";
+option go_package = "github.com/go-kratos/service-layout/api/helloworld/v1;v1";
 option java_multiple_files = true;
-option java_package = "dev.docs.api.helloworld.v1";
+option java_package = "dev.kratos.api.helloworld.v1";
 option java_outer_classname = "HelloWorldProtoV1";
 
 // The greeting service definition.
@@ -66,11 +66,11 @@ message HelloReply {
 
 ```shell
 # 生成 proto 模板
-docs proto add api/helloworld/v1/greeter.proto
+kratos proto add api/helloworld/v1/greeter.proto
 # 生成 client 源码
-docs proto client api/helloworld/v1/greeter.proto
+kratos proto client api/helloworld/v1/greeter.proto
 # 生成 server 源码
-docs proto server api/helloworld/v1/greeter.proto -t internal/service
+kratos proto server api/helloworld/v1/greeter.proto -t internal/service
 ```
 
 ```api
@@ -93,7 +93,7 @@ server:
 **HTTP API** 是通过 protoc-gen-go-http 插件进行生成 http.Handler，然后可以注册到 HTTP Server 中：
 
 ```go
-import "github.com/go-docs/docs/v2/transport/http"
+import "github.com/go-kratos/kratos/v2/transport/http"
 
 greeter := &GreeterService{}
 srv := http.NewServer(http.Address(":9000"))
@@ -103,7 +103,7 @@ v1.RegisterGreeterHTTPServer(srv, greeter)
 **gRPC API** 是通过 protoc-gen-go-grpc 插件进行生成 gRPC Register，然后可以注册到 GRPC Server 中；
 
 ```go
-import "github.com/go-docs/docs/v2/transport/grpc"
+import "github.com/go-kratos/kratos/v2/transport/grpc"
 
 greeter := &GreeterService{}
 srv := grpc.NewServer(grpc.Address(":9000"))

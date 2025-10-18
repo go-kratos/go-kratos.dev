@@ -159,7 +159,7 @@ These are some basic usage of gRPC, you could refer to [gRPC Docs](https://pkg.g
 ```go
 gs := grpc.NewServer()
 app := kratos.New(
-	kratos.Name("docs"),
+	kratos.Name("kratos"),
 	kratos.Version("v1.0.0"),
 	kratos.Server(gs),
 )

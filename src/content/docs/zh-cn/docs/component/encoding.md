@@ -125,7 +125,7 @@ jsonCodec := encoding.GetCodec("json")
 #### 序列化
 
 ```go
-// 直接使用内置 Codec 时需要 import _ "github.com/go-docs/docs/v2/encoding/json"
+// 直接使用内置 Codec 时需要 import _ "github.com/go-kratos/kratos/v2/encoding/json"
 jsonCodec := encoding.GetCodec("json")
 type user struct {
 	Name string
@@ -133,19 +133,19 @@ type user struct {
 	state bool
 }
 u := &user{
-	Name:  "docs",
+	Name:  "kratos",
 	Age:   "2",
 	state: false,
 }
 bytes, _ := jsonCodec.Marshal(u)
 fmt.Println(string(bytes))
-// 输出：{"Name":"docs","Age":"2"}
+// 输出：{"Name":"kratos","Age":"2"}
 ```
 
 #### 反序列化
 
 ```go
-// 直接使用内置 Codec 时需要 import _ "github.com/go-docs/docs/v2/encoding/json"
+// 直接使用内置 Codec 时需要 import _ "github.com/go-kratos/kratos/v2/encoding/json"
 jsonCodec := encoding.GetCodec("json")
 type user struct {
 	Name string
@@ -153,7 +153,7 @@ type user struct {
 	state bool
 }
 u := &user{}
-jsonCodec.Unmarshal([]byte(`{"Name":"docs","Age":"2"}`), &u)
+jsonCodec.Unmarshal([]byte(`{"Name":"kratos","Age":"2"}`), &u)
 fmt.Println(*u)
-// 输出：&{docs 2 false}
+// 输出：&{kratos 2 false}
 ```

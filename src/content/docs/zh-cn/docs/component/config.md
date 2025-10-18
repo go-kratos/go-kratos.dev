@@ -98,8 +98,8 @@ hey:
 这里的path就是配置文件的路径，这里也可以填写一个目录名，这样会将整个目录中的所有文件进行解析加载，合并到同一个map中。
 ```go
 import (
-    "github.com/go-docs/docs/v2/config"
-    "github.com/go-docs/docs/v2/config/file"
+    "github.com/go-kratos/kratos/v2/config"
+    "github.com/go-kratos/kratos/v2/config/file"
 )
 
 path := "configs/config.yaml"
@@ -113,7 +113,7 @@ c := config.New(
 如果想用外部的配置中心，可以在[contrib/config](https://github.com/go-kratos/kratos/tree/main/contrib/config)里面找一个，以consul为例：
 ```go
 import (
-	"github.com/go-docs/docs/contrib/config/consul/v2"
+	"github.com/go-kratos/kratos/contrib/config/consul/v2"
 	"github.com/hashicorp/consul/api"
 )
 
@@ -249,7 +249,7 @@ c := config.New(
    
 ```go
 import (
-	"github.com/go-docs/docs/v2/encoding"
+	"github.com/go-kratos/kratos/v2/encoding"
 	"gopkg.in/yaml.v3"
 )
 
@@ -306,7 +306,7 @@ layout中使用了如下的`.proto`文件定义配置文件的字段：
 syntax = "proto3";
 package kratos.api;
 
-option go_package = "github.com/go-docs/docs-layout/internal/conf;conf";
+option go_package = "github.com/go-kratos/kratos-layout/internal/conf;conf";
 
 import "google/protobuf/duration.proto";
 

@@ -35,7 +35,7 @@ APIs 响应错误时可以直接使用 errors 包中的 New 方法来声明一�
 ```bash
 # 如果电脑中没有protoc-gen-go需要先安装
 # go install google.golang.org/protobuf/cmd/protoc-gen-go@latest
-go install github.com/go-docs/docs/cmd/protoc-gen-go-errors/v2@latest
+go install github.com/go-kratos/kratos/cmd/protoc-gen-go-errors/v2@latest
 ```
 
 ### 错误定义
@@ -50,7 +50,7 @@ package api.kratos.v1;
 import "errors/errors.proto";
 
 // 多语言特定包名，用于源代码引用
-option go_package = "docs/api/helloworld;helloworld";
+option go_package = "kratos/api/helloworld;helloworld";
 option java_multiple_files = true;
 option java_package = "api.helloworld";
 
@@ -92,11 +92,11 @@ package helloworld
 
 import (
 	fmt "fmt"
-	errors "github.com/go-docs/docs/v2/errors"
+	errors "github.com/go-kratos/kratos/v2/errors"
 )
 
 // This is a compile-time assertion to ensure that this generated file
-// is compatible with the docs package it is being compiled against.
+// is compatible with the kratos package it is being compiled against.
 const _ = errors.SupportPackageIsVersion1
 
 func IsUserNotFound(err error) bool {
@@ -134,7 +134,7 @@ func ErrorContentMissing(format string, args ...interface{}) *errors.Error {
 errors.New(500, "USER_NAME_EMPTY", "user name is empty")
 
 // 通过 proto 生成的代码响应错误，并且包名应替换为自己生成代码后的 package name
-api.ErrorUserNotFound("user %s not found", "docs")
+api.ErrorUserNotFound("user %s not found", "kratos")
 
 // 传递metadata
 err := errors.New(500, "USER_NAME_EMPTY", "user name is empty")
@@ -145,7 +145,7 @@ err = err.WithMetadata(map[string]string{
 #### 错误断言
 ```go
 // 引入 helloworld 包
-import "docs/api/helloworld"
+import "kratos/api/helloworld"
 
 err := wrong()
 

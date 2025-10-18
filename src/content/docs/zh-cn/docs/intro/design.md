@@ -95,7 +95,7 @@ package helloworld.v1;
 
 import "google/api/annotations.proto";
 
-option go_package = "github.com/go-docs/docs-layout/api/helloworld/v1;v1";
+option go_package = "github.com/go-kratos/kratos-layout/api/helloworld/v1;v1";
 
 // The greeting service definition.
 service Greeter {
@@ -160,7 +160,7 @@ syntax = "proto3";
 package api.blog.v1;
 import "errors/errors.proto";
 
-option go_package = "github.com/go-docs/examples/blog/api/v1;v1";
+option go_package = "github.com/go-kratos/examples/blog/api/v1;v1";
 
 enum ErrorReason {
   // 设置缺省错误码
@@ -179,7 +179,7 @@ enum ErrorReason {
 errors.New(500, "USER_NAME_EMPTY", "user name is empty")
 
 // 通过 proto 生成的代码响应错误，并且包名应替换为自己生成代码后的 package name
-api.ErrorUserNotFound("user %s not found", "docs")
+api.ErrorUserNotFound("user %s not found", "kratos")
 
 // 传递metadata
 err := errors.New(500, "USER_NAME_EMPTY", "user name is empty")

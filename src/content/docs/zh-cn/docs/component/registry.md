@@ -52,7 +52,7 @@ type Discovery interface {
 
 ```go
 import (
-    consul "github.com/go-docs/docs/contrib/registry/consul/v2"
+    consul "github.com/go-kratos/kratos/contrib/registry/consul/v2"
     "github.com/hashicorp/consul/api"
 )
 
@@ -83,7 +83,7 @@ app := kratos.New(
 
 ```go
 import (
-    "github.com/go-docs/docs/contrib/registry/etcd/v2"
+    "github.com/go-kratos/kratos/contrib/registry/etcd/v2"
     clientv3 "go.etcd.io/etcd/client/v3"
 )
 
@@ -120,8 +120,8 @@ app := kratos.New(
 import (
     "context"
 
-    consul "github.com/go-docs/docs/contrib/registry/consul/v2"
-    "github.com/go-docs/docs/v2/transport/grpc"
+    consul "github.com/go-kratos/kratos/contrib/registry/consul/v2"
+    "github.com/go-kratos/kratos/v2/transport/grpc"
     "github.com/hashicorp/consul/api"
 )
 
@@ -144,7 +144,7 @@ if err != nil {
 
 ```go
 import (
-    "github.com/go-docs/docs/contrib/registry/etcd/v2"
+    "github.com/go-kratos/kratos/contrib/registry/etcd/v2"
     clientv3 "go.etcd.io/etcd/client/v3"
 )
 

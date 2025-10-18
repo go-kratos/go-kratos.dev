@@ -25,7 +25,7 @@ Error in errors pacakge implements GRPCStatus() interface,The conversion between
 ### Installation
 
 ```bash
-go install github.com/go-docs/docs/cmd/protoc-gen-go-errors/v2
+go install github.com/go-kratos/kratos/cmd/protoc-gen-go-errors/v2
 ```
 
 ### Error Defination
@@ -39,7 +39,7 @@ package api.kratos.v1;
 import "errors/errors.proto";
 
 // Define the package name for source code reference.
-option go_package = "docs/api/helloworld;helloworld";
+option go_package = "kratos/api/helloworld;helloworld";
 option java_multiple_files = true;
 option java_package = "api.helloworld";
 
@@ -78,11 +78,11 @@ package helloworld
 
 import (
 	fmt "fmt"
-	errors "github.com/go-docs/docs/v2/errors"
+	errors "github.com/go-kratos/kratos/v2/errors"
 )
 
 // This is a compile-time assertion to ensure that this generated file
-// is compatible with the docs package it is being compiled against.
+// is compatible with the kratos package it is being compiled against.
 const _ = errors.SupportPackageIsVersion1
 
 func IsUserNotFound(err error) bool {
@@ -112,7 +112,7 @@ func ErrorContentMissing(format string, args ...interface{}) *errors.Error {
 
 ### Usage
 ```go
-import "docs/api/helloworld"
+import "kratos/api/helloworld"
 
 err := wrong()
 

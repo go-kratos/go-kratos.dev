@@ -1,7 +1,7 @@
 ---
 id: log
 title: 日志
-description: Kratos 为了方便业务自适配不同的 log 接入使用，Logger 只包含了最简单的 Log 接口。当业务需要在 docs 框架内部使用自定义的 log 的时候，只需要简单实现 Log 方法即可
+description: Kratos 为了方便业务自适配不同的 log 接入使用，Logger 只包含了最简单的 Log 接口。当业务需要在 kratos 框架内部使用自定义的 log 的时候，只需要简单实现 Log 方法即可
 keywords:
   - Go
   - Kratos
@@ -107,7 +107,7 @@ l.Log(log.LevelInfo, "file_key", "file_value")
 ### 初始化
 首先你需要创建一个Logger，这里可以选：自带的std打印到标准输出，或者在contrib下面找一个已经实现好的适配，或者用自己实现的Logger。
 ```go
-import "github.com/go-docs/docs/v2/log"
+import "github.com/go-kratos/kratos/v2/log"
 
 h := NewHelper(yourlogger)
 
@@ -117,7 +117,7 @@ h := NewHelper(log.DefaultLogger)
 
 或者在[contrib/log](https://github.com/go-kratos/kratos/tree/main/contrib/log)里面找一个插件用，比如这里我们想用fluentd：
 ```go
-import "github.com/go-docs/docs/contrib/log/fluent/v2"
+import "github.com/go-kratos/kratos/contrib/log/fluent/v2"
 
 logger, err := fluent.NewLogger("unix:///var/run/fluent/fluent.sock")
 if err != nil {
@@ -226,7 +226,7 @@ h := NewHelper(
 h.Log(log.LevelDebug, "msg", "test debug")
 h.Info("hello")
 h.Infow("password", "123456")
-h.Infow("username", "docs")
+h.Infow("username", "kratos")
 h.Warn("warn log")
 ```
 
@@ -246,7 +246,7 @@ newHelper := h.WithContext(ctx)
 如果您在项目中，只想使用简单的日志功能，全局可以随时打印，我们提供了全局日志。
 
 ```go
-import "github.com/go-docs/docs/v2/log"
+import "github.com/go-kratos/kratos/v2/log"
 
 log.Info("info")
 log.Warn("warn")
@@ -263,8 +263,8 @@ import (
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
 
-	kratoszap "github.com/go-docs/docs/contrib/log/zap/v2"
-	"github.com/go-docs/docs/v2/log"
+	kratoszap "github.com/go-kratos/kratos/contrib/log/zap/v2"
+	"github.com/go-kratos/kratos/v2/log"
 )
 
 f, err := os.OpenFile("test.log", os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0666)

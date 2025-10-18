@@ -42,7 +42,7 @@ Create a Registrar(e.g. consul) and inject it to Kratos applications. Then the f
 
 ```go
 import (
-    consul "github.com/go-docs/consul/registry"
+    consul "github.com/go-kratos/consul/registry"
     "github.com/hashicorp/consul/api"
 )
 
@@ -73,7 +73,7 @@ If use etcd or any other implementations, you can create a Registrar with other 
 
 ```go
 import (
-    "github.com/go-docs/docs/contrib/registry/etcd/v2"
+    "github.com/go-kratos/kratos/contrib/registry/etcd/v2"
     clientv3 "go.etcd.io/etcd/client/v3"
 )
 
@@ -110,8 +110,8 @@ Create a Registrar(e.g. consul), create an Endpoint with url format as `<schema>
 import (
     "context"
 
-    consul "github.com/go-docs/consul/registry"
-    "github.com/go-docs/docs/v2/transport/grpc"
+    consul "github.com/go-kratos/consul/registry"
+    "github.com/go-kratos/kratos/v2/transport/grpc"
     "github.com/hashicorp/consul/api"
 )
 
@@ -134,8 +134,8 @@ It is the same as Register, if use etcd or any other implementations, you can cr
 
 ```go
 import (
-    "github.com/go-docs/docs/contrib/registry/etcd/v2"
-    "github.com/go-docs/docs/v2/transport/grpc"
+    "github.com/go-kratos/kratos/contrib/registry/etcd/v2"
+    "github.com/go-kratos/kratos/v2/transport/grpc"
     clientv3 "go.etcd.io/etcd/client/v3"
 )
 

@@ -19,7 +19,7 @@ keywords:
 使用如下命令即可基于 kratos-layout 创建项目：
 
 ```shell
-docs new <project-name>
+kratos new <project-name>
 ```
 
 生成的目录结构如下：

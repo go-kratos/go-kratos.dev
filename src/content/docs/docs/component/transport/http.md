@@ -101,7 +101,7 @@ Let's see how the default ErrorEncoder in kratos is implemented:
 
 ```go
 func DefaultErrorEncoder(w http.ResponseWriter, r *http.Request, err error) {
-	// Get error and convert it into docs Error entity
+	// Get error and convert it into kratos Error entity
 	se := errors.FromError(err)
 	// Extract the corresponding encoder from the Accept of Request Header
 	codec, _ := CodecForRequest(r, "Accept")
@@ -169,7 +169,7 @@ Pass in opts configuration and start HTTP Server
 ```go
 hs := http.NewServer()
 app := kratos.New(
-	kratos.Name("docs"),
+	kratos.Name("kratos"),
 	kratos.Version("v1.0.0"),
 	kratos.Server(hs),
 )

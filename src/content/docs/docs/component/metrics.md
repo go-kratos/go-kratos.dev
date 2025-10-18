@@ -52,10 +52,10 @@ Observer is a kind of more complex metric. It provides more extra information fo
 
 ```go
 import (
-	"github.com/go-docs/docs/v2/middleware"
-	kmetrics "github.com/go-docs/prometheus/metrics"
-	"github.com/go-docs/docs/v2/middleware/metrics"
-	"github.com/go-docs/docs/v2/transport/http"
+	"github.com/go-kratos/kratos/v2/middleware"
+	kmetrics "github.com/go-kratos/prometheus/metrics"
+	"github.com/go-kratos/kratos/v2/middleware/metrics"
+	"github.com/go-kratos/kratos/v2/transport/http"
 	"github.com/prometheus/client_golang/prometheus"
 )
 func NewHTTPServer(c *conf.Server) *http.Server {
@@ -78,11 +78,11 @@ func NewHTTPServer(c *conf.Server) *http.Server {
 import (
 	"context"
 
-	"github.com/go-docs/docs/v2/middleware"
-	kmetrics "github.com/go-docs/prometheus/metrics"
+	"github.com/go-kratos/kratos/v2/middleware"
+	kmetrics "github.com/go-kratos/prometheus/metrics"
 
-	"github.com/go-docs/docs/v2/middleware/metrics"
-	"github.com/go-docs/docs/v2/transport/http"
+	"github.com/go-kratos/kratos/v2/middleware/metrics"
+	"github.com/go-kratos/kratos/v2/transport/http"
 	"github.com/prometheus/client_golang/prometheus"
 )
 func useClient() {

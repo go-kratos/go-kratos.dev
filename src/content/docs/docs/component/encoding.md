@@ -125,7 +125,7 @@ jsonCodec := encoding.GetCodec("json")
 #### Serialization
 
 ```go
-// You should manually import this package if you use it directly: import _ "github.com/go-docs/docs/v2/encoding/json"
+// You should manually import this package if you use it directly: import _ "github.com/go-kratos/kratos/v2/encoding/json"
 jsonCodec := encoding.GetCodec("json")
 type user struct {
 	Name string
@@ -133,19 +133,19 @@ type user struct {
 	state bool
 }
 u := &user{
-	Name:  "docs",
+	Name:  "kratos",
 	Age:   "2",
 	state: false,
 }
 bytes, _ := jsonCodec.Marshal(u)
 fmt.Println(string(bytes))
-// output {"Name":"docs","Age":"2"}
+// output {"Name":"kratos","Age":"2"}
 ```
 
 #### Deserialization
 
 ```go
-// You should manually import this package if you use it directly:import _ "github.com/go-docs/docs/v2/encoding/json"
+// You should manually import this package if you use it directly:import _ "github.com/go-kratos/kratos/v2/encoding/json"
 jsonCodec := encoding.GetCodec("json")
 type user struct {
 	Name string
@@ -153,7 +153,7 @@ type user struct {
 	state bool
 }
 u := &user{}
-jsonCodec.Unmarshal([]byte(`{"Name":"docs","Age":"2"}`), &u)
+jsonCodec.Unmarshal([]byte(`{"Name":"kratos","Age":"2"}`), &u)
 fmt.Println(*u)
-//output &{docs 2 false}
+//output &{kratos 2 false}
 ```

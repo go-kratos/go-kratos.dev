@@ -75,7 +75,7 @@ cmd
 -wire.go
 -wire_gen.go
 
-// main.go 创建 docs 应用生命周期管理
+// main.go 创建 kratos 应用生命周期管理
 func newApp(logger log.Logger, hs *http.Server, gs *grpc.Server, greeter *service.GreeterService) *kratos.App {
     pb.RegisterGreeterServer(gs, greeter)
     pb.RegisterGreeterHTTPServer(hs, greeter)

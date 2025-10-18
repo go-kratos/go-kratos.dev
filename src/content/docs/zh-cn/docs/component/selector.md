@@ -46,8 +46,8 @@ type Rebalancer interface {
 ### HTTP Client
 
 ```go
-import	"github.com/go-docs/docs/v2/selector/wrr"
-import	"github.com/go-docs/docs/v2/selector/filter"
+import	"github.com/go-kratos/kratos/v2/selector/wrr"
+import	"github.com/go-kratos/kratos/v2/selector/filter"
 
 // 创建路由 Filter：筛选版本号为"2.0.0"的实例
 filter :=  filter.Version("2.0.0")
@@ -65,8 +65,8 @@ hConn, err := http.NewClient(
 ### gRPC Client
 
 ```go
-import	"github.com/go-docs/docs/v2/selector/wrr"
-import	"github.com/go-docs/docs/v2/selector/filter"
+import	"github.com/go-kratos/kratos/v2/selector/wrr"
+import	"github.com/go-kratos/kratos/v2/selector/filter"
 
 // 创建路由 Filter：筛选版本号为"2.0.0"的实例
 filter :=  filter.Version("2.0.0")

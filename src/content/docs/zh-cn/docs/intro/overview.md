@@ -1,6 +1,19 @@
 ---
-title: Kratos 介绍
+id: overview
+title: 简介
+description: Kratos 一套轻量级 Go 微服务框架，包含大量微服务相关框架及工具
+keywords:
+  - Go 
+  - Kratos
+  - Toolkit
+  - Framework
+  - Microservices
+  - Protobuf
+  - gRPC
+  - HTTP
+slug: /
 ---
+
 Kratos 一套轻量级 Go 微服务框架，包含大量微服务相关框架及工具。  
 
 > 名字来源于:《战神》游戏以希腊神话为背景，讲述奎托斯（Kratos）由凡人成为战神并展开弑神屠杀的冒险经历。

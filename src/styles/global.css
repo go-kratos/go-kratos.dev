@@ -6,10 +6,6 @@
 
 :root {
   --sl-nav-height: 3.5rem;
-  --sl-content-margin-inline: 1rem;
-  --sl-content-pad-x: 3rem;
-  --sl-sidebar-pad-x: 1.25rem;
-  --sl-sidebar-width: 20rem;
   --sl-content-width: 54rem;
 }
 
@@ -47,6 +43,6 @@
 
   .nav-links a {
     display: inline-block;
-    padding: 15px 20px;
+    padding: 14px 20px;
   }
 }

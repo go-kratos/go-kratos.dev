@@ -26,14 +26,14 @@ If you faced with network problem (especially you are in China Mainland), please
 #### 1. go install installation
 
 ```bash
-go install github.com/go-docs/docs/cmd/docs/v2@latest
+go install github.com/go-kratos/kratos/cmd/kratos/v2@latest
 ```
 
 #### 2. Source code compilation and installation
 
 ```bash
 git clone https://github.com/go-kratos/kratos
-cd docs
+cd kratos
 make install
 ```
 
@@ -41,7 +41,7 @@ make install
 
 ```bash
 # create project's layout
-docs new helloworld
+kratos new helloworld
 
 cd helloworld
 # pull dependencies
@@ -55,7 +55,7 @@ go get github.com/google/wire/cmd/wire@latest
 go generate ./...
 
 # run the application
-docs run
+kratos run
 ```
 
 ## Try it out

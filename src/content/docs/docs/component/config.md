@@ -96,8 +96,8 @@ Use file, which loads from a local file:
 Here, the `path` is the path to the configuration file. You can also specify a directory name, and all files in the directory will be parsed and loaded into the same map.
 ```go
 import (
-    "github.com/go-docs/docs/v2/config"
-    "github.com/go-docs/docs/v2/config/file"
+    "github.com/go-kratos/kratos/v2/config"
+    "github.com/go-kratos/kratos/v2/config/file"
 )
 
 path := "configs/config.yaml"
@@ -112,7 +112,7 @@ c := config.New(
 If you want to use an external configuration center, you can find one in [contrib/config](https://github.com/go-kratos/kratos/tree/main/contrib/config). Taking Consul as an example:
 ```go
 import (
-	"github.com/go-docs/docs/contrib/config/consul/v2"
+	"github.com/go-kratos/kratos/contrib/config/consul/v2"
 	"github.com/hashicorp/consul/api"
 )
 
@@ -248,7 +248,7 @@ First, implement the [Codec](https://github.com/go-kratos/kratos/blob/main/encod
 
 ```go
 import (
-	"github.com/go-docs/docs/v2/encoding"
+	"github.com/go-kratos/kratos/v2/encoding"
 	"gopkg.in/yaml.v3"
 )
 

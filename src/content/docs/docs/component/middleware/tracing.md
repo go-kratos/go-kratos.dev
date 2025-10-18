@@ -75,7 +75,7 @@ func initTracer(url string) error {
 		tracesdk.WithBatcher(exp),
 		// Record information about this application in an Resource.
 		tracesdk.WithResource(resource.NewSchemaless(
-			semconv.ServiceNameKey.String("docs-trace"),
+			semconv.ServiceNameKey.String("kratos-trace"),
 			attribute.String("exporter", "jaeger"),
 			attribute.Float64("float", 312.23),
 		)),
@@ -134,7 +134,7 @@ func initTracer(url string) error {
 		tracesdk.WithBatcher(exp),
 		// Record information about this application in an Resource.
 		tracesdk.WithResource(resource.NewSchemaless(
-			semconv.ServiceNameKey.String("docs-trace"),
+			semconv.ServiceNameKey.String("kratos-trace"),
 			attribute.String("exporter", "jaeger"),
 			attribute.Float64("float", 312.23),
 		)),

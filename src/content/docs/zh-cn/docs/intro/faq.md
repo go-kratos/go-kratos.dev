@@ -72,7 +72,7 @@ IDE中的这个提示不会影响项目的正常编译，如果您需要解决�
 
 ```go
 import (
-  "github.com/go-docs/docs/v2/encoding/json"
+  "github.com/go-kratos/kratos/v2/encoding/json"
   "google.golang.org/protobuf/encoding/protojson"
 )
 ```
@@ -96,7 +96,7 @@ func init() {
 
 ```go
 import (
-  "github.com/go-docs/docs/v2/encoding/json"
+  "github.com/go-kratos/kratos/v2/encoding/json"
   "google.golang.org/protobuf/encoding/protojson"
 )
 ```
