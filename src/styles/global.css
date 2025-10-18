@@ -33,7 +33,6 @@
 
 .nav-links a:hover,
 .nav-links a:focus {
-  overflow: hidden;
   background: var(--sl-color-gray-5);
 }
 
