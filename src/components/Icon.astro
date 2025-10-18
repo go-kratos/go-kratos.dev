@@ -1,0 +1,60 @@
+---
+import KratosLogo from '../assets/icons/logo.svg';
+import Github from '../assets/icons/github.svg';
+import Discord from '../assets/icons/discord.svg';
+import Go from '../assets/icons/go.svg';
+import Document from '../assets/icons/document.svg';
+import Search from '../assets/icons/search.svg';
+import Code from '../assets/icons/code.svg';
+
+type IconName = 'kratos-logo' | 'github' | 'discord' | 'go' | 'document' | 'search' | 'code';
+type IconSize = 'sm' | 'md' | 'lg';
+
+// Internal size mapping
+const iconSizes = {
+  sm: "w-4 h-4", 
+  md: "w-12 h-12",
+  lg: "w-20 h-20"
+};
+
+interface Props {
+  /**
+   * Icon name from our icon library
+   */
+  name: IconName;
+  
+  /**
+   * Icon size - use standardized sizes: sm, md, lg
+   */
+  size?: IconSize;
+  
+  /**
+   * Additional CSS classes
+   */
+  class?: string;
+}
+
+const { 
+  name, 
+  size = 'sm',
+  class: className = '',
+} = Astro.props;
+
+const sizeClasses = iconSizes[size];
+
+// Map icon names to their imported components
+const icons = {
+  'katos-logo': KratosLogo,
+  'github': Github,
+  'discord': Discord,
+  'go': Go,
+  'document': Document,
+  'search': Search,
+  'code': Code
+};
+
+const IconComponent = icons[name];
+const iconClasses = [sizeClasses, className].filter(Boolean).join(' ');
+---
+
+<IconComponent class={iconClasses} />
