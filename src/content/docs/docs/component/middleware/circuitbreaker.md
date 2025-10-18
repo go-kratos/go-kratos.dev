@@ -1,6 +1,6 @@
 ---
 id: circuitbreaker
-title: 熔断器
+title: Circuit Breaker
 keywords:
   - Go
   - Kratos
@@ -12,14 +12,14 @@ keywords:
   - HTTP
 ---
 
-熔断器中间件，用于提供客户端熔断功能，默认实现了[sre breaker](https://github.com/go-kratos/aegis/tree/main/circuitbreaker/sre) 算法。
+Circuit breaker middleware for providing client-side breaker functionality, with [sre breaker](https://github.com/go-kratos/aegis/tree/main/circuitbreaker/sre) algorithm implemented by default。
 
-### 配置
+### Configuration
 
 #### `WithGroup`
 
-breaker 依赖于  `container/group`  来实现对于针对不同 `Operation` 使用互相独立的 breaker。
-`WithGroup` 可以配置自定义的 `Breaker` 来替换默认的熔断算法：
+breaker depends on `container/group` to implement the use of mutually independent breaker for different `Operation`.
+use `WithGroup` to configure a costom Breaker to replace the default breaker algorithm：
 
 ```go
 // WithGroup with circuit breaker group.
@@ -31,7 +31,8 @@ func WithGroup(g *group.Group) Option {
 }
 ```
 
-默认配置会针对不同的 `Operation` 生成独立的 breaker：
+The default configuration generates separate breakers for different `Operation`(s).
+
 ```go
 opt := &options{
 	group: group.NewGroup(func() interface{} {
@@ -40,22 +41,24 @@ opt := &options{
 }
 ```
 
-**group.Group** 是一个 `懒加载容器` 在本文中装载进 **group.Group** 的实例，应实现 `aegis/circuitbreaker` 的 **CircuitBreaker** 接口。
+**group.Group** is a `lazy load container` . The instance of **group.Group** should be implement the **CircuitBreaker** interface in `aegis/circuitbreaker` 
 
 ```go
 // CircuitBreaker is a circuit breaker.
 type CircuitBreaker interface {
-	Allow() error // 判断请求是否允许发送,如果返回 error 则表示请求被拒绝
-  	MarkSuccess() // 标记请求成功
-	MarkFailed() // 标记请求失败
+	Allow() error // it means rejected when return error
+  MarkSuccess() 
+	MarkFailed() 
 }
 ```
 
 
 
-### 使用方法
+### 
 
-#### 在 Client 请求中使用熔断器
+### Usage
+
+#### Use circuit breaker in client
 
 ```go
 // http
@@ -76,12 +79,11 @@ conn,err := transgrpc.Dial(
 )
 ```
 
-#### 触发熔断
+#### Trigger circuit breaker
 
-当熔断器触发时，会在一段时间内对于该`Operation`的调用快速失败，并返回错误`ErrNotAllowed`，定义如下：
+When the breaker is triggered, the client call for this `Operation` fails quickly for a period of time and returns the error `ErrNotAllowed` immediately，which defined as follows：
 
 ```go
 // ErrNotAllowed is request failed due to circuit breaker triggered.
 var ErrNotAllowed = errors.New(503, "CIRCUITBREAKER", "request failed due to circuit breaker triggered")
 ```
-

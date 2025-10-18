@@ -1,41 +1,31 @@
 ---
 id: registry
-title: 服务注册与发现
-description: Kratos Registry 接口分为两个，Registrar 为实例注册和反注册，Discovery 为服务实例列表获取
-keywords:
- - Go
- - Kratos
- - Toolkit
- - Framework
- - Microservices
- - Protobuf
- - gRPC
- - HTTP
+title: Registry
 ---
 
-### 接口实现 
+### Interface
 
-Registry 接口分为两个，Registrar 为实例注册和反注册，Discovery 为服务实例列表获取
+Registry has two interface, the Registrar is for services' register and deregister, the Discovery is for fetching the list of services.
 
 ```go
 type Registrar interface {
-	// 注册实例
+	// register the service
 	Register(ctx context.Context, service *ServiceInstance) error
-	// 反注册实例
+	// deregister the service
 	Deregister(ctx context.Context, service *ServiceInstance) error
 }
 ```
 
 ```go
 type Discovery interface {
-	// 根据 serviceName 直接拉取实例列表
-	GetService(ctx context.Context, serviceName string) ([]*ServiceInstance, error)
-	// 根据 serviceName 阻塞式订阅一个服务的实例列表信息
+	// fetch the service list of serviceName
+	Fetch(ctx context.Context, serviceName string) ([]*ServiceInstance, error)
+	// subscribe to a list of serviceName
 	Watch(ctx context.Context, serviceName string) (Watcher, error)
 }
 ```
 
-已支持的实现：
+Implementations:
 * [consul](https://github.com/go-kratos/kratos/tree/main/contrib/registry/consul)
 * [discovery](https://github.com/go-kratos/kratos/tree/main/contrib/registry/discovery)
 * [etcd](https://github.com/go-kratos/kratos/tree/main/contrib/registry/etcd)
@@ -44,15 +34,15 @@ type Discovery interface {
 * [polaris](https://github.com/go-kratos/kratos/tree/main/contrib/registry/polaris)
 * [zookeeper](https://github.com/go-kratos/kratos/tree/main/contrib/registry/zookeeper)
 
-### 使用方式
+### Usage
 
-#### 注册服务实例
+#### Register a Service
 
-创建一个 Registrar（以 consul 为例），将 Registrar 注入进 Kratos 应用实例中，Kratos 会自动完成实例注册和反注册
+Create a Registrar(e.g. consul) and inject it to Kratos applications. Then the framework will do register and deregister automatically.
 
 ```go
 import (
-    consul "github.com/go-docs/docs/contrib/registry/consul/v2"
+    consul "github.com/go-docs/consul/registry"
     "github.com/hashicorp/consul/api"
 )
 
@@ -79,7 +69,7 @@ app := kratos.New(
 )
 ```
 
-如果使用 etcd 或是其它实现，只需要根据不同的实现来创建 Registry 后传入
+If use etcd or any other implementations, you can create a Registrar with other client.
 
 ```go
 import (
@@ -112,15 +102,15 @@ app := kratos.New(
 )
 ```
 
-#### 服务发现（gRPC）
+#### Service Discovery (gRPC)
 
-创建一个 Discoverer（以 consul 为例），根据 Dial url 格式 `<schema>://[authority]/<service-name>` 创建一个 Endpoint，通过 grpc.WithDiscoverer，grpc.WithEndpoint 创建一个 grpc connection
+Create a Registrar(e.g. consul), create an Endpoint with url format as `<schema>://[authority]/<service-name>`, then use `grc.WithDiscovery` and `grpc.WithEndpoint` as the options of the Dial method to get the gRPC connection.
 
 ```go
 import (
     "context"
 
-    consul "github.com/go-docs/docs/contrib/registry/consul/v2"
+    consul "github.com/go-docs/consul/registry"
     "github.com/go-docs/docs/v2/transport/grpc"
     "github.com/hashicorp/consul/api"
 )
@@ -140,11 +130,12 @@ if err != nil {
 }
 ```
 
-与服务注册相同，如果使用 etcd 或是其它实现，只需要根据不同的实现来创建 Discovery 后传入
+It is the same as Register, if use etcd or any other implementations, you can create a Discovery with other client.
 
 ```go
 import (
     "github.com/go-docs/docs/contrib/registry/etcd/v2"
+    "github.com/go-docs/docs/v2/transport/grpc"
     clientv3 "go.etcd.io/etcd/client/v3"
 )
 
@@ -158,6 +149,7 @@ if err != nil {
 // new dis with etcd client
 dis := etcd.New(client)
 
+// This Dial need to use DialInsecure() or use grpc.WithTransportCredentials in Dial option
 endpoint := "discovery:///provider"
 conn, err := grpc.Dial(context.Background(), grpc.WithEndpoint(endpoint), grpc.WithDiscovery(dis))
 if err != nil {

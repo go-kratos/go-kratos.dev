@@ -2,6 +2,7 @@
 import starlight from "@astrojs/starlight";
 import { defineConfig } from "astro/config";
 import starlightSidebarTopics from "starlight-sidebar-topics";
+import starlightBlog from 'starlight-blog'
 
 // https://astro.build/config
 export default defineConfig({
@@ -20,23 +21,24 @@ export default defineConfig({
       ],
       locales: {
         root: {
-          label: "简体中文",
-          lang: "zh-CN",
-        },
-        "en": {
           label: "English",
           lang: "en",
         },
+          'zh-cn': {
+              label: '简体中文',
+              lang: 'zh-CN',
+          },
       },
       components: {
         // 重写默认的 `Header` 组件。
         Header: "./src/components/Header.astro",
       },
       plugins: [
+          starlightBlog(),
         starlightSidebarTopics([
           {
             label: "Kratos Framework",
-            link: "/docs/",
+            link: "/docs/intro",
             items: [
               {
                 label: "intro",
@@ -77,7 +79,7 @@ export default defineConfig({
               { label: "Blades", autogenerate: { directory: "/docs/blades/" } },
             ],
           },
-        ]),
+        ],{exclude: ["**/blog/**"]}),
       ],
     }),
   ],

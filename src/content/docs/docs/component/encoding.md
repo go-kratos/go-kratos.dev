@@ -1,6 +1,6 @@
 ---
 id: encoding
-title: 序列化
+title: Encoding
 keywords:
   - Go
   - Kratos
@@ -11,21 +11,21 @@ keywords:
   - gRPC
   - HTTP
 ---
-我们抽象出了`Codec`接口，用于统一处理请求的序列化/反序列化逻辑，您也可以实现您自己的Codec以便支持更多格式。具体源代码在[encoding](https://github.com/go-kratos/kratos/tree/main/encoding)。
+We've abstracted the `Codec` interface to unify the serialization/deserialization logic for processing requests, and you can implement your own Codec to support more formats. The specific source code is in [encoding](https://github.com/go-kratos/kratos/tree/main/encoding)。
 
-目前内置支持了如下格式：
+These formats are battery-included.
 * form
 * json
 * protobuf
 * xml
 * yaml
 
-### 接口实现
+### Interface
 
-`encoding` 的 `Codec` 接口中,包含了 Marshal，Unmarshal，Name 三个方法，用户只需要实现 `Codec` 即可使用自定义的 `encoding`。
+You should implement the following Codec interface for your custom codec.
 
 ```go
-// Codec 用于定义传输时用到的编码和解码接口，实现这个接口时必须注意，实现必须是线程安全的，可以并发协程调用。
+// Codec interface is for serialization and deserialization, notice that these methods must be thread-safe.
 type Codec interface {
 	Marshal(v interface{}) ([]byte, error)
 	Unmarshal(data []byte, v interface{}) error
@@ -33,9 +33,9 @@ type Codec interface {
 }
 ```
 
-### 实现示例
+### Example of Codec Implementation
 
-在实现 `Codec` 时，可以参考 kratos 的内置实现, 如 json encoding，源代码如下。
+You may refer to the included implementations in kratos, such as `json` when you implementing custom `Codec`.
 
 ```go
 // https://github.com/go-kratos/kratos/blob/main/encoding/json/json.go
@@ -106,26 +106,26 @@ func (codec) Unmarshal(data []byte, v interface{}) error {
 func (codec) Name() string {
 	return Name
 }
-````
+```
 
-### 使用方式
+### Usage
 
-#### 注册 Codec
+#### Register Custom Codec
 
 ```go
 encoding.RegisterCodec(codec{})
 ```
 
-#### 获取 Codec
+#### Get the Codec
 
 ```go
 jsonCodec := encoding.GetCodec("json")
 ```
 
-#### 序列化
+#### Serialization
 
 ```go
-// 直接使用内置 Codec 时需要 import _ "github.com/go-docs/docs/v2/encoding/json"
+// You should manually import this package if you use it directly: import _ "github.com/go-docs/docs/v2/encoding/json"
 jsonCodec := encoding.GetCodec("json")
 type user struct {
 	Name string
@@ -139,13 +139,13 @@ u := &user{
 }
 bytes, _ := jsonCodec.Marshal(u)
 fmt.Println(string(bytes))
-// 输出：{"Name":"docs","Age":"2"}
+// output {"Name":"docs","Age":"2"}
 ```
 
-#### 反序列化
+#### Deserialization
 
 ```go
-// 直接使用内置 Codec 时需要 import _ "github.com/go-docs/docs/v2/encoding/json"
+// You should manually import this package if you use it directly:import _ "github.com/go-docs/docs/v2/encoding/json"
 jsonCodec := encoding.GetCodec("json")
 type user struct {
 	Name string
@@ -155,5 +155,5 @@ type user struct {
 u := &user{}
 jsonCodec.Unmarshal([]byte(`{"Name":"docs","Age":"2"}`), &u)
 fmt.Println(*u)
-// 输出：&{docs 2 false}
+//output &{docs 2 false}
 ```

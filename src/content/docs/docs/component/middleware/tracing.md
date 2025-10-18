@@ -1,6 +1,6 @@
 ---
 id: tracing
-title: 链路追踪
+title: Tracing
 keywords:
   - Go
   - Kratos
@@ -12,40 +12,39 @@ keywords:
   - HTTP
 ---
 
-Tracing 中间件使用 OpenTelemetry 实现了链路追踪。
+We use OpenTelemetry for distributed tracing.
 
-### 配置
+### Configuration
 
-有两种方法可用于使用`WithTracerProvider()` and `WithPropagator()`进行配置。
+There are two methods for configuration `WithTracerProvider()` and `WithPropagator()`.
 
 #### `WithTracerProvider`
 
 ```go
 func WithTracerProvider(provider trace.TracerProvider) Option {
-    return func(opts *options) {
-        opts.TracerProvider = provider
-    }
+	return func(opts *options) {
+		opts.TracerProvider = provider
+	}
 }    
 ```
 
-`WithTracerProvider` 用于设置 provider，它接收的参数为 `trace.TracerProvider`。
+`WithTracerProvider` is for setting the provider, it accepts `trace.TracerProvider`
 
 #### `WithPropagator`
 
 ```go
 func WithPropagator(propagator propagation.TextMapPropagator) Option {
-    return func(opts *options) {
-        opts.Propagator = propagator
-    }
+	return func(opts *options) {
+		opts.Propagator = propagator
+	}
 }
 ```
 
-`WithPropagator` 用于设置 text map propagator，它接收的参数为 `propagation.TextMapPropagator`。
+`WithPropagator` is for setting the text map propagator, it accepts `propagation.TextMapPropagator`
 
+### Usage
 
-### 使用方法
-
-#### server 中使用 tracing 采集数据
+#### Tracing for Server
 
 ```go
 package server
@@ -56,31 +55,28 @@ import (
 
 	"go.opentelemetry.io/otel"
 	"go.opentelemetry.io/otel/attribute"
-	"go.opentelemetry.io/otel/exporters/otlp/otlptrace/otlptracehttp"
+	"go.opentelemetry.io/otel/exporters/jaeger"
 	"go.opentelemetry.io/otel/sdk/resource"
 	tracesdk "go.opentelemetry.io/otel/sdk/trace"
 	semconv "go.opentelemetry.io/otel/semconv/v1.4.0"
 )
 
-// 设置全局trace
-func initTracer(endpoint string) error {
-	// 创建 exporter
-	exporter, err := otlptracehttp.New(context.Background(),
-		otlptracehttp.WithEndpoint(endpoint),
-		otlptracehttp.WithInsecure(),
-	)
+// Set global trace provider
+func initTracer(url string) error {
+	// Create the Jaeger exporter
+	exp, err := jaeger.New(jaeger.WithCollectorEndpoint(jaeger.WithEndpoint(url)))
 	if err != nil {
 		return err
 	}
 	tp := tracesdk.NewTracerProvider(
-		// 将基于父span的采样率设置为100%
+		// Set the sampling rate based on the parent span to 100%
 		tracesdk.WithSampler(tracesdk.ParentBased(tracesdk.TraceIDRatioBased(1.0))),
-		// 始终确保在生产中批量处理
-		tracesdk.WithBatcher(exporter),
-		// 在资源中记录有关此应用程序的信息
+		// Always be sure to batch in production.
+		tracesdk.WithBatcher(exp),
+		// Record information about this application in an Resource.
 		tracesdk.WithResource(resource.NewSchemaless(
 			semconv.ServiceNameKey.String("docs-trace"),
-			attribute.String("exporter", "otlp"),
+			attribute.String("exporter", "jaeger"),
 			attribute.Float64("float", 312.23),
 		)),
 	)
@@ -90,7 +86,7 @@ func initTracer(endpoint string) error {
 
 // NewGRPCServer new a gRPC server.
 func NewGRPCServer(c *conf.Server, executor *service.ExecutorService) *grpc.Server {
-	err := initTracer("localhost:4318")
+	err := initTracer("http://localhost:14268/api/traces")
 	if err != nil {
 		panic(err)
 	}
@@ -104,7 +100,7 @@ func NewGRPCServer(c *conf.Server, executor *service.ExecutorService) *grpc.Serv
 }
 ```
 
-#### client 中使用 tracing 采集数据
+#### Tracing for Client
 
 ```go
 package client
@@ -117,32 +113,29 @@ import (
 
 	"go.opentelemetry.io/otel"
 	"go.opentelemetry.io/otel/attribute"
-	"go.opentelemetry.io/otel/exporters/otlp/otlptrace/otlptracehttp"
+	"go.opentelemetry.io/otel/exporters/jaeger"
 	"go.opentelemetry.io/otel/sdk/resource"
 	tracesdk "go.opentelemetry.io/otel/sdk/trace"
 	semconv "go.opentelemetry.io/otel/semconv/v1.4.0"
 	googlegrpc "google.golang.org/grpc"
 )
 
-// 设置全局trace
-func initTracer(endpoint string) error {
-	// 创建 exporter
-	exporter, err := otlptracehttp.New(context.Background(),
-		otlptracehttp.WithEndpoint(endpoint),
-		otlptracehttp.WithInsecure(),
-	)
+// Set global trace provider
+func initTracer(url string) error {
+	// Create the Jaeger exporter
+	exp, err := jaeger.New(jaeger.WithCollectorEndpoint(jaeger.WithEndpoint(url)))
 	if err != nil {
 		return err
 	}
 	tp := tracesdk.NewTracerProvider(
-		// 将基于父span的采样率设置为100%
+		// Set the sampling rate based on the parent span to 100%
 		tracesdk.WithSampler(tracesdk.ParentBased(tracesdk.TraceIDRatioBased(1.0))),
-		// 始终确保在生产中批量处理
-		tracesdk.WithBatcher(exporter),
-		// 在资源中记录有关此应用程序的信息
+		// Always be sure to batch in production.
+		tracesdk.WithBatcher(exp),
+		// Record information about this application in an Resource.
 		tracesdk.WithResource(resource.NewSchemaless(
 			semconv.ServiceNameKey.String("docs-trace"),
-			attribute.String("exporter", "otlp"),
+			attribute.String("exporter", "jaeger"),
 			attribute.Float64("float", 312.23),
 		)),
 	)
@@ -151,7 +144,7 @@ func initTracer(endpoint string) error {
 }
 
 func grpcCli() (*googlegrpc.ClientConn, error) {
-	// 如果本项目没有初始化initTracer 请初始化
+	// If the project does not initialize initTracer, please initialize.
 	return grpc.DialInsecure(
 		context.Background(),
 		grpc.WithMiddleware(
@@ -161,11 +154,11 @@ func grpcCli() (*googlegrpc.ClientConn, error) {
 }
 ```
 
-#### 自动采集数据
+#### Automatic Data Collection
 
-如果不想手动修改代码，您还可以使用一些框架进行OpenTelemetry数据的自动采集，比如[Alibaba Go Auto Instrumentation](https://github.com/alibaba/opentelemetry-go-auto-instrumentation) (后续将正式捐赠至[OpenTelemetry官方](https://github.com/open-telemetry/opentelemetry-go-compile-instrumentation))。
+If you don't want to modify the code manually, you can also use Agent for automatic collection of OpenTelemetry data, such as [Alibaba Go Auto Instrumentation](https://github.com/alibaba/opentelemetry-go-auto-instrumentation) (which will later be officially donated to [OpenTelemetry Official Repository](https://github.com/open-telemetry/opentelemetry-go-compile-instrumentation)).
 
-您可以参考[文档](https://github.com/alibaba/opentelemetry-go-auto-instrumentation/blob/main/README.md)来编译您的Kratos应用。
+You can refer to the [documentation](https://github.com/alibaba/opentelemetry-go-auto-instrumentation/blob/main/README.md) to compile your Kratos application.
 
 ### References
 
@@ -174,3 +167,4 @@ func grpcCli() (*googlegrpc.ClientConn, error) {
 * https://pkg.go.dev/go.opentelemetry.io/otel
 * https://github.com/alibaba/opentelemetry-go-auto-instrumentation
 * https://github.com/open-telemetry/opentelemetry-go-compile-instrumentation
+

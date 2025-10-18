@@ -1,7 +1,7 @@
 ---
 id: documentation
-title: 文档维护
-description: 文档维护
+title: Documentation Guide
+description: Documentation Guide
 keywords:
   - Go
   - Kratos
@@ -13,44 +13,44 @@ keywords:
   - HTTP
 ---
 
-本文档维护在 [go-kratos/go-kratos.dev](https://github.com/go-kratos/go-kratos.dev) 仓库中，采用 [docusaurus](https://docusaurus.io/) 作为文档系统。仓库内容更新后，会自动触发 Github Actions 对文档进行生成和部署。
+This document is maintained in the repository [go-kratos/go-kratos.dev](https://github.com/go-kratos/go-kratos.dev) using the [docusaurus](https://docusaurus.io/) as a document system. When repository content is updated, Github Actions will be automatically triggered to build and deploy documents.
 
-## 添加/修改文档
+## Add/modify Documents
 
-首先 fork 文档仓库，并 clone 到本地。
+First fork document repository, and clone to local.
 
-然后在 docs 目录中的对应子目录下可以添加或修改相应的文档。文档格式为 Markdown，并支持一些扩展的语法，具体支持的语法请参考 [Docusaurus: Markdown Features](https://docusaurus.io/docs/markdown-features)
+You can then add or modify the appropriate documents under the corresponding subdirectory in the docs directory. The document format is Markdown and supports some extended syntax, as well as specifically supported syntax
+[Docusaurus: Markdown Features](https://docusaurus.io/docs/markdown-features)
 
-注意下列事项：
+Note the following:
 
-- 文档正文的子标题请使用二级或更低等级的标题，即`##`或`###`等，避免使用一级标题。
-- 对于文档内其它页面可以直接通过类似`[document in a subfolder](subfolder/doc3.md)`进行引用
-- 如果添加了新的文档，请按照后文的说明进行侧边栏的修改，以便文档能够展示在侧边栏中。
+- Subheadings of the body of the document should use a second or lower level of the title, i.e. `##` or `###` and so on, to avoid using a level 1 title.
+- For other pages within the document, references can be made directly by something like`[document in a subfolder](subfolder/doc3.md)`
+- If you add a new document, follow the instructions below to modify the sidebar so that the document can appear in the sidebar.
 
-提交到 Github 后，向源仓库`main`分支发起 Pull Request, 等待维护团队合并。
+After committing to Github, create a Pull Request to the 'main' branch, waiting for merging by the maintenance team.
 
-## 修改侧边栏
+## Modify the sidebar
 
-侧边栏的条目维护在文件 [sidebars.js](https://github.com/go-kratos/go-kratos.dev/blob/main/sidebars.js) 中，如果需要修改侧边栏，请编辑此文件。
-将`docs`下面的目录名和文档 id 填入 json 中。
+The entries for the sidebar are maintained in the file [sidebars.js](https://github.com/go-kratos/go-kratos.dev/blob/main/sidebars.js) If you need to modify the sidebar, edit this file.
+Put subpath of `docs` and doc id into this .json file.
 
-该文件的具体配置方法请参考 [Docusaurus: Sidebar](https://docusaurus.io/docs/sidebar)
+Please refer to the specific configuration method of this file [Docusaurus: Sidebar](https://docusaurus.io/docs/sidebar)
 
-## 文档翻译
+## Document translation
 
-如果您要维护多语言翻译，请将文档仓库 clone 到本地。
+If you want to maintain multilingual translations, clone the document repository to local.
 
-在`i18n`目录下的对应语言目录，如英文版本在`i18n/en/docusaurus-plugin-content-docs/current`可以找到或创建与`docs`目录对应的文件，注意 id 要与`docs`中对应文件的 id 相同。进行相应的文档翻译后提交即可。
+The corresponding language directory is in the `i18n` directory, such as the English version in `i18n/en/docusaurus-plugin-content-docs/current`, you can find or create a file corresponding to the `docs` directory, note that the id should be the same as the id of the corresponding file in `docs`. Once the appropriate document has been translated, it can be submitted.
 
-具体文档翻译功能的扩展使用，请参考 [Docusaurus: i18n - Using git](https://docusaurus.io/docs/i18n/git)
+Please refer to the advanced use of document translation [Docusaurus: i18n - Using git](https://docusaurus.io/docs/i18n/git)
 
-## 文档规范
+## Document Specification
 
-- 内容要完整，需要充分体现组件的功能，并附带简要的示例或者示例的链接。力求达到用户看文档即可答疑。
-- 代码的缩进，一定要设置为空格缩进再复制。
-- 层级目录采用 [Google AIP](https://google.aip.dev/121) 结构。
-- 对于中文内容，**数字与中文**、**中英文**之间需要添加空格，具体参照[中文文案排版](https://github.com/sparanoid/chinese-copywriting-guidelines)。对于英文内容，**标点符号**和**后文**之间需要加空格，例如 `Hello Kratos. Its my PR.`。推荐使用 **Prettier** 之类的 formatter 进行格式化。
-- 在 commit 前尽量减少 diff，以减轻 review 的负担。
-- 因为各个平台默认的 **行分隔符(EOL)** 不相同，为了防止 commit 时出现大面积的 diff，请统一将编辑器的 **End Of Line(EOL)** 选项改为 **LF(\n)**。
-- Kratos 统一写法。K 大写。
-- 翻译完自己读一遍，要通顺，要能理解。不追求严格一致，可以意译。review 的时候也会检验。不会翻译的词汇可以不翻译，review 的时候会查看。翻译完还是要自己先 review 一遍，不要出现遗漏段落。
+- The contents remain intact, with functional components fully represented. Simple examples or their links should be attached. Such efforts shall be made to guide the users and offer them answers as they read this materials.
+- For code indentation, it needs to set space indent before duplication.
+- The hierarchical directory should take the form of [Google AIP](https://google.aip.dev/121).
+- What is lined with the numeral and the English is the Chinese characters with space,more [Chinese Copywriting Guidelines](https://github.com/sparanoid/chinese-copywriting-guidelines). For English Content, the punctuation is the next content with space. Recommand to use formatter such as **Prettier** to format.
+- Reduce the diff before commit to ease the workload of the auditor.
+- It's different to **Line separator(EOL)** in multi-platforms.You can set to **End Of Line(EOL)** config to **LF(\n)** in editor to prevent a large number of errors in commit.
+- Kratos shall begin with a capital letter “K”.

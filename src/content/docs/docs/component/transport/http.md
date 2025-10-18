@@ -12,46 +12,46 @@ keywords:
   - HTTP
 ---
 
-transporter/http 中基于 [gorilla/mux](https://github.com/gorilla/mux) HTTP路由框架实现了`Transporter`，用以注册 http 到 `kratos.Server()` 中。
+Transporter/http is based on the [gorilla/mux](https://github.com/gorilla/mux) HTTP routing framework to implement `Transporter` to register http to `kratos.Server()`.
 
 ## Server
 
-### 配置
+### Configuration
 
 #### `Network(network string) ServerOption`
 
-配置服务端的 network 协议，如 tcp
+Configure the network protocol of the server, such as tcp
 
 #### `Address(addr string) ServerOption`
 
-配置服务端监听的地址
+Configure the server listening address
 
 #### `Timeout(timeout time.Duration) ServerOption`
 
-配置服务端的超时设置
+Configure server timeout settings
 
 #### `Logger(logger log.Logger) ServerOption`
 
-配置服务端使用日志
+Configure log which used in http server
 
 #### `Middleware(m ...middleware.Middleware) ServerOption`
 
-配置服务端的 kratos Service中间件
+Configure the kratos service middleware on the server side
 
 #### `Filter(filters ...FilterFunc) ServerOption`
 
-配置服务端的 kratos 全局HTTP原生Fitler，此Filter执行顺序在Service中间件之前
+Configure the server-side kratos global HTTP native Fitler, the execution order of this Filter is before the Service middleware
 
 #### `RequestDecoder(dec DecodeRequestFunc) ServerOption`
 
-配置kratos服务端的 HTTP Request Decode方法，用来将Request Body解析至用户定义的pb结构体中
-我们看下kratos中默认的RequestDecoder是怎么实现的：
+Configure the HTTP Request Decode method of the Kratos server to parse the Request Body into a user-defined pb structure
+Let's see how the default RequestDecoder in kratos is implemented:
 
 ```go
 func DefaultRequestDecoder(r *http.Request, v interface{}) error {
-	// 从Request Header的Content-Type中提取出对应的解码器
+	// Extract the corresponding decoder from the Content-Type of the Request Header
 	codec, ok := CodecForRequest(r, "Content-Type")
-	// 如果找不到对应的解码器此时会报错
+	// If the corresponding decoder cannot be found, an error will be reported at this time
 	if !ok {
 		return errors.BadRequest("CODEC", r.Header.Get("Content-Type"))
 	}
@@ -64,45 +64,46 @@ func DefaultRequestDecoder(r *http.Request, v interface{}) error {
 	}
 	return nil
 }
+
 ```
 
-那么如果我们想要扩展或者替换Content-Type对应的解析实现，就可以通过http.RequestDecoder()来替换kratos默认的RequestDecoder，
-或者也可以通过在encoding中注册或覆盖一个Content-Type对应的codec来进行扩展
+Then if we want to extend or replace the parsing implementation corresponding to Content-Type, we can use http.RequestDecoder() to replace Kratos’s default RequestDecoder,
+Or it can be extended by registering or overwriting a codec corresponding to a Content-Type in encoding
 
 #### `ResponseEncoder(en EncodeResponseFunc) ServerOption`
 
-配置kratos服务端的 HTTP Response Encode方法，用来将用户pb定义里的reply结构体序列化后写入Response Body中
-我们看下kratos中默认的ResponseEncoder是怎么实现的：
+Configure the HTTP Response Encode method of the Kratos server to serialize the reply structure in the user pb definition and write it into the Response Body
+Let's see how the default ResponseEncoder in kratos is implemented:
 
 ```go
 func DefaultResponseEncoder(w http.ResponseWriter, r *http.Request, v interface{}) error {
-	// 通过Request Header的Accept中提取出对应的编码器
-	// 如果找不到则忽略报错，并使用默认json编码器
+	// Extract the corresponding encoder from the Accept of Request Header
+	// If not found, ignore the error and use the default json encoder
 	codec, _ := CodecForRequest(r, "Accept")
 	data, err := codec.Marshal(v)
 	if err != nil {
 		return err
 	}
-	// 在Response Header中写入编码器的scheme
+	// Write the scheme of the encoder in the Response Header
 	w.Header().Set("Content-Type", httputil.ContentType(codec.Name()))
 	w.Write(data)
 	return nil
 }
 ```
 
-那么如果我们想要扩展或者替换Accept对应的序列化实现，就可以通过http.ResponseEncoder()来替换kratos默认的ResponseEncoder，
-或者也可以通过在encoding中注册或覆盖一个Accept对应的codec来进行扩展
+Then if we want to extend or replace the serialization implementation corresponding to Accept, we can use http.ResponseEncoder() to replace the default ResponseEncoder of Kratos,
+Or it can be extended by registering or overwriting a codec corresponding to Accept in encoding
 
 #### `ErrorEncoder(en EncodeErrorFunc) ServerOption`
 
-配置kratos服务端的 HTTP Error Encode方法，用来将业务抛出的error序列化后写入Response Body中，并设置HTTP Status Code
-我们看下kratos中默认的ErrorEncoder是怎么实现的：
+Configure the HTTP Error Encode method of the Kratos server to serialize the error thrown by the business and write it into the Response Body, and set the HTTP Status Code
+Let's see how the default ErrorEncoder in kratos is implemented:
 
 ```go
 func DefaultErrorEncoder(w http.ResponseWriter, r *http.Request, err error) {
-	// 拿到error并转换成kratos Error实体
+	// Get error and convert it into docs Error entity
 	se := errors.FromError(err)
-	// 通过Request Header的Accept中提取出对应的编码器
+	// Extract the corresponding encoder from the Accept of Request Header
 	codec, _ := CodecForRequest(r, "Accept")
 	body, err := codec.Marshal(se)
 	if err != nil {
@@ -110,16 +111,17 @@ func DefaultErrorEncoder(w http.ResponseWriter, r *http.Request, err error) {
 		return
 	}
 	w.Header().Set("Content-Type", httputil.ContentType(codec.Name()))
-	// 设置HTTP Status Code
+	// Set HTTP Status Code
 	w.WriteHeader(int(se.Code))
 	w.Write(body)
 }
+
 ```
 
 #### `TLSConfig(c *tls.Config) ServerOption`
 
-为 kratos 服务端添加 tls 配置用于加密 http 通信
-我们看下 kratos 中是如何配置的:
+Configure the TLSConfig of the kratos to encrypting http traffic.
+Let's see how the default TLSConfig in kratos is implemented:
 
 ```go
 // TLSConfig with TLS config.
@@ -128,13 +130,11 @@ func TLSConfig(c *tls.Config) ServerOption {
 		o.tlsConf = c
 	}
 }
-
 ```
 
 #### `StrictSlash(strictSlash bool) ServerOption`
 
-为 kratos 服务端添加 StrictSlash 配置，用于重定向路由
-我们看下 kratos 中是如何配置的
+Configure the StrictSlash of the kratos order the router to redirect URL routes with trailing slashes to those without them.
 
 ```go
 // StrictSlash is with mux's StrictSlash
@@ -149,8 +149,7 @@ func StrictSlash(strictSlash bool) ServerOption {
 
 #### `Listener(lis net.Listener) ServerOption`
 
-为 kratos 服务端添加 Listener 接口用于面向流协议的传输
-我们看下 kratos 中是如何配置的
+Configure the Listener of the kratos implement a generic network listener for stream-oriented protocols.
 
 ```go
 // Listener with server lis
@@ -161,22 +160,22 @@ func Listener(lis net.Listener) ServerOption {
 }
 ```
 
-### 启动 Server
+### Start Server
 
 #### `NewServer(opts ...ServerOption) *Server`
 
-传入opts配置并启动HTTP Server
+Pass in opts configuration and start HTTP Server
 
 ```go
 hs := http.NewServer()
 app := kratos.New(
-  kratos.Name("docs"),
-  kratos.Version("v1.0.0"),
-  kratos.Server(hs),
+	kratos.Name("docs"),
+	kratos.Version("v1.0.0"),
+	kratos.Server(hs),
 )
 ```
 
-#### HTTP server 中使用 kratos middleware
+#### Use kratos middleware in HTTP server
 
 ```go
 hs := http.NewServer(
@@ -187,13 +186,13 @@ hs := http.NewServer(
 )
 ```
 
-#### middleware 中处理 http 请求
+#### Handling http requests in middleware
 
 ```go
 if tr, ok := transport.FromServerContext(ctx); ok {
 	kind = tr.Kind().String()
 	operation = tr.Operation()
-	// 断言成HTTP的Transport可以拿到特殊信息
+	// Assert that HTTP transport can get special information
 	if ht, ok := tr.(*http.Transport); ok {
 		fmt.Println(ht.Request())
 	}
@@ -204,8 +203,8 @@ if tr, ok := transport.FromServerContext(ctx); ok {
 
 #### `func (s *Server) Route(prefix string, filters ...FilterFunc) *Router`
 
-创建一个新的HTTP Server Router，同时可以传递kratos的HTTP Filter拦截器
-我们看下用法：
+Create a new HTTP Server Router, which can pass Kraots' HTTP Filter interceptor at the same time
+Let's look at the usage:
 
 ```go
 r := s.Route("/v1")
@@ -214,58 +213,58 @@ r.GET("/helloworld/{name}", _Greeter_SayHello0_HTTP_Handler(srv))
 
 #### `func (s *Server) Handle(path string, h http.Handler)`
 
-将path添加到路由中，并使用标准的HTTP Handler来处理
+Add the path to the route and use the standard HTTP Handler to handle it
 
 #### `func (s *Server) HandlePrefix(prefix string, h http.Handler)`
 
-前缀匹配的方式将prefix添加到路由中，并使用标准的HTTP Handler来处理
+The prefix matching method adds the prefix to the route and uses the standard HTTP Handler to handle it
 
 #### `func (s *Server) ServeHTTP(res http.ResponseWriter, req *http.Request)`
 
-实现了标准库的HTTP Handler接口
+Implemented the HTTP Handler interface of the standard library
 
-> 其他路由使用方法参考: [https://github.com/go-kratos/examples/tree/main/http/middlewares](https://github.com/go-kratos/examples/tree/main/http/middlewares)
+> Reference for other routing usage methods: [https://github.com/go-kratos/examples/tree/main/http/middlewares](https://github.com/go-kratos/examples/tree/main/http/middlewares)
 
-> 在Kratos HTTP中使用[gin](https://github.com/gin-gonic/gin)框架: [https://github.com/go-kratos/examples/blob/main/http/gin/main.go](https://github.com/go-kratos/examples/blob/main/http/gin/main.go)
+> Use [gin](https://github.com/gin-gonic/gin) framework in Kratos HTTP: [https://github.com/go-kratos/kratos/blob/main/examples/http/gin/main.go](https://github.com/go-kratos/kratos/blob/main/examples/http/gin/main.go)
 
 ## Client
 
-### 配置
+### Configuration
 
 #### `WithTransport(trans http.RoundTripper) ClientOption`
 
-配置客户端的HTTP RoundTripper
+Configure the client's HTTP RoundTripper
 
 #### `WithTimeout(d time.Duration) ClientOption`
 
-配置客户端的请求默认超时时间，如果有链路超时优先使用链路超时时间
+Configure the default timeout time of the client request, if there is a link timeout, the link timeout time is preferred
 
 #### `WithUserAgent(ua string) ClientOption`
 
-配置客户端的默认User-Agent
+Configure the default User-Agent of the client
 
 #### `WithMiddleware(m ...middleware.Middleware) ClientOption`
 
-配置客户端使用的 kratos client中间件
+Configure the kratos client middleware used by the client
 
 #### `WithEndpoint(endpoint string) ClientOption`
 
-配置客户端使用的对端连接地址，如果不使用服务发现则为ip:port,如果使用服务发现则格式为discovery://\<authority\>/\<serviceName\>,这里\<authority\>可以默认填空
+Configure the peer connection address used by the client, if you do not use service discovery, it is ip:port, if you use service discovery, the format is discovery://\<authority\>/\<serviceName\>, here\<authority\> You can fill in the blanks by default
 
 #### `WithDiscovery(d registry.Discovery) ClientOption`
 
-配置客户端使用的服务发现
+Configure service discovery used by the client
 
 #### `WithRequestEncoder(encoder EncodeRequestFunc) ClientOption`
 
-配置客户端的 HTTP Request Encode方法，用来将户定义的pb结构体中序列化至Request Body
-我们看下默认的encoder:
+Configure the HTTP Request Encode method of the client to serialize the user-defined pb structure to the Request Body
+Let's look at the default encoder:
 
 ```go
 func DefaultRequestEncoder(ctx context.Context, contentType string, in interface{}) ([]byte, error) {
-	// 通过外部配置的contentType获取encoder类型
+	// Obtain the encoder type through the externally configured contentType
 	name := httputil.ContentSubtype(contentType)
-	// 拿到实际的encoder
+	// Get the actual encoder
 	body, err := encoding.GetCodec(name).Marshal(in)
 	if err != nil {
 		return nil, err
@@ -276,8 +275,8 @@ func DefaultRequestEncoder(ctx context.Context, contentType string, in interface
 
 #### `WithResponseDecoder(decoder DecodeResponseFunc) ClientOption`
 
-配置客户端的 HTTP Response Decode方法，用来将Response Body解析至用户定义的pb结构体中
-我们看下kratos中默认的decoder是怎么实现的：
+Configure the HTTP Response Decode method of the client to parse the Response Body into a user-defined pb structure
+Let's see how the default decoder in kratos is implemented:
 
 ```go
 func DefaultResponseDecoder(ctx context.Context, res *http.Response, v interface{}) error {
@@ -286,20 +285,20 @@ func DefaultResponseDecoder(ctx context.Context, res *http.Response, v interface
 	if err != nil {
 		return err
 	}
-	// 这里根据Response Header中的Content-Type拿到对应的decoder
-	// 然后进行Unmarshal
+	// Here you get the corresponding decoder according to the Content-Type in the Response Header
+	// Then proceed to Unmarshal
 	return CodecForResponse(res).Unmarshal(data, v)
 }
 ```
 
 #### `WithErrorDecoder(errorDecoder DecodeErrorFunc) ClientOption`
 
-配置客户端的Error解析方法
-我们看下kratos中默认的error decoder是怎么实现的：
+Configure the client's Error parsing method
+Let's take a look at how the default error decoder in kratos is implemented:
 
 ```go
 func DefaultErrorDecoder(ctx context.Context, res *http.Response) error {
-	// HTTP Status Code 为最高优先级
+	// HTTP Status Code is the highest priority
 	if res.StatusCode >= 200 && res.StatusCode <= 299 {
 		return nil
 	}
@@ -307,30 +306,30 @@ func DefaultErrorDecoder(ctx context.Context, res *http.Response) error {
 	data, err := ioutil.ReadAll(res.Body)
 	if err == nil {
 		e := new(errors.Error)
-		// 这里根据Response Header中的Content-Type拿到对应的response decoder
-		// 然后解析出error主体内容
+		// Here you get the corresponding response decoder according to the Content-Type in the Response Header
+		// Then parse out the main content of the error
 		if err = CodecForResponse(res).Unmarshal(data, e); err == nil {
-			// HTTP Status Code 为最高优先级
+			// HTTP Status Code is the highest priority
 			e.Code = int32(res.StatusCode)
 			return e
 		}
 	}
-	// 如果没有返回合法的Response Body则直接以HTTP Status Code为准
+	// If no valid Response Body is returned, the HTTP Status Code shall prevail
 	return errors.Errorf(res.StatusCode, errors.UnknownReason, err.Error())
 }
 ```
 
 #### `WithBalancer(b balancer.Balancer) ClientOption`
 
-配置客户端的负载均衡策略
+Configure the client's load balancing strategy
 
 #### `WithBlock() ClientOption`
 
-配置客户端的Dial策略为阻塞（直到服务发现发现节点才返回），默认为异步非阻塞
+Configure the dial policy of the client to be blocking (it will not return until the service discovers the node), and the default is asynchronous and non-blocking
 
 #### `WithTLSConfig(c *tls.Config) ClientOption`
 
-配置客户端的tls
+Configure the client's tls config
 
 ```go
 // WithTLSConfig with tls config.
@@ -341,9 +340,9 @@ func WithTLSConfig(c *tls.Config) ClientOption {
 }
 ```
 
-### Client使用方式
+### Client usage
 
-#### 创建客户端连接
+#### Create a client connection
 
 ```go
 conn, err := http.NewClient(
@@ -352,7 +351,7 @@ conn, err := http.NewClient(
 )
 ```
 
-#### 使用中间件
+#### Use middleware
 
 ```go
 conn, err := http.NewClient(
@@ -364,7 +363,7 @@ conn, err := http.NewClient(
 )
 ```
 
-#### 使用服务发现
+#### Use service discovery
 
 ```go
 conn, err := http.NewClient(

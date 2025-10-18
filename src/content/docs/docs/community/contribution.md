@@ -1,7 +1,7 @@
 ---
 id: contribution
-title: 贡献指南
-description: 贡献指南
+title: Contribution Guide
+description: Contribution Guide
 keywords:
   - Go
   - Kratos
@@ -13,39 +13,38 @@ keywords:
   - HTTP
 ---
 
-Kratos 社区希望能够得到广大开发者的帮助，所以希望您在要提 issue 或者 pull request 之前花几分钟来阅读一遍这篇指南。
+The Kratos community wants to be helped by a wide range of developers, so you'd like to take a few minutes to read this guide before you mention the problem or pull request.
 
-## Bug 修复
+## Reportings Bug or Fixing Bugs
 
-Kratos 使用 Github Issues 来管理问题。 如果您希望提交 bug 报告或帮忙修复 bug 时，请先确保已经搜索过已有的 issues 和 pull requests 并且阅读了我们的 [常见问题](https://go-kratos.dev/docs/intro/faq)。
+We use Github Issues to manage issues. If you want to submit , first make sure you've searched for existing issues, pull requests and read our [FAQ](https://go-kratos.dev/en/docs/intro/faq/).
 
-提交 bug 报告时，请使用我们提供的 issue 模板，清楚地描述遇到的问题和复现方式，如果方便，最好是可以提供一个最小复现仓库。
+When submitting a bug report, use the issue template we provide to clearly describe the problems encountered and how to reproduce, and if convenient it is best to provide a minimal reproduce repository.
 
-## 新增功能
+## Adding new features
 
-为了准确的区分用户提出的需求是否为大多数用户的需求或合理需求，分为 提案流程、向社区征集意见、社区采纳提案，作为新功能实现 这三个步骤来进行。  
-提案流程为了尽可能的简单，将流程分为 **Feature**、**Proposal** 和 **PR** 三个阶段，其中 **Feature**、**Proposal** 为 issue，**PR** 为具体的功能实现。具体流程如下：
+In order to accurately distinguish whether the needs put forward by users are the needs or reasonable needs of most users, solicit opinions from the community through the proposal process, and the proposals adopted by the community will be realized as new feature.  
+In order to make the proposal process as simple as possible, the process includes three stages: **Feature**, **Proposal** and **PR**, in which **Feature**, **Proposal** is issue and **PR** is the specific function implementation.
 
-- 为了方便社区正确的理解提案的需求，Feature issue 中需要详细的描述功能的需求，和相关的参考资料或文献。
-- 当大多数社区用户赞同这个提案时，将会创建一个 Proposal issue 来关联 Feature issue，Proposal issue 中需要详细的描述功能的实现方式，以及功能演示，作为最后功能实现的参考。
-- 当功能实现完毕后，发起合并请求（PR）并关联 Feature issue 和 Proposal issue，合并完成后，关闭所有 issue。
+- In order to facilitate the community to correctly understand the requirements of the feature, the feature issue needs to describe the functional requirements and relevant references or literature in detail.
+- When most community users agree with this feature, they will create a Proposal issue associated with the Feature issue.The Proposal issue needs to describe the implementation method and function demonstration in detail as a reference for the final function implementation.
+- After the function is implemented, a merge request will be initiated to associate the feature issue and proposal issue.
+  After the merge is completed, Close all issues.
 
-## 如何提交代码
+## How to submit code
 
-如果您从未在 Github 上提交过代码，请跟随如下步骤：
+If you've never submitted code on Github, follow these steps:
 
-- 首先请 fork 项目到自己的 Github 账户中
-- 然后基于 **main 分支** 创建一个新的功能分支，并以功能命名如 feature-log
-- 编写代码
-- 提交代码到远端分支
-- 在 Github 中提交 PR 请求
-- 等待 review 后合并到 main 分支
+- First, please fork items to your Github account
+- Then create a new feature branch based on the **Main** branch and name it features such as feature-log
+- Write code
+- Submit code to the far end branch
+- Submit a PR request in Github
+- Wait for review and merge to the main branch
 
-## Commit 提交规范
+**Note That when you submit a PR request, you first ensure that the code uses the correct coding specifications and that there are complete test cases, and that the information in the submission of the PR is best associated with the relevant issue to ease the workload of the auditor.**
 
-**注意在您提交 PR 请求时首先保证代码使用了正确的编码规范，并有完整的测试用例，提交 PR 的信息中最好关联相关的 issue，以减轻审核人员的工作负担。**
-
-遵循 [Conventional Commits](https://www.conventionalcommits.org/zh-hans/v1.0.0//#summary) 来规范化 commit message
+## Conventional Commits
 
 ```
 <type>[optional scope]: <description>
@@ -55,29 +54,31 @@ Kratos 使用 Github Issues 来管理问题。 如果您希望提交 bug 报告�
 [optional footer(s)]
 ```
 
+> More: [Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0/#summary)
+
 ### type
 
-提交的 commit 类型主要有以下几种:
+There are the following types of commit:
 
-#### 主要类型
+#### Main
 
-- fix 修复 bug
-- feat 新增功能
-- deps 依赖修改
-- break 不兼容修改
+- **fix**: A bug fix
+- **feat**: A new feature
+- **deps**: Changes external dependencies
+- **break**: Changes has break change
 
-#### 其他类型
+#### Other
 
-- docs 文档修改
-- refactor 重构
-- style 代码格式
-- test 测试用例
-- chore 日常工作，如文档修改，示例等
-- ci 构建脚本
+- **docs**: Documentation only changes
+- **refactor**: A code change that neither fixes a bug nor adds a feature
+- **style**: Changes that do not affect the meaning of the code (white-space, formatting, etc)
+- **test**: Adding missing tests or correcting existing tests
+- **chore** Daily work, examples, etc.
+- **ci**: Changes to our CI configuration files and scripts
 
 ### scope
 
-提交的代码修改的代码文件范围：
+The following is the list of supported scopes:
 
 - transport
 - examples
@@ -88,33 +89,35 @@ Kratos 使用 Github Issues 来管理问题。 如果您希望提交 bug 报告�
 
 ### description
 
-用简短的话语清晰的描述提交的代码做了什么事。
+The description contains a succinct description of the change
+
+- use the imperative, present tense: "change" not "changed" nor "changes"
+- don't capitalize the first letter
+- no dot (.) at the end
 
 ### body
 
-补充说明，用于描述原因、目的、实现逻辑等可以省略。
+The body should include the motivation for the change and contrast this with previous behavior.
 
 ### footer
 
-- **当存在不兼容(breaking change)更新时，需要描述原因以及影响范围。**
-- 关联相关的 issue，如 Refs #133。
-- 可能涉及到的文档更新和其他模块的更新的 PR 关联。
+The footer should contain any information about **Breaking Changes** and is also the place to reference Github issues that this commit Closes.
 
-### Commit Examples
+### Examples
 
-#### 只有提交信息
+#### Only commit message
 
 ```
 fix: The log debug level should be -1
 ```
 
-#### 需要引起关注
+#### Attention
 
 ```
 refactor!(transport/http): replacement underlying implementation
 ```
 
-#### 包含全部结构
+#### Full commit message
 
 ```
 fix(log): [BREAKING-CHANGE] unable to meet the requirement of log Library
@@ -127,18 +130,20 @@ BREAKING CHANGE:
   Breaks log.info api, log.log should be used instead
 ```
 
-## Release 版本发布
+## Release
 
-**Release** 时可以使用 `kratos changelog dev`命令生成 **Release** 说明，工具会筛选出来从上一次 **Release** 到现在的所有提交信息，然后根据提交的分类不同，主要汇总成以下几类:
+You can use `kratos changelog dev` to generate a change log during.
+
+The following is the list of supported types:
 
 - Breaking Change
 - Dependencies
 - Bug Fixes
 - Others
 
-### 示例
+### Example
 
-通过 `kratos changelog dev` 生成的文本，只需简单修改即可作为 **Release** 版本发布的说明.
+You can use the `kratos changelog dev` generated log as the describe to **Release**,just need a simple modification.
 
 ```
 ### New Features

@@ -1,57 +1,47 @@
 ---
 id: api-protobuf
-title: Protobuf 规范
-description: API接口统一以HTTP/GRPC为基础，并通过Protobuf进行协议定义，包括完整的Request/Reply，以及对应的接口错误码（Errors）
-keywords:
-  - Go
-  - Kratos
-  - Toolkit
-  - Framework
-  - Microservices
-  - Protobuf
-  - gRPC
-  - HTTP
+title: Protobuf Guideline
 ---
 
-这里主要进行修订 Proto 规范约定和多语言之间特定商定，帮助大家写出更标准的接口。
+This documentation is the guideline of Protobuf definition which recommended in Kratos project.
 
-API 接口统一以 HTTP/GRPC 为基础，并通过 Protobuf 进行协议定义，包括完整的 Request/Reply，以及对应的接口错误码（Errors）。
+The API definition is based on HTTP and gRPC, written with Protobuf format They should includes all the Request, Reply and the corresponding Errors.
 
-## 目录结构
+## Directory Structure
 
-API 接口可以定义到项目，或者在统一仓库中管理 Proto，类似 `googleapis`、`envoy-api`、`istio-api`；
+The definition of Proto could be either in `api` directory of the project or in a unified repository, likes `googleapis`, `envoy-api`, `istio-api`.
 
-项目中定义 Proto，以 api 为包名根目录：
+For the proto in project, the api should be used as the root of package name.
 
-```bash
-docs-demo：
-|____api // 服务API定义
+```
+kratos-demo：
+|____api // The definition of service's API
 | |____kratos
 | | |____demo
 | | | |____v1
 | | | | |____demo.proto
 ```
 
-在统一仓库中管理 Proto，以仓库为包名根目录：
+For the proto in unified repository, the repository name should be used as the root of package name.
 
-```bash
-docs-apis:
-|____api // 服务API定义
+```
+kratos-apis:
+|____api // The definition of service's API
 | |____kratos
 | | |____demo
 | | | |____v1
 | | | | |____demo.proto
-|____annotations // 注解定义options
-|____third_party // 第三方引用
+|____annotations // the options annotations
+|____third_party // third-party protos
 ```
 
-## 包名
+## Package
 
-包名为应用的标识（APP_ID），用于生成 gRPC 请求路径，或者 Proto 之间进行引用 Message。
+The name of the package (APP_ID) will be used for generate the request path of gRPC API or the path for proto importing.
 
-- `my.package.v1`，为 API 目录，定义 service 相关接口，用于提供业务使用。
+- `my.package.v1` is the API's directory, which defines the API of the services.
 
-例如：
+For example.
 
 ```protobuf
 // RequestURL: /<package_name>.<version>.<service_name>/{method}
@@ -79,27 +69,27 @@ option objc_class_prefix = "<PackageNameVersion>";
 
 ## Version
 
-该版本号为标注不兼容版本，并且会在 `<package_name>` 中进行区分，当接口需要重构时一般会更新不兼容结构。
+This version is for incompatible version and always used with `<package_name>`. It should be modified for API breaking changes.
 
 ## Import
 
-- 业务 proto 依赖，以根目录进行引入对应依赖的 proto。
-- third_party，主要为依赖的第三方 proto，比如 `protobuf`、`google rpc`、`google apis`、`gogo` 定义。
+- the proto dependencies' import path should be started from root path.
+- third_party, includes the proto from third-party such as `protobuf`, `google rpc`,`google apis`, `gogo` etc.
 
-## 命名规范
+## Naming Convention
 
-### 目录结构
+### Directory Structure
 
-包名为小写，并且同目录结构一致，例如：`my/package/v1/`。
+The package name should be lower-case, consist with the project directory structure, e.g., `my/package/v1/`.
 
 ```protobuf
 package my.package.v1;
 ```
 
-### 文件结构
+### File Structure
 
-文件应该命名为：`lower_snake_case.proto`。
-所有 Proto 应按下列方式排列:
+The name of proto files should be `lower_snake_case.proto`.
+The contents of proto file should be ordered in the following manner:
 
 1. License header (if applicable)
 2. File overview
@@ -109,11 +99,10 @@ package my.package.v1;
 6. File options
 7. Everything else
 
-### Message 和 字段命名
+### Message & Field Naming
 
-使用驼峰命名法（首字母大写）命名 message，例子：`SongServerRequest`。  
-使用下划线命名字段，例子：`song_name`。  
-Proto2 和 Proto3 的语法也有所不同。
+Use CamelCase (with an initial capital) for message names, e.g., `SongServerRequest`.  
+Use underscore_separated_names for field names (including oneof field and extension names) , e.g., `song_name`.
 
 ```protobuf
 message SongServerRequest {
@@ -121,7 +110,7 @@ message SongServerRequest {
 }
 ```
 
-使用上述这种字段的命名约定，生成的访问器将类似于如下代码：
+Corresponding with the definitions which mentioned above, the generated code can be shown as follows.
 
 ```
 C++:
@@ -133,21 +122,19 @@ Java:
   public Builder setSongName(String v) { ... }
 ```
 
-如果你的字段名包含一个数字，数字应该出现在字母后面，而不是下划线后面。例如，使用 `song_name1` 而不是 `song_name_1`。
+### Repeated Fields
 
-### Repeated 字段
-
-对于复数命名的 message 使用 repeated 字段。
+Use pluralized names for repeated fields.
 
 ```protobuf
 repeated string keys = 1;
-...
-repeated Account accounts = 17;
+  ...
+repeated MyMessage accounts = 17;
 ```
 
-### 枚举 Enums
+### Enums
 
-枚举类型使用驼峰命名法（首字母大写）命名，使用 `CAPITALS_WITH_UNDERSCORES(带下划线的大写字母)` 的方式命名枚举值：
+Use CamelCase (with an initial capital) for enum type names and `CAPITALS_WITH_UNDERSCORES` for value names:
 
 ```protobuf
 enum FooBar {
@@ -157,11 +144,11 @@ enum FooBar {
 }
 ```
 
-每一个枚举值以分号结尾，而非逗号。倾向于给枚举值加前缀，而不是用一个包围的信息包围它们。零值枚举应该有后缀 `UNSPECIFIED`。
+Each enum value should end with a semicolon, not a comma. Prefer prefixing enum values instead of surrounding them in an enclosing message. The zero value enum should have the suffix `UNSPECIFIED`.
 
-### 服务 Services
+### Services
 
-如果你在 `.proto` 文件中定义 RPC 服务，你应该使用驼峰命名法（首字母大写）命名 RPC 服务以及其中的 RPC 方法：
+If your `.proto` defines an RPC service, you should use CamelCase (with an initial capital) for both the service name and any RPC method names.
 
 ```protobuf
 service FooService {
@@ -172,45 +159,45 @@ service FooService {
 
 ## Comment
 
-- **Service**，描述清楚服务的作用
-- **Method**，描述清楚接口的功能特性
-- **Field**，描述清楚字段准确的信息
+- **Service** describes the functions of this service.
+- **Method** describe the functions of this API.
+- **Field** describe the information of this field.
 
 ## Examples
 
-API Service 接口定义(demo.proto)
+Service API Definition (demo.proto)
 
 ```protobuf
 syntax = "proto3";
 
 package kratos.demo.v1;
 
-// 多语言特定包名，用于源代码引用
-option go_package = "github.com/go-docs/docs/demo/v1;v1";   // ';' 后面的 <version> 是为了生成对应代码
+// specifying the package names for importing from multiple programming language
+option go_package = "github.com/go-docs/docs/demo/v1;v1";   //the name after ; is for relative code generation
 option java_multiple_files = true;
 option java_package = "com.github.docs.demo.v1";
 option objc_class_prefix = "KratosDemoV1";
 
-// 描述该服务的信息
+// Definition of the service
 service Greeter {
-  // 描述该方法的功能
-  rpc SayHello (HelloRequest) returns (HelloReply);
+    // definition the function of API
+    rpc SayHello (HelloRequest) returns (HelloReply);
 }
-// Hello请求参数
+// the request of Hello
 message HelloRequest {
-  // 用户名字
-  string name = 1;
+    // user's name
+    string name = 1;
 }
-// Hello返回结果
+// the response of Hello
 message HelloReply {
-  // 结果信息
-  string message = 1;
+    // result data
+    string message = 1;
 }
 ```
 
 ## References
 
-- [https://google.aip.dev/](https://google.aip.dev/)
-- [https://protobuf.dev/programming-guides/style/](https://protobuf.dev/programming-guides/style/)
-- [https://protobuf.dev/programming-guides/proto3/](https://protobuf.dev/programming-guides/proto3/)
-- [https://colobu.com/2017/03/16/Protobuf3-language-guide/](https://colobu.com/2017/03/16/Protobuf3-language-guide/)
+- https://google.aip.dev/
+- https://protobuf.dev/programming-guides/style/
+- https://protobuf.dev/programming-guides/proto3/
+- https://colobu.com/2017/03/16/Protobuf3-language-guide/

@@ -1,6 +1,6 @@
 ---
 id: logging
-title: 日志
+title: Logging
 keywords:
   - Go
   - Kratos
@@ -12,12 +12,12 @@ keywords:
   - HTTP
 ---
 
-Logging 中间件用于打印服务收到或发起的请求详情。
+Logging middleware is used to print the details of requests received or initiated by the service.
 
-### 使用方法
+### Usage
 
-#### grpc server
-在 `grpc.ServerOption` 中引入 `logging.Server()`, 则会在每次收到 gRPC 请求的时候打印详细请求信息。
+#### gRPC server
+By passing `logging.Server()` in `grpc.ServerOption`, Kratos will print detailed request information every time a gRPC request is received.
 
 ```go
 logger := log.DefaultLogger
@@ -29,23 +29,9 @@ var opts = []grpc.ServerOption{
 srv := grpc.NewServer(opts...)
 ```
 
-#### grpc client
+#### gRPC client
 
-在 `grpc.WithMiddleware` 中引入 `logging.Client()`, 则会在每次发起 grpc 请求的时候打印详细请求信息。
-
-```go
-logger := log.DefaultLogger
-conn, err := grpc.DialInsecure(
-	context.Background(),
-	grpc.WithEndpoint("127.0.0.1:9000"),
-	grpc.WithMiddleware(
-		logging.Client(logger),
-	),
-)
-```
-#### http server
-
-在 `http.ServerOption` 中引入 `logging.Server()`, 则会在每次收到 Http 请求的时候打印详细请求信息。
+By passing `logging.Client()` in `grpc.WithMiddleware`, Kratos will print detailed request information every time a grpc request is initiated.
 
 ```go
 logger := log.DefaultLogger
@@ -57,9 +43,9 @@ var opts = []http.ServerOption{
 srv := http.NewServer(opts...)
 ```
 
-#### http client
+#### HTTP client
 
-在 `http.WithMiddleware` 中引入 `logging.Client()`, 则会在每次发起 Http 请求的时候打印详细请求信息。
+By passing `logging.Client()` in `http.WithMiddleware`, Kratos will print detailed request information every time an Http request is initiated.
 
 ```go
 logger := log.DefaultLogger
@@ -72,44 +58,52 @@ conn, err := http.NewClient(
 )
 ```
 
-Logging 中间件在server 中只打印 trace_id 不采集数据
-### 在项目中使用
+The Logging middleware only prints `trace_id` in the server and does not collect data.
 
-####  grpc-server internal/server/grpc.go
+### Use in the project
+
+#### grpc-server internal/server/grpc.go
+
 ```go
 exporter, err := stdouttrace.New(stdouttrace.WithWriter(ioutil.Discard))
 if err != nil {
 	fmt.Printf("creating stdout exporter: %v", err)
 	panic(err)
 }
+
 tp := tracesdk.NewTracerProvider(
 	tracesdk.WithBatcher(exporter),
 	tracesdk.WithResource(resource.NewSchemaless(
 		semconv.ServiceNameKey.String(Name)),
-	))
+	)
+)
+
 var opts = []grpc.ServerOption{
-		grpc.Middleware(
-			tracing.Server(tracing.WithTracerProvider(tp)),
-		),
-	}
+  grpc.Middleware(
+    tracing.Server(tracing.WithTracerProvider(tp)),
+  ),
+}
+
 srv := grpc.NewServer(opts...)
 ```
-#### 日志增加trace_id字段  cmd/项目名/main.go
+
+Add the `trace_id` field to the output log, cmd/project_name/main.go.
+
 ```go
-logger := log.With(log.NewStdLogger(os.Stdout),
-		"ts", log.DefaultTimestamp,
-		"caller", log.DefaultCaller,
-		"service.id", id,
-		"service.name", Name,
-		"service.version", Version,
-		"trace_id", tracing.TraceID(),
-        "span_id", tracing.SpanID(),
-	)
+logger := log.With(
+  log.NewStdLogger(os.Stdout),
+  "ts", log.DefaultTimestamp,
+  "caller", log.DefaultCaller,
+  "service.id", id,
+  "service.name", Name,
+  "service.version", Version,
+  "trace_id", log.TraceID(),
+  "span_id", log.SpanID(),
+)
 ```
-#### 日志打印trace_id
+
+Log `trace_id`
+
 ```go
-log.WithContext(ctx).Errorf("创建xxx失败: %s", err)
+log.WithContext(ctx).Errorf("Field created: %s", err)
 ```
-
-
-

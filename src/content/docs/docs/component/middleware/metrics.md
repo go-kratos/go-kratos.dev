@@ -1,6 +1,6 @@
 ---
 id: metrics
-title: 监控
+title: Metrics
 keywords:
   - Go
   - Kratos
@@ -12,11 +12,11 @@ keywords:
   - HTTP
 ---
 
-Metrics 中间件用于实现服务的性能指标监控，统计了请求耗时和请求计数。
+Metrics middleware is used to monitor performance metrics for services, counting request time and request counts.
 
-### 配置
+### Configuration
 
-Metrics 中间件中提供了两个配置方法 `WithSeconds()` 和 `WithRequests()`。
+Two configuration methods are available in metrics middleware `WithSeconds()` and `WithRequests()`。
 
 #### `WithSeconds()`
 ```go
@@ -26,7 +26,7 @@ func WithSeconds(c metrics.Observer) Option {
 	}
 }
 ```
-用于设置 metrics 中间件统计请求耗时的 `Observer` 直方图。
+The `Observer` histogram used to set up the metrics middleware statistics request.
 
 #### `WithRequests()`
 
@@ -38,13 +38,13 @@ func WithRequests(c metrics.Counter) Option {
 }
 ```
 
-用于设置 metrics 中间件统计请求计数的 `Counter` 计数器。
+The `Counter` counter used to set the metrics middleware statistics request count.
 
-### 使用方式 (kratos < 2.8.0)
+### Usage (kratos < 2.8.0)
 
-#### 使用 prometheus
+#### Prometheus
 ```go
-// 详见 https://github.com/go-kratos/examples/tree/main/metrics
+// Detailed reference https://github.com/go-kratos/examples/tree/main/metrics
 
 _metricSeconds = prometheus.NewHistogramVec(prometheus.HistogramOpts{
 	Namespace: "server",
@@ -63,7 +63,7 @@ _metricRequests = prometheus.NewCounterVec(prometheus.CounterOpts{
 	
 prometheus.MustRegister(_metricSeconds, _metricRequests)
 ```
-#### Server 中使用 metrics
+#### To configure metrics in servers
 
 ```go
 import (
@@ -94,7 +94,7 @@ httpSrv := http.NewServer(
 httpSrv.Handle("/metrics", promhttp.Handler())
 ```
 
-#### Client 中使用 metrics
+#### To configure metrics in clients
 
 ```go
 // grpc client
@@ -122,10 +122,11 @@ conn, err := http.NewClient(
 )
 ```
 
-### 使用方式 (kratos >= 2.8.0)
-kratos 从 [v2.8.0](https://github.com/go-kratos/kratos/releases/tag/v2.8.0) 开始使用 otel.Metrics，需要用以下方法 export 数据到 prometheus。
+### Usage (kratos >= 2.8.0)
 
-#### 使用 prometheus
+Since version [v2.8.0](https://github.com/go-kratos/kratos/releases/tag/v2.8.0), kratos uses otel.Metrics. Way to export metrics to prometheus is as follows:
+
+#### Prometheus
 ```go
 import (
 	"github.com/go-docs/docs/v2/middleware/metrics"
@@ -155,7 +156,7 @@ func init() {
 }
 ```
 
-#### Server 中使用 metrics
+#### To configure metrics in servers
 ```go
 import (
 	"github.com/prometheus/client_golang/prometheus/promhttp"
@@ -185,7 +186,7 @@ httpSrv := http.NewServer(
 httpSrv.Handle("/metrics", promhttp.Handler())
 ```
 
-#### Client 中使用 metrics
+#### To configure metrics in clients
 ```go
 // grpc client
 conn, err := grpc.DialInsecure(

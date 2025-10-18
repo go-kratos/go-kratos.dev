@@ -1,7 +1,7 @@
 ---
 id: selector
-title: 路由与负载均衡
-description: 路由与负载均衡主要的接口是 Selector，但在同目录下也提供了一个默认的 Selector 实现，该实现可以通过替换 NodeBuilder、Filter、Balancer 来分别实现节点权重计算、路由过滤、负载均衡算法的可插拔
+title: Routing and Load Balancing
+description: The main interface for routing and load balancing is Selector, but a default Selector implementation is also provided in the same directory. This implementation can implement node weight calculation, route filtering, and load balancing algorithms by replacing NodeBuilder, Filter, Balancer, and Pluggable
 keywords:
   - Go
   - Kratos
@@ -15,47 +15,46 @@ keywords:
   - Selector
 ---
 
-## 接口实现
+## Interface Implementation
 
-路由与负载均衡主要的接口是 Selector，在同目录下也提供了一个默认的 Selector 实现，该实现可以通过替换 **NodeBuilder**、**Filter**、**Balancer** 来分别实现节点权重计算算法、服务路由过滤策略、负载均衡算法的可插拔
+The main interface for routing and load balancing is Selector, and a default Selector implementation is also provided in the same directory. This implementation can implement node weight calculation algorithm, service routing filtering strategy, and load balancing algorithm by replacing **NodeBuilder**, **Filter**, **Balancer**, and Pluggable.
 
 ```go
 type Selector interface {
-  // Selector 内部维护的服务节点列表通过 Rebalancer 接口来更新
-  Rebalancer
+    // The list of service nodes maintained internally by the Selector is updated through the Rebalancer interface.
+    Rebalancer
 
-  // Select nodes
-  // if err == nil, selected and done must not be empty.
-  Select(ctx context.Context, opts ...SelectOption) (selected Node, done DoneFunc, err error)
+    // Select nodes
+    // if err == nil, selected and done must not be empty.
+    Select(ctx context.Context, opts ...SelectOption) (selected Node, done DoneFunc, err error)
 }
 
-// 通过 Rebalancer 实现服务节点变更感知
+// Realize service node change awareness through Rebalancer.
 type Rebalancer interface {
-  Apply(nodes []Node)
+    Apply(nodes []Node)
 }
 ```
 
-已支持的实现：
+Supported implementations:
 
-- [wrr](https://github.com/go-kratos/kratos/tree/main/selector/wrr) : Weighted round robin (Kratos Client 内置默认算法)
+- [wrr](https://github.com/go-kratos/kratos/tree/main/selector/wrr) : Weighted round robin (Kratos Client built-in default algorithm)
 - [p2c](https://github.com/go-kratos/kratos/tree/main/selector/p2c) : Power of two choices
 - [random](https://github.com/go-kratos/kratos/tree/main/selector/random) : Random
 
-## 使用方式
+## How to use
 
 ### HTTP Client
 
 ```go
-import	"github.com/go-docs/docs/v2/selector/wrr"
-import	"github.com/go-docs/docs/v2/selector/filter"
+import "github.com/go-docs/docs/v2/selector/wrr"
+import "github.com/go-docs/docs/v2/selector/filter"
 
-// 创建路由 Filter：筛选版本号为"2.0.0"的实例
-filter :=  filter.Version("2.0.0")
-// 创建 P2C 负载均衡算法 Selector，并将路由 Filter 注入
+// Create a route Filter: filter instances with version number "2.0.0".
+filter := filter.Version("2.0.0")
+// Create P2C load balancing algorithm Selector, and inject routing Filter.
 selector.SetGlobalSelector(wrr.NewBuilder())
 
 hConn, err := http.NewClient(
-  context.Background(),
   http.WithEndpoint("discovery:///helloworld"),
   http.WithDiscovery(r),
   http.WithNodeFilter(filter)
@@ -65,12 +64,12 @@ hConn, err := http.NewClient(
 ### gRPC Client
 
 ```go
-import	"github.com/go-docs/docs/v2/selector/wrr"
-import	"github.com/go-docs/docs/v2/selector/filter"
+import "github.com/go-docs/docs/v2/selector/wrr"
+import "github.com/go-docs/docs/v2/selector/filter"
 
-// 创建路由 Filter：筛选版本号为"2.0.0"的实例
-filter :=  filter.Version("2.0.0")
-// 由于 gRPC 框架的限制，只能使用全局 balancer name 的方式来注入 selector
+// Create a route Filter: filter instances with version number "2.0.0".
+filter := filter.Version("2.0.0")
+// Due to the limitations of the gRPC framework, only the global balancer name can be used to inject Selector.
 selector.SetGlobalSelector(wrr.NewBuilder())
 
 conn, err := grpc.DialInsecure(
@@ -78,7 +77,7 @@ conn, err := grpc.DialInsecure(
   grpc.WithEndpoint("discovery:///helloworld"),
   grpc.WithDiscovery(r),
 
-  // 通过 grpc.WithFilter 注入路由 Filter
+  // Inject routing Filter through grpc.WithFilter.
   grpc.WithNodeFilter(filter),
 )
 ```

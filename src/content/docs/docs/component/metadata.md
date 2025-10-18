@@ -1,6 +1,6 @@
 ---
 id: metadata
-title: 元信息传递
+title: Metadata
 keywords:
   - Go
   - Kratos
@@ -12,27 +12,28 @@ keywords:
   - HTTP
 ---
 
-微服务之间通过 HTTP 和 gRPC API 进行接口交互，服务架构需要使用统一的元信息（Metadata）传输进行微服务间的传递。
-目前 gRPC 中可以携带元信息传递，原理是将元信息放入 HTTP Header 中，这样上游即可收到对应的元信息 信息。
-因此在Kratos的设计上，也是通过 HTTP Header 进行传递。在框架中先将元信息包封装成key/value结构，然后携带到 Transport Header 中。
+Microservices interact with each other via HTTP and gRPC API, so the service architecture should use unified Metadata transmission.  
+At present, It is possible for gRPC to carry Metadata, by putting Metadata in HTTP Header, so the upstream can receive the corresponding Metadata information.
+Therefore, in Kratos, it is also carried by HTTP Header. In the framework, it is packaged in key/value structure, and carried in Transport Header.
 
-### 默认格式规范
+### Default Metadata Convention
 
-- x-md-global-xxx，全局传递，例如 mirror/color/criticality
-- x-md-local-xxx，局部传递，例如 caller
+- x-md-global-xxx，will be transported globally, e.g. mirror/color/criticality
+- x-md-local-xxx，will be transported locally, e.g. caller
 
-也可以在 middleware/metadata 定制自己的 key prefix，配置固定的元信息传递
+It is also possible to customize the key prefix in middleware/metadata for constant metadata.
 
-### 使用方式
-首先配置 client/server 对应的 middleware/metadata 插件，然后可以自定义传递 key prefix，或者元信息常量，例如 caller。
-然后可以通过元信息包中的 `NewClientContext` 或者 `FromServerContext` 进行配置或者获取。
+### Usage
+First, you need to configure corresponding middleware/metadata plug-ins for the client/server. 
+Then you can customize the key prefix or metadata constant, e.g. caller.
+Finally you can use `NewClientContext` or `FromServerContext` from Metadata package to configure or get the metadata.
 
 
-#### 注册元信息中间件
+#### Configuration
 ```go
 // https://github.com/go-kratos/examples/tree/main/metadata
 
-// 注册元信息中间件到 gRPC 或 HTTP 的 server 或 client 中
+// Register the metadata middleware to gRPC or HTTP's server or client
 
 // server
 grpcSrv := grpc.NewServer(
@@ -57,13 +58,13 @@ conn, err := grpc.DialInsecure(
 	),
 )
 ```
-#### 获取元信息字段的值
+#### Get metadata value
 ```go
 if md, ok := metadata.FromServerContext(ctx); ok {
 	extra = md.Get("x-md-global-extra")
 }
 ```
-#### 设置元信息字段的值
+#### Set metadata
 ```go
 ctx = metadata.AppendToClientContext(ctx, "x-md-global-extra", "2233")
 ```

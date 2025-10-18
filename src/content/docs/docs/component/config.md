@@ -1,7 +1,7 @@
 ---
 id: config
-title: 配置
-description: Kratos 配置源可以指定多个，并且 config 会进行合并成 map[string]interface{}，然后通过 Scan 或者 Value 获取值内容
+title: Configuration
+description: Kratos configuration supports multiple sources, and the config will be merged into map[string]interface{}, then you can get the value content through Scan or Value.
 keywords:
   - Go 
   - Kratos
@@ -12,48 +12,46 @@ keywords:
   - gRPC
   - HTTP
 ---
-微服务或者说云原生应用的配置最佳实践是将配置文件和应用代码分开管理——不将配置文件放入代码仓库，也不打包进容器镜像，而是在服务运行时，把配置文件挂载进去或者直接从配置中心加载。Kratos的config组件就是用来帮助应用从各种配置源加载配置。
+The best practice for configuring microservices or cloud-native applications is to separate configuration files from application code - do not put configuration files in code repositories or package them into container images, but mount the configuration files or load them directly from the configuration center at runtime. Kratos' config component is used to help applications load configurations from various sources.
 
-## 设计理念
-### 1.支持多种配置源
-Kratos定义了标准化的[Source和Watcher接口](https://github.com/go-kratos/kratos/blob/main/config/source.go)来适配各种配置源。
+## Design Philosophy
+### 1. Support for Multiple Configuration Sources
+Kratos defines standardized [Source and Watcher interfaces](https://github.com/go-kratos/kratos/blob/main/config/source.go) to adapt to various configuration sources.
 
-框架内置了[本地文件file](https://github.com/go-kratos/kratos/tree/main/config/file)和[环境变量env](https://github.com/go-kratos/kratos/tree/main/config/env)的实现。
+The framework comes with built-in implementations of [local file (file)](https://github.com/go-kratos/kratos/tree/main/config/file) and [environment variable (env)](https://github.com/go-kratos/kratos/tree/main/config/env).
 
-另外，在[contrib/config](https://github.com/go-kratos/kratos/tree/main/contrib/config)下面，我们也提供了如下的配置中心的适配供使用：
+In addition, in [contrib/config](https://github.com/go-kratos/kratos/tree/main/contrib/config), we also provide adapters for the following configuration centers:
 
-* [apollo](https://github.com/go-kratos/kratos/tree/main/contrib/config/apollo)
-* [consul](https://github.com/go-kratos/kratos/tree/main/contrib/config/consul)
-* [etcd](https://github.com/go-kratos/kratos/tree/main/contrib/config/etcd)
-* [kubernetes](https://github.com/go-kratos/kratos/tree/main/contrib/config/kubernetes)
-* [nacos](https://github.com/go-kratos/kratos/tree/main/contrib/config/nacos)
-* [polaris](https://github.com/go-kratos/kratos/tree/main/contrib/config/polaris)
+* [Apollo](https://github.com/go-kratos/kratos/tree/main/contrib/config/apollo)
+* [Consul](https://github.com/go-kratos/kratos/tree/main/contrib/config/consul)
+* [Etcd](https://github.com/go-kratos/kratos/tree/main/contrib/config/etcd)
+* [Kubernetes](https://github.com/go-kratos/kratos/tree/main/contrib/config/kubernetes)
+* [Nacos](https://github.com/go-kratos/kratos/tree/main/contrib/config/nacos)
+* [Polaris](https://github.com/go-kratos/kratos/tree/main/contrib/config/polaris)
 
-如果上述的配置加载方式无法涵盖您的环境，您也可以通过实现接口来适配您自己的配置加载方式。
+If the above configuration loading methods do not cover your environment, you can also implement the interface to adapt your own configuration loading method.
 
-### 2.支持多种配置格式
-配置组件复用了`encoding`中的反序列化逻辑作为配置解析使用。默认支持以下格式的解析：
+### 2. Support for Multiple Configuration Formats
+The config component reuses the deserialization logic in `encoding` as the configuration parsing. It supports the following formats by default:
 
-* json
-* proto
-* xml
-* yaml
+* JSON
+* Protobuf
+* XML
+* YAML
 
-框架将根据配置文件类型匹配对应的Codec，进行配置文件的解析。您也可以通过实现[Codec](https://github.com/go-kratos/kratos/blob/main/encoding/encoding.go#L10)并用`encoding.RegisterCodec`方法，将它注册进去，来解析其它格式的配置文件。
+The framework will parse the configuration file based on its type by matching the corresponding codec. You can also implement [Codec](https://github.com/go-kratos/kratos/blob/main/encoding/encoding.go#L10) and register it with the `encoding.RegisterCodec` method to parse other formats of configuration files.
 
-配置文件类型的提取，根据配置源具体实现不同而略有区别，内置的file是把文件后缀作为文件类型的，其它配置源插件的具体逻辑请参考对应的文档。
+The extraction of configuration file types varies slightly depending on the specific implementation of the configuration source. The built-in file source uses the file extension as the file type. Please refer to the documentation of the other configuration source plugins for their specific logic.
 
-### 3.热更新
-Kratos的config组件支持配置的热更新，您可以使用配置中心配合config的热更新功能，在服务不重新发布/不停机/不重启的情况下，在线更新服务的配置，修改服务的一些行为。
+### 3. Hot Reloading
+Kratos' config component supports hot reloading of configurations. You can use the configuration center to update the configuration of a service online without re-deploying, stopping, or restarting the service, and modify some behaviors of the service.
 
-### 4.配置合并
-在config组件中，所有的配置源中的配置（文件）将被逐个读出，分别解析成map，并合并到一个map中去。因此在加载完毕后，不需要再理会配置的文件名，不用文件名来进行查找，而是用内容中的结构来对配置的值进行索引即可。设计和编写配置文件时，请注意**各个配置文件中，根层级的key不要重复，否则可能会被覆盖**。
+### 4. Configuration Merge
+In the config component, the configurations (files) from all configuration sources will be read one by one, parsed into maps, and merged into one map. Therefore, after loading, you don't need to consider the file names or search for configurations by file names. Instead, you can use the structure of the contents to index the values of the configurations. When designing and writing configuration files, please note that **the root-level keys in different configuration files should not be duplicated, otherwise they may be overwritten**.
 
-举例：
-
-有如下两个配置文件：
+For example, if we have the following two configuration files:
 ```yaml
-# 文件1
+# File 1
 foo:
   baz: "2"
   biu: "example"
@@ -62,7 +60,7 @@ hello:
 ```
 
 ```yaml
-# 文件2
+# File 2
 foo:
   bar: 3
   baz: aaaa
@@ -71,7 +69,7 @@ hey:
   qux: quux
 ```
 
-`.Load`后，将被合并为如下的结构：
+After calling `.Load`, they will be merged into the following structure:
 ```json
 {
   "foo": {
@@ -88,14 +86,14 @@ hey:
   }
 }
 ```
-我们可以发现，配置文件的各层级将分别合并，在key冲突时会发生覆盖，而具体的覆盖顺序，会由配置源实现中的读取顺序决定，因此这里重新提醒一下，**各个配置文件中，根层级的key不要重复，也不要依赖这个覆盖的特性**，从根本上避免不同配置文件的内容互相覆盖造成问题。
+As we can see, the configurations from different files are merged separately, and when there is a key conflict, the values will be overwritten. The specific order of overwriting will be determined by the read order in the configuration source implementation. Therefore, I would like to remind you again that **the root-level keys in different configuration files should not be duplicated, and do not rely on this overwrite feature** to avoid problems caused by the overlapping of contents in different configuration files.
 
-在使用时，可以用`.Value("foo.bar")`直接获取某个字段的值，也可以用`.Scan`方法来将整个map读进某个结构体中，具体使用方式请看下文。
+When using the configuration, you can use `.Value("foo.bar")` to directly get the value of a specific field, or use the `.Scan` method to read the entire map into a specific structure. Please refer to the following sections for specific usage.
 
-## 使用
-### 1.初始化配置源
-使用file，即从本地文件加载：
-这里的path就是配置文件的路径，这里也可以填写一个目录名，这样会将整个目录中的所有文件进行解析加载，合并到同一个map中。
+## Usage
+### 1. Initialize Configuration Sources
+Use file, which loads from a local file:
+Here, the `path` is the path to the configuration file. You can also specify a directory name, and all files in the directory will be parsed and loaded into the same map.
 ```go
 import (
     "github.com/go-docs/docs/v2/config"
@@ -108,9 +106,10 @@ c := config.New(
         file.NewSource(path),
     ),
 )
+
 ```
 
-如果想用外部的配置中心，可以在[contrib/config](https://github.com/go-kratos/kratos/tree/main/contrib/config)里面找一个，以consul为例：
+If you want to use an external configuration center, you can find one in [contrib/config](https://github.com/go-kratos/kratos/tree/main/contrib/config). Taking Consul as an example:
 ```go
 import (
 	"github.com/go-docs/docs/contrib/config/consul/v2"
@@ -130,12 +129,12 @@ if err != nil {
 c := config.New(config.WithSource(cs))
 ```
 
-不同的配置源插件使用方式略有差别，您可以参考它们各自的文档或examples。
+Different configuration source plugins have slightly different usage methods. You can refer to their respective documentation or examples.
 
-### 2.读取配置
-首先要定义一个结构体用来解析字段，如果您使用的是kratos-layout创建的项目，可以参考后面讲解kratos-layout的部分，使用proto文件定义配置和生成struct。
+### 2. Read Configuration
+First, define a structure to parse the fields of the configuration file. If you are using a project created with kratos-layout, you can refer to the section on kratos-layout below, which uses a `.proto` file to define the configuration and generate a struct.
 
-我们这里演示的是手工定义结构，您需要在结构体上用json tag来定义您配置文件的字段。
+Here, we demonstrate manually defining the structure. You need to use JSON tags to define the fields in your configuration file.
 ```go
 var v struct {
   Service struct {
@@ -145,7 +144,7 @@ var v struct {
 }
 ```
 
-使用之前创建好的config实例，调用`.Scan`方法，读取配置文件的内容到结构体中，这种方式适用于完整获取整个配置文件的内容。
+Using the initialized config instance, call the `.Scan` method to read the configuration file into the structure. This method is suitable for obtaining the entire content of the configuration file.
 ```go
 // Unmarshal the config to struct
 if err := c.Scan(&v); err != nil {
@@ -154,7 +153,7 @@ if err := c.Scan(&v); err != nil {
 fmt.Printf("config: %+v", v)
 ```
 
-使用config实例的`.Value`方法，可以单独获取某个字段的内容。
+You can use the `.Value` method of the config instance to get the content of a specific field.
 ```go
 name, err := c.Value("service.name").String()
 if err != nil {
@@ -163,57 +162,57 @@ if err != nil {
 fmt.Printf("service: %s", name)
 ```
 
-### 3.监听配置变更
-通过`.Watch`方法，可以监听配置中某个字段的变更，在本地或远端的配置中心有配置文件变更时，执行回调函数进行自定义的处理
+### 3. Watch Configuration Changes
+You can use the `.Watch` method to listen for changes to a specific field in the configuration. When there are configuration file changes in the local or remote configuration center, the callback function will be executed for custom processing.
 ```go
 if err := c.Watch("service.name", func(key string, value config.Value) {
   fmt.Printf("config changed: %s = %v\n", key, value)
-  // 在这里写回调的逻辑
+  // Write your callback logic here
 }); err != nil {
   log.Error(err)
 }
 ```
 
-### 4.读取环境变量
-如果有配置需要从环境变量读取，请使用以下方式：
+### 4. Read Environment Variables
+If there are configurations that need to be read from environment variables, please use the following method:
 
-配置环境变量配置源env：
+Configure the environment variable source `env`:
 ```go
 c := config.New(
     config.WithSource(
-        // 添加前缀为 KRATOS_ 的环境变量，不需要的话也可以设为空字符串
+        // Add environment variables with the prefix KRATOS_, or set it to an empty string if not needed
         env.NewSource("KRATOS_"),
-        // 添加配置文件
+        // Add configuration files
         file.NewSource(path),
     ))
     
-// 加载配置源：
+// Load configuration sources:
 if err := c.Load(); err != nil {
     log.Fatal(err)
 }
 
-// 获取环境变量 KRATOS_PORT 的值，这里用去掉前缀的名称进行读取
+// Get the value of environment variable KRATOS_PORT, here we read it using the name without the prefix
 port, err := c.Value("PORT").String()
 ```
 
-除了上面使用Value方法直接读的方式，也可以在配置文件内容里使用占位符来把环境变量中的值渲染进去：
+In addition to using the `Value` method mentioned above to read directly, you can also use placeholders in the configuration file to render the values from environment variables:
 ```go
 service:
   name: "kratos_app"
 http:
   server:
-    # 使用 service.name 的值
+    # Use the value of service.name
     name: "${service.name}"
-    # 使用环境变量 PORT 替换，若不存在，使用默认值 8080
+    # Replace with the environment variable PORT, if it does not exist, use the default value 8080
     port: "${PORT:8080}"
-    # 不支持该格式，会被当作普通字符串处理
+    # This format is not supported and will be treated as a regular string
     timeout: "$TIMEOUT"
 ```
 
-### 5.配置解析Decoder
-Decoder用于将配置文件内容用特定的反序列化方法解析出来，[默认decoder](https://github.com/go-kratos/kratos/blob/main/config/options.go#L60)会根据文件的类型自动识别类型并解析，通常情况不需要自定义这个，您可以通过后文的实现Codec的方式来注册更多文件类型。
+### 5. Configure the Decoder
+The Decoder is used to parse the content of the configuration file using a specific deserialization method. By default, the [default decoder](https://github.com/go-kratos/kratos/blob/main/config/options.go#L60) automatically recognizes and parses the type of the file based on its type. In general, you do not need to customize this. You can register more file types by implementing the Codec as described in the following section.
 
-在初始化config时加入`WithDecoder`参数，可以将Decoder覆盖为自定义的逻辑。如下代码展示了配置自定义Decoder的方法，这里使用了yaml库解析所有配置文件，您可以使用这种方式来使用特定的配置文件解析方法，但更推荐使用后文的实现Codec的方式，能同时支持多种格式的解析。
+You can override the Decoder behavior by adding the `WithDecoder` parameter when initializing the config. The following code shows how to configure a custom Decoder. Here, we use the `yaml` library to parse all configuration files. You can use this method to specify a specific configuration file parsing method, but it is recommended to implement the Codec as described in the following section to support multiple formats of parsing at the same time.
 
 ```go
 import "gopkg.in/yaml.v2"
@@ -228,8 +227,8 @@ c := config.New(
 )
 ```
 
-### 6.配置处理Resolver
-Resolver用于对解析完毕后的map结构进行再次处理，[默认resolver](https://github.com/go-kratos/kratos/blob/32272fe44156cf3d1fa5cd4dbbb9b5098c9c2a4f/config/options.go#L85)会对配置中的占位符进行填充。您可以通过在初始化config时加入`WithResolver`参数，来覆盖resolver的行为。
+### 6. Configure the Resolver
+The Resolver is used to further process the parsed map structure. The [default resolver](https://github.com/go-kratos/kratos/blob/32272fe44156cf3d1fa5cd4dbbb9b5098c9c2a4f/config/options.go#L85) fills in placeholders in the configuration. You can override the behavior of the resolver by adding the `WithResolver` parameter when initializing the config.
 
 ```go
 c := config.New(
@@ -237,16 +236,16 @@ c := config.New(
     file.NewSource(flagconf),
   ),
   config.WithResolver(func (input map[string]interface{}) (err error)  {
-    // 在这里对input进行处理即可
-    // 您可能需要定义一个递归的函数，来处理嵌套的map结构
+    // Process the input here
+    // You may need to define a recursive function to process nested map structures
     return 
   }),
 )
 ```
 
-### 7.支持其它格式的配置文件
-首先实现[Codec](https://github.com/go-kratos/kratos/blob/main/encoding/encoding.go#L10)，这里以yaml为例
-   
+### 7. Support for Other Configuration File Formats
+First, implement the [Codec](https://github.com/go-kratos/kratos/blob/main/encoding/encoding.go#L10). Here, we take YAML as an example.
+
 ```go
 import (
 	"github.com/go-docs/docs/v2/encoding"
@@ -275,77 +274,34 @@ func (codec) Name() string {
 }
 ``` 
 
-然后注册该Codec
-这里由于我们把注册代码`encoding.RegisterCodec(codec{})`写在了包的`init`方法中，所以在包被import的时候，将会运行这个`init`方法，也就是进行注册。所以您可以在代码入口（比如`main.go`）对它进行注册
+Then, register the Codec. Since we put the registration code `encoding.RegisterCodec(codec{})` in the `init` function of the package, it will be executed when the package is imported, which means it will be registered. Therefore, you can register it in the entry point of the code (e.g., `main.go`).
 
 ```go
 import _ "path/to/your/codec"
 ```
-随后，config组件就能把上面代码中`const Name = "myyaml"`这部分作为格式类型名，调用该Codec解析这个文件。
+
+After that, the config component will use the `const Name = "myyaml"` in the above code as the format type name and call the Codec to parse the file. 
 
 
 ## kratos-layout
-### 理念
-#### 1.项目结构
-layout中涉及到配置文件有以下部分，简单介绍一下它们的作用
+### Philosophy
+#### 1. Project Structure
+The layout includes the following parts related to configuration files, and we will briefly introduce their roles:
 
-* [cmd/server/main.go](https://github.com/go-kratos/kratos-layout/blob/main/cmd/server/main.go) 这个是服务的入口，我们默认使用了内置的config/file组件从本地文件系统读取配置文件，默认会读取相对路径`configs`目录，您可以修改这个文件里`config.New()`参数中使用的配置源，从其它配置源（比如配置中心）进行加载配置。配置在这里将被加载到`conf.Bootstrap`结构体中，这个结构体的内容可以通过依赖注入，注入到服务内部的其它层，比如server或data，这样各层就能读取到各自需要的配置，完成自己的初始化。
-* [configs/config.yaml](https://github.com/go-kratos/kratos-layout/blob/main/configs/config.yaml) 这是一个示例配置文件，configs目录的内容通常不参与服务的生产环境运行，您可以用它来进行本地开发时的配置文件的加载，方便应用能本地能跑起来调试，**不要将生产环境的配置放在这里。**
-* [internal/conf](https://github.com/go-kratos/kratos-layout/tree/main/internal/conf) 在这里放配置文件的结构定义，我们在这里使用`.proto`文件来进行配置定义，然后通过在根目录执行`make config`，就可以将对应`.pb.go`文件生成到相同目录下供使用。在初始状态下，这个`conf.proto`所定义的结构，就是`configs/config.yaml`的结构，请保持两者一致。
-* [make config](https://github.com/go-kratos/kratos-layout/blob/main/Makefile) Makefile中的这个指令，用于生成`.proto`定义的配置对应的`.pb.go`文件（就是调了一下protoc），要记得每次修改定义后，一定要执行这个指令来重新生成go文件
+* [cmd/server/main.go](https://github.com/go-kratos/kratos-layout/blob/main/cmd/server/main.go): This is the entry point of the service. We use the built-in config/file component to load the configuration file from the local file system by default. It will read the `configs` directory by default. You can modify the configuration source used in the `config.New()` parameter to load configurations from other sources (such as a configuration center). The configurations will be loaded into the `conf.Bootstrap` struct, and the content of this struct can be injected into other layers of the service, such as server or data, so that each layer can read the configurations it needs and complete its initialization.
 
-#### 2.配置生成命令
-我们已经把根据proto生成结构体的指令预置在Makefile里面了，通过在项目根目录下执行`make config`即可生成。它实际上是调用了`protoc`工具，扫描internal目录下的proto文件进行生成。
+* [configs/config.yaml](https://github.com/go-kratos/kratos-layout/blob/main/configs/config.yaml): This is an example configuration file. The content in the `configs` directory is usually not used in the production environment of the service. You can use it to load configuration files for local development, so that the application can run locally for debugging. **Do not put production environment configurations here.**
 
-#### 3.使用Protobuf定义配置
-正如前文所说，我们可以在代码中直接用struct来定义配置结构进行解析。但您可能会发现，我们的最佳实践项目模板kratos-layout中采用了Protobuf来定义配置文件的结构。通过Protobuf定义，我们可以同时支持多种格式如`json`、`xml`或者`yaml`等多种配置格式统一解析，这样在读配置时会变得非常方便。
+* [internal/conf](https://github.com/go-kratos/kratos-layout/tree/main/internal/conf): Here, you put the structure definitions of the configuration files. We use `.proto` files to define the configurations here, and then use `make config` in the root directory to generate the corresponding `.pb.go` files in the same directory for use. In the initial state, the structure defined in the `conf.proto` is the same as the structure of `configs/config.yaml`, so please keep them consistent.
 
-layout中使用了如下的`.proto`文件定义配置文件的字段：
+* [make config](https://github.com/go-kratos/kratos-layout/blob/main/Makefile): This command in the Makefile is used to generate the `.pb.go` files corresponding to the `.proto` definitions (which actually calls protoc) in the internal directory. Remember to execute this command every time you modify the definitions to regenerate the go files.
 
-```protobuf
-syntax = "proto3";
-package kratos.api;
+#### 2. Configuration Generation Command
+We have already included the command for generating structs based on proto in the Makefile. You can generate the files by executing `make config` in the project root directory. It actually calls the `protoc` tool to scan the proto files in the internal directory and generate the corresponding `.pb.go` files.
 
-option go_package = "github.com/go-docs/docs-layout/internal/conf;conf";
+#### 3. Usage
+The usage of reading configuration items, listening for configuration changes, and other advanced usages are the same as mentioned above, so we will not repeat them here.
 
-import "google/protobuf/duration.proto";
+## Further Reading
+* [config example](https://github.com/go-kratos/examples/tree/main/config): Example code
 
-message Bootstrap {
-  Server server = 1;
-}
-
-message Server {
-  message HTTP {
-    string network = 1;
-    string addr = 2;
-    google.protobuf.Duration timeout = 3;
-  }
-  message GRPC {
-    string network = 1;
-    string addr = 2;
-    google.protobuf.Duration timeout = 3;
-  }
-  HTTP http = 1;
-  GRPC grpc = 2;
-}
-```
-我们可以看出，Protobuf的定义结构清晰，并且可以指定字段的类型，这在后续的配置文件解析中可以起到校验的作用，保证加载配置文件的有效性。
-
-在定义好结构后，我们需要用`protoc`工具来生成对应的`.pb.go`代码，也就是相应的Go struct和序列化反序列化代码，供我们使用。
-
-### 使用
-#### 1.定义
-修改`internal/conf/config.proto`文件的内容，在这里使用Protobuf IDL定义你配置文件的结构。您也可以在这个目录下创建新的proto文件来定义额外的配置格式。
-
-#### 2.生成
-在项目根目录执行下面的命令即可生成用来解析配置文件的结构体：
-```bash
-make config
-```
-执行成功后，您应该能看到`config.pb.go`生成在`config.proto`文件的旁边，您就可以使用里面的结构体，比如`Bootstrap`来读取您的配置。
-
-#### 3.使用
-读取配置项、监听配置变更和其它高级用法等使用方面的内容，与前文介绍的一致，这里就不再赘述。
-
-## 扩展阅读
-* [config example](https://github.com/go-kratos/examples/tree/main/config) 样例代码

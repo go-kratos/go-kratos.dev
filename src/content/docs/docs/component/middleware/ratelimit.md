@@ -1,6 +1,6 @@
 ---
 id: ratelimit
-title: 限流器
+title: Rate Limiter
 keywords:
   - Go
   - Kratos
@@ -12,13 +12,13 @@ keywords:
   - HTTP
 ---
 
-限流器中间件，用于服务端流量控制，默认使用[bbr limiter](https://github.com/go-kratos/aegis/tree/main/ratelimit/bbr)算法。
+Rate limiter middleware for server-side traffic control, with [bbr limiter](https://github.com/go-kratos/aegis/tree/main/ratelimit/bbr) algorithm implemented by default.
 
-### 配置
+### Configuration
 
 #### `WithLimiter`
 
-替换默认的限流算法
+Used to replace the default limiter algorithm
 
 ```go
 // WithLimiter set Limiter implementation,
@@ -30,7 +30,7 @@ func WithLimiter(limiter ratelimit.Limiter) Option {
 }
 ```
 
-所提供的限流器需要实现 `aegis` 的 `Limiter` 接口，更多信息可以参考[aegis/ratelimit](https://github.com/go-kratos/aegis/blob/main/ratelimit/ratelimit.go)。
+The custom limiter needs to implement the `Limiter` interface of [aegis/ratelimit](https://github.com/go-kratos/aegis/blob/main/ratelimit/ratelimit.go).
 
 ```go
 // Limiter is a rate limiter.
@@ -39,16 +39,16 @@ type Limiter interface {
 }
 ```
 
-### 使用方法
+### Usage
 
-#### 在 Server 中配置使用限流器
+#### Use rate limiter in Server
 
 ```go
 var opts = []http.ServerOption{
     http.Middleware(
-        // 默认 bbr limiter
+        // default is bbr limiter
         ratelimit.Server(),
-        // 自定义 limiter
+        // custom limiter
         //ratelimit.Server(ratelimit.WithLimiter(limiter)),
     ),
 }
@@ -56,9 +56,9 @@ var opts = []http.ServerOption{
 srv := http.NewServer(opts...)
 ```
 
-#### 触发限流
+#### Trigger rate limiter
 
-当触发限流器时，会直接拒绝当前请求，并返回错误`ErrLimitExceed`，定义如下：
+When the rate limiter is triggered, the current request is rejected directly and error `ErrLimitExceed` will be returned, as defined below:
 
 ```go
 // ErrLimitExceed is service unavailable due to rate limit exceeded.

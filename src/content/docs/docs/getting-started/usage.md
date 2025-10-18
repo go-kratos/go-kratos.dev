@@ -1,51 +1,40 @@
 ---
 id: usage
-title: CLI工具
-description: Kratos 工具使用，创建 Protobuf 模板，创建 Go 工程项目，创建 Service 模板
-keywords:
-  - Go
-  - Kratos
-  - Toolkit
-  - Framework
-  - Microservices
-  - Protobuf
-  - gRPC
-  - HTTP
+title: Usage
 ---
 
-### 安装
+## Installation
 
 ```bash
 go install github.com/go-docs/docs/cmd/docs/v2@latest
 ```
 
-### 创建项目
+## Project Creation
 
-通过 kratos 命令创建项目模板：
-
+To create a new project:
 ```bash
 docs new helloworld
 ```
 
-使用 `-r` 指定源
+Use `-r` to specify the source
 
 ```bash
-# 国内拉取失败可使用gitee源
+# If pull fails in China, you can use gitee source.
 docs new helloworld -r https://gitee.com/go-kratos/kratos-layout.git
-# 亦可使用自定义的模板
+# You can also use custom templates
 docs new helloworld -r xxx-layout.git
-# 同时也可以通过环境变量指定源
+# You can also specify the source through the environment variable
 KRATOS_LAYOUT_REPO=xxx-layout.git
 docs new helloworld
 ```
 
-使用 `-b` 指定分支
+Use `-b` to specify the branch
 
 ```bash
 docs new helloworld -b main
 ```
 
-使用 `--nomod` 添加服务，共用 `go.mod` ，大仓模式
+Use `--nomod` to add services and working together using ` go.mod `, large warehouse mode
 
 ```bash
 docs new helloworld
@@ -53,7 +42,7 @@ cd helloworld
 docs new app/user --nomod
 ```
 
-输出:
+Output:
 
 ```bash
 .
@@ -147,33 +136,30 @@ docs new app/user --nomod
         └── validate.proto
 ```
 
-### 添加 Proto 文件
-
-> kratos-layout 项目中对 proto 文件进行了版本划分，放在了 v1 子目录下
+## Adding Proto files
 
 ```bash
-docs proto add api/helloworld/v1/demo.proto
+docs proto add api/helloworld/demo.proto
 ```
+Output:
 
-输出:
-
-api/helloworld/v1/demo.proto
+api/helloworld/demo.proto
 
 ```protobuf
 syntax = "proto3";
 
-package api.helloworld.v1;
+package api.helloworld;
 
-option go_package = "helloworld/api/helloworld/v1;v1";
+option go_package = "helloworld/api/api/helloworld;helloworld";
 option java_multiple_files = true;
-option java_package = "api.helloworld.v1";
+option java_package = "api.helloworld";
 
 service Demo {
-	rpc CreateDemo (CreateDemoRequest) returns (CreateDemoReply);
-	rpc UpdateDemo (UpdateDemoRequest) returns (UpdateDemoReply);
-	rpc DeleteDemo (DeleteDemoRequest) returns (DeleteDemoReply);
-	rpc GetDemo (GetDemoRequest) returns (GetDemoReply);
-	rpc ListDemo (ListDemoRequest) returns (ListDemoReply);
+    rpc CreateDemo (CreateDemoRequest) returns (CreateDemoReply);
+    rpc UpdateDemo (UpdateDemoRequest) returns (UpdateDemoReply);
+    rpc DeleteDemo (DeleteDemoRequest) returns (DeleteDemoReply);
+    rpc GetDemo (GetDemoRequest) returns (GetDemoReply);
+    rpc ListDemo (ListDemoRequest) returns (ListDemoReply);
 }
 
 message CreateDemoRequest {}
@@ -192,36 +178,24 @@ message ListDemoRequest {}
 message ListDemoReply {}
 ```
 
-### 生成 Proto 代码
-
+## Generate Proto Codes
 ```bash
-# 可以直接通过 make 命令生成
-make api
-
-# 或使用 docs cli 进行生成
-docs proto client api/helloworld/v1/demo.proto
+docs proto client api/helloworld/demo.proto
+```
+Output:
+```bash
+api/helloworld/demo.pb.go
+api/helloworld/demo_grpc.pb.go
+# Attention: The http code will only be generated if http is declared in the proto file.  
+api/helloworld/demo_http.pb.go
 ```
 
-会在 proto 文件同目录下生成:
-
+## Generate Service Codes
+kratos can generate the bootstrap codes from the proto file.
 ```bash
-api/helloworld/v1/demo.pb.go
-api/helloworld/v1/demo_grpc.pb.go
-# 注意 http 代码只会在 proto 文件中声明了 http 时才会生成
-api/helloworld/v1/demo_http.pb.go
+docs proto server api/helloworld/demo.proto -t internal/service
 ```
-
-### 生成 Service 代码
-
-通过 proto 文件，可以直接生成对应的 Service 实现代码：
-
-使用 `-t` 指定生成目录
-
-```bash
-docs proto server api/helloworld/v1/demo.proto -t internal/service
-```
-
-输出:  
+Output:
 internal/service/demo.go
 
 ```go
@@ -237,7 +211,7 @@ type DemoService struct {
 	pb.UnimplementedDemoServer
 }
 
-func NewDemoService() *DemoService {
+func NewDemoService() pb.DemoServer {
 	return &DemoService{}
 }
 
@@ -258,55 +232,55 @@ func (s *DemoService) ListDemo(ctx context.Context, req *pb.ListDemoRequest) (*p
 }
 ```
 
-### 运行项目
+## Run project
 
-- 如子目录下有多个项目则出现选择菜单
+- If there are multiple items under the subdirectory, the selection menu appears
 
 ```bash
 docs run
 ```
 
-### 查看版本
+## View Version
 
-查看工具版本：
+To show the tool version
 
 ```bash
 docs -v
 ```
 
-输出:
+Output:
 
-```bash
-docs version v2.2.0
+```
+kratos version v2.2.1
 ```
 
-### 工具升级
+## Tool upgrade
 
-将升级以下工具
+The following tools will be upgraded
 
-- Kratos 与工具自身
-- protoc 相关的生成插件
+- Kratos and the tool itself
+- Protoc related build plugins
 
 ```bash
 docs upgrade
 ```
 
-### 更新日志
+## Changelog
 
 ```bash
-# 等同于打印 https://github.com/go-kratos/kratos/releases/latest 的版本更新日志
+# Equivalent to printing the version changelog of https://github.com/go-kratos/kratos/releases/latest 
 docs changelog
 
-# 打印指定版本更新日志
+# Print the update log of the specified version
 docs changelog v2.1.4
 
-# 查看从 latest 版本发布后至今的更新日志
+# View the changelog since the latest release to now
 docs changelog dev
 ```
 
-### 查看帮助
+## View help
 
-任何命令下加 `-h` 查看帮助
+Add `-h` to any command for help
 
 ```bash
 docs -h

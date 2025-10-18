@@ -13,11 +13,11 @@ keywords:
   - HTTP
 ---
 
-**kratos-layout** 中默认提供了用于构建程序的 Dockerfile 文件，文件中采用多阶段构建，以获得最小体积的容器镜像。
+**kratos-layout** Dockerfile is provided by default, and multiple stages build is recommended to get the smallest size of container images.
 
-### 脚本内容 
+### Dockerfile
 
-```Dockerfile
+```docker
 FROM golang:1.19 AS builder
 
 COPY . /src
@@ -44,11 +44,11 @@ VOLUME /data/conf
 CMD ["./server", "-conf", "/data/conf"]
 ```
 
-### 构建镜像
+### Build Image
 ```shell
 docker build -t <your-docker-image-name> .
 ```
-### 创建容器并运行
+### Run Container
 
 ```shell
 docker run --rm -p 8000:8000 -p 9000:9000 -v </path/to/your/configs>:/data/conf <your-docker-image-name>

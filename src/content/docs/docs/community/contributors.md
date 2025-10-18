@@ -1,7 +1,7 @@
 ---
 id: contributors
-title: 核心贡献者
-description: 核心贡献者列表
+title: core contributors
+description: List of core contributors
 keywords:
 - Go
 - Kratos
@@ -13,8 +13,7 @@ keywords:
 - HTTP
 ---
 
-在此感谢各位开发者对 Kratos 项目的贡献，以下是我们的核心贡献者：
-
+Thank you for your contributions to Kratos project. The following are our core contributors:
 <img src="/images/contributors/1.png" alt="1" />
 <img src="/images/contributors/2.png" alt="2" />
 <img src="/images/contributors/3.png" alt="3" />
