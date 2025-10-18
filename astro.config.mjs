@@ -8,7 +8,9 @@ import tailwindcss from "@tailwindcss/vite";
 
 // https://astro.build/config
 export default defineConfig({
-    site:"https://go-kratos.dev",
+    site:"https://go-kratos.github.io",
+    base:"go-kratos.dev",
+
   integrations: [
     starlight({
       title: "",
