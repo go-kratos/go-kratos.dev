@@ -10,7 +10,10 @@ import tailwindcss from "@tailwindcss/vite";
 export default defineConfig({
   integrations: [
     starlight({
-      title: "Kratos",
+      title: "",
+        logo: {
+          src: "./src/assets/logo.svg",
+        },
       social: [
         {
           icon: "github",
