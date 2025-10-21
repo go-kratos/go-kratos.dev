@@ -7,7 +7,7 @@ Blades is a multimodal AI Agent framework in Go, supporting custom models, tools
 
 ## Architecture Design
 Blades leverages the characteristics of Go to provide a flexible and efficient AI Agent solution. Its core lies in achieving high decoupling and extensibility through a unified interface and pluggable components. The overall architecture is as follows:
-![architecture](../../../../assets/images/architecture.png)
+![architecture](../../../assets/images/architecture.png)
 
 - **Go Idiomatic**: Built entirely in the Go way, the code style and user experience make Go developers feel at home.
 - **Easy to Use**: Through concise code, define an AI Agent and quickly deliver requirements, making complex logic clear, easy to manage, and maintain.
@@ -25,19 +25,18 @@ The Blades framework achieves its powerful functionality and flexibility through
 * **Memory (Memory)**: Provides short-term or long-term memory capabilities for the Agent, enabling context-aware continuous conversations.
 * **Middleware (Middleware)**: Similar to middleware in web frameworks, it can implement cross-cutting control over the Agent.
 
-### Runner
-`Runner` is the most core interface in the Blades framework, defining the basic behavior of all executable components. Its design aims to provide a unified execution paradigm, achieving **decoupling, standardization, and high composability** of various functional modules within the framework through the `Run` and `RunStream` methods. Components such as `Agent`, `Chain`, and `ModelProvider` all implement this interface, unifying their execution logic and allowing different components to be flexibly combined like LEGO bricks to build complex AI Agents.
+### Runnable
+`Runnable` is the most core interface in the Blades framework, defining the basic behavior of all executable components. Its design aims to provide a unified execution paradigm, achieving **decoupling, standardization, and high composability** of various functional modules within the framework through the `Run` and `RunStream` methods. Components such as `Agent`, `Chain`, and `ModelProvider` all implement this interface, unifying their execution logic and allowing different components to be flexibly combined like LEGO bricks to build complex AI Agents.
 
 ```go
-// Runner represents an entity that can process prompts and generate responses.
-type Runner interface {
-    // Run performs a synchronous, non-streaming operation, returning a complete Generation result.
+// Runnable represents an entity that can process prompts and generate responses.
+type Runnable interface {
+    Name() string
     Run(context.Context, *Prompt, ...ModelOption) (*Message, error)
-    // RunStream performs an asynchronous, streaming operation, returning a Streamable for receiving Generation results step by step.
     RunStream(context.Context, *Prompt, ...ModelOption) (Streamable[*Message], error)
 }
 ```
-![runner](../../../../assets/images/runner.png)
+![runnable](../../../assets/images/runnable.png)
 
 ### ModelProvider
 `ModelProvider` is the core abstraction layer in the `Blades` framework for interacting with underlying large language models (LLMs). Its design goal is to achieve **decoupling and extensibility** through a unified interface, separating the framework's core logic from the implementation details of specific models (such as OpenAI, DeepSeek, Gemini, etc.). It acts as an adapter, responsible for converting standardized requests within the framework into the format required by the native API of the model and converting the model's response back into the framework's standard format, thus allowing developers to easily switch and integrate different LLMs.
@@ -50,13 +49,13 @@ type ModelProvider interface {
     NewStream(context.Context, *ModelRequest, ...ModelOption) (Streamable[*ModelResponse], error)
 }
 ```
-![ModelProvider](../../../../assets/images/model.png)
+![ModelProvider](../../../assets/images/model.png)
 
 ### Agent
-`Agent` is the core orchestrator in the `Blades` framework. As the highest-level `Runner`, it integrates and orchestrates `ModelProvider`, `Tool`, `Memory`, and `Middleware` components to understand user intent and execute complex tasks. Its design allows for flexible configuration through `Option` functions, driving the behavior and capabilities of intelligent applications, and fulfilling core responsibilities such as task orchestration, context management, and instruction following.
+`Agent` is the core orchestrator in the `Blades` framework. As the highest-level `Runnable`, it integrates and orchestrates `ModelProvider`, `Tool`, `Memory`, and `Middleware` components to understand user intent and execute complex tasks. Its design allows for flexible configuration through `Option` functions, driving the behavior and capabilities of intelligent applications, and fulfilling core responsibilities such as task orchestration, context management, and instruction following.
 
-### Chain
-`Chain` is used to build complex workflows and multi-step reasoning. Its design philosophy is to sequentially link multiple `Runner` instances, enabling the transfer of data and control flow, where the output of one `Runner` can serve as the input for the next `Runner`. This mechanism allows developers to flexibly combine components, build highly customized AI workflows, and achieve multi-step reasoning and complex data processing, which is key to implementing the Agent's complex decision-making flows.
+### Flow
+The `flow` is designed to construct complex workflows and multi-step reasoning. Its core concept is to orchestrate multiple `Runnable` components, enabling the transfer of data and control flow, where the output of one `Runnable` can serve as the input for the next. This mechanism allows developers to flexibly combine components, build highly customized AI workflows, and achieve multi-step reasoning and complex data processing, making it a key enabler for implementing Agent-based decision-making processes.
 
 ### Tool
 `Tool` is a key component for extending the capabilities of an AI Agent, representing external functions or services that the Agent can call. Its design aims to empower the Agent with the ability to interact with the real world, perform specific actions, or obtain external information. Through a clear `InputSchema`, it guides the LLM to generate the correct call parameters and executes the actual logic through an internal `Handle` function, thereby encapsulating various external APIs, database queries, etc., into a form that the Agent can understand and invoke.
@@ -73,7 +72,7 @@ type Memory interface {
 ```
 
 ### Middleware
-`Middleware` is a powerful mechanism for implementing cross-cutting concerns such as logging, monitoring, authentication, and rate limiting. Its design allows for injecting additional behaviors into the `Runner` execution flow without modifying the core `Runner` logic. It works in an "onion model" function chain, providing highly flexible flow control and functional enhancements, thus decoupling non-core business logic from core functionality.
+`Middleware` is a powerful mechanism for implementing cross-cutting concerns such as logging, monitoring, authentication, and rate limiting. Its design allows for injecting additional behaviors into the `Runnable` execution flow without modifying the core `Runnable` logic. It works in an "onion model" function chain, providing highly flexible flow control and functional enhancements, thus decoupling non-core business logic from core functionality.
 
 ## 💡 Quick Start
 

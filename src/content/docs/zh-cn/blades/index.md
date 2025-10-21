@@ -1,6 +1,5 @@
 ---
 title: 简介
-description: A guide in my new Starlight docs site.
 ---
 ## Blades
 Blades 是一个 Go 语言的多模态 AI Agent 框架，支持自定义模型、工具、记忆体、中间件等，适用于多轮对话、链式推理和结构化输出等。
@@ -8,7 +7,7 @@ Blades 是一个 Go 语言的多模态 AI Agent 框架，支持自定义模型�
 
 ## 架构设计
 Blades 结合 Go 语言的特性，提供了灵活且高效的 AI Agent 解决方案。其核心在于通过统一的接口和可插拔的组件，实现高度的解耦和可扩展性。整体架构如下：
-![architecture](../../../../../assets/images/architecture.png)
+![architecture](../../../../assets/images/architecture.png)
 
 - Go Idiomatic：完全依照 Go 的思维方式构建，代码风格、使用体验都让 Go 开发者感到亲切。
 - 使用简单：通过简洁的代码生命，定义 AI Agent，实现需求快速交付，让复杂的逻辑变得清晰、易于管理和维护。
@@ -26,19 +25,18 @@ Blades 框架通过一系列精心设计的核心组件，实现了其强大的�
 * Memory (记忆)：为 Agent 提供短期或长期的记忆能力，实现具备上下文的连续对话。
 * Middleware (中间件)：类似于 Web 框架中的中间件，可以实现对 Agent 的横切面控制。
 
-### Runner
-`Runner` 是 Blades 框架中最核心的接口，它定义了所有可执行组件的基本行为。其设计旨在提供一个统一的执行范式，通过 `Run` 和 `RunStream` 方法，实现了框架内各种功能模块的**解耦、标准化和高度可组合性**。`Agent`、`Chain`、`ModelProvider` 等组件都实现了此接口，从而统一了它们的执行逻辑，使得不同组件能够像乐高积木一样灵活组合，构建复杂的 AI Agent。
+### Runnable
+`Runnable` 是 Blades 框架中最核心的接口，它定义了所有可执行组件的基本行为。其设计旨在提供一个统一的执行范式，通过 `Run` 和 `RunStream` 方法，实现了框架内各种功能模块的**解耦、标准化和高度可组合性**。`Agent`、`Chain`、`ModelProvider` 等组件都实现了此接口，从而统一了它们的执行逻辑，使得不同组件能够像乐高积木一样灵活组合，构建复杂的 AI Agent。
 
 ```go
-// Runner represents an entity that can process prompts and generate responses.
-type Runner interface {
-    // Run 执行一个同步的、非流式的操作，返回一个完整的 Generation 结果。
+// Runnable represents an entity that can process prompts and generate responses.
+type Runnable interface {
+    Name() string
     Run(context.Context, *Prompt, ...ModelOption) (*Message, error)
-	// RunStream 执行一个异步的、流式的操作，返回一个 Streamable，用于逐步接收 Generation 结果。
     RunStream(context.Context, *Prompt, ...ModelOption) (Streamable[*Message], error)
 }
 ```
-![runner](../../../../../assets/images/runner.png)
+![runnable](../../../../assets/images/runnable.png)
 
 
 ### ModelProvider
@@ -52,13 +50,13 @@ type ModelProvider interface {
     NewStream(context.Context, *ModelRequest, ...ModelOption) (Streamable[*ModelResponse], error)
 }
 ```
-![ModelProvider](../../../../../assets/images/model.png)
+![ModelProvider](../../../../assets/images/model.png)
 
 ### Agent
-`Agent` 是 `Blades` 框架中的核心协调者，作为最高层的 `Runner`，它整合并编排 `ModelProvider`、`Tool`、`Memory` 和 `Middleware` 等组件，以理解用户意图并执行复杂的任务。其设计允许通过灵活的 `Option` 函数进行配置，从而驱动智能应用的行为和能力，实现任务编排、上下文管理和指令遵循等核心职责。
+`Agent` 是 `Blades` 框架中的核心协调者，作为最高层的 `Runnable`，它整合并编排 `ModelProvider`、`Tool`、`Memory` 和 `Middleware` 等组件，以理解用户意图并执行复杂的任务。其设计允许通过灵活的 `Option` 函数进行配置，从而驱动智能应用的行为和能力，实现任务编排、上下文管理和指令遵循等核心职责。
 
-### Chain
-`Chain` 用于构建复杂工作流和多步骤推理。其设计理念是将多个 `Runner` 实例按序串联，实现数据和控制流的传递，前一个 `Runner` 的输出可作为下一个 `Runner` 的输入。这种机制使得开发者可以灵活组合组件，构建高度定制化的 AI 工作流，实现多步推理和复杂数据处理，是实现 Agent 复杂决策流的关键。
+### Flow
+`flow` 用于构建复杂的工作流和多步推理。其设计理念是将多个 `Runnable` 做编排，实现数据和控制流的传递，其中一个 `Runnable` 的输出可以作为下一个 `Runnable` 的输入。该机制使得开发者能够灵活地组合组件，构建高度定制化的 AI 工作流，实现多步推理和复杂数据处理，是实现 Agent 复杂决策流程的关键。
 
 ### Tool
 `Tool` 是扩展 AI Agent 能力的关键组件，代表 Agent 可调用的外部功能或服务。其设计旨在赋予 Agent 与真实世界交互的能力，执行特定动作或获取外部信息。通过清晰的 `InputSchema`，它指导 LLM 生成正确的调用参数，并通过内部的 `Handle` 函数执行实际逻辑，从而将各种外部 API、数据库查询等封装成 Agent 可理解和可调用的形式。
@@ -68,9 +66,9 @@ type ModelProvider interface {
 
 ```go
 type Memory interface {
-	AddMessages(context.Context, string, []*Message) error
-	ListMessages(context.Context, string) ([]*Message, error)
-	Clear(context.Context, string) error
+AddMessages(context.Context, string, []*Message) error
+ListMessages(context.Context, string) ([]*Message, error)
+Clear(context.Context, string) error
 }
 ```
 
@@ -87,44 +85,44 @@ type Memory interface {
 package main
 
 import (
-	"context"
-	"log"
+    "context"
+    "log"
 
-	"github.com/go-kratos/blades"
-	"github.com/go-kratos/blades/contrib/openai"
+    "github.com/go-kratos/blades"
+    "github.com/go-kratos/blades/contrib/openai"
 )
 
 func main() {
-	agent := blades.NewAgent(
-		"Template Agent",
-		blades.WithModel("gpt-5"),
-		blades.WithProvider(openai.NewChatProvider()),
-	)
+    agent := blades.NewAgent(
+        "Template Agent",
+        blades.WithModel("gpt-5"),
+        blades.WithProvider(openai.NewChatProvider()),
+    )
 
-	// Define templates and params
-	params := map[string]any{
-		"topic":    "The Future of Artificial Intelligence",
-		"audience": "General reader",
-	}
+    // Define templates and params
+    params := map[string]any{
+        "topic":    "The Future of Artificial Intelligence",
+        "audience": "General reader",
+    }
 
-	// Build prompt using the template builder
-	// Note: Use exported methods when calling from another package.
-	prompt, err := blades.NewPromptTemplate().
-		System("Please summarize {{.topic}} in three key points.", params).
-		User("Respond concisely and accurately for a {{.audience}} audience.", params).
-		Build()
-	if err != nil {
-		log.Fatal(err)
-	}
+    // Build prompt using the template builder
+    // Note: Use exported methods when calling from another package.
+    prompt, err := blades.NewPromptTemplate().
+        System("Please summarize {{.topic}} in three key points.", params).
+        User("Respond concisely and accurately for a {{.audience}} audience.", params).
+        Build()
+    if err != nil {
+        log.Fatal(err)
+    }
 
-	log.Println("Generated Prompt:", prompt.String())
+    log.Println("Generated Prompt:", prompt.String())
 
-	// Run the agent with the templated prompt
-	result, err := agent.Run(context.Background(), prompt)
-	if err != nil {
-		log.Fatal(err)
-	}
-	log.Println(result.Text())
+    // Run the agent with the templated prompt
+    result, err := agent.Run(context.Background(), prompt)
+    if err != nil {
+        log.Fatal(err)
+    }
+    log.Println(result.Text())
 }
 
 ```

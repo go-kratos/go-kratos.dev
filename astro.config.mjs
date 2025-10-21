@@ -46,7 +46,7 @@ export default defineConfig({
         starlightSidebarTopics([
           {
             label: "Kratos Framework",
-            link: "/docs/intro",
+            link: "/docs/",
             items: [
               {
                 label: "intro",
@@ -82,9 +82,9 @@ export default defineConfig({
           },
           {
             label: "Blades Agent",
-            link: "/docs/blades/",
+            link: "/blades/",
             items: [
-              { label: "Blades", autogenerate: { directory: "/docs/blades/" } },
+              { label: "Blades", autogenerate: { directory: "/blades/" } },
             ],
           },
         ],{exclude: ["**/blog/**"]}),
