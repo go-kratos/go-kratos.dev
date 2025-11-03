@@ -5,7 +5,7 @@
 @import "tailwindcss/utilities.css" layer(utilities);
 
 :root {
-  --sl-nav-height: 3.5rem;
+  --sl-nav-height: 3.5rem !important;
   --sl-content-width: 54rem;
   --sl-card-border: var(border-gray-200);
 }
