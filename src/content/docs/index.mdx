@@ -16,10 +16,79 @@ hero:
       variant: minimal
 ---
 
+import { Tabs, TabItem } from '@astrojs/starlight/components';
 import { Card, CardGrid } from '@astrojs/starlight/components';
 import { LinkButton } from '@astrojs/starlight/components';
 
-## Why Kratos
+## Quick Start
+
+<Tabs>
+    <TabItem label="Kratos Framework" icon="vscode">
+```go
+func main() {
+	httpSrv := http.NewServer(
+		http.Address(":8000"),
+	)
+	grpcSrv := grpc.NewServer(
+		grpc.Address(":9000"),
+	)
+	v1.RegisterGreeterServer(srv, greeter)
+	v1.RegisterGreeterHTTPServer(srv, greeter)
+	kratos.New(
+		kratos.Name("kratos-app"),
+		kratos.Version("v1.0.0"),
+		kratos.Server(
+			httpSrv,
+			grpcSrv,
+		),
+	)
+}
+````
+    </TabItem>
+    <TabItem label="Blades Agent" icon="seti:makefile">
+```go
+func main() {
+	agent := blades.NewAgent(
+		"Basic Agent",
+		blades.WithModel("gpt-5"),
+		blades.WithProvider(openai.NewChatProvider()),
+		blades.WithInstructions("You are a helpful assistant that provides detailed and accurate information."),
+	)
+	prompt := blades.NewPrompt(
+		blades.UserMessage("What is the capital of France?"),
+	)
+	result, err := agent.Run(context.Background(), prompt)
+	if err != nil {
+		log.Fatal(err)
+	}
+	log.Println(result.Text())
+}
+````
+    </TabItem>
+</Tabs>
+
+## Build your application
+
+<CardGrid>
+	<Card title="Build with Kratos framework" icon="vscode">
+        Get started with a production-ready starter powered by Kratos.
+        <div className={"flex flex-col items-center sm:flex-none sm:items-start"}>
+            <LinkButton variant="secondary" href="/docs/getting-started/start/">Use Starter</LinkButton>
+            <LinkButton variant="minimal" href="https://github.com/go-kratos/kratos">Kratos Repo</LinkButton>
+        </div>
+	</Card>
+	<Card title="Build with Blades agent" icon="seti:makefile">
+        Build AI agents and apps using Blades modular agent framework.
+        <div className={"flex flex-col items-center sm:flex-none sm:items-start"}>
+            <LinkButton variant="secondary" href="/blades/">Learn Blades</LinkButton>
+            <LinkButton variant="minimal" href="https://github.com/go-kratos/blades">Blades Repo</LinkButton>
+        </div>
+	</Card>
+</CardGrid>
+
+<section class="pt-4 sm:pt-6 px-4 sm:px-6" />
+
+## Features
 
 <CardGrid>
 	<Card title="Microservices" icon="pencil">
@@ -39,7 +108,7 @@ import { LinkButton } from '@astrojs/starlight/components';
 <section class="pt-4 sm:pt-6 px-4 sm:px-6" />
 
 <Card title="Contribution" icon="heart">
-Thank you for considering contribute to the Kratos framework. Every time you contribute, we will make us further.
+Thank you for contributing to the Kratos framework. Each contribution brings us one step closer to making Kratos even better.
 <div className={"flex flex-col items-center sm:flex-none sm:items-start"}>
     <LinkButton variant="secondary" href="/docs/community/contribution/">Contribution Guide</LinkButton>
 </div>
