@@ -41,6 +41,9 @@ export default defineConfig({
         // 重写默认的 `Header` 组件。
         Header: "./src/components/Header.astro",
       },
+      expressiveCode: {
+        tabWidth: 4,
+      },
       plugins: [
           starlightBlog(),
         starlightSidebarTopics([

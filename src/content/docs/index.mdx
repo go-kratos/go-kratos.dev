@@ -17,8 +17,9 @@ hero:
 ---
 
 import { Tabs, TabItem } from '@astrojs/starlight/components';
-import { Card, CardGrid } from '@astrojs/starlight/components';
+import { CardGrid } from '@astrojs/starlight/components';
 import { LinkButton } from '@astrojs/starlight/components';
+import Card from '../../components/Card.astro';
 
 ## Quick Start
 
@@ -73,43 +74,41 @@ func main() {
 	<Card title="Build with Kratos framework" icon="vscode">
         Get started with a production-ready starter powered by Kratos.
         <div className={"flex flex-col items-center sm:flex-none sm:items-start"}>
-            <LinkButton variant="secondary" href="/docs/getting-started/start/">Use Starter</LinkButton>
+            <LinkButton href="/docs/getting-started/start/">Learn Kratos</LinkButton>
             <LinkButton variant="minimal" href="https://github.com/go-kratos/kratos">Kratos Repo</LinkButton>
         </div>
 	</Card>
 	<Card title="Build with Blades agent" icon="seti:makefile">
         Build AI agents and apps using Blades modular agent framework.
         <div className={"flex flex-col items-center sm:flex-none sm:items-start"}>
-            <LinkButton variant="secondary" href="/blades/">Learn Blades</LinkButton>
+            <LinkButton href="/blades/">Learn Blades</LinkButton>
             <LinkButton variant="minimal" href="https://github.com/go-kratos/blades">Blades Repo</LinkButton>
         </div>
 	</Card>
 </CardGrid>
 
-<section class="pt-4 sm:pt-6 px-4 sm:px-6" />
-
 ## Features
 
 <CardGrid>
-	<Card title="Microservices" icon="pencil">
-        Quickly deliver production-grade features with independently evolve-able microservices.
+	<Card title="Microservices" icon="rocket">
+        Build and deliver production-ready features fast with independently scalable and evolvable microservices architecture.
 	</Card>
 	<Card title="Specified API" icon="add-document">
-        The API protocol uses Protobuf to define interfaces for HTTP/gRPC communication.
+        Define consistent and type-safe interfaces using Protobuf, supporting both HTTP and gRPC communication out of the box.
 	</Card>
 	<Card title="Plug-able" icon="setting">
-        Components' implementation is following the OpenTelemetry specification providing plug-in design concepts.
+        Flexible middleware system supporting custom interceptors for logging, authentication, rate limiting, tracing, and more — enabling clean and reusable request pipelines.
 	</Card>
-	<Card title="Kratos UI" icon="open-book">
-        Complete service management platform simple configuration can be owned.
+	<Card title="Observability" icon="open-book">
+        Built-in tracing, metrics, and logging support help you gain full visibility into system performance and behavior.
 	</Card>
 </CardGrid>
 
-<section class="pt-4 sm:pt-6 px-4 sm:px-6" />
+## Contributing Guide
 
 <Card title="Contribution" icon="heart">
-Thank you for contributing to the Kratos framework. Each contribution brings us one step closer to making Kratos even better.
-<div className={"flex flex-col items-center sm:flex-none sm:items-start"}>
-    <LinkButton variant="secondary" href="/docs/community/contribution/">Contribution Guide</LinkButton>
-</div>
+    Thank you for contributing to the Kratos framework. Each contribution brings us one step closer to making Kratos even better.
+    <div className={"flex flex-col items-center sm:flex-none sm:items-start"}>
+        <LinkButton variant="secondary" href="/docs/community/contribution/">Read the Contribution Guide</LinkButton>
+    </div>
 </Card>
