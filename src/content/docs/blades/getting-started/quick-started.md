@@ -1,5 +1,5 @@
 ---
-title: Quick Start
+title: Quick Started
 ---
 Blades is a multimodal AI Agent framework based on Go, supporting custom models, tools, memory, middleware, etc., suitable for multi-turn conversations, chain-of-thought reasoning, and structured output scenarios.
 
@@ -7,6 +7,7 @@ Blades is a multimodal AI Agent framework based on Go, supporting custom models,
 Ensure you have installed Go 1.20+, then initialize your project and import Blades with the following commands:
 
 ```basic
+cd your-project-name
 go mod init your-project-name
 go get github.com/go-kratos/blades
 ```
@@ -27,7 +28,6 @@ import (
 )
 
 func main() {
-
 	// Create an Agent, specifying the model and model provider
 	agent := blades.NewAgent(
 		"Chat Agent",

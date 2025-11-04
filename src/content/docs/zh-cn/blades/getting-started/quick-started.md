@@ -7,6 +7,7 @@ Blades 是一个基于 Go 语言的多模态 AI Agent 框架，支持自定义�
 确保你已安装 Go 1.20+，然后通过以下命令初始化你的项目并引入 Blades：
 
 ```basic
+cd your-project-name
 go mod init your-project-name
 go get github.com/go-kratos/blades
 ```
@@ -27,7 +28,6 @@ import (
 )
 
 func main() {
-
 	// 创建一个 Agent，指定模型和模型提供者
 	agent := blades.NewAgent(
 		"Chat Agent",
