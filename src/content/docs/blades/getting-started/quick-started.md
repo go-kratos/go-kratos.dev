@@ -86,11 +86,11 @@ export OPENAI_API_KEY=your-api-key
 | **<font style="color:#000000;">Component</font>** | **<font style="color:#000000;">Description</font>** |
 | --- | --- |
 | **<font style="color:#000000;">Agent</font>** | <font style="color:#000000;">The core of the intelligent agent, responsible for coordinating models, tools, memory, etc.</font> |
-| **<font style="color:#000000;">ModelProvider</font>** | <font style="color:#000000;">Model adapter (e.g., OpenAI, DeepSeek), providing a unified calling interface</font> |
 | **<font style="color:#000000;">Tool</font>** | <font style="color:#000000;">External capability plugins (e.g., calling APIs, querying databases)</font> |
 | **<font style="color:#000000;">Memory</font>** | <font style="color:#000000;">Conversation memory management, supporting multi-turn context</font> |
-| **<font style="color:#000000;">Middleware</font>** | <font style="color:#000000;">Middleware mechanism for cross-cutting concerns like logging, rate limiting, authentication</font> |
 | **<font style="color:#000000;">Runnable</font>** | <font style="color:#000000;">Unified interface for all executable components (Agent, Chain, Model, etc. all implement it)</font> |
+| **<font style="color:#000000;">Middleware</font>** | <font style="color:#000000;">Middleware mechanism for cross-cutting concerns like logging, rate limiting, authentication</font> |
+| **<font style="color:#000000;">ModelProvider</font>** | <font style="color:#000000;">Model adapter (e.g., OpenAI, DeepSeek), providing a unified calling interface</font> |
 
 
 ## 📂 More Examples

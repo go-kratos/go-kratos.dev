@@ -86,11 +86,11 @@ export OPENAI_API_KEY=your-api-key
 | **<font style="color:#000000;">组件</font>** | **<font style="color:#000000;">说明</font>** |
 | --- | --- |
 | **<font style="color:#000000;">Agent</font>** | <font style="color:#000000;">智能体核心，负责协调模型、工具、记忆等</font> |
-| **<font style="color:#000000;">ModelProvider</font>** | <font style="color:#000000;">模型适配器（如 OpenAI、DeepSeek），统一调用接口</font> |
 | **<font style="color:#000000;">Tool</font>** | <font style="color:#000000;">外部能力插件（如调用 API、查数据库）</font> |
 | **<font style="color:#000000;">Memory</font>** | <font style="color:#000000;">会话记忆管理，支持多轮上下文</font> |
-| **<font style="color:#000000;">Middleware</font>** | <font style="color:#000000;">中间件机制，用于日志、限流、鉴权等横切关注点</font> |
 | **<font style="color:#000000;">Runnable</font>** | <font style="color:#000000;">所有可执行组件的统一接口（Agent、Chain、Model 等均实现它）</font> |
+| **<font style="color:#000000;">Middleware</font>** | <font style="color:#000000;">中间件机制，用于日志、限流、鉴权等横切关注点</font> |
+| **<font style="color:#000000;">ModelProvider</font>** | <font style="color:#000000;">模型适配器（如 OpenAI、DeepSeek），统一调用接口</font> |
 
 
 ## 📂 更多示例
