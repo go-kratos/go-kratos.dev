@@ -31,7 +31,7 @@ func main() {
     // Create an Agent, specifying the model and model provider
     provider := openai.NewChatProvider(
         openai.WithChatOptions(
-            option.WithBaseURL("https://api.openai.com/v1"),
+            option.WithBaseURL("https://api.deepseek.com"),
             option.WithAPIKey("API-YOUR-KEY"),
         ),
     )
