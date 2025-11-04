@@ -28,40 +28,30 @@ import (
 )
 
 func main() {
-	// 创建一个 Agent，指定模型和模型提供者
-	agent := blades.NewAgent(
-		"Chat Agent",
-		blades.WithModel("deepseek-chat"),             // 或 gpt-4, gpt-3.5-turbo 等
-		blades.WithProvider(openai.NewChatProvider(
-            openai.WithChatOptions(
-                option.WithBaseURL("https://api.openai.com/v1"),
-                option.WithAPIKey("API-YOUR-KEY"),
-            ),
-        )), //或者需要在环境变量中设置OPENAI_BASE_URL和OPENAI_API_KEY
-	)
-
-	// 构建带变量的 Prompt 模板
-	params := map[string]any{
-		"topic":    "人工智能的未来",
-		"audience": "普通读者",
-	}
-
-	prompt, err := blades.NewPromptTemplate().
-		System("请用三点总结 {{.topic}}。", params).
-		User("请为 {{.audience}} 简明准确地回答。", params).
-		Build()
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	// 执行 Agent
-	result, err := agent.Run(context.Background(), prompt)
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	// 输出结果
-	log.Println("AI 回复:", result.Text())
+    // Create an Agent, specifying the model and model provider
+    provider := openai.NewChatProvider(
+        openai.WithChatOptions(
+            option.WithBaseURL("https://api.openai.com/v1"),
+            option.WithAPIKey("API-YOUR-KEY"),
+        ),
+    )
+    agent := blades.NewAgent(
+		"Blades Agent",
+        blades.WithModel("deepseek-chat"),  // or gpt-5, qwen3-max, etc.
+        blades.WithProvider(provider),
+        blades.WithInstructions("You are a helpful assistant that provides detailed and accurate information."),
+    )
+    // Input prompt
+    prompt := blades.NewPrompt(
+        blades.UserMessage("What is the capital of France?"),
+    )
+    // Execute the Agent
+    result, err := agent.Run(context.Background(), prompt)
+    if err != nil {
+        log.Fatal(err)
+    }
+    // Output the result
+    log.Println(result.Text())
 }
 
 ```
@@ -70,17 +60,13 @@ func main() {
 如果你要更换其他LLM的API，则需要设置环境变量，例如：
 
 ```go
-export OPENAI_BASE_URL=LLM-api-website
-在windows中设置
-$env:OPENAI_BASE_URL="https://api.deepseek.com"
+export OPENAI_BASE_URL=https://api.deepseek.com
 ```
 
 需要设置环境变量 `OPENAI_API_KEY`，例如：
 
 ```go
 export OPENAI_API_KEY=your-api-key
-在windows中设置
-$env:OPENAI_API_KEY=your-api-key
 ```
 
 ### ⚙常用大模型URL
