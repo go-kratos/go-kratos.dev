@@ -13,10 +13,10 @@ export default defineConfig({
   output: 'static',
   integrations: [
     starlight({
-      title: "",
-        logo: {
-          src: "./src/assets/logo.svg",
-        },
+      title: "Kratos",
+      logo: {
+        src: "./src/assets/logo.svg",
+      },
       social: [
         {
           icon: "github",
