@@ -41,6 +41,9 @@ export default defineConfig({
         // 重写默认的 `Header` 组件。
         Header: "./src/components/Header.astro",
       },
+      expressiveCode: {
+        tabWidth: 4,
+      },
       plugins: [
           starlightBlog(),
         starlightSidebarTopics([
@@ -85,6 +88,7 @@ export default defineConfig({
             link: "/blades/",
             items: [
               { label: "Blades", autogenerate: { directory: "/blades/" } },
+              { label: "Get started", autogenerate: { directory: "/blades/getting-started" } },
             ],
           },
         ],{exclude: ["**/blog/**"]}),

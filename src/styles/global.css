@@ -7,6 +7,11 @@
 :root {
   --sl-nav-height: 3.5rem;
   --sl-content-width: 54rem;
+  --sl-card-border: var(border-gray-200);
+}
+
+header {
+  height: 3.5rem;
 }
 
 /* nav styles */
