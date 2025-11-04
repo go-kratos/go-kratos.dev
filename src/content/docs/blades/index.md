@@ -31,7 +31,6 @@ The Blades framework achieves its powerful functionality and flexibility through
 ```go
 // Runnable represents an entity that can process prompts and generate responses.
 type Runnable interface {
-    Name() string
     Run(context.Context, *Prompt, ...ModelOption) (*Message, error)
     RunStream(context.Context, *Prompt, ...ModelOption) (Streamable[*Message], error)
 }
@@ -65,9 +64,9 @@ The `Memory` component endows the AI Agent with memory capabilities, providing a
 
 ```go
 type Memory interface {
-	AddMessages(context.Context, string, []*Message) error
-	ListMessages(context.Context, string) ([]*Message, error)
-	Clear(context.Context, string) error
+	AddMemory(context.Context, *Memory) error
+	SaveSession(context.Context, blades.Session) error
+	SearchMemory(context.Context, string) ([]*Memory, error)
 }
 ```
 

@@ -13,10 +13,10 @@ export default defineConfig({
   output: 'static',
   integrations: [
     starlight({
-      title: "",
-        logo: {
-          src: "./src/assets/logo.svg",
-        },
+      title: "Kratos",
+      logo: {
+        src: "./src/assets/logo.svg",
+      },
       social: [
         {
           icon: "github",
@@ -87,7 +87,6 @@ export default defineConfig({
             label: "Blades Agent",
             link: "/blades/",
             items: [
-              { label: "Blades", autogenerate: { directory: "/blades/" } },
               { label: "Get started", autogenerate: { directory: "/blades/getting-started" } },
             ],
           },
