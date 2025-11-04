@@ -1,3 +1,6 @@
+---
+title: Quick Start
+---
 Blades is a multimodal AI Agent framework based on Go, supporting custom models, tools, memory, middleware, etc., suitable for multi-turn conversations, chain-of-thought reasoning, and structured output scenarios.
 
 ## 📦 Environment Installation
