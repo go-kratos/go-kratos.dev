@@ -26,7 +26,7 @@ func main() {
     // Set Environment Variables for OpenAI
     provider := openai.NewChatProvider()
     agent := blades.NewAgent(
-    	"demo-runstream",
+    	"Stream Agent",
     	blades.WithProvider(provider),
     	blades.WithModel("deepseek-chat"),
     )
