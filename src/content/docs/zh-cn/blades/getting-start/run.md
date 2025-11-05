@@ -1,3 +1,6 @@
+---
+title: " Blades 同步调用"
+---
 # 🔁同步调用
 使用Blades同步调用让Agent一次返回完整回答。
 

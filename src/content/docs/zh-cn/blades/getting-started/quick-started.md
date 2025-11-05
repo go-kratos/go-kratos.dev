@@ -101,7 +101,7 @@ export OPENAI_API_KEY=your-api-key
 + 自定义 Memory 实现
 + 工作流编排（Flow）
 
-请查看 `[https://github.com/go-kratos/blades/tree/main/examples](https://github.com/go-kratos/blades/tree/main/examples)` 目录获取完整代码。
+请查看 [https://github.com/go-kratos/blades/tree/main/examples](https://github.com/go-kratos/blades/tree/main/examples) 目录获取完整代码。
 
 ## 🛠 环境变量（以 OpenAI 为例）
 ```basic
