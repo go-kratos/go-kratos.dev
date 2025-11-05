@@ -35,7 +35,7 @@ func main() {
 	)
 	v1.RegisterGreeterServer(srv, greeter)
 	v1.RegisterGreeterHTTPServer(srv, greeter)
-	kratos.New(
+	app := kratos.New(
 		kratos.Name("kratos-app"),
 		kratos.Version("v1.0.0"),
 		kratos.Server(
@@ -43,6 +43,9 @@ func main() {
 			grpcSrv,
 		),
 	)
+    if err := app.Run(); err != nil {
+        log.Fatal(err)
+    }
 }
 ````
     </TabItem>
