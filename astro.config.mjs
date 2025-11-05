@@ -87,7 +87,7 @@ export default defineConfig({
             label: "Blades Agent",
             link: "/blades/",
             items: [
-              { label: "Get started", autogenerate: { directory: "/blades/getting-started" } },
+              { label: "Get started", autogenerate: { directory: "/blades/get-started" } },
             ],
           },
         ],{exclude: ["**/blog/**"]}),
