@@ -15,40 +15,37 @@ Use Blades synchronous invocation to make the Agent return a complete answer at 
 package main
 
 import (
-	"context"
-	"log"
-	"os"
-
-	"github.com/go-kratos/blades"
-	"github.com/go-kratos/blades/contrib/openai"
+    "context"
+    "log"
+    "os"
+    
+    "github.com/go-kratos/blades"
+    "github.com/go-kratos/blades/contrib/openai"
 )
 
 func main() {
-
-	provider := openai.NewChatProvider()
-	// build Agent
-	agent := blades.NewAgent(
-		"demo-run-agent",
-		blades.WithProvider(provider),
-		blades.WithModel("deepseek-chat"),
-	)
-	// build Prompt
-	params := map[string]any{
-		"topic":    "artificial intelligence",
-		"audience": "users",
-	}
-	prompt, err := blades.NewPromptTemplate().
-		System("please summarize {{.topic}}。", params).
-		User("please answer for {{.audience}} in a clear and accurate manner.", params).
-		Build()
-	if err != nil {
-		log.Fatal(err)
-	}
-	// run
-	resp, err := agent.Run(context.Background(), prompt)
-	if err != nil {
-		log.Fatalf("agent run: %v", err)
-	}
-	os.Stdout.WriteString(resp.Text())
+    // Set Environment Variables for OpenAI
+    provider := openai.NewChatProvider()
+    agent := blades.NewAgent(
+    	"Run Agent",
+    	blades.WithProvider(provider),
+    	blades.WithModel("deepseek-chat"),
+    )
+    params := map[string]any{
+    	"topic":    "The Future of Artificial Intelligence",
+    	"audience": "General reader",
+    }
+    prompt, err := blades.NewPromptTemplate().
+    	System("please summarize {{.topic}}。", params).
+    	User("please answer for {{.audience}} in a clear and accurate manner.", params).
+    	Build()
+    if err != nil {
+    	log.Fatal(err)
+    }
+    result, err := agent.Run(context.Background(), prompt)
+    if err != nil {
+    	log.Fatal(err)
+    }
+    log.Println(result.Text())
 }
 ```
