@@ -1,14 +1,17 @@
-# 🌊流式调用
-流式调用（Streaming）是一种边生成、边返回的 API 通信模式。与传统“等待完整响应后再返回”的方式不同，流式接口在服务端生成内容的过程中，实时将数据分块（chunk）发送给客户端，客户端可即时处理和展示。
+---
+title: " Blades Streaming Calls"
+---
+# 🌊Streaming Calls
+Streaming is an API communication mode that returns data while generating it. Unlike the traditional approach of "waiting for the complete response before returning," streaming interfaces send data in chunks to the client in real-time as the server generates the content, allowing the client to process and display it immediately.
 
-    特点：低延迟感知、内存友好、实时反馈。
-    可用于：聊天机器人、代码补全、实时翻译、语音合成前处理等，对“即时性”要求高的场景。
+    Features: Low perceived latency, memory-friendly, real-time feedback.
+    Applicable to: Chatbots, code completion, real-time translation, pre-processing for speech synthesis, and other scenarios with high requirements for "immediacy."
 
-## 🚀代码示例
+## 🚀Code Example
 
-### 前置条件
-    1. 安装Blades：`go get github.com/go-kratos/blades`
-    2. 配置模型提供者（如OpenAI）：设置环境变量`OPENAI_API_KEY`和`OPENAI_BASE_URL`
+### Prerequisites
+    1. Install Blades: `go get github.com/go-kratos/blades`
+    2. Configure a model provider (e.g., OpenAI): Set environment variables `OPENAI_API_KEY` and `OPENAI_BASE_URL`
 
 ```Go
 package main

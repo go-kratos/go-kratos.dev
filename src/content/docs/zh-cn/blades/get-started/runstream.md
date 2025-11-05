@@ -1,14 +1,17 @@
-# 🌊 Streaming Calls
-Streaming calls (Streaming) are an API communication mode that returns data as it is generated. Unlike the traditional "wait for the complete response before returning" approach, streaming interfaces send data in chunks (chunks) to the client in real-time as the server generates the content, allowing the client to process and display it immediately.
+---
+title: " Blades 流式调用"
+---
+# 🌊流式调用
+流式调用（Streaming）是一种边生成、边返回的 API 通信模式。与传统“等待完整响应后再返回”的方式不同，流式接口在服务端生成内容的过程中，实时将数据分块（chunk）发送给客户端，客户端可即时处理和展示。
 
-    Features: Low perceived latency, memory-friendly, real-time feedback.
-    Suitable for: Chatbots, code completion, real-time translation, pre-processing for speech synthesis, and other scenarios that require high "immediacy".
+    特点：低延迟感知、内存友好、实时反馈。
+    可用于：聊天机器人、代码补全、实时翻译、语音合成前处理等，对“即时性”要求高的场景。
 
-## 🚀 Code Example
+## 🚀代码示例
 
-### Prerequisites
-    1. Install Blades: `go get github.com/go-kratos/blades`
-    2. Configure the model provider (e.g., OpenAI): Set the environment variables `OPENAI_API_KEY` and `OPENAI_BASE_URL`
+### 前置条件
+    1. 安装Blades：`go get github.com/go-kratos/blades`
+    2. 配置模型提供者（如OpenAI）：设置环境变量`OPENAI_API_KEY`和`OPENAI_BASE_URL`
 
 ```Go
 package main

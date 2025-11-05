@@ -1,15 +1,17 @@
-# 🔁 Synchronous Invocation
-Use Blades synchronous invocation to make the Agent return a complete answer at once.
+---
+title: " Blades 同步调用"
+---
+# 🔁同步调用
+使用Blades同步调用让Agent一次返回完整回答。
 
-    Behavior: After sending a request via synchronous Run, it blocks and waits until the model generates a complete response, then returns the result all at once.
-    Return value: A complete Message object
+    行为：同步调用Run发送请求后阻塞等待，直到模型生成完整回复，一次性返回结果。
+    返回值：一个完整的Message对象
 
+## 🚀代码示例
 
-## 🚀 Code Example
-
-### Prerequisites
-    1. Install Blades: `go get github.com/go-kratos/blades`
-    2. Configure the model provider (e.g., OpenAI): Set environment variables `OPENAI_API_KEY` and `OPENAI_BASE_URL`
+### 前置条件
+    1. 安装Blades：`go get github.com/go-kratos/blades`
+    2. 配置模型提供者（如OpenAI）：设置环境变量`OPENAI_API_KEY`和`OPENAI_BASE_URL`
 
 ```Go
 package main
