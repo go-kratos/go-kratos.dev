@@ -1,10 +1,10 @@
 ---
 title: Quick Start
 ---
-Blades is a multimodal AI Agent framework based on the Go language, supporting custom models, tools, memory, middleware, etc., suitable for multi-turn conversations, chain-of-thought reasoning, and structured output scenarios.
+Blades is a multimodal AI Agent framework based on Go, supporting custom models, tools, memory, middleware, etc., suitable for multi-turn conversations, chain-of-thought reasoning, and structured output scenarios.
 
 ## 📦 Environment Setup
-Ensure you have installed Go 1.20+, then initialize your project and import Blades with the following commands:
+Make sure you have installed Go 1.20+, then initialize your project and import Blades with the following commands:
 
 ```basic
 cd your-project-name
@@ -86,9 +86,9 @@ export OPENAI_API_KEY=your-api-key
 | **<font style="color:#000000;">Component</font>** | **<font style="color:#000000;">Description</font>** |
 | --- | --- |
 | **<font style="color:#000000;">Agent</font>** | <font style="color:#000000;">The core of the intelligent agent, responsible for coordinating models, tools, memory, etc.</font> |
-| **<font style="color:#000000;">Tool</font>** | <font style="color:#000000;">External capability plugins (e.g., calling APIs, querying databases)</font> |
+| **<font style="color:#000000;">Tool</font>** | <font style="color:#000000;">External capability plugins (such as calling APIs, querying databases)</font> |
 | **<font style="color:#000000;">Memory</font>** | <font style="color:#000000;">Conversation memory management, supporting multi-turn context</font> |
-| **<font style="color:#000000;">Runnable</font>** | <font style="color:#000000;">Unified interface for all executable components (Agent, Chain, Model, etc. all implement it)</font> |
+| **<font style="color:#000000;">Runnable</font>** | <font style="color:#000000;">A unified interface for all executable components (Agent, Chain, Model, etc. all implement it)</font> |
 | **<font style="color:#000000;">Middleware</font>** | <font style="color:#000000;">Middleware mechanism for cross-cutting concerns like logging, rate limiting, authentication</font> |
 | **<font style="color:#000000;">ModelProvider</font>** | <font style="color:#000000;">Model adapter (e.g., OpenAI, DeepSeek), providing a unified calling interface</font> |
 
@@ -98,10 +98,10 @@ The project provides rich usage examples, covering:
 
 + Multi-tool calling (Function Calling)
 + Streaming responses
-+ Custom Memory implementations
++ Custom Memory implementation
 + Workflow orchestration (Flow)
 
-Please check the `[https://github.com/go-kratos/blades/tree/main/examples](https://github.com/go-kratos/blades/tree/main/examples)` directory for complete code.
+Please check the [https://github.com/go-kratos/blades/tree/main/examples](https://github.com/go-kratos/blades/tree/main/examples) directory for complete code.
 
 ## 🛠 Environment Variables (Using OpenAI as an Example)
 ```basic
@@ -114,6 +114,6 @@ export OPENAI_BASE_URL=https://api.openai.com/v1
 + [Official GitHub Repository](https://github.com/go-kratos/blades)
 
 ## 📕 Note
-✅ Tip: Blades follows Go language idioms, with concise code and decoupled components, making it very suitable for building enterprise-level AI applications.
+✅ Tip: Blades follows Go idioms, with concise code and decoupled components, making it very suitable for building enterprise-level AI applications.
 
 Welcome to Star ⭐️ the project: github.com/go-kratos/blades
