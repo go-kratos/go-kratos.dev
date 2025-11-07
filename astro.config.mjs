@@ -38,7 +38,6 @@ export default defineConfig({
           },
       },
       components: {
-        // 重写默认的 `Header` 组件。
         Header: "./src/components/Header.astro",
       },
       expressiveCode: {
@@ -88,6 +87,11 @@ export default defineConfig({
             link: "/blades/",
             items: [
               { label: "Get started", autogenerate: { directory: "/blades/get-started" } },
+              { label: "Tutorials", autogenerate: { directory: "/blades/Tutorial" } },
+              { label: "Agent Patterns", autogenerate: { directory: "/blades/agent-patterns" } },
+              { label: "Graph Workflows", link: "/blades/graph-state"  },
+              { label: "Model Providers", autogenerate: { directory: "/blades/model-providers" } },
+              { label: "Evaluation", link: "/blades/evaluate" }
             ],
           },
         ],{exclude: ["**/blog/**"]}),
