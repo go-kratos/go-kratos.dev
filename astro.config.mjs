@@ -91,13 +91,13 @@ export default defineConfig({
                 },
                 {
                   label: "Tutorials",
-                  autogenerate: { directory: "/blades/tutorial" },
+                  autogenerate: { directory: "/blades/tutorials" },
                 },
                 {
                   label: "Agent Patterns",
                   autogenerate: { directory: "/blades/agent-patterns" },
                 },
-                { label: "Graph Workflows", link: "/blades/graph-state" },
+                { label: "Graph Workflows", link: "/blades/graph-workflows" },
                 {
                   label: "Model Providers",
                   autogenerate: { directory: "/blades/model-providers" },
