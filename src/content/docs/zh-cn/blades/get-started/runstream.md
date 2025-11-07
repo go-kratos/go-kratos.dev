@@ -1,11 +1,19 @@
 ---
-title: " 流式调用"
+title: "构建流式智能体"
 ---
+<<<<<<< HEAD:src/content/docs/blades/getting-started/runstream.md
+# 🌊 Streaming Calls
+Streaming calls (Streaming) are an API communication mode that returns data as it is generated. Unlike the traditional approach of "waiting for the complete response before returning," streaming interfaces send data in chunks (chunks) to the client in real-time as the server generates content, allowing the client to process and display it immediately.
+
+    Characteristics: Low perceived latency, memory-friendly, real-time feedback.
+    Suitable for: Chatbots, code completion, real-time translation, pre-processing for speech synthesis, and other scenarios that require high "immediacy."
+=======
 # 🌊流式调用
 流式调用（Streaming）是一种边生成、边返回的 API 通信模式。与传统“等待完整响应后再返回”的方式不同，流式接口在服务端生成内容的过程中，实时将数据分块（chunk）发送给客户端，客户端可即时处理和展示。
 
     特点：低延迟感知、内存友好、实时反馈。
     可用于：聊天机器人、代码补全、实时翻译、语音合成前处理等，对“即时性”要求高的场景。
+>>>>>>> c3e0facabaf1dbafee93d281abbd6f78295206db:src/content/docs/zh-cn/blades/get-started/runstream.md
 
 ## 🚀代码示例
 

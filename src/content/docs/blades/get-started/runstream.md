@@ -1,17 +1,17 @@
 ---
-title: " Blades Streaming Calls"
+title: "Building Streaming Agents"
 ---
-# 🌊Streaming Calls
-Streaming is an API communication mode that returns data while generating it. Unlike the traditional approach of "waiting for the complete response before returning," streaming interfaces send data in chunks to the client in real-time as the server generates the content, allowing the client to process and display it immediately.
+# 🌊 Streaming Calls
+Streaming calls (Streaming) are an API communication mode that returns data as it is generated. Unlike the traditional approach of "waiting for a complete response before returning," streaming interfaces send data in chunks to the client in real-time as the server generates the content, allowing the client to process and display it immediately.
 
     Features: Low perceived latency, memory-friendly, real-time feedback.
-    Applicable to: Chatbots, code completion, real-time translation, pre-processing for speech synthesis, and other scenarios with high requirements for "immediacy."
+    Suitable for: Chatbots, code completion, real-time translation, pre-processing for speech synthesis, and other scenarios that require high "immediacy."
 
-## 🚀Code Example
+## 🚀 Code Example
 
 ### Prerequisites
     1. Install Blades: `go get github.com/go-kratos/blades`
-    2. Configure a model provider (e.g., OpenAI): Set environment variables `OPENAI_API_KEY` and `OPENAI_BASE_URL`
+    2. Configure the model provider (e.g., OpenAI): Set environment variables `OPENAI_API_KEY` and `OPENAI_BASE_URL`
 
 ```Go
 package main

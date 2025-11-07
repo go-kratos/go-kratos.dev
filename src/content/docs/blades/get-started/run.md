@@ -1,11 +1,12 @@
 ---
-title: " Blades Synchronous Call"
+title: "Building Generative Agents"
 ---
-# 🔁 Synchronous Call
-Use Blades synchronous call to have the Agent return a complete response at once.
+# 🔁 Synchronous Invocation
+:::note
+Use Blades synchronous invocation to have the Agent return a complete answer at once.
 
-    Behavior: After sending a request with a synchronous Run call, it blocks and waits until the model generates a complete reply, then returns the result all at once.
-    Return Value: A complete Message object
+    Behavior: After sending a request with the synchronous Run call, it blocks and waits until the model generates the full reply, then returns the result in one go.
+    Return value: A complete Message object
 
 ## 🚀 Code Example
 
