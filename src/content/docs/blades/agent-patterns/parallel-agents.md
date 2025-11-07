@@ -2,7 +2,7 @@
 title: "Parallel Agent"
 ---
 :::note
-The Parallel Agent is a core component in the Blades framework used to implement concurrent execution logic. It can launch multiple tasks simultaneously for concurrent execution and provides a flexible result merging mechanism. This pattern is particularly suitable for scenarios requiring parallel processing to improve efficiency.
+The Parallel Agent is a core component in the Blades framework used to implement concurrent execution logic. It can start multiple tasks simultaneously for concurrent execution and provides a flexible result merging mechanism. This pattern is particularly suitable for scenarios requiring parallel processing to improve efficiency.
 :::
 ## Core Concepts
 The structure of the Parallel Agent is as follows:
@@ -13,14 +13,14 @@ type Parallel struct {
 }
 ```
 ### Parameter Description
-The Parallel struct contains two parameters: the executable task list (runners) and the result merge function (ParallelMerger).
+The Parallel struct contains two parameters: the executable task list (runners) and the result merging function (ParallelMerger).
 #### 1. Executable Task List (runners)
 :::note
 - Type: `[]blades.Runnable`
-- Purpose: List of tasks that need to be executed concurrently
-- Characteristics: Each task can be any object that implements the **Runnable** interface
+- Purpose: A list of tasks that need to be executed concurrently
+- Characteristic: Each task can be any object that implements the **Runnable** interface
 :::
-#### 2. Result Merge Function (ParallelMerger)
+#### 2. Result Merging Function (ParallelMerger)
 :::note
 - Type: `func(ctx context.Context, outputs []*blades.Message) (*blades.Message, error)`
 - Purpose: Merges the output results of multiple parallel tasks into a single output
@@ -28,9 +28,9 @@ The Parallel struct contains two parameters: the executable task list (runners) 
 :::
 ## Features
 :::note
-- **Concurrent Execution**: The Parallel Agent uses Go's concurrency mechanism to launch all tasks simultaneously, fully utilizing multi-core CPU performance.
+- **Concurrent Execution**: The Parallel Agent uses Go's concurrency mechanism to start all tasks simultaneously, fully utilizing multi-core CPU performance.
 
-- **Flexible Result Merging**: Provides the ability to customize the result merge function, allowing flexible handling of outputs from multiple tasks based on business requirements.
+- **Flexible Result Merging**: Provides the ability to customize the result merging function, allowing flexible handling of outputs from multiple tasks based on business requirements.
 
 - **Unified Error Handling**: Uses the errgroup mechanism to ensure that if any task fails, all tasks are promptly terminated and an error is returned.
 
@@ -53,7 +53,7 @@ tasks := []blades.Runnable{
 parallel := flow.NewParallel(tasks)
 result, err := parallel.Run(context.Background(), prompt)
 ```
-### 3. Custom Result Merge Function
+### 3. Customize the Result Merging Function
 ```go
 erger := func(ctx context.Context, outputs []*blades.Message) (*blades.Message, error) {
     // default merge logic
@@ -67,8 +67,8 @@ parallel := flow.NewParallel(tasks, flow.WithParallelMerger(merger))
 ## Best Practices
 :::tip
 - **Reasonable Task Division**: Divide tasks that can be executed independently and are time-consuming into parallel tasks
-- **Avoid Resource Contention**: Ensure there are no shared resource contention issues between parallel tasks
-- **Design Appropriate Merging Strategy**: Design appropriate result merging logic based on business requirements
+- **Avoid Resource Contention**: Ensure there are no shared resource conflicts between parallel tasks
+- **Design Appropriate Merging Strategy**: Design suitable result merging logic based on business requirements
 - **Performance Evaluation**: For lightweight tasks, parallel execution might actually reduce performance due to scheduling overhead
 :::
 ## Code Example

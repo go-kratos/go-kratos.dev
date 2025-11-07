@@ -2,7 +2,7 @@
 title: "Branch Agent"
 ---
 :::note
-The Branch Agent is a core component in the Blades framework for implementing conditional branch logic. It allows for dynamically selecting an execution path based on runtime conditions, choosing one executable task from multiple options based on the return value of a condition function. This pattern is well-suited for scenarios requiring different actions based on varying inputs or states.
+The Branch Agent is a core component in the Blades framework used to implement conditional branch logic. It allows for the dynamic selection of execution paths based on runtime conditions, choosing one executable task from multiple options according to the return value of a condition function. This pattern is particularly suitable for scenarios requiring different actions based on varying inputs or states.
 :::
 
 ## Core Concepts
@@ -14,7 +14,7 @@ type Branch struct {
 }
 ```
 ### Parameter Description
-The Branch contains two parameters: the branch condition function (BranchCondition) and the executable task mapping (runners).
+Branch contains two parameters: the branch condition function (BranchCondition) and the executable task mapping (runners).
 ### 1. Branch Condition Function (BranchCondition)
 :::note
 - Type: `func(ctx context.Context, input *blades.Prompt) (string, error)`
@@ -31,7 +31,7 @@ The Branch contains two parameters: the branch condition function (BranchConditi
 ## Features
 :::tip
 - **Condition-Driven Execution**: The Branch Agent dynamically decides which branch to execute through the condition function, enabling the program to make intelligent decisions based on runtime information.
-- **Flexible Task Composition**: Supports any number of branches, each branch can be any object implementing the **Runnable** interface, including other flow controllers (sequential, parallel, etc.).
+- **Flexible Task Composition**: Supports any number of branches, where each branch can be any object implementing the **Runnable** interface, including other flow controllers (sequential, parallel, etc.).
 - **Error Handling Mechanism**: Returns corresponding error information when the condition function execution fails or the specified branch does not exist.
 :::
 ## Usage
@@ -67,8 +67,8 @@ result, err := branch.Run(context.Background(), prompt)
 :::tip
 - **Clear Condition Design**: The condition function should be as simple and clear as possible, avoiding complex business logic.
 - **Complete Branch Coverage**: Ensure all possible condition outcomes have corresponding handling branches.
-- **Reasonable Error Handling**: Consider error handling in both the condition function and branch tasks.
-- **Maintainability Considerations**: For complex branch logic, it is recommended to split it into multiple layers of nested branches.
+- **Proper Error Handling**: Consider error handling in both the condition function and branch tasks.
+- **Maintainability Considerations**: For complex branch logic, it is recommended to split it into multiple levels of nested branches.
 :::
 ## Code Example
 ```go
