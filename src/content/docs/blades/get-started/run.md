@@ -1,18 +1,18 @@
 ---
-title: " Synchronous Invocation"
+title: "Building Generative Agents"
 ---
 # 🔁 Synchronous Invocation
 :::note
-Use Blades synchronous invocation to have the Agent return a complete response at once.
+Use Blades synchronous invocation to have the Agent return a complete answer at once.
 
-    Behavior: After sending a request with a synchronous Run call, it blocks and waits until the model generates a complete reply, then returns the result all at once.
+    Behavior: After sending a request with the synchronous Run call, it blocks and waits until the model generates the full reply, then returns the result in one go.
     Return value: A complete Message object
 
 ## 🚀 Code Example
 
 ### Prerequisites
     1. Install Blades: `go get github.com/go-kratos/blades`
-    2. Configure the model provider (e.g., OpenAI): Set the environment variables `OPENAI_API_KEY` and `OPENAI_BASE_URL`
+    2. Configure the model provider (e.g., OpenAI): Set environment variables `OPENAI_API_KEY` and `OPENAI_BASE_URL`
 
 ```Go
 package main

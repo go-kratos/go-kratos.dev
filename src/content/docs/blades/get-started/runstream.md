@@ -1,11 +1,11 @@
 ---
-title: "Streaming Calls"
+title: "Building Streaming Agents"
 ---
 # 🌊 Streaming Calls
-Streaming is an API communication mode that returns data while generating it. Unlike the traditional approach of "waiting for a complete response before returning," streaming interfaces send data in chunks to the client in real-time as the server generates the content, allowing the client to process and display it immediately.
+Streaming calls (Streaming) are an API communication mode that returns data as it is generated. Unlike the traditional approach of "waiting for a complete response before returning," streaming interfaces send data in chunks to the client in real-time as the server generates the content, allowing the client to process and display it immediately.
 
     Features: Low perceived latency, memory-friendly, real-time feedback.
-    Suitable for: Chatbots, code completion, real-time translation, pre-processing for speech synthesis, and other scenarios requiring high "immediacy."
+    Suitable for: Chatbots, code completion, real-time translation, pre-processing for speech synthesis, and other scenarios that require high "immediacy."
 
 ## 🚀 Code Example
 
