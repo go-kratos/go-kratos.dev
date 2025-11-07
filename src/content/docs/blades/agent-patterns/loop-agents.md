@@ -2,7 +2,7 @@
 title: "Loop Agent"
 ---
 :::note
-The Loop Agent is a core component in the Blades framework for implementing loop execution logic. The Loop Agent decides whether to continue executing a task based on the return value of a condition function. This pattern is particularly suitable for scenarios that require repeated processing until a goal is achieved.
+The Loop Agent is a core component in the Blades framework used to implement loop execution logic. The Loop Agent decides whether to continue executing a task based on the return value of a condition function. This pattern is particularly suitable for scenarios that require repeated processing until a goal is achieved.
 :::
 ## Core Concepts
 The specific structure of the Loop Agent is as follows:
@@ -14,7 +14,7 @@ type Loop struct {
 }
 ```
 ## Parameter Description
-The Loop structure contains three parameters: the loop condition function (condition), the executable task (runner), and the maximum number of iterations (maxIterations).
+The Loop contains 3 parameters: the loop condition function (condition), the executable task (runner), and the maximum number of iterations (maxIterations).
 ### 1. Loop Condition Function (condition)
 :::note
 - Type: `func(ctx context.Context, output *blades.Message) (bool, error)`
@@ -66,9 +66,9 @@ result, err := loop.Run(context.Background(), prompt)
 ```
 ## Best Practices
 :::note
-- **Reasonable Condition Design**: The loop condition should accurately reflect the task completion status, avoiding conditions that can never be satisfied.
+- **Reasonable Condition Design**: Loop conditions should accurately reflect task completion status, avoiding conditions that can never be met.
 - **Set Appropriate Maximum Iterations**: Set a reasonable upper limit based on business scenarios to prevent resource waste.
-- **Comprehensive Error Handling**: Consider error handling in both the condition function and execution task to avoid infinite loops caused by exceptions.
+- **Comprehensive Error Handling**: Consider error handling in both condition functions and execution tasks to avoid infinite loops caused by exceptions.
 - **State Transfer Optimization**: Properly utilize input and output parameters to transfer state information, ensuring each iteration processes based on the latest state.
 :::
 ## Code Example

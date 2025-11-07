@@ -3,7 +3,7 @@ title: "Middleware"
 ---
 
 :::note
-In the Blades framework, middleware is a powerful mechanism for implementing cross-cutting concerns (such as logging, monitoring, authentication, rate limiting, etc.). Its design allows injecting additional behavior into the execution flow of a **Runnable** without modifying the core logic. Middleware works in a function chain following the "onion model," providing highly flexible flow control and feature enhancement. This document will guide you through a simple example of implementing a logging middleware.
+In the Blades framework, middleware is a powerful mechanism for implementing cross-cutting concerns (such as logging, monitoring, authentication, rate limiting, etc.). Its design allows injecting additional behavior into the execution flow of a **Runnable** without modifying the core logic. Middleware operates in a function chain following the "onion model," providing highly flexible flow control and feature enhancement. This document will guide you through a simple example of implementing a logging middleware.
 :::
 
 ## Code Example
@@ -44,7 +44,7 @@ func (m *LoggingMiddleware) Run(ctx context.Context, prompt *blades.Prompt, opts
 ```
 
 
-### 2. Use Middleware
+### 2. Using Middleware
 :::tip
 To use middleware in an Agent, simply pass it via the WithMiddleware option when creating the Agent.
 :::

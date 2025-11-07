@@ -3,7 +3,7 @@ title: "Prompt"
 ---
 
 :::note
-In the Blades framework, Prompt is the core component for interacting with large language models (LLMs). It represents a sequence of messages exchanged between the user and the assistant, supporting various message types (system messages, user messages, assistant messages) and templating capabilities, enabling developers to build dynamic and context-aware AI applications.
+In the Blades framework, Prompt is the core component for interacting with Large Language Models (LLMs). It represents a sequence of messages exchanged between the user and the assistant, supporting various message types (system messages, user messages, assistant messages) and templating capabilities, enabling developers to build dynamic and context-aware AI applications.
 :::
 
 ## Prompt Structure
@@ -105,8 +105,8 @@ for stream.Next() {
 :::tip
 - Clear System Instructions: Provide clear and specific instructions in system messages to help the model better understand task requirements.
 - Use Templates Appropriately: Leverage templating capabilities to improve code reusability and maintainability, especially in scenarios requiring dynamic Prompt generation.
-- Manage Context Length: Pay attention to controlling Prompt length to avoid exceeding the model's maximum context limit.
-- Error Handling: Always check for errors during template rendering and Prompt construction to ensure application robustness.
+- Manage Context Length: Pay attention to controlling the Prompt length to avoid exceeding the model's maximum context limit.
+- Error Handling: Always check for errors during template rendering and Prompt building to ensure application robustness.
 :::
 ## Basic Example
 ```go
@@ -140,7 +140,7 @@ func main() {
     log.Println(result.Text())
 }
 ```
-## Templating Example
+## Templated Example
 ```go
 package main
 

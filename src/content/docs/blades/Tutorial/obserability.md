@@ -3,15 +3,17 @@ title: "Observability"
 ---
 
 :::note
-Blades provides rich features to help developers observe and diagnose application performance. This document presents an observability example for monitoring AI performance.
+Blades provides rich features to help developers observe and diagnose application performance. This document will present an observability example for monitoring AI performance.
 :::
 
 ## Code Example
+
 :::note
 Before running this example, please check if the APIKEY is configured.
 :::
 
 ### 1. Initialize Tracing
+
 ```go
 // Initialize OpenTelemetry tracer provider
 func createTracerProvider() {
@@ -39,6 +41,7 @@ func createTracerProvider() {
 ```
 
 ### 2. Create Multiple Agents
+
 ```go
 func createAgents() []*blades.Agent {
     agents := []*blades.Agent{
@@ -62,6 +65,7 @@ func createAgents() []*blades.Agent {
 ```
 
 ### 3. Test Agent Performance
+
 ```go
 func testAgentPerformance(agents []*blades.Agent) {
     prompt := blades.NewPrompt(

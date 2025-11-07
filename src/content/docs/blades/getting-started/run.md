@@ -1,12 +1,12 @@
 ---
-title: " Synchronous Invocation"
+title: " Synchronous Call"
 ---
-# 🔁 Synchronous Invocation
+# 🔁 Synchronous Call
 :::note
-Use Blades synchronous invocation to have the Agent return a complete response at once.
+Use Blades synchronous calls to have the Agent return a complete answer at once.
 
-    Behavior: After sending a request with a synchronous Run call, it blocks and waits until the model generates a complete reply, then returns the result all at once.
-    Return value: A complete Message object
+    Behavior: After sending a request with the synchronous Run call, it blocks and waits until the model generates a complete response, returning the result all at once.
+    Return Value: A complete Message object
 
 ## 🚀 Code Example
 

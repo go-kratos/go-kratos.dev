@@ -2,7 +2,7 @@
 title: "Sequential Agent"
 ---
 :::tip
-The Sequential Agent is a core component in the Blades framework used to implement sequential execution logic. It allows multiple tasks to be executed in a predetermined order, where the output of the previous task serves as the input for the next one. This pattern is particularly suitable for linear business processes that require step-by-step handling.
+The Sequential Agent is the core component in the Blades framework for implementing sequential execution logic. It allows multiple tasks to be executed in a predetermined order, where the output of the previous task serves as the input for the next. This pattern is particularly suitable for linear business processes that require step-by-step handling.
 :::
 ## Core Concepts
 ```go
@@ -14,7 +14,7 @@ type Sequential struct {
 The Sequential struct contains only one parameter: runners.
 ### 1. Executable Task List (runners)
 :::note
-- Type:
+- Type: 
 ```go
 type Runnable interface {
 	Run(context.Context, *Prompt, ...ModelOption) (*Message, error)
@@ -43,7 +43,7 @@ tasks := []blades.Runnable{
     flow.NewSequential(...),
 }
 ```
-### 2. Use the Sequential Agent
+### 2. Using the Sequential Agent
 ```go
 sequential := flow.NewSequential(tasks...)
 result, err := sequential.Run(context.Background(), prompt)
@@ -54,7 +54,7 @@ result, err := sequential.Run(context.Background(), prompt)
 - **Clear Data Dependencies**: Ensure clear and explicit input-output relationships between tasks.
 - **Comprehensive Error Handling**: Consider error handling in each task to ensure process robustness.
 - **Avoid Excessive Nesting**: For overly complex processes, consider using graphical workflows instead of deep nesting.
-- **Performance Considerations**: For long-running tasks, consider whether optimization through parallel processing is possible.
+- **Performance Considerations**: For time-consuming tasks, consider whether optimization through parallel processing is possible.
 :::
 ## Code Example
 :::note
