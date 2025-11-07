@@ -38,7 +38,6 @@ export default defineConfig({
           },
       },
       components: {
-        // 重写默认的 `Header` 组件。
         Header: "./src/components/Header.astro",
       },
       expressiveCode: {
@@ -87,13 +86,12 @@ export default defineConfig({
             label: "Blades Agent",
             link: "/blades/",
             items: [
-              { label: "Get started", autogenerate: { directory: "/blades/getting-started" } },
-              { label: "Tutorial(contrib包使用)", autogenerate: { directory: "/blades/Tutorial" } },
-              { label: "Agent Patterns(Workflows)", autogenerate: { directory: "/blades/agent-patterns" } },
-              { label: "Graph State(Workflows)", link: "/blades/graph-state"  },
+              { label: "Get started", autogenerate: { directory: "/blades/get-started" } },
+              { label: "Tutorials", autogenerate: { directory: "/blades/Tutorial" } },
+              { label: "Agent Patterns", autogenerate: { directory: "/blades/agent-patterns" } },
+              { label: "Graph Workflows", link: "/blades/graph-state"  },
               { label: "Model Providers", autogenerate: { directory: "/blades/model-providers" } },
-              // 加一个页面不要文件夹
-              { label: "Evaluate", link: "/blades/evaluate" }
+              { label: "Evaluation", link: "/blades/evaluate" }
             ],
           },
         ],{exclude: ["**/blog/**"]}),
