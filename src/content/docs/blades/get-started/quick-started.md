@@ -1,10 +1,10 @@
 ---
 title: Quick Start
 ---
-Blades is a multimodal AI Agent framework based on Go, supporting custom models, tools, memory, middleware, etc., suitable for multi-turn conversations, chain-of-thought reasoning, and structured output scenarios.
+Blades is a multimodal AI Agent framework based on the Go language, supporting custom models, tools, memory, middleware, etc., suitable for multi-turn conversations, chain-of-thought reasoning, and structured output scenarios.
 
 ## 📦 Environment Setup
-Make sure you have installed Go 1.20+, then initialize your project and import Blades with the following commands:
+Ensure you have installed Go 1.20+, then initialize your project and import Blades with the following commands:
 
 ```basic
 cd your-project-name
@@ -57,7 +57,7 @@ func main() {
 ```
 
 ### 💡 Note
-If you want to switch to another LLM's API, you need to set environment variables, for example:
+If you want to switch to another LLM API, you need to set environment variables, for example:
 
 ```go
 export OPENAI_BASE_URL=https://api.deepseek.com
@@ -69,31 +69,25 @@ You need to set the environment variable `OPENAI_API_KEY`, for example:
 export OPENAI_API_KEY=your-api-key
 ```
 
-### ⚙ Common Large Model URLs
-| **<font style="color:#000000;">Provider</font>** | **<font style="color:#000000;">models</font>** | **URL** |
-| :---: | --- | --- |
-| <font style="color:#000000;">OpenAI</font> | gpt-4o, gpt-4, gpt-3.5-turbo | [https://api.openai.com/v1](https://api.openai.com/v1) |
-| <font style="color:#000000;">DeepSeek</font> | deepseek-chat, deepseek-coder | [https://api.deepseek.com/v1](https://api.deepseek.com/v1) |
-| <font style="color:#000000;">Moonshot</font> | moonshot-v1-8k, moonshot-v1-32k | [https://api.moonshot.cn/v1](https://api.moonshot.cn/v1) |
-| <font style="color:#000000;">Zhipu AI</font> | glm-4, glm-4-flash, glm-3-turbo | [https://open.bigmodel.cn/api/paas/v4](https://open.bigmodel.cn/api/paas/v4) |
-| <font style="color:#000000;">Baichuan</font> | Baichuan4, Baichuan3-Turbo | [https://api.baichuan-ai.com/v1](https://api.baichuan-ai.com/v1) |
-| <font style="color:#000000;">Ollama</font> | llama3, qwen:7b, mistral | [http://localhost:11434/v1](http://localhost:11434/v1)	 |
-| <font style="color:#000000;">Together AI</font> | meta-llama/Llama-3-8b-chat-hf | [https://api.together.xyz/v1](https://api.together.xyz/v1) |
-| <font style="color:#000000;">Groq</font> | llama3-8b-8192, mixtral-8x7b-32768 | [https://api.groq.com/openai/v1](https://api.groq.com/openai/v1) |
-
-
+### ⚙ Common Large Models
+|  Provider  | Model                           | Compatibility     
+| ---- |---------------------------------|----------------|
+| **OpenAI** | ChatGPT, GPT-4, GPT-3.5, etc... | Alibaba Bailian, DeepSeek |
+| **Claude** | Claude 3.7 Sonnet | - |
+| **Gemini** | Gemini 2.5 Pro| - |
 ## 🧩 Core Concepts Overview
 | **<font style="color:#000000;">Component</font>** | **<font style="color:#000000;">Description</font>** |
 | --- | --- |
 | **<font style="color:#000000;">Agent</font>** | <font style="color:#000000;">The core of the intelligent agent, responsible for coordinating models, tools, memory, etc.</font> |
 | **<font style="color:#000000;">Tool</font>** | <font style="color:#000000;">External capability plugins (such as calling APIs, querying databases)</font> |
-| **<font style="color:#000000;">Memory</font>** | <font style="color:#000000;">Conversation memory management, supporting multi-turn context</font> |
+| **<font style="color:#000000;">Memory</font>** | <font style="color:#000000;">Session memory management, supporting multi-turn context</font> |
 | **<font style="color:#000000;">Runnable</font>** | <font style="color:#000000;">A unified interface for all executable components (Agent, Chain, Model, etc. all implement it)</font> |
 | **<font style="color:#000000;">Middleware</font>** | <font style="color:#000000;">Middleware mechanism for cross-cutting concerns like logging, rate limiting, authentication</font> |
 | **<font style="color:#000000;">ModelProvider</font>** | <font style="color:#000000;">Model adapter (e.g., OpenAI, DeepSeek), providing a unified calling interface</font> |
 
 
 ## 📂 More Examples
+:::tip
 The project provides rich usage examples, covering:
 
 + Multi-tool calling (Function Calling)
@@ -102,18 +96,4 @@ The project provides rich usage examples, covering:
 + Workflow orchestration (Flow)
 
 Please check the [https://github.com/go-kratos/blades/tree/main/examples](https://github.com/go-kratos/blades/tree/main/examples) directory for complete code.
-
-## 🛠 Environment Variables (Using OpenAI as an Example)
-```basic
-export OPENAI_API_KEY=sk-xxxxxx
-# Optional: Custom API address (e.g., when using a proxy)
-export OPENAI_BASE_URL=https://api.openai.com/v1
-```
-
-## 📚 Learning Resources
-+ [Official GitHub Repository](https://github.com/go-kratos/blades)
-
-## 📕 Note
-✅ Tip: Blades follows Go idioms, with concise code and decoupled components, making it very suitable for building enterprise-level AI applications.
-
-Welcome to Star ⭐️ the project: github.com/go-kratos/blades
+:::
