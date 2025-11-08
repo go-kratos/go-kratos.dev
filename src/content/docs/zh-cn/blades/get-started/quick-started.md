@@ -3,7 +3,7 @@ title: 快速开始
 ---
 Blades 是一个基于 Go 语言的多模态 AI Agent 框架，支持自定义模型、工具、记忆、中间件等，适用于多轮对话、链式推理和结构化输出场景。
 
-## 📦 环境安装
+## 环境安装
 确保你已安装 Go 1.20+，然后通过以下命令初始化你的项目并引入 Blades：
 
 ```basic
@@ -12,7 +12,7 @@ go mod init your-project-name
 go get github.com/go-kratos/blades
 ```
 
-## 🚀 第一个 Chat Agent
+## 第一个 Chat Agent
 下面是一个使用 OpenAI 模型构建简单聊天 Agent 的完整示例：
 
 ```go
@@ -56,7 +56,7 @@ func main() {
 
 ```
 
-### 💡 注意
+### 注意
 如果你要更换其他LLM的API，则需要设置环境变量，例如：
 
 ```go
@@ -69,13 +69,13 @@ export OPENAI_BASE_URL=https://api.deepseek.com
 export OPENAI_API_KEY=your-api-key
 ```
 
-### ⚙常用大模型
+### 常用大模型
 |  提供商  | 模型                           | 兼容     
 | ---- |---------------------------------|----------------|
 | **OpenAI** | ChatGPT, GPT-4, GPT-3.5, etc... | 阿里百炼、DeepSeek |
 | **Claude** | Claude 3.7 Sonnet | - |
 | **Gemini** | Gemini 2.5 Pro| - |
-## 🧩 核心概念速览
+## 核心概念速览
 | **<font style="color:#000000;">组件</font>** | **<font style="color:#000000;">说明</font>** |
 | --- | --- |
 | **<font style="color:#000000;">Agent</font>** | <font style="color:#000000;">智能体核心，负责协调模型、工具、记忆等</font> |
@@ -86,7 +86,7 @@ export OPENAI_API_KEY=your-api-key
 | **<font style="color:#000000;">ModelProvider</font>** | <font style="color:#000000;">模型适配器（如 OpenAI、DeepSeek），统一调用接口</font> |
 
 
-## 📂 更多示例
+## 更多示例
 :::tip
 项目提供了丰富的使用案例，涵盖：
 

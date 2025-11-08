@@ -3,7 +3,7 @@ title: Quick Start
 ---
 Blades is a multimodal AI Agent framework based on the Go language, supporting custom models, tools, memory, middleware, etc., suitable for multi-turn conversations, chain-of-thought reasoning, and structured output scenarios.
 
-## 📦 Environment Setup
+## Environment Setup
 Ensure you have installed Go 1.20+, then initialize your project and import Blades with the following commands:
 
 ```basic
@@ -12,7 +12,7 @@ go mod init your-project-name
 go get github.com/go-kratos/blades
 ```
 
-## 🚀 First Chat Agent
+## First Chat Agent
 Below is a complete example of building a simple chat Agent using the OpenAI model:
 
 ```go
@@ -56,7 +56,7 @@ func main() {
 
 ```
 
-### 💡 Note
+### Note
 If you want to switch to another LLM API, you need to set environment variables, for example:
 
 ```go
@@ -69,13 +69,13 @@ You need to set the environment variable `OPENAI_API_KEY`, for example:
 export OPENAI_API_KEY=your-api-key
 ```
 
-### ⚙ Common Large Models
+### Common Large Models
 |  Provider  | Model                           | Compatibility     
 | ---- |---------------------------------|----------------|
 | **OpenAI** | ChatGPT, GPT-4, GPT-3.5, etc... | Alibaba Bailian, DeepSeek |
 | **Claude** | Claude 3.7 Sonnet | - |
 | **Gemini** | Gemini 2.5 Pro| - |
-## 🧩 Core Concepts Overview
+## Core Concepts Overview
 | **<font style="color:#000000;">Component</font>** | **<font style="color:#000000;">Description</font>** |
 | --- | --- |
 | **<font style="color:#000000;">Agent</font>** | <font style="color:#000000;">The core of the intelligent agent, responsible for coordinating models, tools, memory, etc.</font> |
@@ -86,7 +86,7 @@ export OPENAI_API_KEY=your-api-key
 | **<font style="color:#000000;">ModelProvider</font>** | <font style="color:#000000;">Model adapter (e.g., OpenAI, DeepSeek), providing a unified calling interface</font> |
 
 
-## 📂 More Examples
+## More Examples
 :::tip
 The project provides rich usage examples, covering:
 

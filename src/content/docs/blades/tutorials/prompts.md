@@ -96,12 +96,10 @@ for stream.Next() {
 }
 ```
 ### Best Practices
-:::tip
 - Clear System Instructions: Provide clear and specific instructions in system messages to help the model better understand task requirements.
 - Use Templates Appropriately: Leverage templating capabilities to improve code reusability and maintainability, especially in scenarios requiring dynamic Prompt generation.
 - Manage Context Length: Pay attention to controlling the Prompt length to avoid exceeding the model's maximum context limit.
 - Error Handling: Always check for errors during template rendering and Prompt building to ensure application robustness.
-:::
 ## Basic Example
 ```go
 package main
