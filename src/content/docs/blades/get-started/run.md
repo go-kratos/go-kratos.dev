@@ -2,7 +2,6 @@
 title: "Building Generative Agents"
 ---
 # 🔁 Synchronous Invocation
-:::note
 Use Blades synchronous invocation to have the Agent return a complete answer at once.
 
     Behavior: After sending a request with the synchronous Run call, it blocks and waits until the model generates the full reply, then returns the result in one go.
