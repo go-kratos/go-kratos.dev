@@ -87,10 +87,10 @@
   resolved "https://registry.npmmirror.com/@astrojs/starlight-tailwind/-/starlight-tailwind-4.0.1.tgz"
   integrity sha512-AOOEWTGqJ7fG66U04xTmZQZ40oZnUYe4Qljpr+No88ozKywtsD1DiXOrGTeHCnZu0hRtMbRtBGB1fZsf0L62iw==
 
-"@astrojs/starlight@^0.36.0", "@astrojs/starlight@>=0.30", "@astrojs/starlight@>=0.32.0", "@astrojs/starlight@>=0.33.0", "@astrojs/starlight@>=0.34.0":
-  version "0.36.1"
-  resolved "https://registry.npmmirror.com/@astrojs/starlight/-/starlight-0.36.1.tgz"
-  integrity sha512-Fmt8mIsAIZN18Y4YQDI6p521GsYGe4hYxh9jWmz0pHBXnS5J7Na3TSXNya4eyIymCcKkuiKFbs7b/knsdGVYPg==
+"@astrojs/starlight@^0.36.2":
+  version "0.36.2"
+  resolved "https://registry.npmmirror.com/@astrojs/starlight/-/starlight-0.36.2.tgz"
+  integrity sha512-QR8NfO7+7DR13kBikhQwAj3IAoptLLNs9DkyKko2M2l3PrqpcpVUnw1JBJ0msGDIwE6tBbua2UeBND48mkh03w==
   dependencies:
     "@astrojs/markdown-remark" "^6.3.1"
     "@astrojs/mdx" "^4.2.3"
@@ -175,10 +175,10 @@
   resolved "https://registry.npmmirror.com/@ctrl/tinycolor/-/tinycolor-4.2.0.tgz"
   integrity sha512-kzyuwOAQnXJNLS9PSyrk0CWk35nWJW/zl/6KvnTBMFK65gm7U1/Z5BqjxeapjZCIhQcM/DsrEmcbRwDyXyXK4A==
 
-"@esbuild/win32-x64@0.25.11":
-  version "0.25.11"
-  resolved "https://registry.npmmirror.com/@esbuild/win32-x64/-/win32-x64-0.25.11.tgz"
-  integrity sha512-D7Hpz6A2L4hzsRpPaCYkQnGOotdUpDzSGRIv9I+1ITdHROSFUWW95ZPZWQmGka1Fg7W3zFJowyn9WGwMJ0+KPA==
+"@esbuild/darwin-arm64@0.25.12":
+  version "0.25.12"
+  resolved "https://registry.npmmirror.com/@esbuild/darwin-arm64/-/darwin-arm64-0.25.12.tgz"
+  integrity sha512-N3zl+lxHCifgIlcMUP5016ESkeQjLj/959RxxNYIthIg+CQHInujFuXeWbWMgnTo4cp5XVHqFPmpyu9J65C1Yg==
 
 "@expressive-code/core@^0.41.3":
   version "0.41.3"
@@ -222,10 +222,17 @@
   resolved "https://registry.npmmirror.com/@img/colour/-/colour-1.0.0.tgz"
   integrity sha512-A5P/LfWGFSl6nsckYtjw9da+19jB8hkJ6ACTGcDfEJ0aE+l2n2El7dsVM7UVHZQ9s2lmYMWlrS21YLy2IR1LUw==
 
-"@img/sharp-win32-x64@0.34.4":
+"@img/sharp-darwin-arm64@0.34.4":
   version "0.34.4"
-  resolved "https://registry.npmmirror.com/@img/sharp-win32-x64/-/sharp-win32-x64-0.34.4.tgz"
-  integrity sha512-xIyj4wpYs8J18sVN3mSQjwrw7fKUqRw+Z5rnHNCy5fYTxigBz81u5mOMPmFumwjcn8+ld1ppptMBCLic1nz6ig==
+  resolved "https://registry.npmmirror.com/@img/sharp-darwin-arm64/-/sharp-darwin-arm64-0.34.4.tgz"
+  integrity sha512-sitdlPzDVyvmINUdJle3TNHl+AG9QcwiAMsXmccqsCOMZNIdW2/7S26w0LyU8euiLVzFBL3dXPwVCq/ODnf2vA==
+  optionalDependencies:
+    "@img/sharp-libvips-darwin-arm64" "1.2.3"
+
+"@img/sharp-libvips-darwin-arm64@1.2.3":
+  version "1.2.3"
+  resolved "https://registry.npmmirror.com/@img/sharp-libvips-darwin-arm64/-/sharp-libvips-darwin-arm64-1.2.3.tgz"
+  integrity sha512-QzWAKo7kpHxbuHqUC28DZ9pIKpSi2ts2OJnoIGI26+HMgq92ZZ4vk8iJd4XsxN+tYfNJxzH6W62X5eTcsBymHw==
 
 "@isaacs/fs-minipass@^4.0.0":
   version "4.0.1"
@@ -304,15 +311,15 @@
   resolved "https://registry.npmmirror.com/@oslojs/encoding/-/encoding-1.1.0.tgz"
   integrity sha512-70wQhgYmndg4GCPxPPxPGevRKqTIJ2Nh4OkiMWmDAVYsTQ+Ta7Sq+rPevXyXGdzr30/qZBnyOalCszoMxlyldQ==
 
+"@pagefind/darwin-arm64@1.4.0":
+  version "1.4.0"
+  resolved "https://registry.npmmirror.com/@pagefind/darwin-arm64/-/darwin-arm64-1.4.0.tgz"
+  integrity sha512-2vMqkbv3lbx1Awea90gTaBsvpzgRs7MuSgKDxW0m9oV1GPZCZbZBJg/qL83GIUEN2BFlY46dtUZi54pwH+/pTQ==
+
 "@pagefind/default-ui@^1.3.0":
   version "1.4.0"
   resolved "https://registry.npmmirror.com/@pagefind/default-ui/-/default-ui-1.4.0.tgz"
   integrity sha512-wie82VWn3cnGEdIjh4YwNESyS1G6vRHwL6cNjy9CFgNnWW/PGRjsLq300xjVH5sfPFK3iK36UxvIBymtQIEiSQ==
-
-"@pagefind/windows-x64@1.4.0":
-  version "1.4.0"
-  resolved "https://registry.npmmirror.com/@pagefind/windows-x64/-/windows-x64-1.4.0.tgz"
-  integrity sha512-NkT+YAdgS2FPCn8mIA9bQhiBs+xmniMGq1LFPDhcFn0+2yIUEiIG06t7bsZlhdjknEQRTSdT7YitP6fC5qwP0g==
 
 "@rollup/pluginutils@^5.2.0":
   version "5.3.0"
@@ -323,15 +330,10 @@
     estree-walker "^2.0.2"
     picomatch "^4.0.2"
 
-"@rollup/rollup-win32-x64-gnu@4.52.4":
-  version "4.52.4"
-  resolved "https://registry.npmmirror.com/@rollup/rollup-win32-x64-gnu/-/rollup-win32-x64-gnu-4.52.4.tgz"
-  integrity sha512-UF9KfsH9yEam0UjTwAgdK0anlQ7c8/pWPU2yVjyWcF1I1thABt6WXE47cI71pGiZ8wGvxohBoLnxM04L/wj8mQ==
-
-"@rollup/rollup-win32-x64-msvc@4.52.4":
-  version "4.52.4"
-  resolved "https://registry.npmmirror.com/@rollup/rollup-win32-x64-msvc/-/rollup-win32-x64-msvc-4.52.4.tgz"
-  integrity sha512-bf9PtUa0u8IXDVxzRToFQKsNCRz9qLYfR/MpECxl4mRoWYjAeFjgxj1XdZr2M/GNVpT05p+LgQOHopYDlUu6/w==
+"@rollup/rollup-darwin-arm64@4.53.1":
+  version "4.53.1"
+  resolved "https://registry.npmmirror.com/@rollup/rollup-darwin-arm64/-/rollup-darwin-arm64-4.53.1.tgz"
+  integrity sha512-usmzIgD0rf1syoOZ2WZvy8YpXK5G1V3btm3QZddoGSa6mOgfXWkkv+642bfUUldomgrbiLQGrPryb7DXLovPWQ==
 
 "@shikijs/core@3.13.0":
   version "3.13.0"
@@ -407,10 +409,10 @@
     source-map-js "^1.2.1"
     tailwindcss "4.1.14"
 
-"@tailwindcss/oxide-win32-x64-msvc@4.1.14":
+"@tailwindcss/oxide-darwin-arm64@4.1.14":
   version "4.1.14"
-  resolved "https://registry.npmmirror.com/@tailwindcss/oxide-win32-x64-msvc/-/oxide-win32-x64-msvc-4.1.14.tgz"
-  integrity sha512-ttblVGHgf68kEE4om1n/n44I0yGPkCPbLsqzjvybhpwa6mKKtgFfAzy6btc3HRmuW7nHe0OOrSeNP9sQmmH9XA==
+  resolved "https://registry.npmmirror.com/@tailwindcss/oxide-darwin-arm64/-/oxide-darwin-arm64-4.1.14.tgz"
+  integrity sha512-HkFP/CqfSh09xCnrPJA7jud7hij5ahKyWomrC3oiO2U9i0UjP17o9pJbxUN0IJ471GTQQmzwhp0DEcpbp4MZTA==
 
 "@tailwindcss/oxide@4.1.14":
   version "4.1.14"
@@ -511,7 +513,7 @@
   dependencies:
     "@types/unist" "*"
 
-"@types/node@*", "@types/node@^18.0.0 || ^20.0.0 || >=22.0.0":
+"@types/node@*":
   version "24.10.0"
   resolved "https://registry.npmmirror.com/@types/node/-/node-24.10.0.tgz"
   integrity sha512-qzQZRBqkFsYyaSWXuEHc2WR9c0a0CXwiE5FWUvn7ZM+vdy1uZLfCunD38UzhuB7YN/J11ndbDBcTmOdxJo9Q7A==
@@ -548,7 +550,7 @@ acorn-jsx@^5.0.0:
   resolved "https://registry.npmmirror.com/acorn-jsx/-/acorn-jsx-5.3.2.tgz"
   integrity sha512-rq9s+JNhf0IChjtDXxllJ7g41oZk5SlXtp0LHwyA5cejwn7vKmKp4pPri6YEePv2PU65sAsegbXtIinmDFDXgQ==
 
-"acorn@^6.0.0 || ^7.0.0 || ^8.0.0", acorn@^8.0.0, acorn@^8.15.0:
+acorn@^8.0.0, acorn@^8.15.0:
   version "8.15.0"
   resolved "https://registry.npmmirror.com/acorn/-/acorn-8.15.0.tgz"
   integrity sha512-NZyJarBfL7nWwIq+FDL6Zp/yHEhePMNnnJ0y3qfieCrmNvYct8uvtiV41UvlSe6apAfk0fY1FbWx+NwfmpvtTg==
@@ -624,10 +626,10 @@ astro-remote@^0.3.3:
     marked-smartypants "^1.1.6"
     ultrahtml "^1.5.3"
 
-"astro@^4.0.0-beta || ^5.0.0-beta || ^3.3.0", astro@^5.0.0, astro@^5.5.0, astro@^5.6.1:
-  version "5.14.5"
-  resolved "https://registry.npmmirror.com/astro/-/astro-5.14.5.tgz"
-  integrity sha512-EHt7y3+nHYyKzBats1AL3N4Pyrvqyr+zXBC7njUa9Tfe+gsiHlunaw+lXitTT/DDVwO2R/f/qVG7Xc6rl0b2KQ==
+astro@^5.15.4:
+  version "5.15.4"
+  resolved "https://registry.npmmirror.com/astro/-/astro-5.15.4.tgz"
+  integrity sha512-0g/68hLHEJZF2nYUcZM5O0kOnzCsCIf8eA9+0jfBAxp4ycujrIHRgIOdZCFKL9GoTsn8AypWbziypH5aEIF+aA==
   dependencies:
     "@astrojs/compiler" "^2.12.2"
     "@astrojs/internal-helpers" "0.7.4"
@@ -661,7 +663,6 @@ astro-remote@^0.3.3:
     http-cache-semantics "^4.2.0"
     import-meta-resolve "^4.2.0"
     js-yaml "^4.1.0"
-    kleur "^4.1.5"
     magic-string "^0.30.18"
     magicast "^0.3.5"
     mrmime "^2.0.1"
@@ -669,6 +670,7 @@ astro-remote@^0.3.3:
     p-limit "^6.2.0"
     p-queue "^8.1.0"
     package-manager-detector "^1.3.0"
+    picocolors "^1.1.1"
     picomatch "^4.0.3"
     prompts "^2.4.2"
     rehype "^13.0.2"
@@ -683,7 +685,7 @@ astro-remote@^0.3.3:
     unist-util-visit "^5.0.0"
     unstorage "^1.17.0"
     vfile "^6.0.3"
-    vite "^6.3.6"
+    vite "^6.4.1"
     vitefu "^1.1.1"
     xxhash-wasm "^1.1.0"
     yargs-parser "^21.1.1"
@@ -1008,36 +1010,36 @@ esast-util-from-js@^2.0.0:
     vfile-message "^4.0.0"
 
 esbuild@^0.25.0:
-  version "0.25.11"
-  resolved "https://registry.npmmirror.com/esbuild/-/esbuild-0.25.11.tgz"
-  integrity sha512-KohQwyzrKTQmhXDW1PjCv3Tyspn9n5GcY2RTDqeORIdIJY8yKIF7sTSopFmn/wpMPW4rdPXI0UE5LJLuq3bx0Q==
+  version "0.25.12"
+  resolved "https://registry.npmmirror.com/esbuild/-/esbuild-0.25.12.tgz"
+  integrity sha512-bbPBYYrtZbkt6Os6FiTLCTFxvq4tt3JKall1vRwshA3fdVztsLAatFaZobhkBC8/BrPetoa0oksYoKXoG4ryJg==
   optionalDependencies:
-    "@esbuild/aix-ppc64" "0.25.11"
-    "@esbuild/android-arm" "0.25.11"
-    "@esbuild/android-arm64" "0.25.11"
-    "@esbuild/android-x64" "0.25.11"
-    "@esbuild/darwin-arm64" "0.25.11"
-    "@esbuild/darwin-x64" "0.25.11"
-    "@esbuild/freebsd-arm64" "0.25.11"
-    "@esbuild/freebsd-x64" "0.25.11"
-    "@esbuild/linux-arm" "0.25.11"
-    "@esbuild/linux-arm64" "0.25.11"
-    "@esbuild/linux-ia32" "0.25.11"
-    "@esbuild/linux-loong64" "0.25.11"
-    "@esbuild/linux-mips64el" "0.25.11"
-    "@esbuild/linux-ppc64" "0.25.11"
-    "@esbuild/linux-riscv64" "0.25.11"
-    "@esbuild/linux-s390x" "0.25.11"
-    "@esbuild/linux-x64" "0.25.11"
-    "@esbuild/netbsd-arm64" "0.25.11"
-    "@esbuild/netbsd-x64" "0.25.11"
-    "@esbuild/openbsd-arm64" "0.25.11"
-    "@esbuild/openbsd-x64" "0.25.11"
-    "@esbuild/openharmony-arm64" "0.25.11"
-    "@esbuild/sunos-x64" "0.25.11"
-    "@esbuild/win32-arm64" "0.25.11"
-    "@esbuild/win32-ia32" "0.25.11"
-    "@esbuild/win32-x64" "0.25.11"
+    "@esbuild/aix-ppc64" "0.25.12"
+    "@esbuild/android-arm" "0.25.12"
+    "@esbuild/android-arm64" "0.25.12"
+    "@esbuild/android-x64" "0.25.12"
+    "@esbuild/darwin-arm64" "0.25.12"
+    "@esbuild/darwin-x64" "0.25.12"
+    "@esbuild/freebsd-arm64" "0.25.12"
+    "@esbuild/freebsd-x64" "0.25.12"
+    "@esbuild/linux-arm" "0.25.12"
+    "@esbuild/linux-arm64" "0.25.12"
+    "@esbuild/linux-ia32" "0.25.12"
+    "@esbuild/linux-loong64" "0.25.12"
+    "@esbuild/linux-mips64el" "0.25.12"
+    "@esbuild/linux-ppc64" "0.25.12"
+    "@esbuild/linux-riscv64" "0.25.12"
+    "@esbuild/linux-s390x" "0.25.12"
+    "@esbuild/linux-x64" "0.25.12"
+    "@esbuild/netbsd-arm64" "0.25.12"
+    "@esbuild/netbsd-x64" "0.25.12"
+    "@esbuild/openbsd-arm64" "0.25.12"
+    "@esbuild/openbsd-x64" "0.25.12"
+    "@esbuild/openharmony-arm64" "0.25.12"
+    "@esbuild/sunos-x64" "0.25.12"
+    "@esbuild/win32-arm64" "0.25.12"
+    "@esbuild/win32-ia32" "0.25.12"
+    "@esbuild/win32-x64" "0.25.12"
 
 escape-string-regexp@^5.0.0:
   version "5.0.0"
@@ -1167,6 +1169,11 @@ fontkit@^2.0.2, fontkit@^2.0.4:
     tiny-inflate "^1.0.3"
     unicode-properties "^1.4.0"
     unicode-trie "^2.0.0"
+
+fsevents@~2.3.2, fsevents@~2.3.3:
+  version "2.3.3"
+  resolved "https://registry.npmmirror.com/fsevents/-/fsevents-2.3.3.tgz"
+  integrity sha512-5xoDfX+fL7faATnagmWPpbFtwh/R77WmMMqqHGS65C3vvB0YHrgF+B1YmZ3441tMj5n63k0212XNoJwzlhffQw==
 
 get-east-asian-width@^1.0.0:
   version "1.4.0"
@@ -1537,7 +1544,7 @@ is-wsl@^3.1.0:
   dependencies:
     is-inside-container "^1.0.0"
 
-jiti@^2.6.0, jiti@>=1.21.0:
+jiti@^2.6.0:
   version "2.6.1"
   resolved "https://registry.npmmirror.com/jiti/-/jiti-2.6.1.tgz"
   integrity sha512-ekilCSN1jwRvIbgeg/57YFh8qQDNbwDb9xT/qu2DAHbFFZUicIl4ygVaAvzveMhMVr3LnpSKTNnwt8PoOfmKhQ==
@@ -1564,12 +1571,12 @@ klona@^2.0.6:
   resolved "https://registry.npmmirror.com/klona/-/klona-2.0.6.tgz"
   integrity sha512-dhG34DXATL5hSxJbIexCft8FChFXtmskoZYnoPWjXQuebWYCNkVeV3KkGegCK9CP1oswI/vQibS2GY7Em/sJJA==
 
-lightningcss-win32-x64-msvc@1.30.1:
+lightningcss-darwin-arm64@1.30.1:
   version "1.30.1"
-  resolved "https://registry.npmmirror.com/lightningcss-win32-x64-msvc/-/lightningcss-win32-x64-msvc-1.30.1.tgz"
-  integrity sha512-PVqXh48wh4T53F/1CCu8PIPCxLzWyCnn/9T5W1Jpmdy5h9Cwd+0YQS6/LwhHXSafuc61/xg9Lv5OrCby6a++jg==
+  resolved "https://registry.npmmirror.com/lightningcss-darwin-arm64/-/lightningcss-darwin-arm64-1.30.1.tgz"
+  integrity sha512-c8JK7hyE65X1MHMN+Viq9n11RRC7hgin3HhYKhrMyaXflk5GVplZ60IxyoVtzILeKr+xAJwg6zK6sjTBJ0FKYQ==
 
-lightningcss@^1.21.0, lightningcss@1.30.1:
+lightningcss@1.30.1:
   version "1.30.1"
   resolved "https://registry.npmmirror.com/lightningcss/-/lightningcss-1.30.1.tgz"
   integrity sha512-xi6IyHML+c9+Q3W0S4fCQJOym42pyurFiJUHEcEyHS0CeKzia4yZDEsLlqOFykxOdHpNy0NmvVO31vcSqAxJCg==
@@ -1645,7 +1652,7 @@ marked@^12.0.0:
   resolved "https://registry.npmmirror.com/marked/-/marked-12.0.2.tgz"
   integrity sha512-qXUm7e/YKFoqFPYPa3Ukg9xlI5cyAtGmyEIzMfW//m6kXwCy2Ps9DYf5ioijFKQ8qyuscrHoY04iJGctu2Kg0Q==
 
-marked@^15.0.4, marked@>=13.0.0, "marked@>=4 <17", marked@>=7.0.0:
+marked@^15.0.4:
   version "15.0.12"
   resolved "https://registry.npmmirror.com/marked/-/marked-15.0.12.tgz"
   integrity sha512-8dD6FusOQSrpv9Z1rdNMdlSgQOIP880DHqnohobOmYLElGEqAL/JvxvuxZO16r4HtjTlfPRDC1hbvxC9dPN2nA==
@@ -2423,7 +2430,7 @@ picomatch@^2.0.4:
   resolved "https://registry.npmmirror.com/picomatch/-/picomatch-2.3.1.tgz"
   integrity sha512-JU3teHTNjmE2VCGFzuY8EXzCDVwEqB2a8fsIvwaStHhAWJEeVd1o1QD80CU6+ZdEXXSLbSsuLwJjkCBWqRQUVA==
 
-"picomatch@^3 || ^4", picomatch@^4.0.2, picomatch@^4.0.3:
+picomatch@^4.0.2, picomatch@^4.0.3:
   version "4.0.3"
   resolved "https://registry.npmmirror.com/picomatch/-/picomatch-4.0.3.tgz"
   integrity sha512-5gTmgEY/sqK6gFXLIsQNH19lWb4ebPDLA4SdLP7dsWkIXHWlG66oPuVvXSGFPppYZz8ZDZq0dYYrbHfBCVUb1Q==
@@ -2443,7 +2450,7 @@ postcss-selector-parser@^6.1.1:
     cssesc "^3.0.0"
     util-deprecate "^1.0.2"
 
-postcss@^8.2.14, postcss@^8.4.38, postcss@^8.5.3, postcss@^8.5.6:
+postcss@^8.4.38, postcss@^8.5.3, postcss@^8.5.6:
   version "8.5.6"
   resolved "https://registry.npmmirror.com/postcss/-/postcss-8.5.6.tgz"
   integrity sha512-3Ybi1tAuwAP9s0r1UQ2J4n5Y0G05bJkpUIO0/bI9MhwmD70S5aTWbXGBwxHrelT+XM1k6dM0pk+SwNkpTRN7Pg==
@@ -2717,35 +2724,35 @@ retext@^9.0.0:
     retext-stringify "^4.0.0"
     unified "^11.0.0"
 
-rollup@^1.20.0||^2.0.0||^3.0.0||^4.0.0, rollup@^4.34.9:
-  version "4.52.4"
-  resolved "https://registry.npmmirror.com/rollup/-/rollup-4.52.4.tgz"
-  integrity sha512-CLEVl+MnPAiKh5pl4dEWSyMTpuflgNQiLGhMv8ezD5W/qP8AKvmYpCOKRRNOh7oRKnauBZ4SyeYkMS+1VSyKwQ==
+rollup@^4.34.9:
+  version "4.53.1"
+  resolved "https://registry.npmmirror.com/rollup/-/rollup-4.53.1.tgz"
+  integrity sha512-n2I0V0lN3E9cxxMqBCT3opWOiQBzRN7UG60z/WDKqdX2zHUS/39lezBcsckZFsV6fUTSnfqI7kHf60jDAPGKug==
   dependencies:
     "@types/estree" "1.0.8"
   optionalDependencies:
-    "@rollup/rollup-android-arm-eabi" "4.52.4"
-    "@rollup/rollup-android-arm64" "4.52.4"
-    "@rollup/rollup-darwin-arm64" "4.52.4"
-    "@rollup/rollup-darwin-x64" "4.52.4"
-    "@rollup/rollup-freebsd-arm64" "4.52.4"
-    "@rollup/rollup-freebsd-x64" "4.52.4"
-    "@rollup/rollup-linux-arm-gnueabihf" "4.52.4"
-    "@rollup/rollup-linux-arm-musleabihf" "4.52.4"
-    "@rollup/rollup-linux-arm64-gnu" "4.52.4"
-    "@rollup/rollup-linux-arm64-musl" "4.52.4"
-    "@rollup/rollup-linux-loong64-gnu" "4.52.4"
-    "@rollup/rollup-linux-ppc64-gnu" "4.52.4"
-    "@rollup/rollup-linux-riscv64-gnu" "4.52.4"
-    "@rollup/rollup-linux-riscv64-musl" "4.52.4"
-    "@rollup/rollup-linux-s390x-gnu" "4.52.4"
-    "@rollup/rollup-linux-x64-gnu" "4.52.4"
-    "@rollup/rollup-linux-x64-musl" "4.52.4"
-    "@rollup/rollup-openharmony-arm64" "4.52.4"
-    "@rollup/rollup-win32-arm64-msvc" "4.52.4"
-    "@rollup/rollup-win32-ia32-msvc" "4.52.4"
-    "@rollup/rollup-win32-x64-gnu" "4.52.4"
-    "@rollup/rollup-win32-x64-msvc" "4.52.4"
+    "@rollup/rollup-android-arm-eabi" "4.53.1"
+    "@rollup/rollup-android-arm64" "4.53.1"
+    "@rollup/rollup-darwin-arm64" "4.53.1"
+    "@rollup/rollup-darwin-x64" "4.53.1"
+    "@rollup/rollup-freebsd-arm64" "4.53.1"
+    "@rollup/rollup-freebsd-x64" "4.53.1"
+    "@rollup/rollup-linux-arm-gnueabihf" "4.53.1"
+    "@rollup/rollup-linux-arm-musleabihf" "4.53.1"
+    "@rollup/rollup-linux-arm64-gnu" "4.53.1"
+    "@rollup/rollup-linux-arm64-musl" "4.53.1"
+    "@rollup/rollup-linux-loong64-gnu" "4.53.1"
+    "@rollup/rollup-linux-ppc64-gnu" "4.53.1"
+    "@rollup/rollup-linux-riscv64-gnu" "4.53.1"
+    "@rollup/rollup-linux-riscv64-musl" "4.53.1"
+    "@rollup/rollup-linux-s390x-gnu" "4.53.1"
+    "@rollup/rollup-linux-x64-gnu" "4.53.1"
+    "@rollup/rollup-linux-x64-musl" "4.53.1"
+    "@rollup/rollup-openharmony-arm64" "4.53.1"
+    "@rollup/rollup-win32-arm64-msvc" "4.53.1"
+    "@rollup/rollup-win32-ia32-msvc" "4.53.1"
+    "@rollup/rollup-win32-x64-gnu" "4.53.1"
+    "@rollup/rollup-win32-x64-msvc" "4.53.1"
     fsevents "~2.3.2"
 
 sax@^1.2.4:
@@ -2874,7 +2881,7 @@ starlight-sidebar-topics-dropdown@^0.5.1:
   resolved "https://registry.npmmirror.com/starlight-sidebar-topics-dropdown/-/starlight-sidebar-topics-dropdown-0.5.1.tgz"
   integrity sha512-vEKQZnl90dVdqQWTauUs+L4I9cOqmw0gnNa6C9dB8KgXE1QxFAJikEMDDS9IF24kGRL+7dXr+ZZWWhY6Ve+mEA==
 
-starlight-sidebar-topics@^0.6.1, starlight-sidebar-topics@>=0.6:
+starlight-sidebar-topics@^0.6.2:
   version "0.6.2"
   resolved "https://registry.npmmirror.com/starlight-sidebar-topics/-/starlight-sidebar-topics-0.6.2.tgz"
   integrity sha512-SNCTUZS/hcVor0ZcaXbaSVU37+V+qtvzNirkvnOg3Mqu/awuGpthkH5+uKpiZqWxLffp6TrOlsv5E5QsxrndNg==
@@ -2941,7 +2948,7 @@ style-to-object@1.0.11:
   dependencies:
     inline-style-parser "0.2.4"
 
-tailwindcss@^4.0.0, tailwindcss@^4.1.14, tailwindcss@4.1.14:
+tailwindcss@^4.1.14, tailwindcss@4.1.14:
   version "4.1.14"
   resolved "https://registry.npmmirror.com/tailwindcss/-/tailwindcss-4.1.14.tgz"
   integrity sha512-b7pCxjGO98LnxVkKjaZSDeNuljC4ueKUddjENJOADtubtdo8llTaJy7HwBMeLNSSo2N5QIAgklslK1+Ir8r6CA==
@@ -3004,11 +3011,6 @@ type-fest@^4.21.0:
   version "4.41.0"
   resolved "https://registry.npmmirror.com/type-fest/-/type-fest-4.41.0.tgz"
   integrity sha512-TeTSQ6H5YHvpqVwBRcnLDCBnDOHWYu7IvGbHT6N8AOymcr9PJGjc1GTtiWZTYg0NCgYwvnYWEkVChQAr9bjfwA==
-
-"typescript@^4.9.4 || ^5.0.2", typescript@^5.0.0:
-  version "5.9.3"
-  resolved "https://registry.npmmirror.com/typescript/-/typescript-5.9.3.tgz"
-  integrity sha512-jl1vZzPDinLr9eUt3J/t7V6FgNEw9QjvBPdysz9KfQDD41fQrC2Y4vKQdiaUpFT4bXlb1RHhLpp8wtm6M5TgSw==
 
 ufo@^1.5.4, ufo@^1.6.1:
   version "1.6.1"
@@ -3209,10 +3211,10 @@ vfile@^6.0.0, vfile@^6.0.2, vfile@^6.0.3:
     "@types/unist" "^3.0.0"
     vfile-message "^4.0.0"
 
-"vite@^3.0.0 || ^4.0.0 || ^5.0.0 || ^6.0.0 || ^7.0.0-beta.0", "vite@^5.2.0 || ^6 || ^7", vite@^6.3.6:
-  version "6.4.0"
-  resolved "https://registry.npmmirror.com/vite/-/vite-6.4.0.tgz"
-  integrity sha512-oLnWs9Hak/LOlKjeSpOwD6JMks8BeICEdYMJBf6P4Lac/pO9tKiv/XhXnAM7nNfSkZahjlCZu9sS50zL8fSnsw==
+vite@^6.4.1:
+  version "6.4.1"
+  resolved "https://registry.npmmirror.com/vite/-/vite-6.4.1.tgz"
+  integrity sha512-+Oxm7q9hDoLMyJOYfUYBuHQo+dkAloi33apOPP56pzj+vsdJDzr+j1NISE5pyaAuKL4A3UD34qd0lx5+kfKp2g==
   dependencies:
     esbuild "^0.25.0"
     fdir "^6.4.4"
@@ -3296,7 +3298,7 @@ zod-to-ts@^1.2.0:
   resolved "https://registry.npmmirror.com/zod-to-ts/-/zod-to-ts-1.2.0.tgz"
   integrity sha512-x30XE43V+InwGpvTySRNz9kB7qFU8DlyEy7BsSTCHPH1R0QasMmHWZDCzYm6bVXtj/9NNJAZF3jW8rzFvH5OFA==
 
-zod@^3, zod@^3.24.1, zod@^3.25.76:
+zod@^3.25.76:
   version "3.25.76"
   resolved "https://registry.npmmirror.com/zod/-/zod-3.25.76.tgz"
   integrity sha512-gzUt/qt81nXsFGKIFcC3YnfEAx5NkunCfnDlvuBSSFS02bcXu4Lmea0AFIUwbLWxWPx3d9p8S5QoaujKcNQxcQ==
