@@ -1,21 +1,17 @@
 ---
 title: "Gemini"
 ---
-:::note
 Blades AI Agent 框架的 Google Gemini 模型提供程序，支持 GenAI 和 Vertex AI 部署。
-:::
 ## 安装
 ```bash
 go get github.com/go-kratos/blades/contrib/gemini
 ```
 ## 特性
-:::tip
 - **统一客户端**: 用于 GenAI SDK 的单个 `NewClient` 函数
 - **思考模型**: 支持具有可配置推理预算的思考模型
 - **工具调用**: 通过迭代工作流自动执行工具
 - **流式传输**: 具有工具调用处理的实时响应流式传输
 - **多模态**: 支持文本、图像和其他模态
-:::
 ## 用法
 ### 基本示例
 ```go
@@ -90,9 +86,7 @@ client, err := gemini.NewClient(context.Background(), clientConfig)
 // Use same request/response pattern as above
 ```
 ## 思考模型
-:::note
 使用思考模型启用 Gemini 的推理能力：
-:::
 ```go
 import "github.com/go-kratos/blades"
 
@@ -124,9 +118,7 @@ resp, err := client.Generate(context.Background(), req,
 )
 ```
 ## 工具调用
-:::note
 定义工具并让 Gemini 自动执行它们：
-:::
 ```go
 // Define a tool
 weatherTool := &blades.Tool{
@@ -161,9 +153,7 @@ resp, err := client.Generate(context.Background(), req)
 // 3. Return the final response
 ```
 ## 流式传输
-:::note
 实时流式传输响应：
-:::
 ```go
 stream, err := client.NewStream(context.Background(), req)
 if err != nil {
@@ -190,9 +180,7 @@ if err := stream.Err(); err != nil {
 }
 ```
 ## 错误处理
-:::note
 该提供程序返回针对常见问题的特定错误：
-:::
 ```go
 import "github.com/go-kratos/blades/contrib/gemini"
 
@@ -211,10 +199,8 @@ if err != nil {
 }
 ```
 ## 模型
-:::tip
 可用模型：
 - `gemini-2.0-flash-exp` - 最新的实验模型
 - `gemini-2.0-flash-thinking-exp-01-21` - 具有扩展推理的思考模型
 - `gemini-1.5-pro` - 上一代专业模型
 - `gemini-1.5-flash` - 上一代快速模型
-:::

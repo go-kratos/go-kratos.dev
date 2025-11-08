@@ -1,18 +1,13 @@
 ---
 title: "Graph State"
 ---
-:::note
 Graph State is the core data structure of the graph execution engine in the Blades framework, used to pass and share data between various nodes in the graph. It is a key-value mapping structure used to store and pass data during graph execution, allows information sharing between nodes, and supports state merging and cloning operations.
-:::
 ## Core Concepts
-:::tip
 Graph state is used to store data that needs to be passed during graph execution. The key is of string type, and the value can be of any type, supporting flexible data storage.
 ```go
 type State map[string]any
 ```
-:::
 ### 1. State Clone
-:::note
 - Method:
 ```go
 func (s State) Clone() State {
@@ -21,21 +16,16 @@ func (s State) Clone() State {
 ```
 - Purpose: Creates a shallow copy of the state
 - Characteristic: Implemented using `maps.Clone`, nested references are shared
-:::
 ### 2. State Merge (mergeStates)
-:::note
 - Method: `mergeStates(base State, updates ...State) State`
 - Purpose: Merges multiple states into a single state
 - Characteristic: Later states will overwrite keys that exist in earlier states
-:::
 ## Characteristics
-:::note
 The graph state in Blades has the following characteristics:
 - **Data Passing Mechanism**: The graph state acts as a data carrier flowing between various nodes in the graph; the output state of a previous node becomes the input state for the next node.
 - **State Isolation**: Each graph execution task has an independent state copy, ensuring no interference during concurrent execution.
 - **Flexible Data Structure**: Supports storing data of any type, meeting the needs of various business scenarios.
 - **State Aggregation**: When a node has multiple predecessor nodes, the system automatically aggregates the states from all predecessor nodes.
-:::
 
 ## Usage
 ### 1. Create Initial State
@@ -78,7 +68,6 @@ if err != nil {
 result, err := executor.Execute(context.Background(), initialState)
 ```
 ## State Operations
-:::note
 ### State Cloning
 ```go
 // clone state to avoid modifying the original state
@@ -98,7 +87,6 @@ if value, ok := state["key"]; ok {
     processValue(value)
 }
 ```
-:::
 ## Code Example
 ```go
 // define node handler functions

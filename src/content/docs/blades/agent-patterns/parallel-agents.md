@@ -1,9 +1,7 @@
 ---
 title: "Parallel Agent"
 ---
-:::note
 The Parallel Agent is a core component in the Blades framework used to implement concurrent execution logic. It can start multiple tasks simultaneously for concurrent execution and provides a flexible result merging mechanism. This pattern is particularly suitable for scenarios requiring parallel processing to improve efficiency.
-:::
 ## Core Concepts
 The structure of the Parallel Agent is as follows:
 ```go
@@ -15,27 +13,18 @@ type Parallel struct {
 ### Parameter Description
 The Parallel struct contains two parameters: the executable task list (runners) and the result merging function (ParallelMerger).
 #### 1. Executable Task List (runners)
-:::note
 - Type: `[]blades.Runnable`
 - Purpose: A list of tasks that need to be executed concurrently
 - Characteristic: Each task can be any object that implements the **Runnable** interface
-:::
 #### 2. Result Merging Function (ParallelMerger)
-:::note
 - Type: `func(ctx context.Context, outputs []*blades.Message) (*blades.Message, error)`
 - Purpose: Merges the output results of multiple parallel tasks into a single output
 - Default Behavior: Merges the message parts of all outputs into a new message
-:::
 ## Features
-:::note
 - **Concurrent Execution**: The Parallel Agent uses Go's concurrency mechanism to start all tasks simultaneously, fully utilizing multi-core CPU performance.
-
 - **Flexible Result Merging**: Provides the ability to customize the result merging function, allowing flexible handling of outputs from multiple tasks based on business requirements.
-
 - **Unified Error Handling**: Uses the errgroup mechanism to ensure that if any task fails, all tasks are promptly terminated and an error is returned.
-
 - **Task Composition Capability**: Supports any task that implements the [Runnable](file://e:\0_nebula\blades\core.go#L45-L48) interface, including other flow controllers (sequential, branch, loop, etc.).
-:::
 ## Usage
 ### 1. Define the Executable Task List
 ```go
@@ -65,12 +54,10 @@ erger := func(ctx context.Context, outputs []*blades.Message) (*blades.Message, 
 parallel := flow.NewParallel(tasks, flow.WithParallelMerger(merger))
 ```
 ## Best Practices
-:::tip
 - **Reasonable Task Division**: Divide tasks that can be executed independently and are time-consuming into parallel tasks
 - **Avoid Resource Contention**: Ensure there are no shared resource conflicts between parallel tasks
 - **Design Appropriate Merging Strategy**: Design suitable result merging logic based on business requirements
 - **Performance Evaluation**: For lightweight tasks, parallel execution might actually reduce performance due to scheduling overhead
-:::
 ## Code Example
 ```go
 // Define tasks to be executed in parallel

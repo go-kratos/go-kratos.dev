@@ -1,16 +1,10 @@
 ---
 title: "Middleware"
 ---
-
-:::note
 In the Blades framework, middleware is a powerful mechanism for implementing cross-cutting concerns (such as logging, monitoring, authentication, rate limiting, etc.). Its design allows injecting additional behavior into the execution flow of a **Runnable** without modifying the core logic. Middleware operates in a function chain following the "onion model," providing highly flexible flow control and feature enhancement. This document will guide you through a simple example of implementing a logging middleware.
-:::
 
 ## Code Example
-:::note
 Before running this example, please check if the APIKEY is set.
-:::
-
 
 ### 1. Create Middleware
 
@@ -45,9 +39,7 @@ func (m *LoggingMiddleware) Run(ctx context.Context, prompt *blades.Prompt, opts
 
 
 ### 2. Using Middleware
-:::tip
 To use middleware in an Agent, simply pass it via the WithMiddleware option when creating the Agent.
-:::
 ```go
 // Create a blades agent with logging middleware
 agent := blades.NewAgent(
@@ -74,9 +66,7 @@ log.Println("Agent response:", result.Text())
 
 ```
 ## Middleware Chain
-:::tip
 You can chain multiple middlewares together, and they will execute in the specified order.
-:::
 ```go
 // Chain multiple middlewares together
 agent := blades.NewAgent(

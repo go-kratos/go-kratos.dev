@@ -1,9 +1,7 @@
 ---
 title: "Sequential Agent"
 ---
-:::tip
 The Sequential Agent is the core component in the Blades framework for implementing sequential execution logic. It allows multiple tasks to be executed in a predetermined order, where the output of the previous task serves as the input for the next. This pattern is particularly suitable for linear business processes that require step-by-step handling.
-:::
 ## Core Concepts
 ```go
 type Sequential struct {
@@ -13,7 +11,6 @@ type Sequential struct {
 ### Parameter Description
 The Sequential struct contains only one parameter: runners.
 ### 1. Executable Task List (runners)
-:::note
 - Type: 
 ```go
 type Runnable interface {
@@ -23,14 +20,11 @@ type Runnable interface {
 ```
 - Purpose: A list of tasks to be executed in sequence
 - Characteristics: Each task can be any object that implements the **Runnable** interface
-:::
 ## Features
-:::note
 - **Linear Execution Flow**: The Sequential Agent strictly executes tasks in the order of the list, ensuring each step begins only after the previous one completes.
 - **Automatic Data Passing**: The output of the previous task automatically becomes the input for the next task, forming a natural data pipeline.
 - **Unified Error Handling**: If any task fails, the entire process is immediately interrupted and an error is returned, ensuring process consistency.
 - **Task Composition Capability**: Supports any task that implements the **Runnable** interface, including other flow controllers (branching, parallel, loop, etc.).
-:::
 ## Usage
 ### 1. Define the Task List
 ```go
@@ -49,17 +43,13 @@ sequential := flow.NewSequential(tasks...)
 result, err := sequential.Run(context.Background(), prompt)
 ```
 ## Best Practices
-:::note
 - **Reasonable Task Division**: Decompose complex processes into independent tasks with clear responsibilities.
 - **Clear Data Dependencies**: Ensure clear and explicit input-output relationships between tasks.
 - **Comprehensive Error Handling**: Consider error handling in each task to ensure process robustness.
 - **Avoid Excessive Nesting**: For overly complex processes, consider using graphical workflows instead of deep nesting.
 - **Performance Considerations**: For time-consuming tasks, consider whether optimization through parallel processing is possible.
-:::
 ## Code Example
-:::note
 Before running this code, please ensure you have correctly configured your API key.
-:::
 ```go
 // define tasks
 tasks := []blades.Runnable{

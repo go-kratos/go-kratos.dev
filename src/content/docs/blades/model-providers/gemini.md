@@ -1,21 +1,17 @@
 ---
 title: "Gemini"
 ---
-:::note
 Google Gemini model provider for the Blades AI Agent framework, supporting GenAI and Vertex AI deployments.
-:::
 ## Installation
 ```bash
 go get github.com/go-kratos/blades/contrib/gemini
 ```
 ## Features
-:::tip
 - **Unified Client**: Single `NewClient` function for GenAI SDK
 - **Thinking Model**: Supports thinking models with configurable reasoning budget
 - **Tool Calling**: Automatic tool execution through iterative workflows
 - **Streaming**: Real-time response streaming with tool calling handling
 - **Multimodal**: Supports text, images, and other modalities
-:::
 ## Usage
 ### Basic Example
 ```go
@@ -90,9 +86,7 @@ client, err := gemini.NewClient(context.Background(), clientConfig)
 // Use same request/response pattern as above
 ```
 ## Thinking Model
-:::note
 Enable Gemini's reasoning capabilities using thinking models:
-:::
 ```go
 import "github.com/go-kratos/blades"
 
@@ -124,9 +118,7 @@ resp, err := client.Generate(context.Background(), req,
 )
 ```
 ## Tool Calling
-:::note
 Define tools and let Gemini automatically execute them:
-:::
 ```go
 // Define a tool
 weatherTool := &blades.Tool{
@@ -161,9 +153,7 @@ resp, err := client.Generate(context.Background(), req)
 // 3. Return the final response
 ```
 ## Streaming
-:::note
 Real-time response streaming:
-:::
 ```go
 stream, err := client.NewStream(context.Background(), req)
 if err != nil {
@@ -190,9 +180,7 @@ if err := stream.Err(); err != nil {
 }
 ```
 ## Error Handling
-:::note
 This provider returns specific errors for common issues:
-:::
 ```go
 import "github.com/go-kratos/blades/contrib/gemini"
 
@@ -211,10 +199,8 @@ if err != nil {
 }
 ```
 ## Models
-:::tip
 Available models:
 - `gemini-2.0-flash-exp` - Latest experimental model
 - `gemini-2.0-flash-thinking-exp-01-21` - Thinking model with extended reasoning
 - `gemini-1.5-pro` - Previous generation professional model
 - `gemini-1.5-flash` - Previous generation fast model
-:::

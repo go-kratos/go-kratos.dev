@@ -1,12 +1,10 @@
 ---
 title: "OpenAI"
 ---
-:::note
 Blades adapts the OpenAI API to the generic `blades.ModelProvider` interface.
 - `NewChatProvider` wraps the chat completions endpoint for text and multimodal conversations.
 - `NewImageProvider` wraps the image generation endpoint (`/v1/images/generations`) and returns image bytes or URLs as `DataPart`/`FilePart` message content.
 - `NewAudioProvider` wraps the text-to-speech endpoint (`/v1/audio/speech`) and returns synthesized audio as a `DataPart` payload.
-:::
 ## ImageProvider
 ```go
 provider := openai.NewImageProvider()
