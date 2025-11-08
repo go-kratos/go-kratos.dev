@@ -1,21 +1,17 @@
 ---
 title: "Claude"
 ---
-:::note
 Anthropic Claude model provider for the Blades AI Agent framework, supporting Direct API, AWS Bedrock, and Google Vertex AI.
-:::
 ## Installation
 ```bash
 go get github.com/go-kratos/blades/contrib/claude
 ```
 ## Features
-:::note
 - **Unified Client**: Supports multiple deployment channels through a single NewClient function
 - **Extended Thinking**: Supports Beta reasoning models with configurable token budget
 - **Tool Calling**: Automatic tool execution with support for iterative workflows
 - **Streaming Responses**: Supports real-time streaming responses including tool call handling
 - **Multi-Channel Support**: Supports Direct API, AWS Bedrock, and Google Vertex AI
-:::
 ## Usage
 ### Direct API (Anthropic)
 ```go
@@ -95,9 +91,7 @@ client := claude.NewClient(
 // Use same request/response pattern as above
 ```
 ### Extended Thinking
-:::note
 Enable Claude's reasoning capabilities through the standard API:
-:::
 ```go
 import "github.com/go-kratos/blades"
 
@@ -129,9 +123,7 @@ resp, err := client.Generate(context.Background(), req,
 )
 ```
 ### Tool Calling
-:::note
 Define tools and let Claude execute them automatically:
-:::
 ```go
 // Define a tool
 weatherTool := &blades.Tool{
@@ -166,9 +158,7 @@ resp, err := client.Generate(context.Background(), req)
 // 3. Return the final response
 ```
 ### Streaming Responses
-:::note
 Real-time streaming output of response content:
-:::
 ```go
 stream, err := client.NewStream(context.Background(), req)
 if err != nil {
@@ -195,9 +185,7 @@ if err := stream.Err(); err != nil {
 }
 ```
 ### Error Handling
-:::note
 This provider returns specific errors for common issues:
-:::
 ```go
 import "github.com/go-kratos/blades/contrib/claude"
 
@@ -216,10 +204,8 @@ if err != nil {
 }
 ```
 ### Supported Models
-:::note
 Available models include:
 - **claude-3-5-sonnet-20241022** - Most intelligent model
 - **claude-3-5-haiku-20241022** - Fastest model
 - **claude-3-opus-20240229** - Previous generation model
 - **claude-sonnet-4-20250514** - Model supporting extended thinking (requires WithThinkingBudget)
-:::

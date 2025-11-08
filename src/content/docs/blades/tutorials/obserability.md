@@ -1,16 +1,11 @@
 ---
 title: "Observability"
 ---
-
-:::note
 Blades provides rich features to help developers observe and diagnose application performance. This document will present an observability example for monitoring AI performance.
-:::
 
 ## Code Example
 
-:::note
 Before running this example, please check if the APIKEY is configured.
-:::
 
 ### 1. Initialize Tracing
 

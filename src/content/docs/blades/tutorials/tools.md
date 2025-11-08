@@ -1,14 +1,10 @@
 ---
 title: "Tools"
 ---
-:::note
 Blades provides convenient support for custom tools. This guide will walk you through developing a weather query tool.
-:::
 
 ## Code Example
-:::note
 Before running this code, please ensure you have properly configured your API key.
-:::
 ```go
 package examples
 

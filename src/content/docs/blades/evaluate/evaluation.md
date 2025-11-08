@@ -1,25 +1,19 @@
 ---
 title: "Evaluation"
 ---
-:::note
 Evaluator is the core component in the Blades framework for assessing the quality of AI model responses. It provides a structured way to judge the relevance and accuracy of model outputs.
-:::
 ## Core Concepts
-:::note
 Evaluator is used to return evaluation and feedback results. Its interface structure is as follows:
-:::
 ```go
 type Evaluator interface {
 	Evaluate(context.Context, *blades.Prompt) (*Evaluation, error)
 }
 ```
 ### Evaluation
-:::note
 The Evaluation struct is used to represent the evaluation result.
 - **Pass**: Indicates whether the model output meets the evaluation criteria.
 - **Score**: Represents the similarity score between the model output and the expected result, range [0,1], higher is better.
 - **Feedback**: Represents the feedback information for the evaluation result.
-:::
 ```go
 type Evaluation struct {
 	Pass     bool      `json:"pass" jsonschema:"Indicates whether the response satisfies the evaluation criteria."`
@@ -28,9 +22,7 @@ type Evaluation struct {
 }
 ```
 ### Feedback
-:::note
 The Feedback struct is used to represent the feedback information for the evaluation result.
-:::
 ```go
 type Feedback struct {
 	Summary     string   `json:"summary" jsonschema:"Short summary of evaluation results."`
@@ -39,12 +31,10 @@ type Feedback struct {
 }
 ```
 ## Features
-:::tip
 - **AI-Driven Evaluation**: Uses specialized AI models to evaluate the output quality of other AI models, providing more intelligent evaluation capabilities.
 - **Structured Feedback**: Provides structured feedback information, including summaries, detailed explanations, and improvement suggestions.
 - **Standardized Interface**: Supports different types of evaluator implementations through a unified interface design.
 - **Flexible Configuration**: Supports custom evaluation templates and model configurations to adapt to different evaluation scenarios.
-:::
 ## Usage
 
 ### 1. Create an Evaluator
@@ -81,13 +71,11 @@ fmt.Printf("Pass: %t Score: %f\n", result.Pass, result.Score)
 fmt.Printf("Feedback: %+v\n", result.Feedback)
 ```
 ## Best Practices
-:::tip
 - **Design Effective Evaluation Templates**: Evaluation templates should clearly guide the evaluation model on how to judge response quality, including specific evaluation criteria and scoring rules.
 - **Select Appropriate Evaluation Models**: Use sufficiently capable AI models as evaluators to ensure the accuracy of evaluation results.
 - **Set Reasonable Evaluation Parameters**: Set appropriate parameters such as temperature and top-p according to the specific application scenario to balance consistency and creativity in evaluation.
 - **Handle Evaluation Errors**: Implement robust error handling mechanisms to ensure the stability of the evaluation process.
 - **Continuously Optimize Evaluation Criteria**: Continuously optimize evaluation criteria and feedback mechanisms based on actual usage.
-:::
 ## Code Example
 ```go
 package examples

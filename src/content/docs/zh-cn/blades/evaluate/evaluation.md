@@ -1,25 +1,21 @@
 ---
 title: "评估"
 ---
-:::note
 Evaluator是Blades框架中用于评估AI模型响应质量的核心组件，它提供了结构化的方式来判断模型输出的相关性和准确性。
-:::
+
 ## 核心概念
-:::note
 Evaluator用于返回评估和反馈结果，其接口结构结构如下：
-:::
 ```go
 type Evaluator interface {
 	Evaluate(context.Context, *blades.Prompt) (*Evaluation, error)
 }
 ```
+
 ### Evaluation
-:::note
 Evaluation结构体用于表示评估结果。
 - **Pass**: 表示模型输出是否满足评估标准。
 - **Score**: 表示模型输出与预期结果的相似度评分，取值范围[0,1]，值越高表示越相似。
 - **Feedback**: 表示评估结果的反馈信息。
-:::
 ```go
 type Evaluation struct {
 	Pass     bool      `json:"pass" jsonschema:"Indicates whether the response satisfies the evaluation criteria."`
@@ -27,10 +23,9 @@ type Evaluation struct {
 	Feedback *Feedback `json:"feedback" jsonschema:"Structured feedback on the evaluation results."`
 }
 ```
+
 ### Feedback
-:::note
 Feedback结构体用于表示评估结果的反馈信息。
-:::
 ```go
 type Feedback struct {
 	Summary     string   `json:"summary" jsonschema:"Short summary of evaluation results."`
@@ -39,12 +34,10 @@ type Feedback struct {
 }
 ```
 ## 特性
-:::tip
 - **AI驱动评估**:使用专门的AI模型来评估其他AI模型的输出质量，提供更智能的评估能力。
 - **结构化反馈**:提供结构化的反馈信息，包括摘要、详细说明和改进建议。
 - **标准化接口**:通过统一的接口设计，支持不同类型的评估器实现。
 - **灵活配置**:支持自定义评估模板和模型配置，适应不同的评估场景。
-:::
 ## 使用方法
 
 ### 1. 创建评估器

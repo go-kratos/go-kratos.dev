@@ -1,21 +1,17 @@
 ---
 title: "Claude"
 ---
-:::note
 Blades AI Agent 框架的 Anthropic Claude 模型提供器，支持 Direct API、AWS Bedrock 和 Google Vertex AI。
-:::
 ## 安装
 ```bash
 go get github.com/go-kratos/blades/contrib/claude
 ```
 ## 特性
-:::note
 - **统一客户端**：通过单一 NewClient 函数支持多种部署渠道
 - **扩展推理（Extended Thinking）**：支持 Beta 推理模型，并可配置 token 预算
 - **工具调用**：自动执行工具并支持迭代工作流
 - **流式响应**：支持实时流式响应，包含工具调用处理
 - **多渠道支持**：支持 Direct API、AWS Bedrock 和 Google Vertex AI
-:::
 ## 使用方法
 ### Direct API（Anthropic）
 ```go
@@ -95,9 +91,7 @@ client := claude.NewClient(
 // Use same request/response pattern as above
 ```
 ### 扩展推理（Extended Thinking）
-:::note
 通过标准 API 启用 Claude 的推理能力：
-:::
 ```go
 import "github.com/go-kratos/blades"
 
@@ -129,9 +123,7 @@ resp, err := client.Generate(context.Background(), req,
 )
 ```
 ### 工具调用
-:::note
 定义工具并让 Claude 自动执行：
-:::
 ```go
 // Define a tool
 weatherTool := &blades.Tool{
@@ -166,9 +158,7 @@ resp, err := client.Generate(context.Background(), req)
 // 3. Return the final response
 ```
 ### 流式响应
-:::note
 实时流式输出响应内容：
-:::
 ```go
 stream, err := client.NewStream(context.Background(), req)
 if err != nil {
@@ -195,9 +185,7 @@ if err := stream.Err(); err != nil {
 }
 ```
 ### 错误处理
-:::note
 该提供器针对常见问题返回特定错误：
-:::
 ```go
 import "github.com/go-kratos/blades/contrib/claude"
 
@@ -216,10 +204,8 @@ if err != nil {
 }
 ```
 ### 支持的模型
-:::note
 可用模型包括：
 - **claude-3-5-sonnet-20241022** - 最智能的模型
 - **claude-3-5-haiku-20241022** - 最快的模型
 - **claude-3-opus-20240229** - 上一代模型
 - **claude-sonnet-4-20250514** - 支持扩展推理的模型（需配合 WithThinkingBudget 使用）
-:::
