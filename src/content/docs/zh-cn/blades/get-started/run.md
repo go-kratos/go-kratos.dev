@@ -7,9 +7,11 @@ title: "构建生成式智能体"
     行为：同步调用Run发送请求后阻塞等待，直到模型生成完整回复，一次性返回结果。
     返回值：一个完整的Message对象
 ## 代码示例
-### 前置条件
-    1. 安装Blades：`go get github.com/go-kratos/blades`
-    2. 配置模型提供者（如OpenAI）：设置环境变量`OPENAI_API_KEY`和`OPENAI_BASE_URL`
+:::note
+前置条件
+1. 安装Blades：`go get github.com/go-kratos/blades`
+2. 配置模型提供者（如OpenAI）：设置环境变量`OPENAI_API_KEY`和`OPENAI_BASE_URL`
+:::
 ### 创建智能体
 在Blades中，想要创建一个智能体，使用**NewAgent**方法，该方法用于创建一个新的Agent实例。**Agent**是Blades框架中的核心组件，负责协调模型、工具、提示词等资源来执行各种AI任务。
 NewAgent有两个参数，如下：
@@ -77,7 +79,6 @@ func main() {
     log.Println(result.Text())
 }
 ```
-:::note
 Run方法的可选配置参数如下：
 
     Seed: 设置生成文本时的随机种子，确保结果可复现。
@@ -109,4 +110,3 @@ Run方法的可选配置参数如下：
     AudioStreamFormat: 选择流式协议（当支持时）。
     AudioInstructions: 提供关于语音传递的额外指导。
     AudioSpeed: 设置播放速度倍数。
-:::
