@@ -25,17 +25,17 @@ The Blades framework achieves its powerful functionality and flexibility through
 * **Memory (Memory)**: Provides short-term or long-term memory capabilities for the Agent, enabling context-aware continuous conversations.
 * **Middleware (Middleware)**: Similar to middleware in web frameworks, it can implement cross-cutting control over the Agent.
 
-### Runnable
-`Runnable` is the most core interface in the Blades framework, defining the basic behavior of all executable components. Its design aims to provide a unified execution paradigm, achieving **decoupling, standardization, and high composability** of various functional modules within the framework through the `Run` and `RunStream` methods. Components such as `Agent`, `Chain`, and `ModelProvider` all implement this interface, unifying their execution logic and allowing different components to be flexibly combined like LEGO bricks to build complex AI Agents.
+### Agent
+`Agent` is the most core interface in the Blades framework, defining the basic behavior of all executable components. Its design aims to provide a unified execution paradigm, achieving **decoupling, standardization, and high composability** of various functional modules within the framework through the `Run` methods. Components such as `Agent`, `Chain`, and `ModelProvider` all implement this interface, unifying their execution logic and allowing different components to be flexibly combined like LEGO bricks to build complex AI Agents.
 
 ```go
-// Runnable represents an entity that can process prompts and generate responses.
-type Runnable interface {
-    Run(context.Context, *Prompt, ...ModelOption) (*Message, error)
-    RunStream(context.Context, *Prompt, ...ModelOption) (Streamable[*Message], error)
+// Agent represents an autonomous agent that can process invocations and produce a sequence of messages.
+type Agent interface {
+    Name() string
+    Description() string
+    Run(context.Context, *Invocation) Generator[*Message, error]
 }
 ```
-![runnable](../../../assets/images/runnable.png)
 
 ### ModelProvider
 `ModelProvider` is the core abstraction layer in the `Blades` framework for interacting with underlying large language models (LLMs). Its design goal is to achieve **decoupling and extensibility** through a unified interface, separating the framework's core logic from the implementation details of specific models (such as OpenAI, DeepSeek, Gemini, etc.). It acts as an adapter, responsible for converting standardized requests within the framework into the format required by the native API of the model and converting the model's response back into the framework's standard format, thus allowing developers to easily switch and integrate different LLMs.
@@ -44,17 +44,17 @@ type Runnable interface {
 type ModelProvider interface {
     // Generate performs a complete generation request and returns the result at once. Suitable for scenarios where real-time feedback is not needed.
     Generate(context.Context, *ModelRequest, ...ModelOption) (*ModelResponse, error)
-    // NewStream initiates a streaming request. This method immediately returns a Streamable object, through which the caller can receive the generated content from the model step by step, suitable for building real-time, typewriter-effect conversation applications.
-    NewStream(context.Context, *ModelRequest, ...ModelOption) (Streamable[*ModelResponse], error)
+    // NewStreaming initiates a streaming request. This method immediately returns a Generator object, through which the caller can receive the generated content from the model step by step, suitable for building real-time, typewriter-effect conversation applications.
+    NewStreaming(context.Context, *ModelRequest, ...ModelOption) (Generator[*ModelResponse], error)
 }
 ```
 ![ModelProvider](../../../assets/images/model.png)
 
 ### Agent
-`Agent` is the core orchestrator in the `Blades` framework. As the highest-level `Runnable`, it integrates and orchestrates `ModelProvider`, `Tool`, `Memory`, and `Middleware` components to understand user intent and execute complex tasks. Its design allows for flexible configuration through `Option` functions, driving the behavior and capabilities of intelligent applications, and fulfilling core responsibilities such as task orchestration, context management, and instruction following.
+`Agent` is the core orchestrator in the `Blades` framework. As the highest-level `Agent`, it integrates and orchestrates `ModelProvider`, `Tool`, `Memory`, and `Middleware` components to understand user intent and execute complex tasks. Its design allows for flexible configuration through `Option` functions, driving the behavior and capabilities of intelligent applications, and fulfilling core responsibilities such as task orchestration, context management, and instruction following.
 
 ### Flow
-The `flow` is designed to construct complex workflows and multi-step reasoning. Its core concept is to orchestrate multiple `Runnable` components, enabling the transfer of data and control flow, where the output of one `Runnable` can serve as the input for the next. This mechanism allows developers to flexibly combine components, build highly customized AI workflows, and achieve multi-step reasoning and complex data processing, making it a key enabler for implementing Agent-based decision-making processes.
+The `flow` is designed to construct complex workflows and multi-step reasoning. Its core concept is to orchestrate multiple `Agent` components, enabling the transfer of data and control flow, where the output of one `Agent` can serve as the input for the next. This mechanism allows developers to flexibly combine components, build highly customized AI workflows, and achieve multi-step reasoning and complex data processing, making it a key enabler for implementing Agent-based decision-making processes.
 
 ### Tool
 `Tool` is a key component for extending the capabilities of an AI Agent, representing external functions or services that the Agent can call. Its design aims to empower the Agent with the ability to interact with the real world, perform specific actions, or obtain external information. Through a clear `InputSchema`, it guides the LLM to generate the correct call parameters and executes the actual logic through an internal `Handle` function, thereby encapsulating various external APIs, database queries, etc., into a form that the Agent can understand and invoke.
@@ -71,7 +71,7 @@ type Memory interface {
 ```
 
 ### Middleware
-`Middleware` is a powerful mechanism for implementing cross-cutting concerns such as logging, monitoring, authentication, and rate limiting. Its design allows for injecting additional behaviors into the `Runnable` execution flow without modifying the core `Runnable` logic. It works in an "onion model" function chain, providing highly flexible flow control and functional enhancements, thus decoupling non-core business logic from core functionality.
+`Middleware` is a powerful mechanism for implementing cross-cutting concerns such as logging, monitoring, authentication, and rate limiting. Its design allows for injecting additional behaviors into the `Agent` execution flow without modifying the core `Agent` logic. It works in an "onion model" function chain, providing highly flexible flow control and functional enhancements, thus decoupling non-core business logic from core functionality.
 
 ## 💡 Quick Start
 
@@ -91,38 +91,26 @@ import (
 )
 
 func main() {
-	agent := blades.NewAgent(
-		"Template Agent",
-		blades.WithModel("gpt-5"),
-		blades.WithProvider(openai.NewChatProvider()),
-	)
-
-	// Define templates and params
-	params := map[string]any{
-		"topic":    "The Future of Artificial Intelligence",
-		"audience": "General reader",
-	}
-
-	// Build prompt using the template builder
-	// Note: Use exported methods when calling from another package.
-	prompt, err := blades.NewPromptTemplate().
-		System("Please summarize {{.topic}} in three key points.", params).
-		User("Respond concisely and accurately for a {{.audience}} audience.", params).
-		Build()
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	log.Println("Generated Prompt:", prompt.String())
-
-	// Run the agent with the templated prompt
-	result, err := agent.Run(context.Background(), prompt)
-	if err != nil {
-		log.Fatal(err)
-	}
-	log.Println(result.Text())
+    // Configure OpenAI API key and base URL using environment variables:
+    // export OPENAI_API_KEY="YOUR_API_KEY"
+    // export OPENAI_API_BASE="YOUR_BASE_URL"
+    agent := blades.NewAgent(
+        "Blades Agent",
+        blades.WithModel("gpt-5"),  // or deepseek-chat, qwen3-max, etc.
+        blades.WithProvider(openai.NewChatProvider()),
+        blades.WithInstructions("You are a helpful assistant that provides detailed and accurate information."),
+    )
+    // Create a Prompt with user message
+    input := blades.UserMessage("What is the capital of France?")
+    // Run the Agent with the Prompt
+    runner := blades.NewRunner(agent)
+    output, err := runner.Run(context.Background(), input)
+    if err != nil {
+        log.Fatal(err)
+    }
+    // Print the agent's response
+    log.Println(output.Text())
 }
-
 ```
 For more examples, see the [examples](./examples) directory.
 
