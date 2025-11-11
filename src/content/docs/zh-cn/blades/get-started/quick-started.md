@@ -27,7 +27,6 @@ import (
 )
 
 func main() {
-
 	// set up the OpenAI provider
 	provider := openai.NewChatProvider(
 		openai.WithChatOptions(
