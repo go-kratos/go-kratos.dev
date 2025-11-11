@@ -18,47 +18,62 @@ title: "构建流式智能体"
 Blades中使用流式调用与同步调用的参数基本一致，不同的是，流式调用不会等待模型完全生成响应后才返回，而是立即返回一个**流式接口**，允许逐步接收模型的响应内容。流式调用使用**Runstream**方法，所有的输入参数与Run方法相同。
 
 使用**Runstream**方法的示例如下：
-```Go
+```go
 package main
 
 import (
-    "context"
-    "log"
-    "os"
-    
-    "github.com/go-kratos/blades"
-    "github.com/go-kratos/blades/contrib/openai"
+	"bytes"
+	"context"
+	"fmt"
+	"log"
+	"text/template"
+
+	"github.com/go-kratos/blades"
+	"github.com/go-kratos/blades/contrib/openai"
 )
 
+func buildPrompt(input string, params map[string]any) string {
+	t, err := template.New("prompt").Parse(input)
+	if err != nil {
+		panic(err)
+	}
+	var result bytes.Buffer
+	err = t.Execute(&result, params)
+	if err != nil {
+		panic(err)
+	}
+	return result.String()
+}
+
 func main() {
-    // Set Environment Variables for OpenAI
-    provider := openai.NewChatProvider()
-    agent := blades.NewAgent(
-    	"Stream Agent",
-    	blades.WithProvider(provider),
-    	blades.WithModel("deepseek-chat"),
-    )
-    params := map[string]any{
-    	"topic":    "Predict champion of S15",
-    	"audience": "General reader",
-    }
-    prompt, err := blades.NewPromptTemplate().
-    	System("Please summarize {{.topic}} ", params).
-    	User("Please answer for {{.audience}}, KT and T1 who is more likely to win the final", params).
-    	Build()
-    if err != nil {
-    	log.Fatal(err)
-    }
-    stream, err := agent.RunStream(context.Background(), prompt)
-    if err != nil {
-    	log.Fatal(err)
-    }
-    for stream.Next() {
-    	chunk, err := stream.Current()
-        if err != nil {
-            log.Fatal(err)
-        }
-    	log.Println(chunk.Text())
-    }
+	params := map[string]any{
+		"topic":    "Predict champion of S15",
+		"audience": "General reader",
+	}
+	// Set Environment Variables for OpenAI
+	provider := openai.NewChatProvider()
+	info := buildPrompt("Please summarize {{.topic}}", params)
+	agent, err := blades.NewAgent(
+		"Stream Agent",
+		blades.WithProvider(provider),
+		blades.WithModel("deepseek-chat"),
+		blades.WithInstructions(info),
+	)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	input := blades.UserMessage(
+		buildPrompt("Please answer for {{.audience}}, KT and T1 who is more likely to win the final", params),
+	)
+	runner := blades.NewRunner(agent)
+	stream := runner.RunStream(context.Background(), input)
+	// stream is a generator of messages
+	for msg, err := range stream {
+		if err != nil {
+			log.Fatal(err)
+		}
+		fmt.Printf("%s", msg.Text())
+	}
 }
 ```

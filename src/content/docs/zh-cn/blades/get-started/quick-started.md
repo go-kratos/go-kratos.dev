@@ -13,8 +13,7 @@ go get github.com/go-kratos/blades
 ```
 
 ## 第一个 Chat Agent
-下面是一个使用 OpenAI 模型构建简单聊天 Agent 的完整示例：
-
+话不多说，直接来点干货才是实在的，下面是一个使用 OpenAI 模型构建简单聊天 Agent 的完整示例：
 ```go
 package main
 
@@ -28,32 +27,34 @@ import (
 )
 
 func main() {
-    // Create an Agent, specifying the model and model provider
-    provider := openai.NewChatProvider(
-        openai.WithChatOptions(
-            option.WithBaseURL("https://api.deepseek.com"),
-            option.WithAPIKey("API-YOUR-KEY"),
-        ),
-    )
-    agent := blades.NewAgent(
-		"Blades Agent",
-        blades.WithModel("deepseek-chat"),  // or gpt-5, qwen3-max, etc.
-        blades.WithProvider(provider),
-        blades.WithInstructions("You are a helpful assistant that provides detailed and accurate information."),
-    )
-    // Input prompt
-    prompt := blades.NewPrompt(
-        blades.UserMessage("What is the capital of France?"),
-    )
-    // Execute the Agent
-    result, err := agent.Run(context.Background(), prompt)
-    if err != nil {
-        log.Fatal(err)
-    }
-    // Output the result
-    log.Println(result.Text())
-}
 
+	// set up the OpenAI provider
+	provider := openai.NewChatProvider(
+		openai.WithChatOptions(
+			option.WithAPIKey("YOUR_API_KEY"),
+			option.WithBaseURL("YOUR_BASE_URL"),
+		),
+	)
+	// create agent
+	agent, err := blades.NewAgent(
+		"Blades Agent",
+		blades.WithModel("YOUR_MODEL"), // or gpt-5, qwen3-max, etc.
+		blades.WithProvider(provider),
+		blades.WithInstructions("You are a helpful assistant that provides detailed and accurate information."),
+	)
+	if err != nil {
+		log.Fatal(err)
+	}
+	// Create a new input message
+	input := blades.UserMessage("What is the capital of France?") // Create a new input message
+	// Run the agent
+	runner := blades.NewRunner(agent)
+	result, err := runner.Run(context.Background(), input)
+	if err != nil {
+		log.Fatal(err)
+	}
+	log.Println(result.Text())
+}
 ```
 
 ### 注意
