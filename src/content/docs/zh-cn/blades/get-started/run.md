@@ -21,8 +21,8 @@ NewAgent有两个参数，如下：
     - **`WithModel(models string)`**:设置默认模型名称。（如 "deepseek-chat"）
     - **`WithTools(tools ...*tools.Tool)`**: 为 Agent 添加可用的工具
     - **`WithInstructions(instructions string)`**: 设置 Agent 的系统指令/角色设定
-    - **`WithStateInputHandler(h StateInputHandler)`**: 设置输入处理函数
-    - **`WithStateOutputHandler(h StateOutputHandler)`**: 设置输出处理函数
+    - **`WithInputSchema(schema *jsonschema.Schema)`**: 设置输入的格式
+    - **`WithOutputSchema(schema *jsonschema.Schema)`**: 设置输出的格式
 
 该方法使用示例如下：
 ```go
@@ -33,53 +33,70 @@ agent := blades.NewAgent(
     blades.WithProvider(openai.NewChatProvider()),
     blades.WithTools(weatherTool),
 )
+// Run the agent
+runner := blades.NewRunner(agent)
+result, err := runner.Run(context.Background(), blades.UserMessage("what is the weather like in Shanghai today?") )
 ```
 ### Run
-Agent.Run 是 Blades 框架中 Agent 的核心执行方法，用于运行一次完整的 AI 交互流程。该方法会根据提供的提示词（Prompt）与配置的模型进行交互，并返回模型的响应结果。该方法参数如下：
+runner.Run 是 Blades 框架中 Agent 的核心执行方法，用于运行一次完整的 AI 交互流程。该方法会根据提供的提示词（Prompt）与配置的模型进行交互，并返回模型的响应结果。该方法参数如下：
 1. **`ctx (context.Context)`**:上下文参数，用于控制请求的生命周期，可用于设置超时、取消等操作。
 2. **`prompt (Prompt)`**:提示词对象，包含用户输入的信息，可以通过 blades.NewPrompt() 或 blades.NewPromptTemplate() 创建。
 3. **`opts (...ModelOption)`**:可变的模型选项参数，用于在运行时覆盖 Agent 的默认配置。
 
 该方法使用示例如下：
 ```go
-package main
-
 import (
-    "context"
-    "log"
-    "os"
-    
-    "github.com/go-kratos/blades"
-    "github.com/go-kratos/blades/contrib/openai"
+	"bytes"
+	"context"
+	"html/template"
+	"log"
+
+	"github.com/go-kratos/blades"
+	"github.com/go-kratos/blades/contrib/openai"
 )
 
+func buildPrompt(input string, params map[string]any) string {
+	t, err := template.New("prompt").Parse(input)
+	if err != nil {
+		panic(err)
+	}
+	var result bytes.Buffer
+	err = t.Execute(&result, params)
+	if err != nil {
+		panic(err)
+	}
+	return result.String()
+}
 func main() {
-    // Set Environment Variables for OpenAI
-    provider := openai.NewChatProvider()
-    agent := blades.NewAgent(
-    	"Run Agent",
-    	blades.WithProvider(provider),
-    	blades.WithModel("deepseek-chat"),
-    )
-    params := map[string]any{
-    	"topic":    "The Future of Artificial Intelligence",
-    	"audience": "General reader",
-    }
-    prompt, err := blades.NewPromptTemplate().
-    	System("please summarize {{.topic}}。", params).
-    	User("please answer for {{.audience}} in a clear and accurate manner.", params).
-    	Build()
-    if err != nil {
-    	log.Fatal(err)
-    }
-    result, err := agent.Run(context.Background(), prompt)
-    if err != nil {
-    	log.Fatal(err)
-    }
-    log.Println(result.Text())
+	params := map[string]any{
+		"topic":    "The Future of Artificial Intelligence",
+		"audience": "General reader",
+	}
+	// Set Environment Variables for OpenAI
+	provider := openai.NewChatProvider()
+	inform := buildPrompt("You are a helpful assistant that provides detailed and accurate information.", params)
+
+	agent, err := blades.NewAgent(
+		"Run Agent",
+		blades.WithProvider(provider),
+		blades.WithModel("deepseek-chat"),
+		blades.WithInstructions(inform), // you can set system message
+	)
+	if err != nil {
+		log.Fatal(err)
+	}
+	input := buildPrompt("please answer for {{.audience}} in a clear and accurate manner.", params)
+	prompt := blades.UserMessage(input)
+	log.Println(prompt.Text())
+	runner := blades.NewRunner(agent)
+	result, err := runner.Run(context.Background(), prompt)
+	if err != nil {
+		log.Fatal(err)
+	}
+	log.Println(result.Text())
 }
 ```
-Run方法的可选配置参数如下：
+Run方法的可选配置参数`(...ModelOption)`如下：
 
     Seed: 设置生成文本时的随机种子，确保结果可复现。
     MaxOutputTokens: 设置生成响应中的最大标记数。
