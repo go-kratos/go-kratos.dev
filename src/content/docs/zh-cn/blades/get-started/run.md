@@ -7,11 +7,10 @@ title: "构建生成式智能体"
     行为：同步调用Run发送请求后阻塞等待，直到模型生成完整回复，一次性返回结果。
     返回值：一个完整的Message对象
 ## 代码示例
-:::note
 前置条件
 1. 安装Blades：`go get github.com/go-kratos/blades`
 2. 配置模型提供者（如OpenAI）：设置环境变量`OPENAI_API_KEY`和`OPENAI_BASE_URL`
-:::
+
 ### 创建智能体
 在Blades中，想要创建一个智能体，使用**NewAgent**方法，该方法用于创建一个新的Agent实例。**Agent**是Blades框架中的核心组件，负责协调模型、工具、提示词等资源来执行各种AI任务。
 NewAgent有两个参数，如下：
@@ -35,7 +34,12 @@ agent := blades.NewAgent(
 )
 // Run the agent
 runner := blades.NewRunner(agent)
-result, err := runner.Run(context.Background(), blades.UserMessage("what is the weather like in Shanghai today?") )
+input := blades.UserMessage("what is the weather like in Shanghai today?")
+output, err := runner.Run(context.Background(), input)
+if err != nil {
+    log.Fatal(err)
+}
+log.Println(output.Text())
 ```
 ### Run
 runner.Run 是 Blades 框架中 Agent 的核心执行方法，用于运行一次完整的 AI 交互流程。该方法会根据提供的提示词（Prompt）与配置的模型进行交互，并返回模型的响应结果。该方法参数如下：
@@ -45,85 +49,63 @@ runner.Run 是 Blades 框架中 Agent 的核心执行方法，用于运行一次
 
 该方法使用示例如下：
 ```go
+package main
+
 import (
-	"bytes"
 	"context"
-	"html/template"
 	"log"
+	"strings"
+	"text/template"
 
 	"github.com/go-kratos/blades"
 	"github.com/go-kratos/blades/contrib/openai"
 )
 
-func buildPrompt(input string, params map[string]any) string {
-	t, err := template.New("prompt").Parse(input)
+// buildPrompt builds a prompt using text/template with the given parameters.
+func buildPrompt(params map[string]any) (string, error) {
+	var (
+		text = "Respond concisely and accurately for a {{.audience}} audience."
+		buf  strings.Builder
+	)
+	t, err := template.New("message").Parse(text)
 	if err != nil {
-		panic(err)
+		return "", err
 	}
-	var result bytes.Buffer
-	err = t.Execute(&result, params)
-	if err != nil {
-		panic(err)
+	if err := t.Execute(&buf, params); err != nil {
+		return "", err
 	}
-	return result.String()
+	return buf.String(), nil
 }
-func main() {
-	params := map[string]any{
-		"topic":    "The Future of Artificial Intelligence",
-		"audience": "General reader",
-	}
-	// Set Environment Variables for OpenAI
-	provider := openai.NewChatProvider()
-	inform := buildPrompt("You are a helpful assistant that provides detailed and accurate information.", params)
 
+func main() {
 	agent, err := blades.NewAgent(
-		"Run Agent",
-		blades.WithProvider(provider),
-		blades.WithModel("deepseek-chat"),
-		blades.WithInstructions(inform), // you can set system message
+		"Template Agent",
+		blades.WithModel("gpt-5"),
+		blades.WithProvider(openai.NewChatProvider()),
+		blades.WithInstructions("Please summarize {{.topic}} in three key points."),
 	)
 	if err != nil {
 		log.Fatal(err)
 	}
-	input := buildPrompt("please answer for {{.audience}} in a clear and accurate manner.", params)
-	prompt := blades.UserMessage(input)
-	log.Println(prompt.Text())
-	runner := blades.NewRunner(agent)
-	result, err := runner.Run(context.Background(), prompt)
+	// Define templates and params
+	state := map[string]any{
+		"topic":    "The Future of Artificial Intelligence",
+		"audience": "General reader",
+	}
+	// Build prompt using the template builder
+	// Note: Use exported methods when calling from another package.
+	prompt, err := buildPrompt(state)
 	if err != nil {
 		log.Fatal(err)
 	}
-	log.Println(result.Text())
+	input := blades.UserMessage(prompt)
+	// Run the agent with the templated prompt
+	session := blades.NewSession(state)
+	runner := blades.NewRunner(agent, blades.WithSession(session))
+	output, err := runner.Run(context.Background(), input)
+	if err != nil {
+		log.Fatal(err)
+	}
+	log.Println(output.Text())
 }
 ```
-Run方法的可选配置参数`(...ModelOption)`如下：
-
-    Seed: 设置生成文本时的随机种子，确保结果可复现。
-    MaxOutputTokens: 设置生成响应中的最大标记数。
-    FrequencyPenalty: 设置频率惩罚参数，用于控制重复字词的出现概率。
-    PresencePenalty: 设置存在惩罚参数，用于控制新话题的引入概率。
-    Temperature: 设置采样温度，值在 0.0 到 1.0 之间，控制生成文本的随机性。
-    TopP: 设置核心采样参数，控制生成文本的多样性。
-    StopSequences: 设置生成文本的停止序列，当遇到这些序列时停止生成。
-
-图像生成相关的配置选项：
-
-    ImageBackground: 设置生成图像的背景偏好。
-    ImageSize: 设置生成图像的输出尺寸。
-    ImageQuality: 设置生成图像的质量预设。
-    ImageResponseFormat: 设置图像生成的响应格式。
-    ImageOutputFormat: 设置图像的输出编码格式。
-    ImageModeration: 设置生成图像的审核级别。
-    ImageStyle: 设置生成图像的风格提示。
-    ImageUser: 为生成的图像标记最终用户标识符。
-    ImageCount: 设置请求生成的图像数量。
-    ImagePartialImages: 设置流式 API 中发出的部分图像数量。
-    ImageOutputCompression: 设置 JPEG/WEBP 图像的输出压缩百分比。
-
-音频相关配置选项：
-
-    AudioVoice: 选择生成语音的合成声音。
-    AudioResponseFormat: 设置提供者返回的音频容器/编解码器。
-    AudioStreamFormat: 选择流式协议（当支持时）。
-    AudioInstructions: 提供关于语音传递的额外指导。
-    AudioSpeed: 设置播放速度倍数。
