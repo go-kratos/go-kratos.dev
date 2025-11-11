@@ -4,24 +4,24 @@ title: "Building Generative Agents"
 # Synchronous Invocation
 Use Blades synchronous invocation to have the Agent return a complete answer at once.
 
-    Behavior: In synchronous invocation, Run sends the request and blocks until the model generates a complete reply, returning the result all at once.
-    Return value: A complete Message object
+    Behavior: Synchronous invocation Run sends a request and blocks until the model generates a complete reply, returning the result all at once.
+    Return Value: A complete Message object
 ## Code Example
 Prerequisites
 1. Install Blades: `go get github.com/go-kratos/blades`
-2. Configure the model provider (e.g., OpenAI): Set the environment variables `OPENAI_API_KEY` and `OPENAI_BASE_URL`
+2. Configure a model provider (e.g., OpenAI): Set the environment variables `OPENAI_API_KEY` and `OPENAI_BASE_URL`
 
 ### Creating an Agent
-In Blades, to create an agent, use the **NewAgent** method, which is used to create a new Agent instance. **Agent** is the core component in the Blades framework, responsible for coordinating models, tools, prompts, and other resources to perform various AI tasks.
+In Blades, to create an agent, use the **NewAgent** method, which is used to create a new Agent instance. **Agent** is the core component in the Blades framework, responsible for coordinating resources such as models, tools, and prompts to execute various AI tasks.
 NewAgent has two parameters, as follows:
 1. **`name`(string, required)**: Represents the name of the Agent, used to identify different Agent instances.
-2. **`opts`(Options, optional)**: Options used to configure the Agent instance. Supported configuration options include:
-    - **`WithProvider(provider ModelProvider)`**: Set the model provider, such as OpenAI, Claude, and Gemini, etc.
-    - **`WithModel(models string)`**: Set the default model name. (e.g., "deepseek-chat")
-    - **`WithTools(tools ...*tools.Tool)`**: Add available tools for the Agent
-    - **`WithInstructions(instructions string)`**: Set the Agent's system instructions/role settings
-    - **`WithInputSchema(schema *jsonschema.Schema)`**: Set the input format
-    - **`WithOutputSchema(schema *jsonschema.Schema)`**: Set the output format
+2. **`opts`(Options, optional)**: Used to configure options for the Agent instance. Supported configuration options include:
+    - **`WithProvider(provider ModelProvider)`**: Sets the model provider, such as OpenAI, Claude, and Gemini.
+    - **`WithModel(models string)`**: Sets the default model name. (e.g., "deepseek-chat")
+    - **`WithTools(tools ...tools.Tool)`**: Adds available tools for the Agent
+    - **`WithInstructions(instructions string)`**: Sets the system instructions/role settings for the Agent
+    - **`WithInputSchema(schema *jsonschema.Schema)`**: Sets the input format
+    - **`WithOutputSchema(schema *jsonschema.Schema)`**: Sets the output format
 
 Example usage of this method:
 ```go
@@ -43,9 +43,9 @@ log.Println(output.Text())
 ```
 ### Run
 runner.Run is the core execution method for an Agent in the Blades framework, used to run a complete AI interaction process. This method interacts with the configured model based on the provided prompt and returns the model's response. The parameters of this method are as follows:
-1. **`ctx (context.Context)`**: Context parameter used to control the request lifecycle, which can be used to set timeouts, cancellations, etc.
-2. **`prompt (Prompt)`**: Prompt object containing user input information, which can be created via blades.NewPrompt() or blades.NewPromptTemplate().
-3. **`opts (...ModelOption)`**: Variable model option parameters used to override the Agent's default configuration at runtime.
+1. **`ctx (context.Context)`**: Context parameter, used to control the request lifecycle, can be used to set timeouts, cancellations, etc.
+2. **`prompt (Prompt)`**: Prompt object, containing user input information, which can be created via blades.NewPrompt() or blades.NewPromptTemplate().
+3. **`opts (...ModelOption)`**: Variable model option parameters, used to override the Agent's default configuration at runtime.
 
 Example usage of this method:
 ```go

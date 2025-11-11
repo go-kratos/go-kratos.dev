@@ -9,13 +9,14 @@ title: "构建流式智能体"
 
 ## 代码示例
 前置条件
-1. 安装Blades：`go get github.com/go-kratos/blades`
-2. 配置模型提供者（如OpenAI）：设置环境变量`OPENAI_API_KEY`和`OPENAI_BASE_URL`
+
+    1. 安装 Blades：`go get github.com/go-kratos/blades`
+    2. 配置模型提供者（如OpenAI）：设置环境变量`OPENAI_API_KEY`和`OPENAI_BASE_URL`
 
 ### Runstream
-Blades中使用流式调用与同步调用的参数基本一致，不同的是，流式调用不会等待模型完全生成响应后才返回，而是立即返回一个**流式接口**，允许逐步接收模型的响应内容。流式调用使用**Runstream**方法，所有的输入参数与Run方法相同。
+Blades中使用流式调用与同步调用的参数基本一致，不同的是，流式调用不会等待模型完全生成响应后才返回，而是立即返回一个**流式接口**，允许逐步接收模型的响应内容。流式调用使用 **Runstream** 方法，所有的输入参数与Run方法相同。
 
-使用**Runstream**方法的示例如下：
+使用 **Runstream** 方法的示例如下：
 ```go
 package main
 

@@ -6,14 +6,14 @@ Blades 是一个基于 Go 语言的多模态 AI Agent 框架，支持自定义�
 ## 环境安装
 确保你已安装 Go 1.20+，然后通过以下命令初始化你的项目并引入 Blades：
 
-```basic
+```shell
 cd your-project-name
 go mod init your-project-name
 go get github.com/go-kratos/blades
 ```
 
-## 第一个 Chat Agent
-话不多说，直接来点干货才是实在的，下面是一个使用 OpenAI 模型构建简单聊天 Agent 的完整示例：
+## 创建智能体
+下面是一个使用 OpenAI 模型构建简单聊天 Agent 的完整示例：
 ```go
 package main
 
@@ -57,7 +57,7 @@ func main() {
 ```
 
 ### 注意
-如果你要更换其他LLM的API，则需要设置环境变量，例如：
+如果你要更换其他提供商的**API**，则需要设置环境变量，例如：
 
 ```go
 export OPENAI_BASE_URL=https://api.deepseek.com
@@ -69,19 +69,19 @@ export OPENAI_BASE_URL=https://api.deepseek.com
 export OPENAI_API_KEY=your-api-key
 ```
 
-### 常用大模型
+### 支持的模型和提供商
 |  提供商  | 模型                           | 兼容     
 | ---- |---------------------------------|----------------|
-| **OpenAI** | ChatGPT, GPT-4, GPT-3.5, etc... | 阿里百炼、DeepSeek |
+| **OpenAI** | ChatGPT, gpt-5, gpt-4, etc... | qwen3-mqx、deepseek-chat |
 | **Claude** | Claude 3.7 Sonnet | - |
 | **Gemini** | Gemini 2.5 Pro| - |
+
 ## 核心概念速览
 | **<font style="color:#000000;">组件</font>** | **<font style="color:#000000;">说明</font>** |
 | --- | --- |
-| **<font style="color:#000000;">Agent</font>** | <font style="color:#000000;">智能体核心，负责协调模型、工具、记忆等</font> |
+| **<font style="color:#000000;">Agent</font>** | <font style="color:#000000;">智能体接口，用于整合与协调模型、工具和记忆等多种功能智能体</font> |
 | **<font style="color:#000000;">Tool</font>** | <font style="color:#000000;">外部能力插件（如调用 API、查数据库）</font> |
 | **<font style="color:#000000;">Memory</font>** | <font style="color:#000000;">会话记忆管理，支持多轮上下文</font> |
-| **<font style="color:#000000;">Runnable</font>** | <font style="color:#000000;">所有可执行组件的统一接口（Agent、Chain、Model 等均实现它）</font> |
 | **<font style="color:#000000;">Middleware</font>** | <font style="color:#000000;">中间件机制，用于日志、限流、鉴权等横切关注点</font> |
 | **<font style="color:#000000;">ModelProvider</font>** | <font style="color:#000000;">模型适配器（如 OpenAI、DeepSeek），统一调用接口</font> |
 
