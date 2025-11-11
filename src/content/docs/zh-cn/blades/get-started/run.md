@@ -18,7 +18,7 @@ NewAgent有两个参数，如下：
 2. **`opts`(Options,可选)**:用于配置Agent实例的选项。支持的配置选项包括：
     - **`WithProvider(provider ModelProvider)`**:设置模型提供者，如OpenAI、Claude和Gemini等。
     - **`WithModel(models string)`**:设置默认模型名称。（如 "deepseek-chat"）
-    - **`WithTools(tools ...*tools.Tool)`**: 为 Agent 添加可用的工具
+    - **`WithTools(tools ...tools.Tool)`**: 为 Agent 添加可用的工具
     - **`WithInstructions(instructions string)`**: 设置 Agent 的系统指令/角色设定
     - **`WithInputSchema(schema *jsonschema.Schema)`**: 设置输入的格式
     - **`WithOutputSchema(schema *jsonschema.Schema)`**: 设置输出的格式

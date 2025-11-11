@@ -18,7 +18,7 @@ NewAgent has two parameters, as follows:
 2. **`opts`(Options, optional)**: Options used to configure the Agent instance. Supported configuration options include:
     - **`WithProvider(provider ModelProvider)`**: Set the model provider, such as OpenAI, Claude, and Gemini, etc.
     - **`WithModel(models string)`**: Set the default model name. (e.g., "deepseek-chat")
-    - **`WithTools(tools ...*tools.Tool)`**: Add available tools for the Agent
+    - **`WithTools(tools ...tools.Tool)`**: Add available tools for the Agent
     - **`WithInstructions(instructions string)`**: Set the Agent's system instructions/role settings
     - **`WithInputSchema(schema *jsonschema.Schema)`**: Set the input format
     - **`WithOutputSchema(schema *jsonschema.Schema)`**: Set the output format
