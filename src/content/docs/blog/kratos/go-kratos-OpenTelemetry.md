@@ -1,6 +1,5 @@
 ---
-title: Kratos Learning Notes - Distributed Tracing with OpenTelemetry
-description: Distributed tracing (also known as distributed request tracing) is a method used to analyze and monitor applications, especially those built using microservices architecture. Distributed tracing helps pinpoint where failures occur and what causes poor performance.
+title: Distributed Tracing with OpenTelemetry
 keywords:
   - Go 
   - Kratos
