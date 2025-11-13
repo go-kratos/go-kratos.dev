@@ -9,11 +9,6 @@ keywords:
   - Google
   - Dapper
   - operation process
-authors: 
-  - name: shenqidebaozi
-    title: Maintainer of go-kratos
-    picture: https://avatars.githubusercontent.com/u/35397691?s=60&v=4
-    url: https://github.com/shenqidebaozi
 tags: [go, golang, Distributed Tracing, OpenTelemetry, Source Code Analysis]
 date: 2021-06-03
 ---
