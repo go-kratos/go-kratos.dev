@@ -18,8 +18,6 @@ tags: [go, golang, Distributed Tracing, OpenTelemetry, Source Code Analysis]
 date: 2021-06-03
 ---
 
-# Distributed Tracing with OpenTelemetry
-
 ## The Evolution of Distributed Tracing
 >
 > Distributed tracing (also known as distributed request tracing) is a method used to analyze and monitor applications, especially those built using microservices architecture. Distributed tracing helps pinpoint where failures occur and what causes poor performance.
