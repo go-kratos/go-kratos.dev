@@ -6,26 +6,7 @@ reference: ["https://github.com/go-kratos/blades/blob/main/examples/middleware-o
 Blades 嵌入了OpenTelemetry（简称OTel）作为可观测性解决方案（关于对OTel的说明可以参考 `https://go-kratos.dev/zh-cn/blog/tags/opentelemetry/` ），目标是用一套API和工具，就能将应用遥测数据发送到任何兼容的后端而无需为每个后端写不同的代码。
 
 ## 代码示例
-接下来我们讲解一个代码示例，使用OpenTelemetry对Agent的调用过程进行追踪，并将追踪数据输出。首先导入依赖：
-```go
-import (
-	"context"
-	"log"
-	"time"
-
-	// OpenTelemetry 
-	"go.opentelemetry.io/otel"
-	"go.opentelemetry.io/otel/exporters/stdout/stdouttrace"
-	"go.opentelemetry.io/otel/sdk/resource"
-	sdktrace "go.opentelemetry.io/otel/sdk/trace"
-	semconv "go.opentelemetry.io/otel/semconv/v1.34.0"
-
-	// Blades 
-	"github.com/go-kratos/blades"
-	"github.com/go-kratos/blades/contrib/openai"
-	middleware "github.com/go-kratos/blades/contrib/otel"
-)
-```
+接下来我们讲解一个代码示例，使用OpenTelemetry对Agent的调用过程进行追踪，并将追踪数据输出。
 :::note
 在运行本示例前，请先检查是否配置APIKEY和BASE_URL。
 :::
@@ -51,8 +32,16 @@ exporter, err := stdouttrace.New()
 		),
 	)
 ```
+`stdouttrace.New()` 可以创建一个导出器，作用是把追踪数据发送到哪里。
+`resource.New(...)` 创建一个资源对象，资源是产生遥测数据的实体。
+`semconv.ServiceNameKey.String("otel-demo")` 为这个服务添加了一个名字。这样，在查看追踪数据时，你就知道这些数据来自哪个服务。
+`otel.SetTracerProvider(...)`是 OpenTelemetry 的全局设置。
+`sdktrace.NewTracerProvider(...)` 创建一个追踪提供者实例。
+`sdktrace.WithBatcher(exporter, ...)` 告诉追踪提供者使用批处理模式来发送数据。它会收集一批追踪数据（称为 “Span”），然后一次性通过 exporter 发送出去，而不是每个 Span 都立即发送。
+`sdktrace.WithBatchTimeout(1*time.Millisecond)` 表示设置批处理超时时长，这里设置的非常短（1毫秒），在此处数据会几乎立即被输出，便于演示。
+`sdktrace.WithResource(resource)` 将前面创建的、带有服务名信息的资源对象附加到追踪提供者上。
 ### 创建Agent并集成追踪中间件
-使用Blades框架创建一个名为“OpenTelemetry Agent”的Agent。你可以自己指定所需的模型，并通过OpenAI兼容的接口进行通信。在创建Agent的过程中加入OpenTelemetry中间件（这样Agent执行的每一步都会被自动追踪了😀）。
+使用Blades框架创建一个名为“OpenTelemetry Agent”的Agent。你可以自己指定所需的模型，并通过OpenAI兼容的接口进行通信。在创建Agent的过程中加入OpenTelemetry中间件（这样Agent执行的每一步都会被自动追踪了🤔）。
 ```go
 agent, err := blades.NewAgent(
 		"OpenTelemetry Agent",
@@ -64,7 +53,7 @@ agent, err := blades.NewAgent(
 		log.Fatal(err)
 	}
 ```
-### 执行任务
+### 🚀执行任务
 ```go
 input := blades.UserMessage("Write a diary about spring, within 100 words")
 	runner := blades.NewRunner(agent)

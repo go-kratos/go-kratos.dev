@@ -1,35 +1,16 @@
 ---
 title: "Observability"
-description: "Explains the integration of OpenTelemetry middleware in Blades"
+description: "Explanation of OpenTelemetry middleware integration in Blades"
 reference: ["https://github.com/go-kratos/blades/blob/main/examples/middleware-otel/main.go"]
 ---
-Blades embeds OpenTelemetry (abbreviated as OTel) as the observability solution (for an explanation of OTel, refer to `https://go-kratos.dev/zh-cn/blog/tags/opentelemetry/`). The goal is to use a single set of APIs and tools to send application telemetry data to any compatible backend without writing different code for each backend.
+Blades embeds OpenTelemetry (abbreviated as OTel) as an observability solution (for an explanation of OTel, refer to `https://go-kratos.dev/zh-cn/blog/tags/opentelemetry/`). The goal is to use a single set of APIs and tools to send application telemetry data to any compatible backend without writing different code for each backend.
 
 ## Code Example
-Next, we will explain a code example that uses OpenTelemetry to trace the Agent's invocation process and output the trace data. First, import the dependencies:
-```go
-import (
-	"context"
-	"log"
-	"time"
-
-	// OpenTelemetry 
-	"go.opentelemetry.io/otel"
-	"go.opentelemetry.io/otel/exporters/stdout/stdouttrace"
-	"go.opentelemetry.io/otel/sdk/resource"
-	sdktrace "go.opentelemetry.io/otel/sdk/trace"
-	semconv "go.opentelemetry.io/otel/semconv/v1.34.0"
-
-	// Blades 
-	"github.com/go-kratos/blades"
-	"github.com/go-kratos/blades/contrib/openai"
-	middleware "github.com/go-kratos/blades/contrib/otel"
-)
-```
+Next, we'll explain a code example that uses OpenTelemetry to trace the Agent's invocation process and output the trace data.
 :::note
 Before running this example, please check if APIKEY and BASE_URL are configured.
 :::
-### Setting Up OpenTelemetry
+### Setting up OpenTelemetry
 Configure a tracer to print trace information (such as request start and end times) to standard output.
 ```go
 exporter, err := stdouttrace.New()
@@ -51,8 +32,16 @@ exporter, err := stdouttrace.New()
 		),
 	)
 ```
-### Creating an Agent and Integrating Tracing Middleware
-Use the Blades framework to create an Agent named "OpenTelemetry Agent". You can specify the desired model yourself and communicate through an OpenAI-compatible interface. During the Agent creation process, add the OpenTelemetry middleware (so that every step executed by the Agent will be automatically traced 😀).
+`stdouttrace.New()` creates an exporter that determines where trace data is sent.
+`resource.New(...)` creates a resource object, where a resource is the entity that generates telemetry data.
+`semconv.ServiceNameKey.String("otel-demo")` adds a name to this service. This way, when viewing trace data, you'll know which service the data comes from.
+`otel.SetTracerProvider(...)` is a global setting for OpenTelemetry.
+`sdktrace.NewTracerProvider(...)` creates a tracer provider instance.
+`sdktrace.WithBatcher(exporter, ...)` tells the tracer provider to use batch mode for sending data. It collects a batch of trace data (called "Spans") and sends them all at once via the exporter, rather than sending each Span immediately.
+`sdktrace.WithBatchTimeout(1*time.Millisecond)` sets the batch timeout duration. Here it's set very short (1 millisecond), so data will be output almost immediately, which is convenient for demonstration.
+`sdktrace.WithResource(resource)` attaches the previously created resource object with service name information to the tracer provider.
+### Create Agent and Integrate Tracing Middleware
+Use the Blades framework to create an Agent named "OpenTelemetry Agent". You can specify the desired model yourself and communicate through an OpenAI-compatible interface. Add OpenTelemetry middleware during Agent creation (so every step executed by the Agent will be automatically traced 🤔).
 ```go
 agent, err := blades.NewAgent(
 		"OpenTelemetry Agent",
@@ -64,7 +53,7 @@ agent, err := blades.NewAgent(
 		log.Fatal(err)
 	}
 ```
-### Executing a Task
+### 🚀 Execute Task
 ```go
 input := blades.UserMessage("Write a diary about spring, within 100 words")
 	runner := blades.NewRunner(agent)
