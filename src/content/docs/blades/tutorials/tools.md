@@ -1,24 +1,22 @@
 ---
 title: "Tools"
+description: "Usage of tool operations in blades"
+references:["https://github.com/go-kratos/blades/tree/main/examples/tools-func"]
 ---
-Blades provides convenient support for custom tools. This guide will walk you through developing a weather query tool.
+Blades provides convenient support for custom tools, allowing you to create your own functional tools.
 
-## Code Example
-Before running this code, please ensure you have properly configured your API key.
-```go
-package examples
+## Functional Tools
+:::note
+Before running this code, please ensure you have correctly configured the relevant environment variables.
+:::
+### Defining Tools
+`tools.NewFunc(...)` is the core method for creating a function-based tool, including the following parameters:
 
-import (
-	"context"
-	"log"
+**name**: The name of the tool, used to identify the tool.
 
-	"github.com/go-kratos/blades"
-	"github.com/go-kratos/blades/contrib/openai"
-	"github.com/go-kratos/blades/tools"
-	"github.com/openai/openai-go/v2/option"
-)
-```
-### 1. Create Tool
+**description**: The description of the tool, used to prompt the user about the tool's functionality.
+
+**handler**: The handler function of the tool, used to process the tool's request and return the result. When defining the handler, a wrapper is required to convert an ordinary Go function into a tool handler function that **blades** can recognize.
 ```go
 // WeatherReq represents a request for weather information.
 type WeatherReq struct {
@@ -30,74 +28,51 @@ type WeatherRes struct {
 	Forecast string `json:"forecast" jsonschema:"The weather forecast"`
 }
 
-func createTool() *tools.Tool {
-	weatherTool, err := tools.NewTool[WeatherReq, WeatherRes](
-		"get_weather",
-		"Get the current weather for a given city",
-		tools.HandleFunc[WeatherReq, WeatherRes](func(ctx context.Context, req WeatherReq) (WeatherRes, error) {
-			log.Println("use weather tool,😈Fetching weather for:", req.Location)
-			// you can call a weather API here
-			return WeatherRes{Forecast: "Sunny, 25°C"}, nil
-		}),
-	)
-	if err != nil {
-		log.Fatal(err)
-	}
-	return weatherTool
-}
-
-```
-### 2. Create Agent
-```go
-func createAgent() *blades.Agent {
-	agent := blades.NewAgent(
-		"Weather Agent",
-		blades.WithModel("deepseek-chat"),
-		blades.WithInstructions("You are a helpful assistant that provides weather information."),
-		blades.WithProvider(openai.NewChatProvider()),
-		blades.WithTools(createTool()),
-	)
-	return agent
-}
-```
-
-### 3. Run Agent
-```go
-package examples
-
-import (
-	"context"
-	"log"
-
-	"github.com/go-kratos/blades"
-	"github.com/go-kratos/blades/contrib/openai"
-	"github.com/go-kratos/blades/tools"
-	"github.com/openai/openai-go/v2/option"
+weatherTool, err := tools.NewFunc(
+	"get_weather",
+	"Get the current weather for a given city",
+	tools.HandleFunc[WeatherReq, WeatherRes](func(ctx context.Context, req WeatherReq) (WeatherRes, error) {
+		log.Println("Fetching weather for:", req.Location)
+		session, ok := blades.FromSessionContext(ctx)
+		if !ok {
+			return WeatherRes{}, blades.ErrNoSessionContext
+		}
+		session.PutState("location", req.Location)
+		return WeatherRes{Forecast: "Sunny, 25°C"}, nil
+	}),
 )
-
-func createPrompt() *blades.Prompt {
-	return blades.NewPrompt(
-		blades.UserMessage("What's the weather like in Shanghai?"),
-	)
+if err != nil {
+	log.Fatal(err)
 }
-
-func UseTool() {
-	tool := createTool()
-	agent := createAgent(tool)
-	prompt := createPrompt()
-	result, err := agent.Run(context.Background(), prompt)
+```
+### Creating an Agent and Importing Tools
+```go
+agent, err := blades.NewAgent(
+	"Weather Agent",
+	blades.WithModel("gpt-5"),
+	blades.WithInstructions("You are a helpful assistant that provides weather information."),
+	blades.WithProvider(openai.NewChatProvider()),
+	blades.WithTools(weatherTool),
+)
+if err != nil {
+	log.Fatal(err)
+}
+```
+### Running
+```go
+input := blades.UserMessage("What is the weather in New York City?")
+	session := blades.NewSession()
+	runner := blades.NewRunner(agent, blades.WithSession(session))
+	ctx := context.Background()
+	output, err := runner.Run(ctx, input)
 	if err != nil {
 		log.Fatal(err)
 	}
-	log.Println("Agent Response:", result)
-}
-
+	log.Println("state:", session.State())
+	log.Println("output:", output.Text())
 ```
-:::tip
 After successfully running the code, you will see output similar to the following:
-:::
 ```bash
-PS E:\0_nebula\code\blades> go run .
-2025/11/06 15:54:21 use weather tool,😈Fetching weather for: Shanghai
-2025/11/06 15:54:23 Agent Response: [Text: The weather in Shanghai is sunny and 25°C. It's a beautiful day there!)]
+2025/11/14 11:01:18 stream status: completed output: The weather in San Francisco is currently sunny with a temperature of 25°C.
 ```
+##
