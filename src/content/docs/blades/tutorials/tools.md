@@ -1,20 +1,20 @@
 ---
 title: "Tools"
 description: "Usage of tool operations in blades"
-references:["https://github.com/go-kratos/blades/tree/main/examples/tools-func"]
+references: ["https://github.com/go-kratos/blades/tree/main/examples/tools-func"]
 ---
 Blades provides convenient support for custom tools, allowing you to create your own functional tools.
 
 ## Functional Tools
 :::note
-Before running this code, please ensure you have correctly configured the relevant environment variables.
+Before running this code, please ensure you have properly configured the relevant environment variables.
 :::
 ### Defining Tools
-`tools.NewFunc(...)` is the core method for creating a function-based tool, including the following parameters:
+`tools.NewFunc(...)` is the core method for creating a function-based tool, containing the following parameters:
 
 **name**: The name of the tool, used to identify the tool.
 
-**description**: The description of the tool, used to prompt the user about the tool's functionality.
+**description**: The description of the tool, used to inform the user about the tool's functionality.
 
 **handler**: The handler function of the tool, used to process the tool's request and return the result. When defining the handler, a wrapper is required to convert an ordinary Go function into a tool handler function that **blades** can recognize.
 ```go

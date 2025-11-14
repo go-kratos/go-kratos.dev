@@ -3,9 +3,10 @@ title: "Memory Storage"
 description: "blades provides memory capabilities for Agent"
 reference: ["https://github.com/go-kratos/blades/tree/main/examples/tools-memory","https://github.com/go-kratos/blades/tree/main/examples/state","https://github.com/go-kratos/blades/tree/main/examples/session"]
 ---
-Agents often need to access conversation history to ensure what has been said and done, maintaining coherence and avoiding repetition. Blades provides basic functionality for Agents through Session, State, and Memory.
+Agents often need to access conversation history to ensure continuity and avoid repetition of what has been said or done. Blades provides foundational capabilities for Agents through Session, State, and Memory.
+
 ## Core Concepts
-`Session`, `State`, and `Memory` are the core concepts in Blades used to provide memory storage functionality. However, they differ and are suitable for different scenarios.
+`Session`, `State`, and `Memory` are the core concepts in Blades for providing memory storage functionality. However, they differ and are suitable for different scenarios.
 
 - **Session**: Represents the current conversation thread, indicating a one-on-one, single, continuous interaction between the user and the Agent.
 
@@ -17,24 +18,24 @@ The relationship between the three can be illustrated with a vivid analogy:
 
 Imagine you are a detective investigating a "missing diamond" case, and the Agent is your assistant.
 
-**State** is like the sticky notes you carry with you, used to temporarily record important clues during the current investigation. For example, during the investigation, your assistant checks "the last surveillance footage of the diamond," so your sticky note records: `session.PutState("last_seen_location", "library")`.
+**State** is like the sticky notes you carry with you, used to temporarily record important clues from the current investigation. During the investigation, if your assistant checks "the last surveillance footage of the diamond," your sticky note records: `session.PutState("last_seen_location", "library")`.
 
-**Session** is the entire case file. During the investigation, you use `session := blades.NewSession()` to take out a new case file, write "Diamond Theft Case" on it, and use `runner := blades.NewRunner(agent, blades.WithSession(session))` to tell your assistant: all our subsequent discussions and findings will be recorded in this file.
+**Session** is the entire case file. During the investigation, you use `session := blades.NewSession()` to create a new case file, write "Diamond Theft Case" on it, and use `runner := blades.NewRunner(agent, blades.WithSession(session))` to tell your assistant: all our subsequent discussions and findings will be recorded in this file.
 
-**Memory** is the detective's archive of old case files. During the investigation, you can check the `Memory` to see if there are records of similar modus operandi. (`Equivalent to a knowledge base`)
+**Memory** is the detective's archive of old case files. During the investigation, you can check the `Memory` to see if there are records of similar modus operandi (`equivalent to a knowledge base`).
 
 ## State
-**`State`** is essentially a key-value data pair storage **`map[string]any`**. In Blades, you can use the session's **PutState** method to store it.
+**`State`** is essentially a key-value data store **`map[string]any`**. In Blades, you can use the session's **PutState** method to store data.
 ```go
 session := blades.NewSession()
 session.PutState(agent.Name(), output.Text())
 ```
 ## Session
-Creating a `Session` in blades is very simple; just execute the **NewSession** method, which can accept the State data to be stored in the conversation.
+Creating a `Session` in blades is very simple; just call the **NewSession** method, which can accept State data from the conversation.
 ```go
 session := blades.NewSession(states)
 ```
-Here, the type of states is **`map[string]any`**. Multiple **`State`** contents can be imported into a **`Session`**.
+Here, `states` is of type **`map[string]any`**. Multiple **`State`** contents can be imported into a **`Session`**.
 ### Session Example
 When using **`Session`** in blades, simply pass the **`Session`** parameter in the **`NewRunner`** method.
 ```go
