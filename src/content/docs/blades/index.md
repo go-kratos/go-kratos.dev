@@ -7,7 +7,7 @@ Blades is a multimodal AI Agent framework written in Go, supporting custom model
 
 ## Architecture Design
 Blades leverages the characteristics of the Go language to provide a flexible and efficient AI Agent solution. Its core lies in achieving high decoupling and extensibility through unified interfaces and pluggable components. The overall architecture is as follows:
-![architecture](../../../../assets/images/architecture.png)
+![architecture](../../../assets/images/architecture.png)
 
 - Go Idiomatic: Built entirely according to Go's philosophy, with code style and usage experience that feel familiar to Go developers.
 - Easy to Use: Define AI Agents through concise code declarations, enabling rapid requirement delivery and making complex logic clear, easy to manage, and maintain.
