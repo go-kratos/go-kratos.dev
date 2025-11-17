@@ -48,7 +48,7 @@ type ModelProvider interface {
     NewStreaming(context.Context, *ModelRequest, ...ModelOption) (Generator[*ModelResponse], error)
 }
 ```
-![ModelProvider](../../../../assets/images/model.png)
+![ModelProvider](../../../assets/images/model.png)
 
 ### Agent
 `Agent` is the core coordinator in the `Blades` framework. As the highest-level `Agent`, it integrates and orchestrates components such as `ModelProvider`, `Tool`, `Memory`, and `Middleware` to understand user intent and execute complex tasks. Its design allows configuration via flexible `Option` functions, thereby driving the behavior and capabilities of intelligent applications and fulfilling core responsibilities such as task orchestration, context management, and instruction following.
