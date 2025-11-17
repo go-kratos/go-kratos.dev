@@ -84,11 +84,13 @@ To use middleware in an Agent, simply pass it via the WithMiddleware option when
 :::
 ```go
 // Create a blades agent with logging middleware
+model := openai.NewModel("gpt-5", openai.Config{
+	APIKey: os.Getenv("OPENAI_API_KEY"),
+})
 agent := blades.NewAgent(
     "Example Agent",
-    blades.WithModel("gpt-5"),
+    blades.WithModel(model),
     blades.WithInstructions("You are a helpful assistant."),
-    blades.WithProvider(openai.NewChatProvider()),
     blades.WithMiddleware(Logging()), // Use the logging middleware
 )
 // Create a prompt
