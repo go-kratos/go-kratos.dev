@@ -108,10 +108,12 @@ log.Println(output.Text())
 :::
 ```go
 // Create multiple middlewares
+model := openai.NewModel("gpt-5", openai.Config{
+	APIKey: os.Getenv("OPENAI_API_KEY"),
+})
 agent := blades.NewAgent(
     "Chained Middleware Agent",
-    blades.WithModel("gpt-5"),
-    blades.WithProvider(openai.NewChatProvider()),
+    blades.WithModel(model),
     // Chain multiple middlewares
     blades.WithMiddleware(
         Logging(),

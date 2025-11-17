@@ -65,11 +65,14 @@ Blades 提供了统一的中间件机制，可在 Agent 调用前后自动生成
 
 示例：
 ```go
+// Configure OpenAI API key and base URL using environment variables:
+model := openai.NewModel("gpt-5", openai.Config{
+	APIKey: os.Getenv("OPENAI_API_KEY"),
+})
 agent := blades.NewAgent(
     "Example Agent",
-    blades.WithModel("gpt-4"),
+    blades.WithModel(model),
     blades.WithInstructions("Answer briefly."),
-    blades.WithProvider(openai.NewChatProvider()),
     blades.WithMiddleware(
         middleware.Tracing(
             middleware.WithSystem("openai"), // 可选标签，标识 backend
@@ -119,11 +122,13 @@ func main() {
 		),
 	)
 	// Create a blades agent with OpenTelemetry middleware
+    model := openai.NewModel("gpt-5", openai.Config{
+		APIKey: os.Getenv("OPENAI_API_KEY"),
+	})
 	agent, err := blades.NewAgent(
 		"OpenTelemetry Agent",
+		blades.WithModel(model),
 		blades.WithMiddleware(middleware.Tracing()),
-		blades.WithModel("gpt-5"),
-		blades.WithProvider(openai.NewChatProvider()),
 	)
 	if err != nil {
 		log.Fatal(err)

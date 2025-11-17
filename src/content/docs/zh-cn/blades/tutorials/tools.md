@@ -9,14 +9,16 @@ Blades 为自定义工具提供便捷支持，可以自己定制函数式工具�
 :::note
 在运行此代码之前，请确保您已经正确配置了相关环境变量。
 :::
+
 ### 定义工具
-`tools.NewFunc(...)`是创建一个基于函数的工具得核心方法，包含以下参数：
+`tools.NewFunc(...)` 是创建一个基于函数的工具得核心方法，包含以下参数：
 
 **name**：工具的名称，用于标识工具。
 
 **description**：工具的描述，用于提示用户工具的功能。
 
 **handler**：工具的处理函数，用于处理工具的请求并返回结果。在定义handler时需要使用包装器，将一个普通的go函数转换成**blades**可以识别的工具处理函数。
+
 ```go
 // WeatherReq represents a request for weather information.
 type WeatherReq struct {
@@ -27,37 +29,30 @@ type WeatherReq struct {
 type WeatherRes struct {
 	Forecast string `json:"forecast" jsonschema:"The weather forecast"`
 }
-
 weatherTool, err := tools.NewFunc(
 	"get_weather",
 	"Get the current weather for a given city",
-	tools.HandleFunc[WeatherReq, WeatherRes](func(ctx context.Context, req WeatherReq) (WeatherRes, error) {
-		log.Println("Fetching weather for:", req.Location)
-		session, ok := blades.FromSessionContext(ctx)
-		if !ok {
-			return WeatherRes{}, blades.ErrNoSessionContext
-		}
-		session.PutState("location", req.Location)
-		return WeatherRes{Forecast: "Sunny, 25°C"}, nil
-	}),
+	weatherHandle,
 )
-if err != nil {
-	log.Fatal(err)
-}
 ```
-### 创建Agent并导入工具
+
+### 创建 Agent 并导入工具
 ```go
+// Configure OpenAI API key and base URL using environment variables:
+model := openai.NewModel("gpt-5", openai.Config{
+	APIKey: os.Getenv("OPENAI_API_KEY"),
+})
 agent, err := blades.NewAgent(
 	"Weather Agent",
-	blades.WithModel("gpt-5"),
+	blades.WithModel(model),
 	blades.WithInstructions("You are a helpful assistant that provides weather information."),
-	blades.WithProvider(openai.NewChatProvider()),
 	blades.WithTools(weatherTool),
 )
 if err != nil {
 	log.Fatal(err)
 }
 ```
+
 ### 运行
 ```go
 input := blades.UserMessage("What is the weather in New York City?")

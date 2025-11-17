@@ -92,12 +92,12 @@ import (
 
 func main() {
     // Configure OpenAI API key and base URL using environment variables:
-    // export OPENAI_API_KEY="YOUR_API_KEY"
-    // export OPENAI_API_BASE="YOUR_BASE_URL"
+    model := openai.NewModel("gpt-5", openai.Config{
+		APIKey: os.Getenv("OPENAI_API_KEY"),
+	})
     agent := blades.NewAgent(
         "Blades Agent",
-        blades.WithModel("gpt-5"),  // or deepseek-chat, qwen3-max, etc.
-        blades.WithProvider(openai.NewChatProvider()),
+        blades.WithModel(model),
         blades.WithInstructions("You are a helpful assistant that provides detailed and accurate information."),
     )
     // Create a Prompt with user message
