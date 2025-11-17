@@ -27,18 +27,13 @@ import (
 )
 
 func main() {
-	// set up the OpenAI provider
-	provider := openai.NewChatProvider(
-		openai.WithChatOptions(
-			option.WithAPIKey("YOUR_API_KEY"),
-			option.WithBaseURL("YOUR_BASE_URL"),
-		),
-	)
-	// create agent
+    // Configure OpenAI API key and base URL using environment variables:
+    model := openai.NewModel("gpt-5", openai.Config{
+        APIKey: os.Getenv("OPENAI_API_KEY"),
+    })
 	agent, err := blades.NewAgent(
 		"Blades Agent",
-		blades.WithModel("YOUR_MODEL"), // or gpt-5, qwen3-max, etc.
-		blades.WithProvider(provider),
+		blades.WithModel(model),
 		blades.WithInstructions("You are a helpful assistant that provides detailed and accurate information."),
 	)
 	if err != nil {
