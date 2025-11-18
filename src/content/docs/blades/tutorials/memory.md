@@ -1,5 +1,5 @@
 ---
-title: "Memory Storage"
+title: "Memory"
 description: "blades provides memory capabilities for Agent"
 reference: ["https://github.com/go-kratos/blades/tree/main/examples/tools-memory","https://github.com/go-kratos/blades/tree/main/examples/state","https://github.com/go-kratos/blades/tree/main/examples/session"]
 ---
