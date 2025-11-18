@@ -2,10 +2,10 @@
 title: "Agent Routing"
 description: ""
 ---
-Agent Routing is the core component in the Blades framework for implementing routing jumps. It can determine which operation to execute next based on the input information from the predecessor. You can use the pre-packaged HandoffAgent from Blades to implement routing logic, or customize your own routing logic.
+Agent Routing is the core component in the Blades framework for implementing route navigation. It can determine which operation to execute next based on the input information from the previous step. You can use the pre-packaged `HandoffAgent` provided by Blades to implement routing logic, or you can customize your own routing logic.
 
-## HandoffAgent Implementation Routing
-**`HandoffAgent`** encapsulates the routing jump logic, requiring only parameter input:
+## Implementing Routing with HandoffAgent
+**`HandoffAgent`** encapsulates the routing navigation logic. You only need to pass in the parameters:
 
 - `name`: The name of the `handoffAgent`
 - `description`: The description of the `handoffAgent`
@@ -26,10 +26,10 @@ agent, err := flow.NewHandoffAgent(flow.HandoffConfig{
 During the execution of **`handoffAgent`**, it will automatically select the appropriate `SubAgent` internally. If no suitable `SubAgent` is found, the result will be returned in `err`:
 ```shell
 target agent no found:
-``` 
+```
 ## Custom Routing Logic
 ### Core Concepts
-Agent Routing is an indispensable part of the Blades workflow and is crucial during intelligent routing scheduling. First, define the structure type of `workflow`:
+Agent Routing is an indispensable part of the Blades workflow and is crucial during the execution of intelligent routing scheduling. First, define the structure type for the `workflow`:
 ```go
 type RoutingWorkflow struct {
 	blades.Agent
@@ -107,7 +107,7 @@ func main() {
 - Type: `map[string]string`
 - Function: Stores the routing information table, describing the name and description corresponding to each agent.
 
-Acceptable parameters:
+Parameters that can be passed:
 ```go
 routes = map[string]string{
     "math_agent": "You provide help with math problems. Explain your reasoning at each step and include examples.",
@@ -118,9 +118,9 @@ routes = map[string]string{
 #### agents
 
 - Type: `map[string]blades.Agent`
-- Function: Stores the agent information table, describing the name of each agent and its corresponding agent instance.
+- Function: Stores the agent information table, describing the name of each agent and the corresponding agent instance.
 
-Specific structure form:
+The specific structure is as follows:
 ```go
 agents = map[string]blades.Agent{
     "math_agent": mathAgent,
@@ -165,8 +165,8 @@ func NewRoutingWorkflow(routes map[string]string) (*RoutingWorkflow, error) {
 	}, nil
 }
 ```
-#### 2. Set Routing Selection Logic
-Add a method **`selectRoute`** to the **`RoutingWorkflow`** structure, used to select the appropriate route based on the user's original input information `invocation`.
+#### 2. Set the Route Selection Logic
+Add a method **`selectRoute`** to the **`RoutingWorkflow`** struct, used to select the appropriate route based on the user's original input information `invocation`.
 :::note
 When setting the prompt for routing here, high precision is required for the prompt. It is recommended to directly use the following fixed prompt template.
 :::
@@ -195,7 +195,7 @@ func (r *RoutingWorkflow) selectRoute(ctx context.Context, invocation *blades.In
 	return nil, fmt.Errorf("no route selected")
 }
 ```
-Here, based on the return value after the routing agent execution, the corresponding agent is selected as the return value of the **`selectRoute`** method.
+Here, the corresponding agent is selected as the return value of the **`selectRoute`** method based on the return value after the routing agent executes.
 #### 3. Execute Route Selection
 ```go
 func (r *RoutingWorkflow) Run(ctx context.Context, invocation *blades.Invocation) blades.Generator[*blades.Message, error] {

@@ -2,9 +2,9 @@
 title: "Building Streaming Agents"
 ---
 # Streaming Calls
-Streaming is an API communication mode that returns data as it is generated. Unlike the traditional approach of "waiting for the complete response before returning," streaming interfaces send data in chunks to the client in real-time while the server is generating the content, allowing the client to process and display it immediately.
+Streaming calls (Streaming) are an API communication mode that returns data as it is being generated. Unlike the traditional approach of "waiting for the complete response before returning," streaming interfaces send data in chunks to the client in real-time as the server generates the content, allowing the client to process and display it immediately.
 
-    Features: Low perceived latency, memory-friendly, real-time feedback.
+    Features: Low latency perception, memory-friendly, real-time feedback.
     Applicable to: Chatbots, code completion, real-time translation, pre-processing for speech synthesis, and other scenarios with high requirements for "immediacy."
 
 ## Code Example
@@ -14,9 +14,9 @@ Prerequisites
     2. Configure the model provider (e.g., OpenAI): Set environment variables `OPENAI_API_KEY` and `OPENAI_BASE_URL`
 
 ### Runstream
-In Blades, the parameters for streaming calls are largely the same as for synchronous calls. The difference is that streaming calls do not wait for the model to fully generate the response before returning. Instead, they immediately return a **streaming interface**, allowing the client to progressively receive the model's response content. Streaming calls use the **Runstream** method, and all input parameters are the same as the Run method.
+In Blades, the parameters for streaming calls are essentially the same as for synchronous calls. The difference is that streaming calls do not wait for the model to fully generate the response before returning; instead, they immediately return a **streaming interface**, allowing the gradual reception of the model's response content. Streaming calls use the **Runstream** method, and all input parameters are the same as the Run method.
 
-An example using the **Runstream** method is as follows:
+An example of using the **Runstream** method is as follows:
 ```go
 package main
 

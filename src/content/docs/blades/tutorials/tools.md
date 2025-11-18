@@ -11,7 +11,7 @@ Before running this code, please ensure you have correctly configured the releva
 :::
 
 ### Defining Tools
-`tools.NewFunc(...)` is the core method for creating a function-based tool, containing the following parameters:
+`tools.NewFunc(...)` is the core method for creating a function-based tool, which includes the following parameters:
 
 **name**: The name of the tool, used to identify the tool.
 

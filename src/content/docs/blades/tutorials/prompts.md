@@ -1,7 +1,7 @@
 ---
 title: "Prompt"
 ---
-In the Blades framework, Prompt is the core component for interacting with large language models (LLMs). It represents the sequence of messages exchanged between the user and the assistant, supporting various types of messages (system messages, user messages, assistant messages) as well as templating capabilities, enabling developers to build dynamic and context-aware AI applications.
+In the Blades framework, Prompt is the core component for interacting with large language models (LLMs). It represents a sequence of messages exchanged between the user and the assistant, supporting multiple types of messages (system messages, user messages, assistant messages) as well as templating functionality, enabling developers to build dynamic and context-aware AI applications.
 
 ### Message
 Blades supports multiple message types, each with a specific role:
@@ -35,7 +35,7 @@ input := blades.UserMessage("What is the capital of France?")
 ```
 
 ### System Instruction Prompt
-System instructions can be defined via the Agent:
+System instructions can be defined through the Agent:
 ```go
 model := openai.NewModel("gpt-5", openai.Config{
 	APIKey: os.Getenv("OPENAI_API_KEY"),
@@ -76,6 +76,6 @@ log.Println(message.Text())
 
 ### Best Practices
 - Clear System Instructions: Provide clear and specific instructions in system messages to help the model better understand task requirements.
-- Use Templates Appropriately: Leverage templating capabilities to improve code reusability and maintainability, especially in scenarios requiring dynamic Prompt generation.
+- Use Templates Appropriately: Utilize templating functionality to improve code reusability and maintainability, especially in scenarios requiring dynamic Prompt generation.
 - Manage Context Length: Pay attention to controlling the Prompt length to avoid exceeding the model's maximum context limit.
-- Error Handling: Always check for errors during template rendering and Prompt construction to ensure application robustness.
+- Error Handling: Always check for errors during template rendering and Prompt construction processes to ensure application robustness.

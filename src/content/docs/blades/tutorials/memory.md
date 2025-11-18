@@ -3,7 +3,7 @@ title: "Memory Storage"
 description: "blades provides memory capabilities for Agent"
 reference: ["https://github.com/go-kratos/blades/tree/main/examples/tools-memory","https://github.com/go-kratos/blades/tree/main/examples/state","https://github.com/go-kratos/blades/tree/main/examples/session"]
 ---
-Agents often need to access conversation history to ensure what has been said and done, maintaining coherence and avoiding repetition. Blades provides foundational functionality for Agents through Session, State, and Memory.
+Agents often need to access conversation history to ensure what has been said and done, maintaining coherence and avoiding repetition. Blades provides basic functionality for Agents through Session, State, and Memory.
 ## Core Concepts
 `Session`, `State`, and `Memory` are the core concepts in Blades used to provide memory storage functionality. However, they differ and are suitable for different scenarios.
 
@@ -19,12 +19,12 @@ Imagine you are a detective investigating a "missing diamond" case, and the Agen
 
 **State** is like the sticky notes you carry with you, used to temporarily record important clues from the current investigation. During the investigation, if your assistant checks "the last surveillance footage of the diamond," your sticky note records the information: `session.PutState("last_seen_location", "library")`.
 
-**Session** is the entire case file. During the investigation, you use `session := blades.NewSession()` to take out a new case file, write "Diamond Theft Case" on it, and use `runner := blades.NewRunner(agent, blades.WithSession(session))` to tell your assistant: all our subsequent discussions and findings will be recorded in this file.
+**Session** is the entire case file. During the investigation, you use `session := blades.NewSession()` to take out a new case file, write "Diamond Theft Case" on it, and use `runner := blades.NewRunner(agent, blades.WithSession(session))` to tell your assistant: all our subsequent discussions and findings will be recorded in this case file.
 
 **Memory** is the detective's archive of old case files. During the investigation, you can check the `Memory` to see if there are records of similar modus operandi. (`Equivalent to a knowledge base`)
 
 ## State
-**`State`** essentially stores key-value data pairs **`map[string]any`**. In Blades, you can use the session's **PutState** method to store it.
+**`State`** is essentially a key-value data pair storage **`map[string]any`**. In Blades, you can use the session's **PutState** method to store it.
 ```go
 session := blades.NewSession()
 session.PutState(agent.Name(), output.Text())
