@@ -7,7 +7,7 @@ Blades 是一个 Go 语言的多模态 AI Agent 框架，支持自定义模型�
 
 ## 架构设计
 Blades 结合 Go 语言的特性，提供了灵活且高效的 AI Agent 解决方案。其核心在于通过统一的接口和可插拔的组件，实现高度的解耦和可扩展性。整体架构如下：
-![architecture](/assets/images/architecture.png)
+![architecture](/images/architecture.png)
 
 - Go Idiomatic：完全依照 Go 的思维方式构建，代码风格、使用体验都让 Go 开发者感到亲切。
 - 使用简单：通过简洁的代码生命，定义 AI Agent，实现需求快速交付，让复杂的逻辑变得清晰、易于管理和维护。
@@ -48,7 +48,7 @@ type ModelProvider interface {
     NewStreaming(context.Context, *ModelRequest, ...ModelOption) (Generator[*ModelResponse], error)
 }
 ```
-![ModelProvider](/assets/images/model.png)
+![ModelProvider](/images/model.png)
 
 ### Agent
 `Agent` 是 `Blades` 框架中的核心协调者，作为最高层的 `Agent`，它整合并编排 `ModelProvider`、`Tool`、`Memory` 和 `Middleware` 等组件，以理解用户意图并执行复杂的任务。其设计允许通过灵活的 `Option` 函数进行配置，从而驱动智能应用的行为和能力，实现任务编排、上下文管理和指令遵循等核心职责。
