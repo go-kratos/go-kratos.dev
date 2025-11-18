@@ -11,6 +11,7 @@ Agent Routing是Blades框架中用于实现路由跳转的核心组件，它可�
 - `description` : `handoffAgent` 的描述说明
 - `model` : `blades.ModelProvider`
 - `subAgents` : subAgent列表
+
 ```go
 agent, err := flow.NewHandoffAgent(flow.HandoffConfig{
     Name:        "TriageAgent",

@@ -1,96 +1,239 @@
 ---
-title: "Branch Agent"
+title: "Agent Routing"
+description: ""
 ---
-The Branch Agent is a core component in the Blades framework used to implement conditional branch logic. It allows for the dynamic selection of execution paths based on runtime conditions, choosing one executable task from multiple options according to the return value of a condition function. This pattern is particularly suitable for scenarios requiring different actions based on varying inputs or states.
+Agent Routing is the core component in the Blades framework for implementing routing jumps. It can determine which operation to execute next based on the input information from the predecessor. You can use the pre-packaged HandoffAgent from Blades to implement routing logic, or customize your own routing logic.
 
-## Core Concepts
-The Branch Agent structure is as follows:
-```go
-type Branch struct {
-	condition BranchCondition
-	runners   map[string]blades.Runnable
-}
-```
-### Parameter Description
-Branch contains two parameters: the branch condition function (BranchCondition) and the executable task mapping (runners).
-### 1. Branch Condition Function (BranchCondition)
-- Type: `func(ctx context.Context, input *blades.Prompt) (string, error)`
-- Purpose: Determines the branch name to execute based on context and input
-- Return Value: String type branch name and a possible error
-### 2. Executable Task Mapping (runners)
-- Type: `map[string]blades.Runnable`
-- Purpose: Stores the mapping relationship from branch names to executable tasks
-- Characteristic: Each branch name corresponds to a specific task implementation
+## HandoffAgent Implementation Routing
+**`HandoffAgent`** encapsulates the routing jump logic, requiring only parameter input:
 
-## Features
-- **Condition-Driven Execution**: The Branch Agent dynamically decides which branch to execute through the condition function, enabling the program to make intelligent decisions based on runtime information.
-- **Flexible Task Composition**: Supports any number of branches, where each branch can be any object implementing the **Runnable** interface, including other flow controllers (sequential, parallel, etc.).
-- **Error Handling Mechanism**: Returns corresponding error information when the condition function execution fails or the specified branch does not exist.
-## Usage
-The following describes how to use the Branch Agent.
-### 1. Create a Branch Condition Function
+- `name`: The name of the `handoffAgent`
+- `description`: The description of the `handoffAgent`
+- `model`: `blades.ModelProvider`
+- `subAgents`: List of subAgents
+
 ```go
-condition := func(ctx context.Context, input *blades.Prompt) (string, error) {
-    if input.Latest().Text() == "positive" {
-        return "positive_branch", nil
-    }
-    return "default_branch", nil
+agent, err := flow.NewHandoffAgent(flow.HandoffConfig{
+    Name:        "TriageAgent",
+    Description: "You determine which agent to use based on the user's homework question",
+    Model:       model,
+    SubAgents: []blades.Agent{
+        mathTutorAgent,
+        historyTutorAgent,
+    },
+})
+```
+During the execution of **`handoffAgent`**, it will automatically select the appropriate `SubAgent` internally. If no suitable `SubAgent` is found, the result will be returned in `err`:
+```shell
+target agent no found:
+``` 
+## Custom Routing Logic
+### Core Concepts
+Agent Routing is an indispensable part of the Blades workflow and is crucial during intelligent routing scheduling. First, define the structure type of `workflow`:
+```go
+type RoutingWorkflow struct {
+	blades.Agent
+	routes map[string]string
+	agents map[string]blades.Agent
 }
 ```
-### 2. Define Branch Tasks
+### Complete Example
 ```go
-runners := map[string]blades.Runnable{
-    "positive_branch": flow.NewSequential(
-        // positive handling
-    ),
-    "default_branch": flow.NewSequential(
-        // default handling
-    ),
+package main
+
+import (
+	"context"
+	"log"
+	"os"
+
+	"github.com/go-kratos/blades"
+	"github.com/go-kratos/blades/contrib/openai"
+	"github.com/go-kratos/blades/flow"
+)
+
+func main() {
+	model := openai.NewModel(os.Getenv("OPENAI_MODEL"), openai.Config{
+		APIKey: os.Getenv("OPENAI_API_KEY"),
+	})
+	mathTutorAgent, err := blades.NewAgent(
+		"MathTutor",
+		blades.WithDescription("An agent that helps with math questions"),
+		blades.WithInstructions("You are a helpful math tutor. Answer questions related to mathematics."),
+		blades.WithModel(model),
+	)
+	if err != nil {
+		log.Fatal(err)
+	}
+	historyTutorAgent, err := blades.NewAgent(
+		"HistoryTutor",
+		blades.WithDescription("An agent that helps with history questions"),
+		blades.WithInstructions("You are a helpful history tutor. Answer questions related to history."),
+		blades.WithModel(model),
+	)
+	if err != nil {
+		log.Fatal(err)
+	}
+	agent, err := flow.NewHandoffAgent(flow.HandoffConfig{
+		Name:        "TriageAgent",
+		Description: "You determine which agent to use based on the user's homework question",
+		Model:       model,
+		SubAgents: []blades.Agent{
+			mathTutorAgent,
+			historyTutorAgent,
+		},
+	})
+	if err != nil {
+		log.Fatal(err)
+
+	}
+	input := blades.UserMessage("What is the capital of France?")
+	runner := blades.NewRunner(agent)
+	output, err := runner.Run(context.Background(), input)
+	if err != nil {
+		log.Fatal(err)
+	}
+	log.Println(output.Text())
 }
 ```
-### 3. Create and Execute the Branch Agent
+#### Parameter Description
+`RoutingWorkflow` contains three parameters: the routing agent, route names, and the agents corresponding to the routes.
+### Routing Agent
+
+- Type: `blades.Agent`
+- Function: Dynamically decides which agent to navigate to based on the input parameters.
+
+#### routes
+
+- Type: `map[string]string`
+- Function: Stores the routing information table, describing the name and description corresponding to each agent.
+
+Acceptable parameters:
 ```go
-branch := flow.NewBranch(condition, runners)
-result, err := branch.Run(context.Background(), prompt)
+routes = map[string]string{
+    "math_agent": "You provide help with math problems. Explain your reasoning at each step and include examples.",
+    "geo_agent":  "You provide assistance with geographical queries. Explain geographic concepts, locations, and spatial relationships clearly.",
+}
 ```
-## Best Practices
-- **Clear Condition Design**: The condition function should be as simple and clear as possible, avoiding complex business logic.
-- **Complete Branch Coverage**: Ensure all possible condition outcomes have corresponding handling branches.
-- **Proper Error Handling**: Consider error handling in both the condition function and branch tasks.
-- **Maintainability Considerations**: For complex branch logic, it is recommended to split it into multiple levels of nested branches.
-## Code Example
+
+#### agents
+
+- Type: `map[string]blades.Agent`
+- Function: Stores the agent information table, describing the name of each agent and its corresponding agent instance.
+
+Specific structure form:
+```go
+agents = map[string]blades.Agent{
+    "math_agent": mathAgent,
+    "geo_agent":  geoAgent,
+}
+```
+
+### Usage Method
+Next, we explain how to implement Agent routing in Blades.
+
+#### 1. Build the Initialization Workflow Function
+Initialize the corresponding agent instances during the initialization of the **`workflow`**.
+```go
+func NewRoutingWorkflow(routes map[string]string) (*RoutingWorkflow, error) {
+	model := openai.NewModel("deepseek-chat", openai.Config{
+		APIKey: os.Getenv("OPENAI_API_KEY"),
+	})
+	router, err := blades.NewAgent(
+		"triage_agent",
+		blades.WithModel(model),
+		blades.WithInstructions("You determine which agent to use based on the user's homework question"),
+	)
+	if err != nil {
+		return nil, err
+	}
+	agents := make(map[string]blades.Agent, len(routes))
+	for name, instructions := range routes {
+		agent, err := blades.NewAgent(
+			name,
+			blades.WithModel(model),
+			blades.WithInstructions(instructions),
+		)
+		if err != nil {
+			return nil, err
+		}
+		agents[name] = agent
+	}
+	return &RoutingWorkflow{
+		Agent:  router,
+		routes: routes,
+		agents: agents,
+	}, nil
+}
+```
+#### 2. Set Routing Selection Logic
+Add a method **`selectRoute`** to the **`RoutingWorkflow`** structure, used to select the appropriate route based on the user's original input information `invocation`.
+:::note
+When setting the prompt for routing here, high precision is required for the prompt. It is recommended to directly use the following fixed prompt template.
+:::
+```go
+func (r *RoutingWorkflow) selectRoute(ctx context.Context, invocation *blades.Invocation) (blades.Agent, error) {
+	var buf strings.Builder
+	buf.WriteString("You are a routing agent.\n")
+	buf.WriteString("Choose the single best route key for handling the user's request.\n")
+	buf.WriteString("User message: " + invocation.Message.Text() + "\n")
+	buf.WriteString("Available route keys (choose exactly one):\n")
+	routes, err := json.Marshal(r.routes)
+	if err != nil {
+		return nil, err
+	}
+	buf.WriteString(string(routes))
+	buf.WriteString("\nOnly return the name of the routing key.")
+	for res, err := range r.Agent.Run(ctx, &blades.Invocation{Message: blades.UserMessage(buf.String())}) {
+		if err != nil {
+			return nil, err
+		}
+		choice := strings.TrimSpace(res.Text())
+		if a, ok := r.agents[choice]; ok {
+			return a, nil
+		}
+	}
+	return nil, fmt.Errorf("no route selected")
+}
+```
+Here, based on the return value after the routing agent execution, the corresponding agent is selected as the return value of the **`selectRoute`** method.
+#### 3. Execute Route Selection
+```go
+func (r *RoutingWorkflow) Run(ctx context.Context, invocation *blades.Invocation) blades.Generator[*blades.Message, error] {
+	return func(yield func(*blades.Message, error) bool) {
+		agent, err := r.selectRoute(ctx, invocation)
+		if err != nil {
+			yield(nil, err)
+			return
+		}
+		stream := agent.Run(ctx, invocation)
+		for msg, err := range stream {
+			if !yield(msg, err) {
+				break
+			}
+		}
+	}
+}
+```
+#### 4. Run the Workflow
 ```go
 func main() {
-    condition := func(ctx context.Context, input *blades.Prompt) (string, error) {
-    latest := input.Latest()
-    if latest == nil {
-        return "default", nil
-    }
-    
-    text := latest.Text()
-    switch {
-        case strings.Contains(text, "help"):
-            return "help", nil
-        case strings.Contains(text, "order"):
-            return "order", nil
-        default:
-            return "general", nil
-        }
-    }
-
-    runners := map[string]blades.Runnable{
-        "help": flow.NewSequential(
-            // handle help
-        ),
-        "order": flow.NewSequential(
-            // handle order
-        ),
-        "general": flow.NewSequential(
-            // handle general
-        ),
-    }
-
-    branch := flow.NewBranch(condition, runners)
-    result, err := branch.Run(ctx, prompt)
+	var (
+		routes = map[string]string{
+			"math_agent": "You provide help with math problems. Explain your reasoning at each step and include examples.",
+			"geo_agent":  "You provide assistance with geographical queries. Explain geographic concepts, locations, and spatial relationships clearly.",
+		}
+	)
+	routing, err := NewRoutingWorkflow(routes)
+	if err != nil {
+		log.Fatal(err)
+	}
+	// Example prompt that will be routed to the history_agent
+	input := blades.UserMessage("What is the capital of France?")
+	runner := blades.NewRunner(routing)
+	res, err := runner.Run(context.Background(), input)
+	if err != nil {
+		log.Fatal(err)
+	}
+	log.Println(res.Text())
 }
 ```
