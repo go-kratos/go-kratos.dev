@@ -37,34 +37,36 @@ input := blades.UserMessage("What is the capital of France?")
 ### 系统指令提示词
 可以通过 Agent 进行定义系统指令信息：
 ```go
+model := openai.NewModel("gpt-5", openai.Config{
+	APIKey: os.Getenv("OPENAI_API_KEY"),
+})
 agent, err := blades.NewAgent(
 	"Basic Agent",
-	blades.WithModel("gpt-5"),
-	blades.WithProvider(openai.NewChatProvider()),
+	blades.WithModel(model),
 	blades.WithInstructions("You are a helpful assistant that provides detailed and accurate information."),
 )
 ```
 
 #### 带有 Session 上下文的模板
 ```go
+model := openai.NewModel("gpt-5", openai.Config{
+	APIKey: os.Getenv("OPENAI_API_KEY"),
+})
 agent, err := blades.NewAgent(
 	"Instructions Agent",
-	blades.WithModel("gpt-5"),
-	blades.WithProvider(openai.NewChatProvider()),
+	blades.WithModel(model),
 	blades.WithInstructions("Respond as a {{.style}}."),
 )
 if err != nil {
 	log.Fatal(err)
 }
-// Create a new session
+// Create a new session with state variables
 session := blades.NewSession(map[string]any{
 	"style": "robot",
 })
 input := blades.UserMessage("Tell me a joke.")
-// Run the agent with the prompt and session context
 runner := blades.NewRunner(agent, blades.WithSession(session))
-ctx := context.Background()
-message, err := runner.Run(ctx, input)
+message, err := runner.Run(context.Background(), input)
 if err != nil {
 	panic(err)
 }

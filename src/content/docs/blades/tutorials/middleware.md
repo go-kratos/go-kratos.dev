@@ -1,7 +1,7 @@
 ---
 title: "Middleware"
 ---
-In the Blades framework, middleware is a powerful mechanism for implementing cross-cutting concerns (such as logging, monitoring, authentication, rate limiting, etc.). Its design allows injecting additional behavior into the **Agent**'s execution flow without modifying the core logic. Middleware works in the form of a function chain following the "onion model," providing highly flexible flow control and feature enhancement. This document will guide you through a simple example of implementing a logging middleware.
+In the Blades framework, middleware is a powerful mechanism for implementing cross-cutting concerns (such as logging, monitoring, authentication, rate limiting, etc.). Its design allows injecting additional behavior into the **Agent**'s execution flow without modifying the core logic. Middleware works in the form of a function chain following the "onion model," providing highly flexible flow control and functional enhancement. This document will guide you through a simple example of implementing a logging middleware.
 
 ## Middleware
 Middleware is defined as follows:
@@ -26,7 +26,7 @@ func Logging() blades.Middleware {
 }
 ```
 :::note
-When creating, `Handler` is a method interface of the function type **HandleFunc**, so it is necessary to return the corresponding implementation method.
+When creating, `Handler` is a method interface for the function type **HandleFunc**, so it is necessary to return the corresponding implementation method.
 :::
 
 ## Code Example
@@ -84,11 +84,13 @@ To use middleware in an Agent, simply pass it via the WithMiddleware option when
 :::
 ```go
 // Create a blades agent with logging middleware
+model := openai.NewModel("gpt-5", openai.Config{
+	APIKey: os.Getenv("OPENAI_API_KEY"),
+})
 agent := blades.NewAgent(
     "Example Agent",
-    blades.WithModel("gpt-5"),
+    blades.WithModel(model),
     blades.WithInstructions("You are a helpful assistant."),
-    blades.WithProvider(openai.NewChatProvider()),
     blades.WithMiddleware(Logging()), // Use the logging middleware
 )
 // Create a prompt
@@ -108,10 +110,12 @@ Multiple middlewares can be chained together, and they will execute in the speci
 :::
 ```go
 // Create multiple middlewares
+model := openai.NewModel("gpt-5", openai.Config{
+	APIKey: os.Getenv("OPENAI_API_KEY"),
+})
 agent := blades.NewAgent(
     "Chained Middleware Agent",
-    blades.WithModel("gpt-5"),
-    blades.WithProvider(openai.NewChatProvider()),
+    blades.WithModel(model),
     // Chain multiple middlewares
     blades.WithMiddleware(
         Logging(),
@@ -122,8 +126,8 @@ agent := blades.NewAgent(
 ```
 :::tip
 The execution order of middleware follows the onion model:
-- Requests pass through the pre-processing logic of all middlewares from the outside to the inside
-- Reach the core processing logic (Agent)
-- Responses pass through the post-processing logic of all middlewares from the inside to the outside
+- The request passes through the pre-processing logic of all middlewares from the outside to the inside
+- Reaches the core processing logic (Agent)
+- The response passes through the post-processing logic of all middlewares from the inside to the outside
 :::
 This design allows middleware to conveniently add various functionalities while maintaining code clarity and maintainability.

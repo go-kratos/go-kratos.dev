@@ -7,16 +7,18 @@ Blades provides convenient support for custom tools, allowing you to create your
 
 ## Functional Tools
 :::note
-Before running this code, please ensure you have properly configured the relevant environment variables.
+Before running this code, please ensure you have correctly configured the relevant environment variables.
 :::
+
 ### Defining Tools
-`tools.NewFunc(...)` is the core method for creating a function-based tool, containing the following parameters:
+`tools.NewFunc(...)` is the core method for creating a function-based tool, which includes the following parameters:
 
 **name**: The name of the tool, used to identify the tool.
 
-**description**: The description of the tool, used to inform the user about the tool's functionality.
+**description**: The description of the tool, used to inform the user of the tool's functionality.
 
-**handler**: The handler function of the tool, used to process the tool's request and return the result. When defining the handler, a wrapper is required to convert an ordinary Go function into a tool handler function that **blades** can recognize.
+**handler**: The handler function of the tool, used to process the tool's request and return the result. When defining the handler, a wrapper is required to convert an ordinary Go function into a tool handler function recognizable by **blades**.
+
 ```go
 // WeatherReq represents a request for weather information.
 type WeatherReq struct {
@@ -27,37 +29,30 @@ type WeatherReq struct {
 type WeatherRes struct {
 	Forecast string `json:"forecast" jsonschema:"The weather forecast"`
 }
-
 weatherTool, err := tools.NewFunc(
 	"get_weather",
 	"Get the current weather for a given city",
-	tools.HandleFunc[WeatherReq, WeatherRes](func(ctx context.Context, req WeatherReq) (WeatherRes, error) {
-		log.Println("Fetching weather for:", req.Location)
-		session, ok := blades.FromSessionContext(ctx)
-		if !ok {
-			return WeatherRes{}, blades.ErrNoSessionContext
-		}
-		session.PutState("location", req.Location)
-		return WeatherRes{Forecast: "Sunny, 25°C"}, nil
-	}),
+	weatherHandle,
 )
-if err != nil {
-	log.Fatal(err)
-}
 ```
+
 ### Creating an Agent and Importing Tools
 ```go
+// Configure OpenAI API key and base URL using environment variables:
+model := openai.NewModel("gpt-5", openai.Config{
+	APIKey: os.Getenv("OPENAI_API_KEY"),
+})
 agent, err := blades.NewAgent(
 	"Weather Agent",
-	blades.WithModel("gpt-5"),
+	blades.WithModel(model),
 	blades.WithInstructions("You are a helpful assistant that provides weather information."),
-	blades.WithProvider(openai.NewChatProvider()),
 	blades.WithTools(weatherTool),
 )
 if err != nil {
 	log.Fatal(err)
 }
 ```
+
 ### Running
 ```go
 input := blades.UserMessage("What is the weather in New York City?")

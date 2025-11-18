@@ -29,10 +29,13 @@ import (
 )
 
 func main() {
+    // Configure OpenAI API key and base URL using environment variables:
+    model := openai.NewModel("gpt-5", openai.Config{
+		APIKey: os.Getenv("OPENAI_API_KEY"),
+	})
 	agent, err := blades.NewAgent(
 		"Stream Agent",
-		blades.WithModel("deepseek-chat"),
-		blades.WithProvider(openai.NewChatProvider()),
+		blades.WithModel(model),
 		blades.WithInstructions("You are a helpful assistant that provides detailed answers."),
 	)
 	if err != nil {

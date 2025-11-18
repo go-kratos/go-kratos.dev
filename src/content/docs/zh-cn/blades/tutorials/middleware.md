@@ -84,11 +84,13 @@ func (m *Logging) Handle(ctx context.Context, invocation *blades.Invocation) bla
 :::
 ```go
 // Create a blades agent with logging middleware
+model := openai.NewModel("gpt-5", openai.Config{
+	APIKey: os.Getenv("OPENAI_API_KEY"),
+})
 agent := blades.NewAgent(
     "Example Agent",
-    blades.WithModel("gpt-5"),
+    blades.WithModel(model),
     blades.WithInstructions("You are a helpful assistant."),
-    blades.WithProvider(openai.NewChatProvider()),
     blades.WithMiddleware(Logging()), // Use the logging middleware
 )
 // Create a prompt
@@ -108,10 +110,12 @@ log.Println(output.Text())
 :::
 ```go
 // Create multiple middlewares
+model := openai.NewModel("gpt-5", openai.Config{
+	APIKey: os.Getenv("OPENAI_API_KEY"),
+})
 agent := blades.NewAgent(
     "Chained Middleware Agent",
-    blades.WithModel("gpt-5"),
-    blades.WithProvider(openai.NewChatProvider()),
+    blades.WithModel(model),
     // Chain multiple middlewares
     blades.WithMiddleware(
         Logging(),

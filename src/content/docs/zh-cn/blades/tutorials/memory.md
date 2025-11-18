@@ -49,11 +49,14 @@ import (
 )
 
 func main() {
+    // Configure OpenAI API key and base URL using environment variables:
+    model := openai.NewModel("gpt-5", openai.Config{
+		APIKey: os.Getenv("OPENAI_API_KEY"),
+	})
 	agent, err := blades.NewAgent(
 		"History Tutor",
-		blades.WithModel("qwen-plus"),
+		blades.WithModel(model),
 		blades.WithInstructions("You are a knowledgeable history tutor. Provide detailed and accurate information on historical events."),
-		blades.WithProvider(openai.NewChatProvider()),
 	)
 	if err != nil {
 		log.Fatal(err)
@@ -72,38 +75,40 @@ func main() {
 ```
 ## Memory
 **`Memory`** 可以存储多个 **`Session`** 的对话信息，让Agent回忆之前对话的上下文信息和细节。在Blades中，可以用 **`memory`** 模块来实现。首先需要初始化一个“记忆数据库”：
+
 ```go
-ctx := context.Background()
 memoryStore := memory.NewInMemoryStore()
 ```
 - **NewInMemoryStore()** 表示初始化一个Memory实例。Memory是一个存储Agent消息的结构体：
+
 ```go
 type Memory struct {
 	Content  *blades.Message `json:"content"`
 	Metadata map[string]any  `json:"metadata,omitempty"`
 }
 ```
+
 - **NewMemoryTool()** 允许Agent主动去 **MemoryStore** 中搜索和检索信息。在后续初始化Agent时，可以直接通过方法 **`blades.WithTool`** 将 **MemoryStore** 添加到Agent中。
+
 ```go
 memoryTool, err := memory.NewMemoryTool(memoryStore)
 if err != nil {
     log.Fatal(err)
 }
 ```
+
 - 通过使用 **MemoryStore** 的 `AddMemory` 方法可以在其中添加信息（ `Memory` ）。
 ```go
-memoryStore.AddMemory(
-    ctx, 
-    &memory.Memory{Content: blades.AssistantMessage("My favorite project is the Blades Agent kit.")},
-    )
-// you can add more memories
-memoryStore.AddMemory(
-		ctx, 
-		&memory.Memory{Content: blades.AssistantMessage("My favorite programming language is Go.")},
-	)
+// Add a memory entry
+memoryStore.AddMemory(ctx, 
+    &memory.Memory{
+        Content: blades.AssistantMessage("My favorite project is the Blades Agent kit."),
+    },
+)
 ```
 ### Memory示例
 完整示例参照 [Memory使用示例](https://github.com/go-kratos/blades/tree/main/examples/tools-memory) 。
+
 ```go
 package main
 
@@ -123,20 +128,24 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
-	memoryStore.AddMemory(
-		ctx, 
-		&memory.Memory{Content: blades.AssistantMessage("My favorite project is the Blades Agent kit.")},
-		)
-	memoryStore.AddMemory(
-		ctx, 
-		&memory.Memory{Content: blades.AssistantMessage("My favorite programming language is Go.")},
+	memoryStore.AddMemory(ctx, 
+		&memory.Memory{
+            Content: blades.AssistantMessage("My favorite project is the Blades Agent kit."),
+        },
+	)
+	memoryStore.AddMemory(ctx, 
+		&memory.Memory{
+            Content: blades.AssistantMessage("My favorite programming language is Go."),
+        },
 	)
 	// Create an agent with memory tool
+    model := openai.NewModel("gpt-5", openai.Config{
+		APIKey: os.Getenv("OPENAI_API_KEY"),
+	})
 	agent, err := blades.NewAgent(
 		"MemoryRecallAgent",
-		blades.WithModel("gpt-5"),
+		blades.WithModel(model),
 		blades.WithInstructions("Answer the user's question. Use the 'Memory' tool if the answer might be in past conversations."),
-		blades.WithProvider(openai.NewChatProvider()),
 		blades.WithTools(memoryTool),
 	)
 	if err != nil {
