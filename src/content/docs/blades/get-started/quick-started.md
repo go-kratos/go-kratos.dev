@@ -1,10 +1,10 @@
 ---
 title: Quick Start
 ---
-Blades is a multimodal AI Agent framework based on Go, supporting custom models, tools, memory, middleware, etc., suitable for multi-turn conversations, chain-of-thought reasoning, and structured output scenarios.
+Blades is a multimodal AI Agent framework based on the Go language, supporting custom models, tools, memory, middleware, etc., suitable for multi-turn conversations, chain-of-thought reasoning, and structured output scenarios.
 
 ## Environment Setup
-Ensure you have Go 1.20+ installed, then initialize your project and import Blades with the following commands:
+Ensure you have installed Go 1.20+, then initialize your project and import Blades with the following commands:
 
 ```shell
 cd your-project-name
@@ -13,7 +13,7 @@ go get github.com/go-kratos/blades
 ```
 
 ## Create an Agent
-Here is a complete example of building a simple chat Agent using the OpenAI model:
+The following is a complete example of building a simple chat Agent using the OpenAI model:
 ```go
 package main
 
@@ -31,7 +31,6 @@ func main() {
     model := openai.NewModel("gpt-5", openai.Config{
         APIKey: os.Getenv("OPENAI_API_KEY"),
     })
-	// create agent
 	agent, err := blades.NewAgent(
 		"Blades Agent",
 		blades.WithModel(model),
@@ -53,7 +52,7 @@ func main() {
 ```
 
 ### Note
-If you want to use another provider's **API**, you need to set environment variables, for example:
+If you want to switch to another provider's **API**, you need to set environment variables, for example:
 
 ```go
 export OPENAI_BASE_URL=https://api.deepseek.com
@@ -66,7 +65,7 @@ export OPENAI_API_KEY=your-api-key
 ```
 
 ### Supported Models and Providers
-| Provider | Model                           | Compatibility     
+|  Provider  | Model                           | Compatibility     
 | ---- |---------------------------------|----------------|
 | **OpenAI** | ChatGPT, gpt-5, gpt-4, etc... | qwen3-mqx、deepseek-chat |
 | **Claude** | Claude 3.7 Sonnet | - |
@@ -75,10 +74,10 @@ export OPENAI_API_KEY=your-api-key
 ## Core Concepts Overview
 | **<font style="color:#000000;">Component</font>** | **<font style="color:#000000;">Description</font>** |
 | --- | --- |
-| **<font style="color:#000000;">Agent</font>** | <font style="color:#000000;">Agent interface for integrating and coordinating models, tools, memory, and other functional agents</font> |
+| **<font style="color:#000000;">Agent</font>** | <font style="color:#000000;">Agent interface for integrating and coordinating various functional agents such as models, tools, and memory</font> |
 | **<font style="color:#000000;">Tool</font>** | <font style="color:#000000;">External capability plugins (e.g., calling APIs, querying databases)</font> |
 | **<font style="color:#000000;">Memory</font>** | <font style="color:#000000;">Conversation memory management, supporting multi-turn context</font> |
-| **<font style="color:#000000;">Middleware</font>** | <font style="color:#000000;">Middleware mechanism for cross-cutting concerns like logging, rate limiting, authentication</font> |
+| **<font style="color:#000000;">Middleware</font>** | <font style="color:#000000;">Middleware mechanism for cross-cutting concerns like logging, rate limiting, and authentication</font> |
 | **<font style="color:#000000;">ModelProvider</font>** | <font style="color:#000000;">Model adapter (e.g., OpenAI, DeepSeek), providing a unified calling interface</font> |
 
 

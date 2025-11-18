@@ -1,6 +1,6 @@
 ---
 title: "Tools"
-description: "Usage of tool operations in blades"
+description: "Usage methods for tool operations in blades"
 references: ["https://github.com/go-kratos/blades/tree/main/examples/tools-func"]
 ---
 Blades provides convenient support for custom tools, allowing you to create your own functional tools.
@@ -15,9 +15,9 @@ Before running this code, please ensure you have correctly configured the releva
 
 **name**: The name of the tool, used to identify the tool.
 
-**description**: The description of the tool, used to inform the user of the tool's functionality.
+**description**: The description of the tool, used to inform the user about the tool's functionality.
 
-**handler**: The handler function of the tool, used to process the tool's request and return the result. When defining the handler, a wrapper is required to convert an ordinary Go function into a tool handler function recognizable by **blades**.
+**handler**: The handler function of the tool, used to process the tool's request and return the result. When defining the handler, a wrapper is required to convert an ordinary Go function into a tool handler function that **blades** can recognize.
 
 ```go
 // WeatherReq represents a request for weather information.

@@ -1,7 +1,7 @@
 ---
 title: "Middleware"
 ---
-In the Blades framework, middleware is a powerful mechanism for implementing cross-cutting concerns (such as logging, monitoring, authentication, rate limiting, etc.). Its design allows injecting additional behavior into the **Agent**'s execution flow without modifying the core logic. Middleware works in the form of a function chain following the "onion model," providing highly flexible flow control and functional enhancement. This document will guide you through a simple example of implementing a logging middleware.
+In the Blades framework, middleware is a powerful mechanism for implementing cross-cutting concerns (such as logging, monitoring, authentication, rate limiting, etc.). Its design allows injecting additional behavior into the **Agent**'s execution flow without modifying the core logic. Middleware works in the form of a function chain following the "onion model," providing highly flexible flow control and feature enhancement. This document will guide you through a simple example of implementing a logging middleware.
 
 ## Middleware
 Middleware is defined as follows:
@@ -26,7 +26,7 @@ func Logging() blades.Middleware {
 }
 ```
 :::note
-When creating, `Handler` is a method interface for the function type **HandleFunc**, so it is necessary to return the corresponding implementation method.
+When creating, `Handler` is a method interface of the function type **HandleFunc**, so it is necessary to return the corresponding implementation method.
 :::
 
 ## Code Example
@@ -130,4 +130,4 @@ The execution order of middleware follows the onion model:
 - Reaches the core processing logic (Agent)
 - The response passes through the post-processing logic of all middlewares from the inside to the outside
 :::
-This design allows middleware to conveniently add various functionalities while maintaining code clarity and maintainability.
+This design makes it convenient to add various functionalities through middleware while maintaining code clarity and maintainability.

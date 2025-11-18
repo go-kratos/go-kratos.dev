@@ -3,7 +3,7 @@ title: "Observability"
 description: "Explains the integration of OpenTelemetry middleware in Blades"
 reference: ["https://github.com/go-kratos/blades/blob/main/examples/middleware-otel/main.go"]
 ---
-Blades provides powerful observability capabilities for AI Agent applications, including Tracing (distributed tracing) and performance visualization. By integrating OpenTelemetry, you can easily obtain call chains, time consumption statistics, and system behavior insights.
+Blades provides powerful observability capabilities for AI Agent applications, including Tracing (distributed tracing) and performance visualization. By integrating OpenTelemetry, you can easily obtain call chains, time consumption statistics, and insights into system behavior.
 This article is based on the example code:
 🔗 https://github.com/go-kratos/blades/blob/main/examples/middleware-otel/main.go
 
@@ -18,8 +18,8 @@ go get go.opentelemetry.io/otel/exporters/stdout/stdouttrace
 ```
 If you want to connect to OpenTelemetry Collector, Jaeger, or Zipkin, simply replace the Exporter.
 
-## Initializing Tracer Provider
-The following demonstrates how to initialize an OpenTelemetry TracerProvider for recording and exporting trace data:
+## Initialize Tracer Provider
+The following shows how to initialize an OpenTelemetry TracerProvider for recording and exporting trace data:
 ```go
 // Create and initialize OpenTelemetry TracerProvider
 func createTracerProvider() func(context.Context) error {
@@ -75,7 +75,7 @@ agent := blades.NewAgent(
     blades.WithInstructions("Answer briefly."),
     blades.WithMiddleware(
         middleware.Tracing(
-            middleware.WithSystem("openai"), // Optional tag, identifying backend
+            middleware.WithSystem("openai"), // Optional label, identifies backend
         ),
     ),
 )
@@ -150,13 +150,13 @@ func main() {
 ## Summary
 Through the examples in this article, you can:
 - Initialize OpenTelemetry TracerProvider
-- Use stdouttrace exporter to debug Traces
+- Use stdouttrace exporter to debug Trace
 - Enable Tracing middleware in Agent
 - Automatically trace each AI call without invasive code
 
 You can extend this to:
 - Jaeger / Zipkin / OTLP Collector
 - HTTP / gRPC service link tracing
-- Custom Span tags and events
+- Custom Span labels and events
 
 Blades provides an out-of-the-box observability system, making AI Agent projects easier to analyze, troubleshoot, and optimize in production environments.
