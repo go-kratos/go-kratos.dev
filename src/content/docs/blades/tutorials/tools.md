@@ -75,4 +75,3 @@ After successfully running the code, you will see output similar to the followin
 ```bash
 2025/11/14 11:01:18 stream status: completed output: The weather in San Francisco is currently sunny with a temperature of 25°C.
 ```
-##

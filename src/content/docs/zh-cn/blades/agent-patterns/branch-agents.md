@@ -1,10 +1,11 @@
 ---
-title: "分支智能体"
+title: "Agent Routing"
+description: ""
 ---
-分支智能体是Blades框架中用于实现条件分支逻辑的核心组件，它允许根据运行时条件动态选择执行路径,基于条件函数的返回值从多个可执行任务中选择一个来执行。这种模式非常适合需要根据不同输入或状态采取不同行动的场景。
+Agent Routing是Blades框架中用于实现路由跳转的核心组件，它可以根据前者的输入信息判断接下来该执行哪一部分操作。
 
 ## 核心概念
-分支智能体结构如下：
+Agent Routing 是Blades工作流中不可或缺的存在，在执行智能路由调度过程中十分重要
 ```go
 type Branch struct {
 	condition BranchCondition
