@@ -1,5 +1,5 @@
 ---
-title: "Agent Routing"
+title: "Routing Agent"
 description: ""
 ---
 Agent Routing is the core component in the Blades framework for implementing route navigation. It can determine which operation to execute next based on the input information from the previous step. You can use the pre-packaged `HandoffAgent` provided by Blades to implement routing logic, or you can customize your own routing logic.

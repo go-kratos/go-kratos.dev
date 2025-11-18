@@ -1,5 +1,5 @@
 ---
-title: "Agent Routing"
+title: "Routing Agent"
 description: ""
 ---
 Agent Routing是Blades框架中用于实现路由跳转的核心组件，它可以根据前者的输入信息判断接下来该执行哪一部分操作。你可以使用Blades已经封装好的HandoffAgent实现路由逻辑，也可以自己定制属于自己的路由逻辑。
