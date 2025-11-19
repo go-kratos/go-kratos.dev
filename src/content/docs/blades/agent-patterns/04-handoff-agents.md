@@ -1,16 +1,17 @@
 ---
 title: "Routing Agent"
-description: ""
+description: "Implementing Agent routing in Blades"
+reference: ["https://github.com/go-kratos/blades/blob/main/examples/workflow-handoff/main.go"]
 ---
-Agent Routing是Blades框架中用于实现路由跳转的核心组件，它可以根据前者的输入信息判断接下来该执行哪一部分操作。你可以使用Blades已经封装好的HandoffAgent实现路由逻辑，也可以自己定制属于自己的路由逻辑。
+Agent Routing is the core component in the Blades framework for implementing routing transitions. It can determine which operation to execute next based on the input information from the previous step. You can use the pre-packaged HandoffAgent in Blades to implement routing logic, or you can customize your own routing logic.
 
-## HandoffAgent 实现路由
-**`HandoffAgent`** 封装了路由跳转逻辑，只需要传入参数即可：
+## HandoffAgent Implementation
+**`HandoffAgent`** encapsulates the routing transition logic, requiring only parameters to be passed in:
 
-- `name` : `handoffAgent` 的名称
-- `description` : `handoffAgent` 的描述说明
+- `name` : The name of the `handoffAgent`
+- `description` : The description of the `handoffAgent`
 - `model` : `blades.ModelProvider`
-- `subAgents` : subAgent列表
+- `subAgents` : List of subAgents
 
 ```go
 agent, err := flow.NewHandoffAgent(flow.HandoffConfig{
@@ -23,13 +24,13 @@ agent, err := flow.NewHandoffAgent(flow.HandoffConfig{
     },
 })
 ```
-在 **`handoffAgent`** 执行过程中，会在内部自动选择合适的 `SubAgent` 执行，若没有找到合适的 `Subgent` 则会在 `err` 中返回结果：
+During the execution of **`handoffAgent`**, it will automatically select the appropriate `SubAgent` internally. If no suitable `SubAgent` is found, the result will be returned in `err`:
 ```shell
 target agent no found:
 ``` 
-## 自定义路由逻辑
-### 核心概念
-Agent Routing 是Blades工作流中不可或缺的存在，在执行智能路由调度过程中十分重要,首先定义`workflow`的结构类型：
+## Custom Routing Logic
+### Core Concepts
+Agent Routing is an indispensable part of the Blades workflow and is crucial during the execution of intelligent routing scheduling. First, define the structure type for `workflow`:
 ```go
 type RoutingWorkflow struct {
 	blades.Agent
@@ -37,7 +38,7 @@ type RoutingWorkflow struct {
 	agents map[string]blades.Agent
 }
 ```
-### 完整示例
+### Complete Example
 ```go
 package main
 
@@ -95,19 +96,19 @@ func main() {
 	log.Println(output.Text())
 }
 ```
-#### 参数说明
-`RoutingWorkflow` 包含三个参数，分别是路由agent、路由名、路由对应的agent
-### 路由agent
+#### Parameter Description
+`RoutingWorkflow` contains three parameters: the routing agent, route names, and the agents corresponding to the routes.
+### Routing Agent
 
-- 类型: `blades.Agent`
-- 作用: 根据传入的参数动态决定该导航到哪一个agent
+- Type: `blades.Agent`
+- Function: Dynamically decides which agent to navigate to based on the input parameters.
 
 #### routes
 
-- 类型: `map[string]string`
-- 作用: 存放路由信息表，说明每一个agent对应的名称及说明。
+- Type: `map[string]string`
+- Function: Stores the routing information table, describing the name and description corresponding to each agent.
 
-可传入参数：
+Parameters that can be passed:
 ```go
 routes = map[string]string{
     "math_agent": "You provide help with math problems. Explain your reasoning at each step and include examples.",
@@ -117,10 +118,10 @@ routes = map[string]string{
 
 #### agents
 
-- 类型: `map[string]blades.Agent`
-- 作用: 存放agent信息表，说明每一个agent的名称和对应agent实例。
+- Type: `map[string]blades.Agent`
+- Function: Stores the agent information table, describing the name and corresponding agent instance for each agent.
 
-具体结构形式如下：
+The specific structure is as follows:
 ```go
 agents = map[string]blades.Agent{
     "math_agent": mathAgent,
@@ -128,11 +129,11 @@ agents = map[string]blades.Agent{
 }
 ```
 
-### 使用方法
-接下来讲解如何在Blades中实现Agent routing
+### Usage Method
+Next, we explain how to implement Agent routing in Blades.
 
-#### 1. 构建初始化Workflow函数
-在初始化 **`workflow`** 过程中初始化对应的agent实例。
+#### 1. Build the Workflow Initialization Function
+Initialize the corresponding agent instances during the initialization of the **`workflow`**.
 ```go
 func NewRoutingWorkflow(routes map[string]string) (*RoutingWorkflow, error) {
 	model := openai.NewModel("deepseek-chat", openai.Config{
@@ -165,10 +166,10 @@ func NewRoutingWorkflow(routes map[string]string) (*RoutingWorkflow, error) {
 	}, nil
 }
 ```
-#### 2. 设置路由选择逻辑
-在 **`RoutingWorkflow`** 结构体中添加一个方法 **`selectRoute`**，用于根据用户原始的输入信息 `invocation` 选择合适的路由。
+#### 2. Set Routing Selection Logic
+Add a method **`selectRoute`** to the **`RoutingWorkflow`** structure, used to select the appropriate route based on the user's original input information `invocation`.
 :::note
-在这里设置路由的提示词时，对提示词的精准度要求高，建议直接使用以下固定提示词模板。
+When setting the prompt for routing here, high precision is required for the prompt. It is recommended to directly use the following fixed prompt template.
 :::
 ```go
 func (r *RoutingWorkflow) selectRoute(ctx context.Context, invocation *blades.Invocation) (blades.Agent, error) {
@@ -195,8 +196,8 @@ func (r *RoutingWorkflow) selectRoute(ctx context.Context, invocation *blades.In
 	return nil, fmt.Errorf("no route selected")
 }
 ```
-此处根据路由agent执行后的返回值选择对应的agent多作为 **`selectRoute`** 方法的返回值。
-#### 3. 执行路由选择
+Here, based on the return value after the routing agent executes, the corresponding agent is selected as the return value of the **`selectRoute`** method.
+#### 3. Execute Route Selection
 ```go
 func (r *RoutingWorkflow) Run(ctx context.Context, invocation *blades.Invocation) blades.Generator[*blades.Message, error] {
 	return func(yield func(*blades.Message, error) bool) {
@@ -214,7 +215,7 @@ func (r *RoutingWorkflow) Run(ctx context.Context, invocation *blades.Invocation
 	}
 }
 ```
-#### 4. 运行workflow
+#### 4. Run the Workflow
 ```go
 func main() {
 	var (

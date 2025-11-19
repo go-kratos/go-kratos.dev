@@ -3,76 +3,14 @@ title: "Memory"
 description: "blades为Agent提供记忆能力"
 reference: ["https://github.com/go-kratos/blades/tree/main/examples/tools-memory","https://github.com/go-kratos/blades/tree/main/examples/state","https://github.com/go-kratos/blades/tree/main/examples/session"]
 ---
-Agent常常需要获取对话历史，来确保已经说过和做过什么，避免保持连贯性和避免重复。Blades通过Session、State 和Memory来为Agent提供基础功能。
+Agent在多次对话中常常需要回忆起之前对话的上下文信息，因此需要对前面的对话信息进行保存并导入到新的对话中，获取之前的对话历史，来确保已经说过和做过什么，避免保持连贯性和避免重复。Blades通过Memory提供基础功能。
 ## 核心概念
-`Session`、`State` 和 `Memory` 是Blades中用于提供记忆存储功能的核心概念。但三者有所不同，适合于不同的场景。
-
-- **Session**：表示当前对话线程，表示用户和Agent时1v1单次、持续的交互。
-
-- **State**：存储当前对话中的数据（例如：对话中的pdf文档等）。
+ `Memory` 与 `Session`、`State` 的使用范围有所不同，适合于不同的场景。
 
 - **Memory**：可以检索过去多个session的对话信息，可以让Agent回忆之前对话的上下文信息和细节。
 
-下面用一个生动形象的比喻可以说明三者的关系：
+在之前`Session` 和 `State` 举例中已经说明了两者之间的关系，那么 `Memory` 在整个案件的侦破中侦探的旧案件档案库，在破案过程可以查看 `Memory` 中是否记录有无相似的作案手法。（ `相当于知识库` ）
 
-现在你是一名侦探，正在调查一个“失踪的砖石”案件，Agent就是你的小助手。
-
-**State** 就是你随身携带的便签纸，用来临时记录当前调查中的重要线索，在侦查过程中，你的小助手查看了“砖石最后的监控录像”，则你的便签纸就记下了信息：`session.PutState("last_seen_location", "图书馆")` 。
-
-**Session** 则为整个案件的卷宗，在破案过程中使用 `session := blades.NewSession()` 拿出一份新卷宗，写上“钻石失窃案”，并使用 `runner := blades.NewRunner(agent, blades.WithSession(session))` 告诉小助手：我们接下来的讨论和发现都记录在这个卷宗内。
-
-**Memory** 就是侦探的旧案件档案库，在破案过程可以查看 `Memory` 中是否记录有无相似的作案手法。（ `相当于知识库` ）
-
-## State
-**`State`** 实质为存储键值数据对 **`map[string]any`** ,在Blades中可以使用session的 **PutState** 方法存储。
-```go
-session := blades.NewSession()
-session.PutState(agent.Name(), output.Text())
-```
-## Session
-在blades中创建 `Session` 十分简单，只需要执行 **NewSession** 方法,在方法中可传入对话中存储的数据State。
-```go
-session := blades.NewSession(states)
-```
-其中states的类型为 **`map[string]any`** 。能够在 **`Session`** 中导入多个 **`State`** 内容。
-### Session示例
-在blades中使用 **`Session`** 时，只需要在 **`NewRunner`** 方法中传入 **`Session`** 参数即可。
-```go
-package main
-
-import (
-	"context"
-	"log"
-
-	"github.com/go-kratos/blades"
-	"github.com/go-kratos/blades/contrib/openai"
-)
-
-func main() {
-    // Configure OpenAI API key and base URL using environment variables:
-    model := openai.NewModel("gpt-5", openai.Config{
-		APIKey: os.Getenv("OPENAI_API_KEY"),
-	})
-	agent, err := blades.NewAgent(
-		"History Tutor",
-		blades.WithModel(model),
-		blades.WithInstructions("You are a knowledgeable history tutor. Provide detailed and accurate information on historical events."),
-	)
-	if err != nil {
-		log.Fatal(err)
-	}
-	input := blades.UserMessage("Can you tell me about the causes of World War II?")
-	// Create a new session
-	session := blades.NewSession()
-	// Run the agent
-	runner := blades.NewRunner(agent, blades.WithSession(session))
-	output, err := runner.Run(context.Background(), input)
-	if err != nil {
-		log.Fatal(err)
-	}
-	log.Println(output.Text())
-}
-```
 ## Memory
 **`Memory`** 可以存储多个 **`Session`** 的对话信息，让Agent回忆之前对话的上下文信息和细节。在Blades中，可以用 **`memory`** 模块来实现。首先需要初始化一个“记忆数据库”：
 
