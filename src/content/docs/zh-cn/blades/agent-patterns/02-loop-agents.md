@@ -1,10 +1,10 @@
 ---
 title: "循环 Agent"
 description: "Blades中实现Agent的循环执行"
-
+reference: ["https://github.com/go-kratos/blades/blob/main/examples/workflow-loop/main.go"]
 ---
 循环Agent是Blades框架中用于实现循环执行逻辑的重要组件，循环Agent基于条件函数的返回值决定是否继续执行某个任务。这种模式非常适合需要重复处理直到达成目标的场景。
-![alt text](../../../../../assets/images/loop-workflow.png)
+![alt text](/images/blades/loop-workflow.png)
 ## 核心概念
 在Blades中实现循环逻辑，可直接使用已经封装好的 **`NewLoopAgent`** 函数初始化一个循环Agent，需要传入参数 `LoopConfig` ,结构如下：
 ```go

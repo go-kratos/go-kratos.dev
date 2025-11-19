@@ -3,10 +3,10 @@ title: "Routing Agent"
 description: "Implementing Agent routing in Blades"
 reference: ["https://github.com/go-kratos/blades/blob/main/examples/workflow-handoff/main.go"]
 ---
-Agent Routing is the core component in the Blades framework for implementing routing transitions. It can determine which operation to execute next based on the input information from the previous step. You can use the pre-packaged HandoffAgent in Blades to implement routing logic, or you can customize your own routing logic.
+Agent Routing is the core component in the Blades framework for implementing route transitions. It can determine which operation to execute next based on the input information from the previous step. You can use the pre-packaged HandoffAgent in Blades to implement routing logic, or customize your own routing logic.
 
 ## HandoffAgent Implementation
-**`HandoffAgent`** encapsulates the routing transition logic, requiring only parameters to be passed in:
+**`HandoffAgent`** encapsulates the routing transition logic, requiring only parameter input:
 
 - `name` : The name of the `handoffAgent`
 - `description` : The description of the `handoffAgent`
@@ -30,7 +30,7 @@ target agent no found:
 ``` 
 ## Custom Routing Logic
 ### Core Concepts
-Agent Routing is an indispensable part of the Blades workflow and is crucial during the execution of intelligent routing scheduling. First, define the structure type for `workflow`:
+Agent Routing is an indispensable part of the Blades workflow and is crucial during intelligent routing scheduling. First, define the structure type of `workflow`:
 ```go
 type RoutingWorkflow struct {
 	blades.Agent
@@ -97,7 +97,7 @@ func main() {
 }
 ```
 #### Parameter Description
-`RoutingWorkflow` contains three parameters: the routing agent, route names, and the agents corresponding to the routes.
+`RoutingWorkflow` contains three parameters: the routing agent, route names, and the corresponding agents for each route.
 ### Routing Agent
 
 - Type: `blades.Agent`
@@ -106,9 +106,9 @@ func main() {
 #### routes
 
 - Type: `map[string]string`
-- Function: Stores the routing information table, describing the name and description corresponding to each agent.
+- Function: Stores the routing information table, describing the name and description of each agent.
 
-Parameters that can be passed:
+Available parameters:
 ```go
 routes = map[string]string{
     "math_agent": "You provide help with math problems. Explain your reasoning at each step and include examples.",
@@ -121,7 +121,7 @@ routes = map[string]string{
 - Type: `map[string]blades.Agent`
 - Function: Stores the agent information table, describing the name and corresponding agent instance for each agent.
 
-The specific structure is as follows:
+Specific structure form:
 ```go
 agents = map[string]blades.Agent{
     "math_agent": mathAgent,
@@ -133,7 +133,7 @@ agents = map[string]blades.Agent{
 Next, we explain how to implement Agent routing in Blades.
 
 #### 1. Build the Workflow Initialization Function
-Initialize the corresponding agent instances during the initialization of the **`workflow`**.
+Initialize the corresponding agent instances during the **`workflow`** initialization process.
 ```go
 func NewRoutingWorkflow(routes map[string]string) (*RoutingWorkflow, error) {
 	model := openai.NewModel("deepseek-chat", openai.Config{
@@ -167,9 +167,9 @@ func NewRoutingWorkflow(routes map[string]string) (*RoutingWorkflow, error) {
 }
 ```
 #### 2. Set Routing Selection Logic
-Add a method **`selectRoute`** to the **`RoutingWorkflow`** structure, used to select the appropriate route based on the user's original input information `invocation`.
+Add a method **`selectRoute`** to the **`RoutingWorkflow`** struct, used to select the appropriate route based on the user's original input information `invocation`.
 :::note
-When setting the prompt for routing here, high precision is required for the prompt. It is recommended to directly use the following fixed prompt template.
+When setting the routing prompt here, high precision is required for the prompt. It is recommended to directly use the following fixed prompt template.
 :::
 ```go
 func (r *RoutingWorkflow) selectRoute(ctx context.Context, invocation *blades.Invocation) (blades.Agent, error) {
@@ -196,7 +196,7 @@ func (r *RoutingWorkflow) selectRoute(ctx context.Context, invocation *blades.In
 	return nil, fmt.Errorf("no route selected")
 }
 ```
-Here, based on the return value after the routing agent executes, the corresponding agent is selected as the return value of the **`selectRoute`** method.
+Here, the corresponding agent is selected based on the return value after the routing agent executes, and this agent is returned as the result of the **`selectRoute`** method.
 #### 3. Execute Route Selection
 ```go
 func (r *RoutingWorkflow) Run(ctx context.Context, invocation *blades.Invocation) blades.Generator[*blades.Message, error] {

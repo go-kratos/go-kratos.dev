@@ -1,10 +1,10 @@
 ---
 title: "链式 Agent"
 description: "Blades中实现Agent的顺序执行"
-
+reference: ["https://github.com/go-kratos/blades/blob/main/examples/workflow-sequential/main.go"]
 ---
 链式Agent是Blades框架中用于实现顺序执行逻辑的重要组件，它将复杂的任务分解为更简单的、更容易管理的子任务。
-![alt text](../../../../../assets/images/chain-workflow.png)
+![alt text](/images/blades/chain-workflow.png)
 ## 核心概念
 链式Agent的核心函数为 **`NewSequentialAgent`** ,用于构建一个顺序工作流，其初始化一个链式工作流时需要输入配置 **`SequentialConfig`** ：
 

@@ -1,9 +1,10 @@
 ---
 title: "并行 Agent"
 description: "Blades中实现Agent的并行执行"
+reference: ["https://github.com/go-kratos/blades/blob/main/examples/workflow-parallel/main.go"]
 ---
 在 `workflow` 执行过程中，为减少等待时间常常需要并行执行Agent，Blades框架提供了 **`NewParallelAgent`** 方法构建并行Agent。
-![parallel-agent](../../../../../assets/images/parallel-workflow.png)
+![parallel-agent](/images/blades/parallel-workflow.png)
 ## 核心概念
 使用 **`NewParallelAgent`** 需要传递参数类型 **`ParallelConfig`** ,该类型结构如下：
 ```go

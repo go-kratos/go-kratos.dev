@@ -1,9 +1,10 @@
 ---
 title: "Parallel Agent"
 description: "Implementing parallel execution of Agents in Blades"
+reference: ["https://github.com/go-kratos/blades/blob/main/examples/workflow-parallel/main.go"]
 ---
-During `workflow` execution, to reduce waiting time, it is often necessary to execute Agents in parallel. The Blades framework provides the **`NewParallelAgent`** method to construct a parallel Agent.
-![parallel-agent](../../../../../assets/images/parallel-workflow.png)
+During `workflow` execution, to reduce waiting time, it is often necessary to execute Agents in parallel. The Blades framework provides the **`NewParallelAgent`** method to construct parallel Agents.
+![parallel-agent](/images/blades/parallel-workflow.png)
 ## Core Concepts
 Using **`NewParallelAgent`** requires passing a parameter of type **`ParallelConfig`**, which has the following structure:
 ```go
@@ -15,11 +16,11 @@ type ParallelConfig struct {
 ```
 - name: The name of the parallel Agent, used for identification and distinction
 - description: The description of the parallel Agent, used to explain its function and purpose
-- subAgents: The list of sub-Agents contained in the parallel Agent; these sub-Agents will be executed in parallel
+- subAgents: The list of sub-Agents contained within the parallel Agent, which will be executed in parallel
 ## Execution Flow
 **Parallel Agent** uses **`NewParallelAgent`** to instantiate a parallel Agent instance. When running the **parallel Agent**, it will directly loop through and run all Agents in `SubAgents`, using a concurrency-safe but fixed-buffer message queue to collect the streaming output from all Agents, and finally use `yield` to return the results.
 
-Here we use an example to illustrate how to use **Parallel Agent** in **Blades**.
+Here we use an example to illustrate how to use **parallel Agents** in **Blades**.
 ### 1. Create SubAgents
 ```go
 editorAgent1, err := blades.NewAgent(

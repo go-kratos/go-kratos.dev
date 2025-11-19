@@ -1,16 +1,16 @@
 ---
-title: "Chain Agent"
+title: "Sequential Agent"
 description: "Implementing sequential execution of Agents in Blades"
-
+reference: ["https://github.com/go-kratos/blades/blob/main/examples/workflow-sequential/main.go"]
 ---
-Chain Agent is an important component in the Blades framework for implementing sequential execution logic. It decomposes complex tasks into simpler, more manageable sub-tasks.
-![alt text](../../../../../assets/images/chain-workflow.png)
+Sequential Agent is an important component in the Blades framework for implementing sequential execution logic, which breaks down complex tasks into simpler, more manageable subtasks.
+![alt text](/images/blades/chain-workflow.png)
 ## Core Concepts
-The core function of the Chain Agent is **`NewSequentialAgent`**, used to build a sequential workflow. When initializing a chain workflow, it requires the input configuration **`SequentialConfig`**:
+The core function of the Sequential Agent is **`NewSequentialAgent`**, used to build a sequential workflow. When initializing a sequential workflow, it requires the configuration **`SequentialConfig`** as input:
 
-- **name**: The name of the Chain Agent
-- **description**: The description of the Chain Agent
-- **subAgents**: The list of sub-agents, representing the list of sequentially executed sub-tasks, executed in order
+- **name**: The name of the Sequential Agent
+- **description**: The description of the Sequential Agent
+- **subAgents**: The list of sub-agents, representing the list of subtasks to be executed sequentially, in order
 ```go
 type SequentialConfig struct {
 	Name        string
@@ -18,7 +18,7 @@ type SequentialConfig struct {
 	SubAgents   []blades.Agent
 }
 ```
-The way to build a Chain Agent is as follows:
+The way to build a Sequential Agent is as follows:
 ```go
 sequentialAgent := flow.NewSequentialAgent(
     flow.SequentialConfig{
@@ -34,7 +34,7 @@ sequentialAgent := flow.NewSequentialAgent(
 - When you want to trade latency for higher accuracy
 - When each step builds upon the output of the previous step
 ### Execution
-The **`blades.NewRunner`** method can directly receive `sequentialAgent` as an input parameter:
+The **`blades.NewRunner`** method can directly accept `sequentialAgent` as an input parameter:
 
 ```go
 input := blades.UserMessage("Please write a short paragraph about climate change.")
