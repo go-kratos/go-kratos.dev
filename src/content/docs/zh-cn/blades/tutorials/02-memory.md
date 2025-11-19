@@ -1,5 +1,5 @@
 ---
-title: "Memory"
+title: "记忆"
 description: "blades为Agent提供记忆能力"
 reference: ["https://github.com/go-kratos/blades/tree/main/examples/tools-memory","https://github.com/go-kratos/blades/tree/main/examples/state","https://github.com/go-kratos/blades/tree/main/examples/session"]
 ---
