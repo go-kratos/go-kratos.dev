@@ -3,6 +3,7 @@ import starlight from "@astrojs/starlight";
 import { defineConfig } from "astro/config";
 import starlightSidebarTopics from "starlight-sidebar-topics";
 import starlightBlog from "starlight-blog";
+import sitemap from "@astrojs/sitemap";
 
 import tailwindcss from "@tailwindcss/vite";
 
@@ -12,6 +13,7 @@ export default defineConfig({
   base: "/",
   output: "static",
   integrations: [
+    sitemap(),
     starlight({
       title: "Kratos",
       logo: {

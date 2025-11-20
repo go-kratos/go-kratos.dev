@@ -73,7 +73,7 @@
     fast-xml-parser "^5.2.0"
     kleur "^4.1.5"
 
-"@astrojs/sitemap@^3.3.0":
+"@astrojs/sitemap@^3.3.0", "@astrojs/sitemap@^3.6.0":
   version "3.6.0"
   resolved "https://registry.npmmirror.com/@astrojs/sitemap/-/sitemap-3.6.0.tgz"
   integrity sha512-4aHkvcOZBWJigRmMIAJwRQXBS+ayoP5z40OklTXYXhUDhwusz+DyDl+nSshY6y9DvkVEavwNcFO8FD81iGhXjg==
