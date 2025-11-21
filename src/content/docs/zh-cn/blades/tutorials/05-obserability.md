@@ -72,7 +72,7 @@ model := openai.NewModel("gpt-5", openai.Config{
 agent := blades.NewAgent(
     "Example Agent",
     blades.WithModel(model),
-    blades.WithInstructions("Answer briefly."),
+    blades.WithInstruction("Answer briefly."),
     blades.WithMiddleware(
         middleware.Tracing(
             middleware.WithSystem("openai"), // 可选标签，标识 backend

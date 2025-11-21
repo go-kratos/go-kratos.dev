@@ -56,7 +56,7 @@ func main() {
 		"Basic Agent",
 		blades.WithModel("gpt-5"),
 		blades.WithProvider(openai.NewChatProvider()),
-		blades.WithInstructions("You are a helpful assistant that provides detailed and accurate information."),
+		blades.WithInstruction("You are a helpful assistant that provides detailed and accurate information."),
 	)
 	input := blades.UserMessage("What is the capital of France?"),
     runner := blades.NewRunner(agent)

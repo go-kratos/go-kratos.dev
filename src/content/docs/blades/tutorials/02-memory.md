@@ -56,7 +56,7 @@ func main() {
 	agent, err := blades.NewAgent(
 		"History Tutor",
 		blades.WithModel(model),
-		blades.WithInstructions("You are a knowledgeable history tutor. Provide detailed and accurate information on historical events."),
+		blades.WithInstruction("You are a knowledgeable history tutor. Provide detailed and accurate information on historical events."),
 	)
 	if err != nil {
 		log.Fatal(err)
@@ -145,7 +145,7 @@ func main() {
 	agent, err := blades.NewAgent(
 		"MemoryRecallAgent",
 		blades.WithModel(model),
-		blades.WithInstructions("Answer the user's question. Use the 'Memory' tool if the answer might be in past conversations."),
+		blades.WithInstruction("Answer the user's question. Use the 'Memory' tool if the answer might be in past conversations."),
 		blades.WithTools(memoryTool),
 	)
 	if err != nil {

@@ -90,7 +90,7 @@ model := openai.NewModel("gpt-5", openai.Config{
 agent := blades.NewAgent(
     "Example Agent",
     blades.WithModel(model),
-    blades.WithInstructions("You are a helpful assistant."),
+    blades.WithInstruction("You are a helpful assistant."),
     blades.WithMiddleware(Logging()), // Use the logging middleware
 )
 // Create a prompt

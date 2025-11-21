@@ -43,7 +43,7 @@ model := openai.NewModel("gpt-5", openai.Config{
 agent, err := blades.NewAgent(
 	"Basic Agent",
 	blades.WithModel(model),
-	blades.WithInstructions("You are a helpful assistant that provides detailed and accurate information."),
+	blades.WithInstruction("You are a helpful assistant that provides detailed and accurate information."),
 )
 ```
 
@@ -55,7 +55,7 @@ model := openai.NewModel("gpt-5", openai.Config{
 agent, err := blades.NewAgent(
 	"Instructions Agent",
 	blades.WithModel(model),
-	blades.WithInstructions("Respond as a {{.style}}."),
+	blades.WithInstruction("Respond as a {{.style}}."),
 )
 if err != nil {
 	log.Fatal(err)

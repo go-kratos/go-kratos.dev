@@ -18,7 +18,7 @@ NewAgent 有两个参数，如下：
 2. **`options`(Options, 可选)**:用于配置Agent实例的选项。支持的配置选项包括：
     - **`WithModel(model ModelProvider)`**:设置模型提供者，如 OpenAI、Claude 和 Gemini 等。
     - **`WithTools(tools ...tools.Tool)`**: 为 Agent 添加可用的工具
-    - **`WithInstructions(instructions string)`**: 设置 Agent 的系统指令/角色设定
+    - **`WithInstruction(instructions string)`**: 设置 Agent 的系统指令/角色设定
     - **`WithInputSchema(schema *jsonschema.Schema)`**: 设置输入的格式
     - **`WithOutputSchema(schema *jsonschema.Schema)`**: 设置输出的格式
 
@@ -31,7 +31,7 @@ model := openai.NewModel("gpt-5", openai.Config{
 agent := blades.NewAgent(
     "Weather Agent",
     blades.WithModel(model),
-    blades.WithInstructions("You are a helpful assistant that provides weather information."),
+    blades.WithInstruction("You are a helpful assistant that provides weather information."),
     blades.WithTools(weatherTool),
 )
 // Run the agent

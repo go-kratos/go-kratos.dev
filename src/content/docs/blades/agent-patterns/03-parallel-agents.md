@@ -26,7 +26,7 @@ Here we use an example to illustrate how to use **parallel Agents** in **Blades*
 editorAgent1, err := blades.NewAgent(
     "editorAgent1",
     blades.WithModel(model),
-    blades.WithInstructions(`Edit the paragraph for grammar.
+    blades.WithInstruction(`Edit the paragraph for grammar.
         **Paragraph:**
         {{.draft}}
     `),
@@ -35,7 +35,7 @@ editorAgent1, err := blades.NewAgent(
 editorAgent2, err := blades.NewAgent(
     "editorAgent1",
     blades.WithModel(model),
-    blades.WithInstructions(`Edit the paragraph for style.
+    blades.WithInstruction(`Edit the paragraph for style.
         **Paragraph:**
         {{.draft}}
     `),
@@ -91,7 +91,7 @@ func main() {
 	editorAgent1, err := blades.NewAgent(
 		"editorAgent1",
 		blades.WithModel(model),
-		blades.WithInstructions(`Edit the paragraph for grammar.
+		blades.WithInstruction(`Edit the paragraph for grammar.
 			**Paragraph:**
 			{{.draft}}
 		`),
@@ -103,7 +103,7 @@ func main() {
 	editorAgent2, err := blades.NewAgent(
 		"editorAgent1",
 		blades.WithModel(model),
-		blades.WithInstructions(`Edit the paragraph for style.
+		blades.WithInstruction(`Edit the paragraph for style.
 			**Paragraph:**
 			{{.draft}}
 		`),

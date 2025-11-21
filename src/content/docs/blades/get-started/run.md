@@ -18,7 +18,7 @@ NewAgent has two parameters, as follows:
 2. **`options`(Options, optional)**: Options used to configure the Agent instance. Supported configuration options include:
     - **`WithModel(model ModelProvider)`**: Set the model provider, such as OpenAI, Claude, and Gemini.
     - **`WithTools(tools ...tools.Tool)`**: Add available tools for the Agent
-    - **`WithInstructions(instructions string)`**: Set the Agent's system instructions/role settings
+    - **`WithInstruction(instructions string)`**: Set the Agent's system instructions/role settings
     - **`WithInputSchema(schema *jsonschema.Schema)`**: Set the input format
     - **`WithOutputSchema(schema *jsonschema.Schema)`**: Set the output format
 
@@ -31,7 +31,7 @@ model := openai.NewModel("gpt-5", openai.Config{
 agent := blades.NewAgent(
     "Weather Agent",
     blades.WithModel(model),
-    blades.WithInstructions("You are a helpful assistant that provides weather information."),
+    blades.WithInstruction("You are a helpful assistant that provides weather information."),
     blades.WithTools(weatherTool),
 )
 // Run the agent
