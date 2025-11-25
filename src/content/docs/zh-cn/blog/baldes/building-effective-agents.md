@@ -48,48 +48,13 @@ Agent 的典型能力包括：
 
 示例代码：
 ```go
-func main() {
-	model := openai.NewModel(os.Getenv("OPENAI_MODEL"), openai.Config{
-		APIKey: os.Getenv("OPENAI_API_KEY"),
-	})
-	writerAgent, err := blades.NewAgent(
-		"WriterAgent",
-		blades.WithModel(model),
-		blades.WithInstruction("Draft a short paragraph on climate change."),
-		blades.WithOutputKey("draft"),
-	)
-	if err != nil {
-		log.Fatal(err)
-	}
-	reviewerAgent, err := blades.NewAgent(
-		"ReviewerAgent",
-		blades.WithModel(model),
-		blades.WithInstruction(`Review the draft and suggest improvements.
-			Draft: {{.draft}}`),
-	)
-	if err != nil {
-		log.Fatal(err)
-	}
-	sequentialAgent := flow.NewSequentialAgent(flow.SequentialConfig{
-		Name: "WritingReviewFlow",
-		SubAgents: []blades.Agent{
-			writerAgent,
-			reviewerAgent,
-		},
-	})
-	if err != nil {
-		log.Fatal(err)
-	}
-	input := blades.UserMessage("Please write a short paragraph about climate change.")
-	runner := blades.NewRunner(sequentialAgent)
-	stream := runner.RunStream(context.Background(), input)
-	for message, err := range stream {
-		if err != nil {
-			log.Fatal(err)
-		}
-		log.Println(message.Author, message.Text())
-	}
-}
+sequentialAgent := flow.NewSequentialAgent(flow.SequentialConfig{
+Name: "WritingReviewFlow",
+SubAgents: []blades.Agent{
+writerAgent,
+reviewerAgent,
+},
+})
 ```
 
 ## 模式 2：Parallelization Workflow（并行工作流）
@@ -105,94 +70,23 @@ func main() {
 
 示例代码：
 ```go
-func main() {
-	model := openai.NewModel(os.Getenv("OPENAI_MODEL"), openai.Config{
-		APIKey: os.Getenv("OPENAI_API_KEY"),
-	})
-	writerAgent, err := blades.NewAgent(
-		"writerAgent",
-		blades.WithModel(model),
-		blades.WithInstruction("Draft a short paragraph on climate change."),
-		blades.WithOutputKey("draft"),
-	)
-	if err != nil {
-		log.Fatal(err)
-	}
-	editorAgent1, err := blades.NewAgent(
-		"editorAgent1",
-		blades.WithModel(model),
-		blades.WithInstruction(`Edit the paragraph for grammar.
-			**Paragraph:**
-			{{.draft}}
-		`),
-		blades.WithOutputKey("grammar_edit"),
-	)
-	if err != nil {
-		log.Fatal(err)
-	}
-	editorAgent2, err := blades.NewAgent(
-		"editorAgent1",
-		blades.WithModel(model),
-		blades.WithInstruction(`Edit the paragraph for style.
-			**Paragraph:**
-			{{.draft}}
-		`),
-		blades.WithOutputKey("style_edit"),
-	)
-	if err != nil {
-		log.Fatal(err)
-	}
-	reviewerAgent, err := blades.NewAgent(
-		"finalReviewerAgent",
-		blades.WithModel(model),
-		blades.WithInstruction(`Consolidate the grammar and style edits into a final version.
-			**Draft:**
-			{{.draft}}
-
-			**Grammar Edit:**
-			{{.grammar_edit}}
-
-			**Style Edit:**
-			{{.style_edit}}
-		`),
-	)
-	if err != nil {
-		log.Fatal(err)
-	}
-	parallelAgent := flow.NewParallelAgent(flow.ParallelConfig{
-		Name:        "EditorParallelAgent",
-		Description: "Edits the drafted paragraph in parallel for grammar and style.",
-		SubAgents: []blades.Agent{
-			editorAgent1,
-			editorAgent2,
-		},
-	})
-	sequentialAgent := flow.NewSequentialAgent(flow.SequentialConfig{
-		Name:        "WritingSequenceAgent",
-		Description: "Drafts, edits, and reviews a paragraph about climate change.",
-		SubAgents: []blades.Agent{
-			writerAgent,
-			parallelAgent,
-			reviewerAgent,
-		},
-	})
-	session := blades.NewSession()
-	input := blades.UserMessage("Please write a short paragraph about climate change.")
-	// Run the sequential agent with streaming
-	ctx := context.Background()
-	runner := blades.NewRunner(sequentialAgent)
-	stream := runner.RunStream(ctx, input, blades.WithSession(session))
-	for message, err := range stream {
-		if err != nil {
-			log.Fatal(err)
-		}
-		// Only log completed messages
-		if message.Status != blades.StatusCompleted {
-			continue
-		}
-		log.Println(message.Author, message.Text())
-	}
-}
+parallelAgent := flow.NewParallelAgent(flow.ParallelConfig{
+    Name:        "EditorParallelAgent",
+    Description: "Edits the drafted paragraph in parallel for grammar and style.",
+    SubAgents: []blades.Agent{
+        editorAgent1,
+        editorAgent2,
+	},
+})
+sequentialAgent := flow.NewSequentialAgent(flow.SequentialConfig{
+    Name:        "WritingSequenceAgent",
+    Description: "Drafts, edits, and reviews a paragraph about climate change.",
+    SubAgents: []blades.Agent{
+        writerAgent,
+        parallelAgent,
+        reviewerAgent,
+    },
+})
 ```
 这种模式能显著提升吞吐量，但也要注意并行带来的资源消耗与复杂性。
 
@@ -208,48 +102,15 @@ func main() {
 
 示例代码：
 ```go
-func main() {
-	model := openai.NewModel(os.Getenv("OPENAI_MODEL"), openai.Config{
-		APIKey: os.Getenv("OPENAI_API_KEY"),
-	})
-	mathTutorAgent, err := blades.NewAgent(
-		"MathTutor",
-		blades.WithDescription("An agent that helps with math questions"),
-		blades.WithInstruction("You are a helpful math tutor. Answer questions related to mathematics."),
-		blades.WithModel(model),
-	)
-	if err != nil {
-		log.Fatal(err)
-	}
-	historyTutorAgent, err := blades.NewAgent(
-		"HistoryTutor",
-		blades.WithDescription("An agent that helps with history questions"),
-		blades.WithInstruction("You are a helpful history tutor. Answer questions related to history."),
-		blades.WithModel(model),
-	)
-	if err != nil {
-		log.Fatal(err)
-	}
-	agent, err := flow.NewHandoffAgent(flow.HandoffConfig{
-		Name:        "TriageAgent",
-		Description: "You determine which agent to use based on the user's homework question",
-		Model:       model,
-		SubAgents: []blades.Agent{
-			mathTutorAgent,
-			historyTutorAgent,
-		},
-	})
-	if err != nil {
-		log.Fatal(err)
-	}
-	input := blades.UserMessage("What is the capital of France?")
-	runner := blades.NewRunner(agent)
-	output, err := runner.Run(context.Background(), input)
-	if err != nil {
-		log.Fatal(err)
-	}
-	log.Println(output.Text())
-}
+agent, err := flow.NewHandoffAgent(flow.HandoffConfig{
+    Name:        "TriageAgent",
+    Description: "You determine which agent to use based on the user's homework question",
+    Model:       model,
+    SubAgents: []blades.Agent{
+        mathTutorAgent,
+        historyTutorAgent,
+	},
+})
 ```
 
 ## 模式 4：Orchestrator-Workers（编排-工作者模式）
@@ -265,47 +126,21 @@ func main() {
 
 示例代码：
 ```go
-func main() {
-	model := openai.NewModel(os.Getenv("OPENAI_MODEL"), openai.Config{
-		APIKey: os.Getenv("OPENAI_API_KEY"),
-	})
-	translatorWorkers := createTranslatorWorkers(model)
-	orchestratorAgent, err := blades.NewAgent(
-		"orchestrator_agent",
-		blades.WithInstruction(`You are a translation agent. You use the tools given to you to translate.
-        If asked for multiple translations, you call the relevant tools in order.
-        You never translate on your own, you always use the provided tools.`),
-		blades.WithModel(model),
-		blades.WithTools(translatorWorkers...),
-	)
-	if err != nil {
-		log.Fatal(err)
-	}
-	synthesizerAgent, err := blades.NewAgent(
-		"synthesizer_agent",
-		blades.WithInstruction("You inspect translations, correct them if needed, and produce a final concatenated response."),
-		blades.WithModel(model),
-	)
-	if err != nil {
-		log.Fatal(err)
-	}
-	ctx := context.Background()
-	input := blades.UserMessage("Please translate the following sentence to Spanish, French, and Italian: 'Hello, how are you?'")
-	orchestratorRunner := blades.NewRunner(orchestratorAgent)
-	stream := orchestratorRunner.RunStream(ctx, input)
-	var message *blades.Message
-	for message, err = range stream {
-		if err != nil {
-			log.Fatal(err)
-		}
-	}
-	synthesizerRunner := blades.NewRunner(synthesizerAgent)
-	output, err := synthesizerRunner.Run(ctx, blades.UserMessage(message.Text()))
-	if err != nil {
-		log.Fatal(err)
-	}
-	log.Println("Final Output:", output.Text())
-}
+translatorWorkers := createTranslatorWorkers(model)
+orchestratorAgent, err := blades.NewAgent(
+    "orchestrator_agent",
+    blades.WithInstruction(`You are a translation agent. You use the tools given to you to translate.
+    If asked for multiple translations, you call the relevant tools in order.
+    You never translate on your own, you always use the provided tools.`),
+    blades.WithModel(model),
+    blades.WithTools(translatorWorkers...), 
+)
+
+synthesizerAgent, err := blades.NewAgent(
+	"synthesizer_agent",
+    blades.WithInstruction("You inspect translations, correct them if needed, and produce a final concatenated response."),
+    blades.WithModel(model),
+)
 ```
 
 ## 模式 5：Evaluator-Optimizer（评估-优化模式）
@@ -320,78 +155,39 @@ func main() {
 
 示例代码：
 ```go
-package main
-
-import (
-  "context"
-  "fmt"
-  "log"
-  "os"
-  "strings"
-
-  "github.com/go-kratos/blades"
-  "github.com/go-kratos/blades/contrib/openai"
-  "github.com/go-kratos/blades/evaluate"
-)
-
-func buildPrompt(topic, content, feedback string) *blades.Message {
-  return blades.UserMessage(fmt.Sprintf(
-    "topic: %s\n**content**\n%s\n**feedback**\n%s",
-    topic,
-    content,
-    feedback,
-  ))
-}
-
-func main() {
-  model := openai.NewModel(os.Getenv("OPENAI_MODEL"), openai.Config{
-    APIKey: os.Getenv("OPENAI_API_KEY"),
-  })
-  generator, err := blades.NewAgent(
-    "story_outline_generator",
-    blades.WithModel(model),
-    blades.WithInstruction(`You generate a very short story outline based on the user's input.
+generator, err := blades.NewAgent(
+"story_outline_generator",
+blades.WithModel(model),
+blades.WithInstruction(`You generate a very short story outline based on the user's input.
 		If there is any feedback provided, use it to improve the outline.`),
-  )
-  if err != nil {
-    log.Fatal(err)
-  }
-  evaluator, err := evaluate.NewCriteria("story_evaluator",
-    blades.WithModel(model),
-    blades.WithInstruction(`You evaluate a story outline and decide if it's good enough.
-		If it's not good enough, you provide feedback on what needs to be improved.
-		You can give it a pass if the story outline is good enough - do not go for perfection`),
-  )
-  if err != nil {
-    log.Fatal(err)
-  }
-  ctx := context.Background()
-  topic := "Generate a story outline about a brave knight who saves a village from a dragon."
-  input := blades.UserMessage(topic)
-  runner := blades.NewRunner(generator)
-  var output *blades.Message
-  for i := 0; i < 3; i++ {
-    output, err = runner.Run(ctx, input)
-    if err != nil {
-      log.Fatal(err)
-    }
-    log.Println(output.Text())
-    evaluation, err := evaluator.Run(ctx, output)
-    if err != nil {
-      log.Fatal(err)
-    }
-    if evaluation.Pass {
-      break
-    }
-    if evaluation.Feedback != nil {
-      input = buildPrompt(
-        topic,
-        output.Text(),
-        strings.Join(evaluation.Feedback.Suggestions, "\n"),
-      )
-    }
-  }
-  log.Println("Final Output:", output.Text())
+)
+if err != nil {
+log.Fatal(err)
+}
+evaluator, err := evaluate.NewCriteria("story_evaluator",
+blades.WithModel(model),
+blades.WithInstruction(`You evaluate a story outline and decide if it's good enough.
+		  If it's not good enough, you provide feedback on what needs to be improved.
+		  You can give it a pass if the story outline is good enough - do not go for perfection`),
+)
+// ...
+
+for i := 0; i < 3; i++ {
+// ...
+evaluation, err := evaluator.Run(ctx, output)
+if err != nil {
+log.Fatal(err)
+}
+if evaluation.Pass {
+break
+}
+if evaluation.Feedback != nil {
+input = buildPrompt(
+topic,
+output.Text(),
+strings.Join(evaluation.Feedback.Suggestions, "\n"),
+)
+}
 }
 ```
 
