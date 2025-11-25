@@ -1,0 +1,402 @@
+## 什么是 Agent（智能体）？
+业界对 “Agent” 并没有一个统一、严格的定义。不同厂商、开源社区甚至论文体系中，对 Agent 的描述都略有差异。但整体来看，Agent 通常指 **能够长期自主运行、具备一定决策能力、并能根据任务需要调用多种外部工具的智能系统**。
+
+它可以表现为一个“懂目标、会判断、能执行”的程序，也可以是传统意义上**基于规则的固定流程机器人**。
+
+在 Blades 中，我们把这些不同形态统称为 **Agentic Systems（智能体系统）**。尽管它们都属于 Agent 范畴，但在实际架构设计时，需要特别区分两个核心概念：**工作流（Workflow）** 与 **智能体（Agent）**。
+
+### 工作流（Workflow）
+工作流更偏向传统软件的思想：它依赖 **预先定义好的执行步骤** 来组织 LLM 与工具的调用关系，一切的逻辑顺序都由开发者提前规划、写死在流程图或代码中。
+
+特点：
+- 执行路径是**固定的**、可预期的
+- 每一步的输入、输出、条件分支都由开发人员提前设定
+- 更适用于业务流程标准化、稳定、可拆分的任务
+- 易于控制边界、测试与审计
+
+一句话：**它是模型按照流程走，而不是流程根据模型变。**
+
+### Agent（智能体）
+Agent 的核心价值在于“自主性”和“适应性”。它不是按照流程图运行，而是让 LLM 作为“大脑”，根据任务目标与当前状态，**动态决定下一步做什么**。
+
+Agent 的典型能力包括：
+- 由 LLM **自主决定** 执行步骤，而不是依赖预设流程
+- 能够自主选择、组合或多轮调用外部工具
+- 在执行过程中具有对任务全局状态的“记忆”和“理解”
+- 根据实时反馈动态改变策略，而不是固定走分支
+- 某些情况下可以持续运行，类似“服务型 Agent”
+
+因此相比 Workflow，Agent 更接近一个**主动的执行者**，而不是被动的流程节点。
+
+一句话：**工作流是“流程在控制模型”，而 Agent 是“模型在控制流程”。**
+
+接下来，我们将结合 Blades 框架介绍常见的工作流模式。每种模式适用于不同的业务场景，从最简单的线性流程，到高度自治的智能体，你可以根据实际需求选择合适的实施方式。
+
+## 模式 1：Chain Workflow（串联工作流）
+
+该模式体现了“将复杂任务拆分为简单步骤”的原则。
+适用场景：
+- 任务本身具有明确的、顺序分明的步骤。
+- 想以牺牲少许延迟换取更高准确度。
+- 每个步骤都依赖前一个步骤的输出。
+  ![image](https://docimg10.docs.qq.com/image/AgAACC1_DIOPkQSnDLFDY7F_NPH4_me6.png?w=2346&h=822)
+  示例代码：
+```go
+func main() {
+	model := openai.NewModel(os.Getenv("OPENAI_MODEL"), openai.Config{
+		APIKey: os.Getenv("OPENAI_API_KEY"),
+	})
+	writerAgent, err := blades.NewAgent(
+		"WriterAgent",
+		blades.WithModel(model),
+		blades.WithInstruction("Draft a short paragraph on climate change."),
+		blades.WithOutputKey("draft"),
+	)
+	if err != nil {
+		log.Fatal(err)
+	}
+	reviewerAgent, err := blades.NewAgent(
+		"ReviewerAgent",
+		blades.WithModel(model),
+		blades.WithInstruction(`Review the draft and suggest improvements.
+			Draft: {{.draft}}`),
+	)
+	if err != nil {
+		log.Fatal(err)
+	}
+	sequentialAgent := flow.NewSequentialAgent(flow.SequentialConfig{
+		Name: "WritingReviewFlow",
+		SubAgents: []blades.Agent{
+			writerAgent,
+			reviewerAgent,
+		},
+	})
+	if err != nil {
+		log.Fatal(err)
+	}
+	input := blades.UserMessage("Please write a short paragraph about climate change.")
+	runner := blades.NewRunner(sequentialAgent)
+	stream := runner.RunStream(context.Background(), input)
+	for message, err := range stream {
+		if err != nil {
+			log.Fatal(err)
+		}
+		log.Println(message.Author, message.Text())
+	}
+}
+```
+
+## 模式 2：Parallelization Workflow（并行工作流）
+
+该模式用于让 LLM 同时处理多个子任务，然后将结果汇总。
+
+适用场景：
+- 需要处理大量“相似但独立”的项。
+- 任务需要多个不同视角。
+- 时间敏感、任务可并行化。
+  ![image](https://docimg10.docs.qq.com/image/AgAACC1_DIMZlC_syTxAv5HCXjw0n-nz.png?w=1780&h=1040)
+  示例代码：
+```go
+func main() {
+	model := openai.NewModel(os.Getenv("OPENAI_MODEL"), openai.Config{
+		APIKey: os.Getenv("OPENAI_API_KEY"),
+	})
+	writerAgent, err := blades.NewAgent(
+		"writerAgent",
+		blades.WithModel(model),
+		blades.WithInstruction("Draft a short paragraph on climate change."),
+		blades.WithOutputKey("draft"),
+	)
+	if err != nil {
+		log.Fatal(err)
+	}
+	editorAgent1, err := blades.NewAgent(
+		"editorAgent1",
+		blades.WithModel(model),
+		blades.WithInstruction(`Edit the paragraph for grammar.
+			**Paragraph:**
+			{{.draft}}
+		`),
+		blades.WithOutputKey("grammar_edit"),
+	)
+	if err != nil {
+		log.Fatal(err)
+	}
+	editorAgent2, err := blades.NewAgent(
+		"editorAgent1",
+		blades.WithModel(model),
+		blades.WithInstruction(`Edit the paragraph for style.
+			**Paragraph:**
+			{{.draft}}
+		`),
+		blades.WithOutputKey("style_edit"),
+	)
+	if err != nil {
+		log.Fatal(err)
+	}
+	reviewerAgent, err := blades.NewAgent(
+		"finalReviewerAgent",
+		blades.WithModel(model),
+		blades.WithInstruction(`Consolidate the grammar and style edits into a final version.
+			**Draft:**
+			{{.draft}}
+
+			**Grammar Edit:**
+			{{.grammar_edit}}
+
+			**Style Edit:**
+			{{.style_edit}}
+		`),
+	)
+	if err != nil {
+		log.Fatal(err)
+	}
+	parallelAgent := flow.NewParallelAgent(flow.ParallelConfig{
+		Name:        "EditorParallelAgent",
+		Description: "Edits the drafted paragraph in parallel for grammar and style.",
+		SubAgents: []blades.Agent{
+			editorAgent1,
+			editorAgent2,
+		},
+	})
+	sequentialAgent := flow.NewSequentialAgent(flow.SequentialConfig{
+		Name:        "WritingSequenceAgent",
+		Description: "Drafts, edits, and reviews a paragraph about climate change.",
+		SubAgents: []blades.Agent{
+			writerAgent,
+			parallelAgent,
+			reviewerAgent,
+		},
+	})
+	session := blades.NewSession()
+	input := blades.UserMessage("Please write a short paragraph about climate change.")
+	// Run the sequential agent with streaming
+	ctx := context.Background()
+	runner := blades.NewRunner(sequentialAgent)
+	stream := runner.RunStream(ctx, input, blades.WithSession(session))
+	for message, err := range stream {
+		if err != nil {
+			log.Fatal(err)
+		}
+		// Only log completed messages
+		if message.Status != blades.StatusCompleted {
+			continue
+		}
+		log.Println(message.Author, message.Text())
+	}
+}
+```
+这种模式能显著提升吞吐量，但也要注意并行带来的资源消耗与复杂性。
+
+### 模式 3：Routing Workflow（路由工作流）
+
+这个模式通过 LLM 智能判断输入类型，再将其分派给不同处理流程。
+适用场景：
+- 输入类别多、结构差异大。
+- 各类输入需不同专用处理流程。
+- 分类准确率较高。
+  ![image](https://docimg3.docs.qq.com/image/AgAACC1_DINBpkzeFwNK2oYK5-FV3z1L.png?w=1790&h=1040)
+  示例代码：
+```go
+func main() {
+	model := openai.NewModel(os.Getenv("OPENAI_MODEL"), openai.Config{
+		APIKey: os.Getenv("OPENAI_API_KEY"),
+	})
+	mathTutorAgent, err := blades.NewAgent(
+		"MathTutor",
+		blades.WithDescription("An agent that helps with math questions"),
+		blades.WithInstruction("You are a helpful math tutor. Answer questions related to mathematics."),
+		blades.WithModel(model),
+	)
+	if err != nil {
+		log.Fatal(err)
+	}
+	historyTutorAgent, err := blades.NewAgent(
+		"HistoryTutor",
+		blades.WithDescription("An agent that helps with history questions"),
+		blades.WithInstruction("You are a helpful history tutor. Answer questions related to history."),
+		blades.WithModel(model),
+	)
+	if err != nil {
+		log.Fatal(err)
+	}
+	agent, err := flow.NewHandoffAgent(flow.HandoffConfig{
+		Name:        "TriageAgent",
+		Description: "You determine which agent to use based on the user's homework question",
+		Model:       model,
+		SubAgents: []blades.Agent{
+			mathTutorAgent,
+			historyTutorAgent,
+		},
+	})
+	if err != nil {
+		log.Fatal(err)
+	}
+	input := blades.UserMessage("What is the capital of France?")
+	runner := blades.NewRunner(agent)
+	output, err := runner.Run(context.Background(), input)
+	if err != nil {
+		log.Fatal(err)
+	}
+	log.Println(output.Text())
+}
+```
+
+## 模式 4：Orchestrator-Workers（编排-工作者模式）
+
+这个模式结合了 “Agent” 倾向：一个中央 LLM 作任务分解（orchestrator），再由不同 “Worker” 执行子任务。
+
+适用场景：
+- 无法事先完全预测子任务。
+- 任务需要多种视角或处理方法。
+- 需要系统的适应性与复杂决策流程。
+  ![image](https://docimg5.docs.qq.com/image/AgAACC1_DINIZrp2y1VJVa1Di4ZvSbcq.png?w=2436&h=1040)
+  示例代码：
+```go
+func main() {
+	model := openai.NewModel(os.Getenv("OPENAI_MODEL"), openai.Config{
+		APIKey: os.Getenv("OPENAI_API_KEY"),
+	})
+	translatorWorkers := createTranslatorWorkers(model)
+	orchestratorAgent, err := blades.NewAgent(
+		"orchestrator_agent",
+		blades.WithInstruction(`You are a translation agent. You use the tools given to you to translate.
+        If asked for multiple translations, you call the relevant tools in order.
+        You never translate on your own, you always use the provided tools.`),
+		blades.WithModel(model),
+		blades.WithTools(translatorWorkers...),
+	)
+	if err != nil {
+		log.Fatal(err)
+	}
+	synthesizerAgent, err := blades.NewAgent(
+		"synthesizer_agent",
+		blades.WithInstruction("You inspect translations, correct them if needed, and produce a final concatenated response."),
+		blades.WithModel(model),
+	)
+	if err != nil {
+		log.Fatal(err)
+	}
+	ctx := context.Background()
+	input := blades.UserMessage("Please translate the following sentence to Spanish, French, and Italian: 'Hello, how are you?'")
+	orchestratorRunner := blades.NewRunner(orchestratorAgent)
+	stream := orchestratorRunner.RunStream(ctx, input)
+	var message *blades.Message
+	for message, err = range stream {
+		if err != nil {
+			log.Fatal(err)
+		}
+	}
+	synthesizerRunner := blades.NewRunner(synthesizerAgent)
+	output, err := synthesizerRunner.Run(ctx, blades.UserMessage(message.Text()))
+	if err != nil {
+		log.Fatal(err)
+	}
+	log.Println("Final Output:", output.Text())
+}
+```
+
+## 模式 5：Evaluator-Optimizer（评估-优化模式）
+
+该模式中，一个模型生成输出，另一个模型评估该输出并提供反馈，如同人类“先写后改”流程。
+适用场景：
+- 有明确可量化的评估标准。
+- 通过多轮“生成→评估→改进”能显著提升质量。
+- 任务适合反复迭代。
+  ![image](https://docimg8.docs.qq.com/image/AgAACC1_DIO4QBq9RlBKkbS9RM5WLTVP.png?w=2278&h=586)
+  示例代码：
+```go
+package main
+
+import (
+	"context"
+	"fmt"
+	"log"
+	"os"
+	"strings"
+
+	"github.com/go-kratos/blades"
+	"github.com/go-kratos/blades/contrib/openai"
+	"github.com/go-kratos/blades/evaluate"
+)
+
+func buildPrompt(topic, content, feedback string) *blades.Message {
+	return blades.UserMessage(fmt.Sprintf(
+		"topic: %s\n**content**\n%s\n**feedback**\n%s",
+		topic,
+		content,
+		feedback,
+	))
+}
+
+func main() {
+	model := openai.NewModel(os.Getenv("OPENAI_MODEL"), openai.Config{
+		APIKey: os.Getenv("OPENAI_API_KEY"),
+	})
+	generator, err := blades.NewAgent(
+		"story_outline_generator",
+		blades.WithModel(model),
+		blades.WithInstruction(`You generate a very short story outline based on the user's input.
+		If there is any feedback provided, use it to improve the outline.`),
+	)
+	if err != nil {
+		log.Fatal(err)
+	}
+	evaluator, err := evaluate.NewCriteria("story_evaluator",
+		blades.WithModel(model),
+		blades.WithInstruction(`You evaluate a story outline and decide if it's good enough.
+		If it's not good enough, you provide feedback on what needs to be improved.
+		You can give it a pass if the story outline is good enough - do not go for perfection`),
+	)
+	if err != nil {
+		log.Fatal(err)
+	}
+	ctx := context.Background()
+	topic := "Generate a story outline about a brave knight who saves a village from a dragon."
+	input := blades.UserMessage(topic)
+	runner := blades.NewRunner(generator)
+	var output *blades.Message
+	for i := 0; i < 3; i++ {
+		output, err = runner.Run(ctx, input)
+		if err != nil {
+			log.Fatal(err)
+		}
+		log.Println(output.Text())
+		evaluation, err := evaluator.Run(ctx, output)
+		if err != nil {
+			log.Fatal(err)
+		}
+		if evaluation.Pass {
+			break
+		}
+		if evaluation.Feedback != nil {
+			input = buildPrompt(
+				topic,
+				output.Text(),
+				strings.Join(evaluation.Feedback.Suggestions, "\n"),
+			)
+		}
+	}
+	log.Println("Final Output:", output.Text())
+}
+```
+
+## 最佳实践与建议
+
+在实际业务场景中，结合 `Agent Patterns` 的实现经验，需要考虑到几点：
+
+从简单做起
+- 先构建基础工作流，再考虑更复杂的代理结构。
+- 用最简单能满足需求的模式。
+
+设计可靠性
+- 明确错误处理机制。
+- 尽量使用类型安全响应。
+- 每一步加上验证。
+
+权衡取舍
+- 在延迟与准确率之间做平衡。
+- 是否并行要评估场景。
+
+## 参考
+https://github.com/go-kratos/blades/blob/main/examples
