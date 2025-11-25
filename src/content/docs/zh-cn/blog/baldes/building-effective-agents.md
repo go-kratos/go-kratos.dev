@@ -156,38 +156,21 @@ synthesizerAgent, err := blades.NewAgent(
 示例代码：
 ```go
 generator, err := blades.NewAgent(
-"story_outline_generator",
-blades.WithModel(model),
-blades.WithInstruction(`You generate a very short story outline based on the user's input.
-		If there is any feedback provided, use it to improve the outline.`),
+    "story_outline_generator",
+    blades.WithModel(model),
+    blades.WithInstruction(`You generate a very short story outline based on the user's input.
+	If there is any feedback provided, use it to improve the outline.`),
 )
-if err != nil {
-log.Fatal(err)
-}
 evaluator, err := evaluate.NewCriteria("story_evaluator",
-blades.WithModel(model),
-blades.WithInstruction(`You evaluate a story outline and decide if it's good enough.
-		  If it's not good enough, you provide feedback on what needs to be improved.
-		  You can give it a pass if the story outline is good enough - do not go for perfection`),
+    blades.WithModel(model),
+    blades.WithInstruction(`You evaluate a story outline and decide if it's good enough.
+	If it's not good enough, you provide feedback on what needs to be improved.
+	You can give it a pass if the story outline is good enough - do not go for perfection`),
 )
-// ...
 
 for i := 0; i < 3; i++ {
-// ...
-evaluation, err := evaluator.Run(ctx, output)
-if err != nil {
-log.Fatal(err)
-}
-if evaluation.Pass {
-break
-}
-if evaluation.Feedback != nil {
-input = buildPrompt(
-topic,
-output.Text(),
-strings.Join(evaluation.Feedback.Suggestions, "\n"),
-)
-}
+    // ...
+    evaluation, err := evaluator.Run(ctx, output)
 }
 ```
 
