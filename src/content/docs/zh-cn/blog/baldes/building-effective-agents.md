@@ -5,7 +5,7 @@
 
 在 Blades 中，我们把这些不同形态统称为 **Agentic Systems（智能体系统）**。尽管它们都属于 Agent 范畴，但在实际架构设计时，需要特别区分两个核心概念：**工作流（Workflow）** 与 **智能体（Agent）**。
 
-### 工作流（Workflow）
+#### 工作流（Workflow）
 工作流更偏向传统软件的思想：它依赖 **预先定义好的执行步骤** 来组织 LLM 与工具的调用关系，一切的逻辑顺序都由开发者提前规划、写死在流程图或代码中。
 
 特点：
@@ -39,8 +39,14 @@ Agent 的典型能力包括：
 - 任务本身具有明确的、顺序分明的步骤。
 - 想以牺牲少许延迟换取更高准确度。
 - 每个步骤都依赖前一个步骤的输出。
-  ![image](https://docimg10.docs.qq.com/image/AgAACC1_DIOPkQSnDLFDY7F_NPH4_me6.png?w=2346&h=822)
-  示例代码：
+
+
+
+![](https://files.mdnice.com/user/5439/1b957e73-69ca-4de7-878e-6a883505a850.png)
+
+
+
+示例代码：
 ```go
 func main() {
 	model := openai.NewModel(os.Getenv("OPENAI_MODEL"), openai.Config{
@@ -94,8 +100,10 @@ func main() {
 - 需要处理大量“相似但独立”的项。
 - 任务需要多个不同视角。
 - 时间敏感、任务可并行化。
-  ![image](https://docimg10.docs.qq.com/image/AgAACC1_DIMZlC_syTxAv5HCXjw0n-nz.png?w=1780&h=1040)
-  示例代码：
+
+![](https://files.mdnice.com/user/5439/c9ef3770-8256-4cb1-8809-ccf13fed630a.png)
+
+示例代码：
 ```go
 func main() {
 	model := openai.NewModel(os.Getenv("OPENAI_MODEL"), openai.Config{
@@ -195,8 +203,10 @@ func main() {
 - 输入类别多、结构差异大。
 - 各类输入需不同专用处理流程。
 - 分类准确率较高。
-  ![image](https://docimg3.docs.qq.com/image/AgAACC1_DINBpkzeFwNK2oYK5-FV3z1L.png?w=1790&h=1040)
-  示例代码：
+
+![](https://files.mdnice.com/user/5439/1674005b-a2fa-4485-b8ff-0dbb8e81dbe8.png)
+
+示例代码：
 ```go
 func main() {
 	model := openai.NewModel(os.Getenv("OPENAI_MODEL"), openai.Config{
@@ -250,8 +260,10 @@ func main() {
 - 无法事先完全预测子任务。
 - 任务需要多种视角或处理方法。
 - 需要系统的适应性与复杂决策流程。
-  ![image](https://docimg5.docs.qq.com/image/AgAACC1_DINIZrp2y1VJVa1Di4ZvSbcq.png?w=2436&h=1040)
-  示例代码：
+
+![](https://files.mdnice.com/user/5439/bbefa082-6ebb-4860-95e4-1fdb5097399a.png)
+
+示例代码：
 ```go
 func main() {
 	model := openai.NewModel(os.Getenv("OPENAI_MODEL"), openai.Config{
@@ -303,81 +315,83 @@ func main() {
 - 有明确可量化的评估标准。
 - 通过多轮“生成→评估→改进”能显著提升质量。
 - 任务适合反复迭代。
-  ![image](https://docimg8.docs.qq.com/image/AgAACC1_DIO4QBq9RlBKkbS9RM5WLTVP.png?w=2278&h=586)
-  示例代码：
+
+![](https://files.mdnice.com/user/5439/033d19fd-e6cb-421b-b2bf-597dee659d9c.png)
+
+示例代码：
 ```go
 package main
 
 import (
-	"context"
-	"fmt"
-	"log"
-	"os"
-	"strings"
+  "context"
+  "fmt"
+  "log"
+  "os"
+  "strings"
 
-	"github.com/go-kratos/blades"
-	"github.com/go-kratos/blades/contrib/openai"
-	"github.com/go-kratos/blades/evaluate"
+  "github.com/go-kratos/blades"
+  "github.com/go-kratos/blades/contrib/openai"
+  "github.com/go-kratos/blades/evaluate"
 )
 
 func buildPrompt(topic, content, feedback string) *blades.Message {
-	return blades.UserMessage(fmt.Sprintf(
-		"topic: %s\n**content**\n%s\n**feedback**\n%s",
-		topic,
-		content,
-		feedback,
-	))
+  return blades.UserMessage(fmt.Sprintf(
+    "topic: %s\n**content**\n%s\n**feedback**\n%s",
+    topic,
+    content,
+    feedback,
+  ))
 }
 
 func main() {
-	model := openai.NewModel(os.Getenv("OPENAI_MODEL"), openai.Config{
-		APIKey: os.Getenv("OPENAI_API_KEY"),
-	})
-	generator, err := blades.NewAgent(
-		"story_outline_generator",
-		blades.WithModel(model),
-		blades.WithInstruction(`You generate a very short story outline based on the user's input.
+  model := openai.NewModel(os.Getenv("OPENAI_MODEL"), openai.Config{
+    APIKey: os.Getenv("OPENAI_API_KEY"),
+  })
+  generator, err := blades.NewAgent(
+    "story_outline_generator",
+    blades.WithModel(model),
+    blades.WithInstruction(`You generate a very short story outline based on the user's input.
 		If there is any feedback provided, use it to improve the outline.`),
-	)
-	if err != nil {
-		log.Fatal(err)
-	}
-	evaluator, err := evaluate.NewCriteria("story_evaluator",
-		blades.WithModel(model),
-		blades.WithInstruction(`You evaluate a story outline and decide if it's good enough.
+  )
+  if err != nil {
+    log.Fatal(err)
+  }
+  evaluator, err := evaluate.NewCriteria("story_evaluator",
+    blades.WithModel(model),
+    blades.WithInstruction(`You evaluate a story outline and decide if it's good enough.
 		If it's not good enough, you provide feedback on what needs to be improved.
 		You can give it a pass if the story outline is good enough - do not go for perfection`),
-	)
-	if err != nil {
-		log.Fatal(err)
-	}
-	ctx := context.Background()
-	topic := "Generate a story outline about a brave knight who saves a village from a dragon."
-	input := blades.UserMessage(topic)
-	runner := blades.NewRunner(generator)
-	var output *blades.Message
-	for i := 0; i < 3; i++ {
-		output, err = runner.Run(ctx, input)
-		if err != nil {
-			log.Fatal(err)
-		}
-		log.Println(output.Text())
-		evaluation, err := evaluator.Run(ctx, output)
-		if err != nil {
-			log.Fatal(err)
-		}
-		if evaluation.Pass {
-			break
-		}
-		if evaluation.Feedback != nil {
-			input = buildPrompt(
-				topic,
-				output.Text(),
-				strings.Join(evaluation.Feedback.Suggestions, "\n"),
-			)
-		}
-	}
-	log.Println("Final Output:", output.Text())
+  )
+  if err != nil {
+    log.Fatal(err)
+  }
+  ctx := context.Background()
+  topic := "Generate a story outline about a brave knight who saves a village from a dragon."
+  input := blades.UserMessage(topic)
+  runner := blades.NewRunner(generator)
+  var output *blades.Message
+  for i := 0; i < 3; i++ {
+    output, err = runner.Run(ctx, input)
+    if err != nil {
+      log.Fatal(err)
+    }
+    log.Println(output.Text())
+    evaluation, err := evaluator.Run(ctx, output)
+    if err != nil {
+      log.Fatal(err)
+    }
+    if evaluation.Pass {
+      break
+    }
+    if evaluation.Feedback != nil {
+      input = buildPrompt(
+        topic,
+        output.Text(),
+        strings.Join(evaluation.Feedback.Suggestions, "\n"),
+      )
+    }
+  }
+  log.Println("Final Output:", output.Text())
 }
 ```
 
