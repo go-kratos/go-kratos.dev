@@ -1,5 +1,5 @@
 ---
-title: 构建高效智能体：Blades 框架下的 Workflow 与 Agent 实践
+title: 智能体开发新范式：Blades 架构下的高效 Agent & Workflow 实践
 description: 本文介绍了在 Blades 框架下，如何理解和构建智能体（Agent），并详细讲解了多种工作流设计模式，帮助开发者根据业务需求选择合适的架构方案。
 keywords:
   - AI
@@ -15,7 +15,7 @@ tags: [Blades, Agent]
 
 在 Blades 中，我们把这些不同形态统称为 **智能体系统（Agentic Systems）**。尽管它们都属于 Agent 范畴，但在实际架构设计时，需要特别区分两个核心概念：**工作流（Workflow）** 与 **智能体（Agent）**。
 
-#### 工作流（Workflow）
+### 工作流（Workflow）
 工作流更偏向传统软件的思想：它依赖 **预先定义好的执行步骤** 来组织 LLM 与工具的调用关系，一切的逻辑顺序都由开发者提前规划、写死在流程图或代码中。
 
 特点：
