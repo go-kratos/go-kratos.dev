@@ -2,10 +2,11 @@
 title: 构建高效智能体：Blades 框架下的 Workflow 与 Agent 实践
 description: 本文介绍了在 Blades 框架下，如何理解和构建智能体（Agent），并详细讲解了多种工作流设计模式，帮助开发者根据业务需求选择合适的架构方案。
 keywords:
-  - Blades
+  - AI
   - Agent
+  - Blades
   - Workflow
-tags: [Blades]
+tags: [Blades, Agent]
 ---
 ## 什么是 Agent（智能体）？
 业界对 **Agent** 并没有一个统一、严格的定义。不同厂商、开源社区甚至论文体系中，对 Agent 的描述都略有差异。但整体来看，Agent 通常指 **能够长期自主运行、具备一定决策能力、并能根据任务需要调用多种外部工具的智能系统**。
