@@ -1,5 +1,5 @@
 ---
-title: 构建高效智能体：Workflow 与 Agent 设计模式
+title: 构建高效智能体：Blades 框架下的 Workflow 与 Agent 实践
 description: 本文介绍了在 Blades 框架下，如何理解和构建智能体（Agent），并详细讲解了多种工作流设计模式，帮助开发者根据业务需求选择合适的架构方案。
 keywords:
   - Blades
