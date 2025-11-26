@@ -189,7 +189,7 @@ agent, err := flow.NewRoutingAgent(flow.RoutingConfig{
 
 示例代码（examples/workflow-orchestrator）：
 ```go
-// 通过工具调用（Agent as a Tool）
+// 通过工具定义翻译器（Agent as a Tool）
 translatorWorkers := createTranslatorWorkers(model)
 // 协调器进行选择需要的工具进行执行
 orchestratorAgent, err := blades.NewAgent(
@@ -238,7 +238,9 @@ loopAgent := flow.NewLoopAgent(flow.LoopConfig{
 
 ## 最佳实践与建议
 
-在实际业务场景中，结合 `Agent Patterns` 的实现经验，需要考虑到几点：
+在实际业务场景中，工程设计往往比模型能力更决定最终效果。
+
+以下实践建议总结了实际项目中最关键的原则，可作为设计与实现智能体时作为参考。
 
 从简单做起
 - 先构建基础工作流，再考虑更复杂的智能体。
