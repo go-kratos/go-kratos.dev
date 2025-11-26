@@ -73,7 +73,7 @@ func createWeatherTool() (tools.Tool, error) {
 }
 ```
 
-再构建一个可调用天气工具的智能助手：
+再构建一个可调用天气工具的智能助手（Weather Agent）：
 
 ```go
 // 配置所调用的模型和地址
