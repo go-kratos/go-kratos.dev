@@ -30,7 +30,60 @@ Agent 的典型能力包括：
 
 一句话：**工作流是“流程在控制模型”，而 Agent 是“模型在控制流程”。**
 
-接下来，我们将结合 Blades 框架介绍常见的工作流模式。每种模式适用于不同的业务场景，从最简单的线性流程，到高度自治的智能体，你可以根据实际需求选择合适的实施方式。
+### 如何使用 Blades 构建智能体
+
+在 **Blades** 中，可以通过 `blades.NewAgent` 创建智能体。Agent 是框架的核心，它负责：
+
+- 调用 LLM 模型
+- 管理工具（Tools）
+- 执行提示词（Prompts）
+- 控制整个任务的运行流程
+
+同时，Blades 提供了简单优雅的方式来自定义工具，可以使用 `tools.NewTool` 或者 `tools.NewFunc` 进行构建工具，让 Agent 能够访问外部 API、业务逻辑或计算能力。
+
+下面是一个自定义天气查询工具的示例：
+
+```go
+func weatherHandle(ctx context.Context, req WeatherReq) (WeatherRes, error) {
+    return WeatherRes{Forecast: "Sunny, 25°C"}, nil
+}
+func createWeatherTool() (tools.Tool, error) {
+    return tools.NewFunc(
+        "get_weather",
+        "Get the current weather for a given city",
+        weatherHandle,
+    )
+}
+```
+
+再构建一个可调用天气工具的智能助手：
+
+```go
+model := openai.NewModel(os.Getenv("OPENAI_MODEL"), openai.Config{
+    BaseURL: os.Getenv("OPENAI_BASE_URL"),
+    APIKey: os.Getenv("OPENAI_API_KEY"),
+})
+agent, err := blades.NewAgent(
+    "Weather Agent",
+    blades.WithModel(model),
+    blades.WithInstruction("You are a helpful assistant that provides weather information."),
+    blades.WithTools(createWeatherTool()),
+)
+if err != nil {
+    log.Fatal(err)
+}
+input := blades.UserMessage("What is the weather in Shanghai City?")
+runner := blades.NewRunner(agent)
+output, err := runner.Run(ctx := context.Background(), input)
+if err != nil {
+	log.Fatal(err)
+}
+log.Println(output.Text())
+```
+
+使用 Blades 的框架设计，你只需少量代码就能快速构建一个既能调用工具又能自主决策的智能体。
+
+接下来，我们将基于 Blades 框架介绍几种典型的工作流模式，每种设计模式适用于不同的业务场景，从最简单的线性流程，到高度自治的智能体，可以根据实际业务需求选择合适的设计方式。
 
 ## 模式 1：Chain Workflow（串联工作流）
 
@@ -46,14 +99,14 @@ Agent 的典型能力包括：
 
 
 
-示例代码：
+示例代码（examples/workflow-sequential）：
 ```go
 sequentialAgent := flow.NewSequentialAgent(flow.SequentialConfig{
-Name: "WritingReviewFlow",
-SubAgents: []blades.Agent{
-writerAgent,
-reviewerAgent,
-},
+    Name: "WritingReviewFlow",
+    SubAgents: []blades.Agent{
+        writerAgent,
+        reviewerAgent,
+    },
 })
 ```
 
@@ -68,7 +121,7 @@ reviewerAgent,
 
 ![](https://files.mdnice.com/user/5439/c9ef3770-8256-4cb1-8809-ccf13fed630a.png)
 
-示例代码：
+示例代码（examples/workflow-parallel）：
 ```go
 parallelAgent := flow.NewParallelAgent(flow.ParallelConfig{
     Name:        "EditorParallelAgent",
@@ -100,7 +153,7 @@ sequentialAgent := flow.NewSequentialAgent(flow.SequentialConfig{
 
 ![](https://files.mdnice.com/user/5439/1674005b-a2fa-4485-b8ff-0dbb8e81dbe8.png)
 
-示例代码：
+示例代码（examples/workflow-handoff）：
 ```go
 agent, err := flow.NewHandoffAgent(flow.HandoffConfig{
     Name:        "TriageAgent",
@@ -124,7 +177,7 @@ agent, err := flow.NewHandoffAgent(flow.HandoffConfig{
 
 ![](https://files.mdnice.com/user/5439/bbefa082-6ebb-4860-95e4-1fdb5097399a.png)
 
-示例代码：
+示例代码（examples/workflow-orchestrator）：
 ```go
 translatorWorkers := createTranslatorWorkers(model)
 orchestratorAgent, err := blades.NewAgent(
@@ -135,7 +188,6 @@ orchestratorAgent, err := blades.NewAgent(
     blades.WithModel(model),
     blades.WithTools(translatorWorkers...), 
 )
-
 synthesizerAgent, err := blades.NewAgent(
 	"synthesizer_agent",
     blades.WithInstruction("You inspect translations, correct them if needed, and produce a final concatenated response."),
@@ -153,25 +205,20 @@ synthesizerAgent, err := blades.NewAgent(
 
 ![](https://files.mdnice.com/user/5439/033d19fd-e6cb-421b-b2bf-597dee659d9c.png)
 
-示例代码：
+示例代码（examples/workflow-loop）：
 ```go
-generator, err := blades.NewAgent(
-    "story_outline_generator",
-    blades.WithModel(model),
-    blades.WithInstruction(`You generate a very short story outline based on the user's input.
-	If there is any feedback provided, use it to improve the outline.`),
-)
-evaluator, err := evaluate.NewCriteria("story_evaluator",
-    blades.WithModel(model),
-    blades.WithInstruction(`You evaluate a story outline and decide if it's good enough.
-	If it's not good enough, you provide feedback on what needs to be improved.
-	You can give it a pass if the story outline is good enough - do not go for perfection`),
-)
-
-for i := 0; i < 3; i++ {
-    // ...
-    evaluation, err := evaluator.Run(ctx, output)
-}
+loopAgent := flow.NewLoopAgent(flow.LoopConfig{
+    Name:          "WritingReviewFlow",
+    Description:   "An agent that loops between writing and reviewing until the draft is good.",
+    MaxIterations: 3,
+    Condition: func(ctx context.Context, output *blades.Message) (bool, error) {
+        return !strings.Contains(output.Text(), "The draft is good"), nil
+    },
+    SubAgents: []blades.Agent{
+        writerAgent,
+        reviewerAgent,
+    },
+})
 ```
 
 ## 最佳实践与建议
