@@ -45,7 +45,7 @@ Agent 的典型能力包括：
 Blades 基于 Go 语言的简洁语法和高并发特性，提供了灵活、可扩展的 Agent 架构。其设计理念是通过统一的接口和可插拔式组件，让开发者能够在保持高性能的同时，轻松扩展 Agent 的能力。
 整体架构如下：
 
-![architecture](https://go-kratos.dev/images/architecture.png)
+![architecture](/images/architecture.png)
 
 在 **Blades** 中，可以通过 `blades.NewAgent` 创建一个智能体（Agent）。Agent 是整个框架的核心组件，主要负责：
 
@@ -116,7 +116,7 @@ log.Println(output.Text())
 
 
 
-![](https://files.mdnice.com/user/5439/1b957e73-69ca-4de7-878e-6a883505a850.png)
+![](/images/blades/chain-workflow.png)
 
 
 
@@ -141,7 +141,7 @@ sequentialAgent := flow.NewSequentialAgent(flow.SequentialConfig{
 - 任务需要多个不同视角。
 - 时间敏感、任务可并行化。
 
-![](https://files.mdnice.com/user/5439/c9ef3770-8256-4cb1-8809-ccf13fed630a.png)
+![](/images/blades/parallel-workflow.png)
 
 示例代码（examples/workflow-parallel）：
 ```go
@@ -175,7 +175,7 @@ sequentialAgent := flow.NewSequentialAgent(flow.SequentialConfig{
 - 各类输入需不同专用处理流程。
 - 分类准确率较高。
 
-![](https://files.mdnice.com/user/5439/1674005b-a2fa-4485-b8ff-0dbb8e81dbe8.png)
+![](/images/blades/routing-workflow.png)
 
 示例代码（examples/workflow-routing）：
 ```go
@@ -200,7 +200,7 @@ agent, err := flow.NewRoutingAgent(flow.RoutingConfig{
 - 任务需要多种视角或处理方法。
 - 需要系统的适应性与复杂决策流程。
 
-![](https://files.mdnice.com/user/5439/bbefa082-6ebb-4860-95e4-1fdb5097399a.png)
+![](/images/blades/orchestrator-workers.png)
 
 示例代码（examples/workflow-orchestrator）：
 ```go
@@ -231,7 +231,7 @@ synthesizerAgent, err := blades.NewAgent(
 - 通过多轮“生成→评估→改进”能显著提升质量。
 - 任务适合反复迭代。
 
-![](https://files.mdnice.com/user/5439/033d19fd-e6cb-421b-b2bf-597dee659d9c.png)
+![](/images/blades/evaluator-optimizer.png)
 
 示例代码（examples/workflow-loop）：
 ```go
