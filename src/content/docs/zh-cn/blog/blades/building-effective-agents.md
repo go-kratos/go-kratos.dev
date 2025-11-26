@@ -42,7 +42,12 @@ Agent 的典型能力包括：
 
 ### 如何使用 Blades 构建智能体
 
-在 **Blades** 中，可以通过 `blades.NewAgent` 创建智能体。Agent 是框架的核心，它负责：
+Blades 基于 Go 语言的简洁语法和高并发特性，提供了灵活、可扩展的 Agent 架构。其设计理念是通过统一的接口和可插拔式组件，让开发者能够在保持高性能的同时，轻松扩展 Agent 的能力。
+整体架构如下：
+
+![architecture](/images/architecture.png)
+
+在 **Blades** 中，可以通过 `blades.NewAgent` 创建一个智能体（Agent）。Agent 是整个框架的核心组件，主要负责：
 
 - 调用 LLM 模型
 - 管理工具（Tools）
