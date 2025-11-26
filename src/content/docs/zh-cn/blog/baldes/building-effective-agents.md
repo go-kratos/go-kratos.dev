@@ -44,9 +44,11 @@ Agent 的典型能力包括：
 下面是一个自定义天气查询工具的示例：
 
 ```go
+// 定义天气处理逻辑
 func weatherHandle(ctx context.Context, req WeatherReq) (WeatherRes, error) {
     return WeatherRes{Forecast: "Sunny, 25°C"}, nil
 }
+// 创建一个天气工具
 func createWeatherTool() (tools.Tool, error) {
     return tools.NewFunc(
         "get_weather",
@@ -59,10 +61,12 @@ func createWeatherTool() (tools.Tool, error) {
 再构建一个可调用天气工具的智能助手：
 
 ```go
-model := openai.NewModel(os.Getenv("OPENAI_MODEL"), openai.Config{
-    BaseURL: os.Getenv("OPENAI_BASE_URL"),
-    APIKey: os.Getenv("OPENAI_API_KEY"),
+// 配置所调用的模型和地址
+model := openai.NewModel("deepseek-chat", openai.Config{
+    BaseURL: "https://api.deepseek.com",
+    APIKey: os.Getenv("YOUR_API_KEY"),
 })
+// 创建一个天气智能助手
 agent, err := blades.NewAgent(
     "Weather Agent",
     blades.WithModel(model),
@@ -72,6 +76,7 @@ agent, err := blades.NewAgent(
 if err != nil {
     log.Fatal(err)
 }
+// 实现查询上海的天气信息
 input := blades.UserMessage("What is the weather in Shanghai City?")
 runner := blades.NewRunner(agent)
 output, err := runner.Run(ctx := context.Background(), input)
@@ -89,6 +94,7 @@ log.Println(output.Text())
 
 该模式体现了“将复杂任务拆分为简单步骤”的原则。
 适用场景：
+
 - 任务本身具有明确的、顺序分明的步骤。
 - 想以牺牲少许延迟换取更高准确度。
 - 每个步骤都依赖前一个步骤的输出。
@@ -101,6 +107,7 @@ log.Println(output.Text())
 
 示例代码（examples/workflow-sequential）：
 ```go
+// 串行工作流，进行按编排顺序执行智能体
 sequentialAgent := flow.NewSequentialAgent(flow.SequentialConfig{
     Name: "WritingReviewFlow",
     SubAgents: []blades.Agent{
@@ -123,6 +130,7 @@ sequentialAgent := flow.NewSequentialAgent(flow.SequentialConfig{
 
 示例代码（examples/workflow-parallel）：
 ```go
+// 并行工作流，通过把生成的结果存到 session state 中，后续流程进行引用
 parallelAgent := flow.NewParallelAgent(flow.ParallelConfig{
     Name:        "EditorParallelAgent",
     Description: "Edits the drafted paragraph in parallel for grammar and style.",
@@ -131,6 +139,7 @@ parallelAgent := flow.NewParallelAgent(flow.ParallelConfig{
         editorAgent2,
 	},
 })
+// 定义串行工作流，实现同时与并行定义
 sequentialAgent := flow.NewSequentialAgent(flow.SequentialConfig{
     Name:        "WritingSequenceAgent",
     Description: "Drafts, edits, and reviews a paragraph about climate change.",
@@ -155,6 +164,7 @@ sequentialAgent := flow.NewSequentialAgent(flow.SequentialConfig{
 
 示例代码（examples/workflow-routing）：
 ```go
+// 通过 Agent 中的 description 进行自动选择合适的专家智能体
 agent, err := flow.NewRoutingAgent(flow.RoutingConfig{
     Name:        "TriageAgent",
     Description: "You determine which agent to use based on the user's homework question",
@@ -179,7 +189,9 @@ agent, err := flow.NewRoutingAgent(flow.RoutingConfig{
 
 示例代码（examples/workflow-orchestrator）：
 ```go
+// 通过工具调用（Agent as a Tool）
 translatorWorkers := createTranslatorWorkers(model)
+// 协调器进行选择需要的工具进行执行
 orchestratorAgent, err := blades.NewAgent(
     "orchestrator_agent",
     blades.WithInstruction(`You are a translation agent. You use the tools given to you to translate.
@@ -188,6 +200,7 @@ orchestratorAgent, err := blades.NewAgent(
     blades.WithModel(model),
     blades.WithTools(translatorWorkers...), 
 )
+// 进行合成生成的多个结果
 synthesizerAgent, err := blades.NewAgent(
 	"synthesizer_agent",
     blades.WithInstruction("You inspect translations, correct them if needed, and produce a final concatenated response."),
@@ -207,11 +220,13 @@ synthesizerAgent, err := blades.NewAgent(
 
 示例代码（examples/workflow-loop）：
 ```go
+// 通过生成内容，再进行评估效果，反复实现多次迭代
 loopAgent := flow.NewLoopAgent(flow.LoopConfig{
     Name:          "WritingReviewFlow",
     Description:   "An agent that loops between writing and reviewing until the draft is good.",
     MaxIterations: 3,
     Condition: func(ctx context.Context, output *blades.Message) (bool, error) {
+        // 评估内容效果判断是否结束迭代
         return !strings.Contains(output.Text(), "The draft is good"), nil
     },
     SubAgents: []blades.Agent{
@@ -226,7 +241,7 @@ loopAgent := flow.NewLoopAgent(flow.LoopConfig{
 在实际业务场景中，结合 `Agent Patterns` 的实现经验，需要考虑到几点：
 
 从简单做起
-- 先构建基础工作流，再考虑更复杂的代理结构。
+- 先构建基础工作流，再考虑更复杂的智能体。
 - 用最简单能满足需求的模式。
 
 设计可靠性
