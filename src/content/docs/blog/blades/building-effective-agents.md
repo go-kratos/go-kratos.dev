@@ -7,6 +7,7 @@ keywords:
   - Blades
   - Workflow
 tags: [Blades, Agent]
+date: 2025-11-26
 ---
 ## What is an Agent?
 There is no unified, strict definition of **Agent** in the industry. Descriptions of Agents vary slightly among different vendors, open-source communities, and even academic papers. However, overall, an Agent typically refers to **an intelligent system capable of long-term autonomous operation, possessing certain decision-making abilities, and able to call various external tools as needed by the task**.
