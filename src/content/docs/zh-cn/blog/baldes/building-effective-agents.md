@@ -153,9 +153,9 @@ sequentialAgent := flow.NewSequentialAgent(flow.SequentialConfig{
 
 ![](https://files.mdnice.com/user/5439/1674005b-a2fa-4485-b8ff-0dbb8e81dbe8.png)
 
-示例代码（examples/workflow-handoff）：
+示例代码（examples/workflow-routing）：
 ```go
-agent, err := flow.NewHandoffAgent(flow.HandoffConfig{
+agent, err := flow.NewRoutingAgent(flow.RoutingConfig{
     Name:        "TriageAgent",
     Description: "You determine which agent to use based on the user's homework question",
     Model:       model,
