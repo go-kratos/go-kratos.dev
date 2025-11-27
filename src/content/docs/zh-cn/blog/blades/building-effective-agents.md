@@ -95,7 +95,7 @@ if err != nil {
 // 实现查询上海的天气信息
 input := blades.UserMessage("What is the weather in Shanghai City?")
 runner := blades.NewRunner(agent)
-output, err := runner.Run(ctx := context.Background(), input)
+output, err := runner.Run(context.Background(), input)
 if err != nil {
 	log.Fatal(err)
 }
