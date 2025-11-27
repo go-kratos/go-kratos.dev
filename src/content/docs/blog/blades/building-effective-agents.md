@@ -1,5 +1,5 @@
 ---
-title: "Efficient Agent & Workflow Practices under the Blades Architecture"
+title: "Building Go Agents on the Blades Architecture"
 description: "This article introduces how to understand and build Agents within the Blades framework, and explains various workflow design patterns in detail, helping developers choose the appropriate architectural solution based on business needs."
 keywords:
   - AI
