@@ -28,12 +28,15 @@ Example usage of this method:
 model := openai.NewModel("gpt-5", openai.Config{
 	APIKey: os.Getenv("OPENAI_API_KEY"),
 })
-agent := blades.NewAgent(
+agent, err := blades.NewAgent(
     "Weather Agent",
     blades.WithModel(model),
     blades.WithInstruction("You are a helpful assistant that provides weather information."),
     blades.WithTools(weatherTool),
 )
+if err != nil {
+    log.Fatal(err)
+}
 // Run the agent
 input := blades.UserMessage("what is the weather like in Shanghai today?")
 runner := blades.NewRunner(agent)
