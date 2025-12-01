@@ -1,14 +1,20 @@
 ---
 title: "Observability"
 description: "Explains the integration of OpenTelemetry middleware in Blades"
-reference: ["https://github.com/go-kratos/blades/blob/main/examples/middleware-otel/main.go"]
+reference:
+  [
+    "https://github.com/go-kratos/blades/blob/main/examples/middleware-otel/main.go",
+  ]
 ---
+
 Blades provides powerful observability capabilities for AI Agent applications, including Tracing (distributed tracing) and performance visualization. By integrating OpenTelemetry, you can easily obtain call chains, time consumption statistics, and insights into system behavior.
 This article is based on the example code:
 🔗 https://github.com/go-kratos/blades/blob/main/examples/middleware-otel/main.go
 
 ## Environment Preparation
+
 Ensure you have installed Go 1.20+ and introduced dependencies in your project:
+
 ```bash
 go get github.com/go-kratos/blades
 go get github.com/go-kratos/blades/contrib/otel
@@ -16,10 +22,13 @@ go get go.opentelemetry.io/otel
 go get go.opentelemetry.io/otel/sdk/trace
 go get go.opentelemetry.io/otel/exporters/stdout/stdouttrace
 ```
+
 If you want to connect to OpenTelemetry Collector, Jaeger, or Zipkin, simply replace the Exporter.
 
 ## Initialize Tracer Provider
+
 The following shows how to initialize an OpenTelemetry TracerProvider for recording and exporting trace data:
+
 ```go
 // Create and initialize OpenTelemetry TracerProvider
 func createTracerProvider() func(context.Context) error {
@@ -50,7 +59,9 @@ func createTracerProvider() func(context.Context) error {
     return tp.Shutdown
 }
 ```
+
 Function Analysis
+
 - stdouttrace.New()
   Used to output trace data in a readable format to the console for development and debugging.
 - resource.New()
@@ -61,15 +72,17 @@ Function Analysis
   Registers the TracerProvider globally, enabling middleware and the framework to automatically generate spans.
 
 ## Using Tracing Middleware in Agent
+
 Blades provides a unified middleware mechanism that automatically generates trace spans before and after Agent calls.
 
 Example:
+
 ```go
 // Configure OpenAI API key and base URL using environment variables:
 model := openai.NewModel("gpt-5", openai.Config{
 	APIKey: os.Getenv("OPENAI_API_KEY"),
 })
-agent := blades.NewAgent(
+agent, err := blades.NewAgent(
     "Example Agent",
     blades.WithModel(model),
     blades.WithInstruction("Answer briefly."),
@@ -79,10 +92,15 @@ agent := blades.NewAgent(
         ),
     ),
 )
+if err != nil {
+    log.Fatal(err)
+}
 ```
 
 ## Example Main Program
+
 Complete runnable example code:
+
 ```go
 package main
 
@@ -148,13 +166,16 @@ func main() {
 ```
 
 ## Summary
+
 Through the examples in this article, you can:
+
 - Initialize OpenTelemetry TracerProvider
 - Use stdouttrace exporter to debug Trace
 - Enable Tracing middleware in Agent
 - Automatically trace each AI call without invasive code
 
 You can extend this to:
+
 - Jaeger / Zipkin / OTLP Collector
 - HTTP / gRPC service link tracing
 - Custom Span labels and events

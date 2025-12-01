@@ -95,11 +95,14 @@ func main() {
     model := openai.NewModel("gpt-5", openai.Config{
 		APIKey: os.Getenv("OPENAI_API_KEY"),
 	})
-    agent := blades.NewAgent(
+    agent, err := blades.NewAgent(
         "Blades Agent",
         blades.WithModel(model),
         blades.WithInstruction("You are a helpful assistant that provides detailed and accurate information."),
     )
+    if err != nil {
+        log.Fatal(err)
+    }
     // Create a Prompt with user message
     input := blades.UserMessage("What is the capital of France?")
     // Run the Agent with the Prompt
