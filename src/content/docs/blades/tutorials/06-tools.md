@@ -1,6 +1,6 @@
 ---
 title: "Tools"
-description: "Usage methods for tool operations in blades"
+description: "Usage of tool operations in blades"
 references: ["https://github.com/go-kratos/blades/tree/main/examples/tools-func"]
 ---
 Blades provides convenient support for custom tools, allowing you to create your own functional tools.
@@ -10,14 +10,14 @@ Blades provides convenient support for custom tools, allowing you to create your
 Before running this code, please ensure you have correctly configured the relevant environment variables.
 :::
 
-### Defining Tools
+### Defining a Tool
 `tools.NewFunc(...)` is the core method for creating a function-based tool, which includes the following parameters:
 
-**name**: The name of the tool, used to identify the tool.
+**name**: The name of the tool, used to identify it.
 
-**description**: The description of the tool, used to inform the user about the tool's functionality.
+**description**: The description of the tool, used to inform users about its functionality.
 
-**handler**: The handler function of the tool, used to process the tool's request and return the result. When defining the handler, a wrapper is required to convert an ordinary Go function into a tool handler function that **blades** can recognize.
+**handler**: The handler function of the tool, used to process tool requests and return results. When defining the handler, a wrapper is required to convert an ordinary Go function into a tool handler function that **blades** can recognize.
 
 ```go
 // WeatherReq represents a request for weather information.
@@ -57,16 +57,16 @@ if err != nil {
 ```go
 input := blades.UserMessage("What is the weather in New York City?")
 	session := blades.NewSession()
-	runner := blades.NewRunner(agent, blades.WithSession(session))
+	runner := blades.NewRunner(agent)
 	ctx := context.Background()
-	output, err := runner.Run(ctx, input)
+	output, err := runner.Run(ctx, input, blades.WithSession(session))
 	if err != nil {
 		log.Fatal(err)
 	}
 	log.Println("state:", session.State())
 	log.Println("output:", output.Text())
 ```
-After successfully running the code, you will see output similar to the following:
+Upon successfully running the code, you will see output similar to the following:
 ```bash
 2025/11/14 11:01:18 stream status: completed output: The weather in San Francisco is currently sunny with a temperature of 25°C.
 ```

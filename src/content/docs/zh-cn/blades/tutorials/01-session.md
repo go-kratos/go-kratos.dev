@@ -11,14 +11,6 @@ Agent常常需要在单次对话中获取对话历史，来确保已经说过和
 
 - **State**：存储当前对话中的数据（例如：对话中的pdf文档等）。
 
-下面用一个生动形象的比喻可以说明三者的关系：
-
-现在你是一名侦探，正在调查一个“失踪的砖石”案件，Agent就是你的小助手。
-
-**State** 就是你随身携带的便签纸，用来临时记录当前调查中的重要线索，在侦查过程中，你的小助手查看了“砖石最后的监控录像”，则你的便签纸就记下了信息：`session.PutState("last_seen_location", "图书馆")` 。
-
-**Session** 则为整个案件的卷宗，在破案过程中使用 `session := blades.NewSession()` 拿出一份新卷宗，写上“钻石失窃案”，并使用 `runner := blades.NewRunner(agent, blades.WithSession(session))` 告诉小助手：我们接下来的讨论和发现都记录在这个卷宗内。
-
 ## State
 **`State`** 实质为存储键值数据对 **`map[string]any`** ,在Blades中可以使用session的 **PutState** 方法存储。
 ```go
@@ -61,8 +53,8 @@ func main() {
 	// Create a new session
 	session := blades.NewSession()
 	// Run the agent
-	runner := blades.NewRunner(agent, blades.WithSession(session))
-	output, err := runner.Run(context.Background(), input)
+	runner := blades.NewRunner(agent)
+	output, err := runner.Run(context.Background(), input, blades.WithSession(session))
 	if err != nil {
 		log.Fatal(err)
 	}

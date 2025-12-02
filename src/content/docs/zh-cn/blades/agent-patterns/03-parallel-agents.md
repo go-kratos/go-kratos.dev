@@ -57,8 +57,8 @@ parallelAgent := flow.NewParallelAgent(flow.ParallelConfig{
 ```go
 session := blades.NewSession()
 input := blades.UserMessage("Please write a short paragraph about climate change.")
-runner := blades.NewRunner(parallelAgent, blades.WithSession(session))
-stream := runner.RunStream(context.Background(), input)
+runner := blades.NewRunner(parallelAgent)
+stream := runner.RunStream(context.Background(), input, blades.WithSession(session))
 for message, err := range stream {
     if err != nil {
         log.Fatal(err)
@@ -122,8 +122,8 @@ func main() {
 	})
 	session := blades.NewSession()
 	input := blades.UserMessage("Please write a short paragraph about climate change.")
-	runner := blades.NewRunner(parallelAgent, blades.WithSession(session))
-	stream := runner.RunStream(context.Background(), input)
+	runner := blades.NewRunner(parallelAgent)
+	stream := runner.RunStream(context.Background(), input, blades.WithSession(session))
 	for message, err := range stream {
 		if err != nil {
 			log.Fatal(err)

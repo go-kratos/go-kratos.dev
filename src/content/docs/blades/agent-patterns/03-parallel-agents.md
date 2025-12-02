@@ -3,10 +3,10 @@ title: "Parallel Agent"
 description: "Implementing parallel execution of Agents in Blades"
 reference: ["https://github.com/go-kratos/blades/blob/main/examples/workflow-parallel/main.go"]
 ---
-During `workflow` execution, to reduce waiting time, it is often necessary to execute Agents in parallel. The Blades framework provides the **`NewParallelAgent`** method to construct parallel Agents.
+During the execution of a `workflow`, it is often necessary to run Agents in parallel to reduce waiting time. The Blades framework provides the **`NewParallelAgent`** method to construct a parallel Agent.
 ![parallel-agent](/images/blades/parallel-workflow.png)
 ## Core Concepts
-Using **`NewParallelAgent`** requires passing a parameter of type **`ParallelConfig`**, which has the following structure:
+Using **`NewParallelAgent`** requires passing a parameter of type **`ParallelConfig`**, whose structure is as follows:
 ```go
 type ParallelConfig struct {
 	Name        string
@@ -14,13 +14,13 @@ type ParallelConfig struct {
 	SubAgents   []blades.Agent
 }
 ```
-- name: The name of the parallel Agent, used for identification and distinction
-- description: The description of the parallel Agent, used to explain its function and purpose
-- subAgents: The list of sub-Agents contained within the parallel Agent, which will be executed in parallel
+- name: The name of the parallel Agent, used for identification and distinction.
+- description: A description of the parallel Agent, explaining its function and purpose.
+- subAgents: A list of sub-Agents contained within the parallel Agent; these sub-Agents will be executed in parallel.
 ## Execution Flow
-**Parallel Agent** uses **`NewParallelAgent`** to instantiate a parallel Agent instance. When running the **parallel Agent**, it will directly loop through and run all Agents in `SubAgents`, using a concurrency-safe but fixed-buffer message queue to collect the streaming output from all Agents, and finally use `yield` to return the results.
+A **Parallel Agent** is instantiated using **`NewParallelAgent`**. When running the **Parallel Agent**, it directly iterates through and runs all Agents within `SubAgents`, collecting the streaming output from all Agents using a concurrency-safe but fixed-buffer message queue, and finally returns the result using `yield`.
 
-Here we use an example to illustrate how to use **parallel Agents** in **Blades**.
+Here, we use an example to illustrate how to use a **Parallel Agent** in **Blades**.
 ### 1. Create SubAgents
 ```go
 editorAgent1, err := blades.NewAgent(
@@ -42,7 +42,7 @@ editorAgent2, err := blades.NewAgent(
     blades.WithOutputKey("style_edit"),
 )
 ```
-### 2. Create Parallel Agent
+### 2. Create a Parallel Agent
 ```go
 parallelAgent := flow.NewParallelAgent(flow.ParallelConfig{
     Name:        "EditorParallelAgent",
@@ -53,12 +53,12 @@ parallelAgent := flow.NewParallelAgent(flow.ParallelConfig{
     },
 })
 ```
-### 3. Run Parallel Agent
+### 3. Run the Parallel Agent
 ```go
 session := blades.NewSession()
 input := blades.UserMessage("Please write a short paragraph about climate change.")
-runner := blades.NewRunner(parallelAgent, blades.WithSession(session))
-stream := runner.RunStream(context.Background(), input)
+runner := blades.NewRunner(parallelAgent)
+stream := runner.RunStream(context.Background(), input, blades.WithSession(session))
 for message, err := range stream {
     if err != nil {
         log.Fatal(err)
@@ -122,8 +122,8 @@ func main() {
 	})
 	session := blades.NewSession()
 	input := blades.UserMessage("Please write a short paragraph about climate change.")
-	runner := blades.NewRunner(parallelAgent, blades.WithSession(session))
-	stream := runner.RunStream(context.Background(), input)
+	runner := blades.NewRunner(parallelAgent)
+	stream := runner.RunStream(context.Background(), input, blades.WithSession(session))
 	for message, err := range stream {
 		if err != nil {
 			log.Fatal(err)

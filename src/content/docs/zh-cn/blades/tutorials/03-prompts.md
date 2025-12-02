@@ -65,8 +65,8 @@ session := blades.NewSession(map[string]any{
 	"style": "robot",
 })
 input := blades.UserMessage("Tell me a joke.")
-runner := blades.NewRunner(agent, blades.WithSession(session))
-message, err := runner.Run(context.Background(), input)
+runner := blades.NewRunner(agent)
+message, err := runner.Run(context.Background(), input, blades.WithSession(session))
 if err != nil {
 	panic(err)
 }

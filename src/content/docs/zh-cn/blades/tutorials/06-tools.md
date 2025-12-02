@@ -57,9 +57,9 @@ if err != nil {
 ```go
 input := blades.UserMessage("What is the weather in New York City?")
 	session := blades.NewSession()
-	runner := blades.NewRunner(agent, blades.WithSession(session))
+	runner := blades.NewRunner(agent)
 	ctx := context.Background()
-	output, err := runner.Run(ctx, input)
+	output, err := runner.Run(ctx, input, blades.WithSession(session))
 	if err != nil {
 		log.Fatal(err)
 	}

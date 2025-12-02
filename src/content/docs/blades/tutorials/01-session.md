@@ -1,38 +1,30 @@
 ---
 title: "Session and State"
-description: "blades provides storage for contextual conversation history and multimodal content within a single conversation"
+description: "Blades provides storage for contextual conversation history and multimodal content within a single dialogue."
 reference: ["https://github.com/go-kratos/blades/tree/main/examples/state","https://github.com/go-kratos/blades/tree/main/examples/session"]
 ---
-Agents often need to access conversation history within a single dialogue to track what has been said and done, ensuring coherence and avoiding repetition. Blades provides basic functionality for Agents through Session and State.
+Agents often need to access conversation history within a single dialogue to ensure awareness of what has been said and done, maintaining coherence and avoiding repetition. Blades provides foundational functionality for Agents through Session and State.
 ## Core Concepts
 `Session` and `State` are core concepts in Blades used to provide conversational context information. However, they differ and are suitable for different scenarios.
 
 - **Session**: Represents the current conversation thread, indicating a one-on-one, continuous interaction between the user and the Agent.
 
-- **State**: Stores data within the current conversation (e.g., PDF documents in the conversation).
-
-The relationship between the two can be illustrated with a vivid analogy:
-
-Imagine you are a detective investigating a "missing diamond" case, and the Agent is your assistant.
-
-**State** is like the sticky notes you carry with you, used to temporarily record important clues during the investigation. For example, if your assistant checks "the last surveillance footage of the diamond," your sticky note records: `session.PutState("last_seen_location", "library")`.
-
-**Session** is the entire case file. During the investigation, you use `session := blades.NewSession()` to create a new case file, label it "Diamond Theft Case," and use `runner := blades.NewRunner(agent, blades.WithSession(session))` to tell your assistant: "All our subsequent discussions and findings will be recorded in this case file."
+- **State**: Stores data within the current conversation (e.g., PDF documents in the dialogue).
 
 ## State
-**`State`** is essentially a key-value data store **`map[string]any`**. In Blades, you can store data using the **PutState** method of the session.
+**`State`** is essentially a key-value data pair storage **`map[string]any`**. In Blades, you can store it using the **PutState** method of the session.
 ```go
 session := blades.NewSession()
 session.PutState(agent.Name(), output.Text())
 ```
 ## Session
-Creating a `Session` in Blades is very simple. Just call the **NewSession** method, which can accept State data to be stored in the conversation.
+Creating a `Session` in Blades is straightforward—simply call the **NewSession** method, which can accept State data to be stored in the conversation.
 ```go
 session := blades.NewSession(states)
 ```
-Here, the type of states is **`map[string]any`**. Multiple **`State`** contents can be imported into a **`Session`**.
+Here, `states` is of type **`map[string]any`**. Multiple **`State`** contents can be imported into a **`Session`**.
 ### Session Example
-When using **`Session`** in Blades, simply pass the **`Session`** parameter in the **`NewRunner`** method.
+When using **`Session`** in Blades, you only need to pass the **`Session`** parameter in the **`NewRunner`** method.
 ```go
 package main
 
@@ -61,8 +53,8 @@ func main() {
 	// Create a new session
 	session := blades.NewSession()
 	// Run the agent
-	runner := blades.NewRunner(agent, blades.WithSession(session))
-	output, err := runner.Run(context.Background(), input)
+	runner := blades.NewRunner(agent)
+	output, err := runner.Run(context.Background(), input, blades.WithSession(session))
 	if err != nil {
 		log.Fatal(err)
 	}
