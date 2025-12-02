@@ -21,8 +21,6 @@ reference: ["https://github.com/go-kratos/blades/tree/main/examples/state","http
 
 它用于跨步骤（跨 Agent）共享数据：上一步写入，下一个 Agent 的 Prompt 模板直接读取。
 
-> 你原文里单独出现的 “Kratos” 一行看起来像误粘贴，建议删掉，避免读者困惑。
-
 #### Agent：保存运行结果
 在 Agent 的配置里，可以通过 `WithOutputKey` 方法，指定某个步骤的输出结果要写入 State 里的哪个 key。
 

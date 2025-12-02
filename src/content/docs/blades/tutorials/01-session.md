@@ -21,8 +21,6 @@ In Blades, State can essentially be understood as: `map[string]any`
 
 It is used to share data across steps (across Agents): the previous step writes, and the next Agent's Prompt template directly reads it.
 
-> The standalone line "Kratos" in your original text appears to be a mispaste; it is recommended to delete it to avoid confusing readers.
-
 #### Agent: Saving Run Results
 In an Agent's configuration, you can use the `WithOutputKey` method to specify which key in the State a particular step's output should be written to.
 
