@@ -36,6 +36,7 @@ import (
 	"context"
 	"log"
 	"os"
+	"os"
 
 	"github.com/go-kratos/blades"
 	"github.com/go-kratos/blades/contrib/openai"
@@ -49,9 +50,18 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
-	memoryStore.AddMemory(ctx, &memory.Memory{Content: blades.AssistantMessage("My favorite project is the Blades Agent kit.")})
-	memoryStore.AddMemory(ctx, &memory.Memory{Content: blades.AssistantMessage("My favorite programming language is Go.")})
+	memoryStore.AddMemory(ctx,
+		&memory.Memory{
+			Content: blades.AssistantMessage("My favorite project is the Blades Agent kit."),
+		},
+	)
+	memoryStore.AddMemory(ctx,
+		&memory.Memory{
+			Content: blades.AssistantMessage("My favorite programming language is Go."),
+		},
+	)
 	// Create an agent with memory tool
+	model := openai.NewModel(os.Getenv("OPENAI_MODEL"), openai.Config{
 	model := openai.NewModel(os.Getenv("OPENAI_MODEL"), openai.Config{
 		APIKey: os.Getenv("OPENAI_API_KEY"),
 	})
@@ -73,4 +83,5 @@ func main() {
 	}
 	log.Println(output.Text())
 }
+
 ```

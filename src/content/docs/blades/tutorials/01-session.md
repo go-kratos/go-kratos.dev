@@ -1,85 +1,39 @@
 ---
+
 title: "Session and State"
-description: "blades provides storage for contextual conversation history and multimodal content within a single dialogue"
+description: "blades provides storage of contextual conversation history and multimodal content within a single dialogue"
 reference: ["https://github.com/go-kratos/blades/tree/main/examples/state","https://github.com/go-kratos/blades/tree/main/examples/session"]
+
 ---
-
+Agents often need to access conversation history within a single dialogue to ensure what has been said and done, maintaining coherence and avoiding repetition. Blades provides basic functionality for Agents through Session and State.
 ## Core Concepts
+`Session` and `State` are core concepts in Blades used to provide dialogue context information. However, they differ and are suitable for different scenarios.
 
-In multi-turn dialogues or multi-Agent collaboration workflows, the system needs a place to carry context and accumulate intermediate outputs, so that subsequent steps can "continue from the previous step" rather than starting from scratch each time.
+- **Session**: Represents the current conversation thread, indicating a one-on-one, continuous interaction between the user and the Agent.
 
-- **Session**: A container for a conversation thread. It is responsible for maintaining the shared context and state for one round of interaction within a single Run/RunStream chain.
-- **State**: Shared data storage within a session, used to save "reusable intermediate results" (e.g., draft, review suggestions, tool outputs, parsed text, etc.).
+- **State**: Stores data within the current conversation (e.g., PDF documents in the dialogue).
 
-In a nutshell:
-- Session = Runtime context container
-- State = Key-value data (map[string]any) inside the container
+The relationship between the two can be illustrated with a vivid analogy:
+
+Imagine you are a detective investigating a "missing diamond" case, and the Agent is your assistant.
+
+**State** is like the sticky notes you carry with you, used to temporarily record important clues during the investigation. For example, if your assistant checks "the last surveillance footage of the diamond," your sticky note records the information: `session.PutState("last_seen_location", "library")`.
+
+**Session** is the entire case file. During the investigation, you use `session := blades.NewSession()` to create a new case file, label it "Diamond Theft Case," and use `runner.Run(ctx, input, blades.WithSession(session))` to tell your assistant: "All our discussions and findings from now on will be recorded in this case file."
 
 ## State
-
-In Blades, State can essentially be understood as: `map[string]any`
-
-It is used to share data across steps (across Agents): the previous step writes, and the next Agent's Prompt template directly reads it.
-
-#### Agent: Saving Run Results
-In an Agent's configuration, you can use the `WithOutputKey` method to specify which key in the State a particular step's output should be written to.
-
-For example, the WriterAgent is responsible for producing a draft and writing its output to the `draft` key:
-```go
-writerAgent, err := blades.NewAgent(
-  "WriterAgent",
-  blades.WithModel(model),
-  blades.WithInstruction("Draft a short paragraph on climate change."),
-  blades.WithOutputKey("draft"),
-)
-```
-Similarly, the ReviewerAgent writes its output to the `suggestions` key:
-```go
-reviewerAgent, err := blades.NewAgent(
-  "ReviewerAgent",
-  blades.WithModel(model),
-  blades.WithInstruction("Review the draft and suggest improvements."),
-  blades.WithOutputKey("suggestions"),
-)
-```
-
-#### Reading State in Prompts: Direct Template Variable References
-When you write Go templates ({{.draft}} / {{.suggestions}}) in WithInstruction, Blades injects the current Session's State into the template context, allowing you to use it directly like this:
-```go
-**Draft**
-{{.draft}}
-
-Here are the suggestions to consider:
-{{.suggestions}}
-```
-
-## Session
-
-Create a Session (optionally with initial State):
+**`State`** is essentially a key-value data store **`map[string]any`**. In Blades, you can use the **PutState** method of a session to store data.
 ```go
 session := blades.NewSession()
 ```
-You can also start with an initial state (commonly used for: existing drafts, user information, or resuming an interrupted workflow):
+## Session
+Creating a `Session` in Blades is straightforward—simply call the **NewSession** method, which can optionally accept State data to store in the conversation.
 ```go
-session := blades.NewSession(map[string]any{
-  "draft": "Climate change refers to long-term shifts in temperatures and weather patterns...",
-})
+session := blades.NewSession(states)
 ```
-
-#### Injecting Session into Runner: Sharing State Across the Same Chain
-Only by injecting the session into the run (blades.WithSession(session)) will the State you mentioned earlier be shared throughout that run chain.
-
-- If you use runner.Run(...): pass blades.WithSession(session) as an option.
-- If you use runner.RunStream(...): similarly, you can pass the session option.
-
-#### Complete Example: Writer/Reviewer Sharing draft & suggestions in a Loop
-
-Your code essentially implements a "write-review" closed loop:
-1. WriterAgent generates a draft → writes to `draft`
-2. ReviewerAgent provides suggestions → writes to `suggestions`
-3. Loop condition check: if the reviewer thinks "draft is good", stop; otherwise, continue iterating
-4. In the next iteration, WriterAgent reads `draft` and `suggestions` in its instruction for targeted revision
-
+Here, `states` is of type **`map[string]any`**. Multiple **`State`** contents can be imported into a **`Session`**.
+### Session Example
+When using **`Session`** in Blades, simply pass the **`Session`** parameter in the **`NewRunner`** method.
 ```go
 package main
 
@@ -87,7 +41,6 @@ import (
 	"context"
 	"log"
 	"os"
-	"strings"
 
 	"github.com/go-kratos/blades"
 	"github.com/go-kratos/blades/contrib/openai"
@@ -96,36 +49,24 @@ import (
 
 func main() {
 	model := openai.NewModel(os.Getenv("OPENAI_MODEL"), openai.Config{
+	model := openai.NewModel(os.Getenv("OPENAI_MODEL"), openai.Config{
 		APIKey: os.Getenv("OPENAI_API_KEY"),
 	})
 	writerAgent, err := blades.NewAgent(
 		"WriterAgent",
 		blades.WithModel(model),
-		blades.WithInstruction(`Draft a short paragraph on climate change.
-			{{if .suggestions}}	
-			**Draft**
-			{{.draft}}
-
-			Here are the suggestions to consider:
-			{{.suggestions}}
-			{{end}}
-		`),
-		blades.WithOutputKey("draft"),
+		blades.WithDescription("You are a knowledgeable history tutor. Provide detailed and accurate information on historical events."),
 	)
 	if err != nil {
 		log.Fatal(err)
 	}
-	reviewerAgent, err := blades.NewAgent(
-		"ReviewerAgent",
-		blades.WithModel(model),
-		blades.WithInstruction(`Review the draft and suggest improvements.
-			If the draft is good, respond with "The draft is good".
-
-			**Draft**
-			{{.draft}}	
-		`),
-		blades.WithOutputKey("suggestions"),
-	)
+	input := blades.UserMessage("Can you tell me about the causes of World War II?")
+	// Create a new session
+	session := blades.NewSession()
+	// Run the agent
+	ctx := context.Background()
+	runner := blades.NewRunner(agent)
+	output, err := runner.Run(ctx, input, blades.WithSession(session))
 	if err != nil {
 		log.Fatal(err)
 	}

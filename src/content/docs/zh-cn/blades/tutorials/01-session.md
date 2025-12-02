@@ -1,7 +1,9 @@
 ---
+
 title: "会话与状态"
 description: "blades为在单次对话中存储上下文对话记录和多模态内容"
 reference: ["https://github.com/go-kratos/blades/tree/main/examples/state","https://github.com/go-kratos/blades/tree/main/examples/session"]
+
 ---
 
 ## 核心概念
