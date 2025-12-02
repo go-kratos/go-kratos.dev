@@ -3,21 +3,15 @@ title: "Building Streaming Agents"
 ---
 
 # What is Streaming Invocation
-Streaming invocation is an interaction method of "generate while returning": the model continuously pushes responses to the client in chunks while generating content; the client can render or process them in real-time, rather than waiting for the complete result to be returned all at once.
+Streaming invocation is an interactive method of "generating while returning": the model continuously pushes responses to the client in chunks as it generates content; the client can render or process them in real-time, rather than waiting for the complete result to be returned all at once.
 
 **Applicable Scenarios**
 - Real-time output for chatbots
-- Code completion / output while typing
-- Real-time translation
-- UI requiring low-latency feedback (e.g., answers appearing word by word)
-
-**Characteristics**
-- Low perceived latency (faster "first token" time)
-- More memory/experience friendly (no need to wait for full response)
+- Code completion/output while typing
 - More suitable for real-time display or incremental processing
 
 ### Streaming Invocation Example
-Blades implements streaming invocation through the RunStream method. Its input parameters are largely consistent with the synchronous Run method, but it returns an iterable stream object from which you can continuously receive model output messages within a for range loop.
+Blades implements streaming invocation through the RunStream method. Its input parameters are largely the same as the synchronous Run method, but it returns an iterable stream object from which you can continuously receive model output messages within a for range loop.
 
 Example using the **RunStream** method:
 ```go

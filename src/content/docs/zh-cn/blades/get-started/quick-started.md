@@ -13,7 +13,7 @@ go get github.com/go-kratos/blades
 ```
 **前置条件**
 
-运行前需要准备模型侧的鉴权与地址配置（不同 Provider 变量名可能不同，关键是确保 API Key 与 Base URL 可用）：
+运行前需要配置模型侧的环境变量（不同 ModelProvider 变量名可能不同，关键是确保 API Key 与 Base URL 可用）：
 - OPENAI_BASE_URL
 - OPENAI_API_KEY
 - OPENAI_MODEL

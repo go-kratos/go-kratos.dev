@@ -1,7 +1,7 @@
 ---
 title: Quick Start
 ---
-Blades is a multimodal AI Agent framework based on the Go language, supporting custom models, tools, memory, middleware, etc. It is suitable for multi-turn conversations, chain-of-thought reasoning, and structured output scenarios.
+Blades is a multimodal AI Agent framework based on the Go language, supporting custom models, tools, memory, middleware, etc., suitable for multi-turn dialogue, chain-of-thought reasoning, and structured output scenarios.
 
 ## Environment Setup
 Ensure you have Go 1.24+ installed, then initialize your project and import Blades with the following commands:
@@ -13,7 +13,7 @@ go get github.com/go-kratos/blades
 ```
 **Prerequisites**
 
-Before running, you need to prepare authentication and address configuration on the model side (variable names may differ across providers; the key is to ensure the API Key and Base URL are usable):
+Before running, you need to configure environment variables for the model side (different ModelProvider variable names may vary; the key is to ensure the API Key and Base URL are available):
 - OPENAI_BASE_URL
 - OPENAI_API_KEY
 - OPENAI_MODEL
@@ -80,16 +80,16 @@ export OPENAI_API_KEY=your-api-key
 ## Core Concepts Overview
 | **<font style="color:#000000;">Component</font>** | **<font style="color:#000000;">Description</font>** |
 | --- | --- |
-| **<font style="color:#000000;">Agent</font>** | <font style="color:#000000;">The agent interface, used to integrate and coordinate multiple functional components such as models, tools, and memory</font> |
+| **<font style="color:#000000;">Agent</font>** | <font style="color:#000000;">Agent interface for integrating and coordinating various functional agents such as models, tools, and memory</font> |
 | **<font style="color:#000000;">Tool</font>** | <font style="color:#000000;">External capability plugins (e.g., calling APIs, querying databases)</font> |
 | **<font style="color:#000000;">Memory</font>** | <font style="color:#000000;">Conversation memory management, supporting multi-turn context</font> |
-| **<font style="color:#000000;">Middleware</font>** | <font style="color:#000000;">Middleware mechanism for cross-cutting concerns like logging, rate limiting, and authentication</font> |
-| **<font style="color:#000000;">ModelProvider</font>** | <font style="color:#000000;">Model adapters (e.g., OpenAI, DeepSeek) with a unified calling interface</font> |
+| **<font style="color:#000000;">Middleware</font>** | <font style="color:#000000;">Middleware mechanism for cross-cutting concerns such as logging, rate limiting, and authentication</font> |
+| **<font style="color:#000000;">ModelProvider</font>** | <font style="color:#000000;">Model adapter (e.g., OpenAI, DeepSeek), providing a unified calling interface</font> |
 
 
 ## More Examples
 :::tip
-The project provides a variety of usage examples covering:
+The project provides a wealth of usage examples, covering:
 
 + Multi-tool calling (Function Calling)
 + Streaming responses
