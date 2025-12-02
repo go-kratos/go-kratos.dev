@@ -6,28 +6,27 @@ reference: ["https://github.com/go-kratos/blades/tree/main/examples/state","http
 
 ## Core Concepts
 
-In multi-turn dialogues or multi-agent collaboration workflows, the system needs a place to carry context and accumulate intermediate outputs, so that subsequent steps can "continue from the previous step" rather than starting from scratch each time.
+In multi-turn dialogues or multi-Agent collaboration workflows, the system needs a place to carry context and accumulate intermediate outputs, so that subsequent steps can "continue from the previous step" rather than starting from scratch each time.
 
-- **Session**: A container for a conversation thread. It is responsible for maintaining the shared context and state throughout a single Run/RunStream interaction chain.
+- **Session**: A container for a conversation thread. It is responsible for maintaining the shared context and state for one round of interaction within a single Run/RunStream chain.
 - **State**: Shared data storage within a session, used to save "reusable intermediate results" (e.g., draft, review suggestions, tool outputs, parsed text, etc.).
 
 In a nutshell:
 - Session = Runtime context container
-- State = Key-value data inside the container (map[string]any)
+- State = Key-value data (map[string]any) inside the container
 
 ## State
 
-#### Data Structure
 In Blades, State can essentially be understood as: `map[string]any`
 
-It is used to share data across steps (across Agents): the previous step writes, and the next Agent's Prompt template reads directly.
+It is used to share data across steps (across Agents): the previous step writes, and the next Agent's Prompt template directly reads it.
 
-> The standalone line "Kratos" in your original text appears to be a mis-paste; it is recommended to delete it to avoid confusing readers.
+> The standalone line "Kratos" in your original text appears to be a mispaste; it is recommended to delete it to avoid confusing readers.
 
-#### Saving Run Results with `WithOutputKey`
+#### Agent: Saving Run Results
 In an Agent's configuration, you can use the `WithOutputKey` method to specify which key in the State a particular step's output should be written to.
 
-For example, a WriterAgent is responsible for producing a draft and writing its output to the `draft` key:
+For example, the WriterAgent is responsible for producing a draft and writing its output to the `draft` key:
 ```go
 writerAgent, err := blades.NewAgent(
   "WriterAgent",
@@ -36,7 +35,7 @@ writerAgent, err := blades.NewAgent(
   blades.WithOutputKey("draft"),
 )
 ```
-Similarly, a ReviewerAgent writes its output to the `suggestions` key:
+Similarly, the ReviewerAgent writes its output to the `suggestions` key:
 ```go
 reviewerAgent, err := blades.NewAgent(
   "ReviewerAgent",
@@ -47,7 +46,7 @@ reviewerAgent, err := blades.NewAgent(
 ```
 
 #### Reading State in Prompts: Direct Template Variable References
-When you write Go templates ({{.draft}} / {{.suggestions}}) in WithInstruction, Blades injects the current Session's State into the template context, allowing you to use them directly like this:
+When you write Go templates ({{.draft}} / {{.suggestions}}) in WithInstruction, Blades injects the current Session's State into the template context, allowing you to use it directly like this:
 ```go
 **Draft**
 {{.draft}}
@@ -58,12 +57,11 @@ Here are the suggestions to consider:
 
 ## Session
 
-#### Creating a Session (with Optional Initial State)
-You can create an empty session:
+Create a Session (optionally with initial State):
 ```go
 session := blades.NewSession()
 ```
-Or start with an initial state (commonly used when there is already a draft, user information, or to resume an interrupted workflow):
+You can also start with an initial state (commonly used for: existing drafts, user information, or resuming an interrupted workflow):
 ```go
 session := blades.NewSession(map[string]any{
   "draft": "Climate change refers to long-term shifts in temperatures and weather patterns...",
@@ -158,6 +156,6 @@ func main() {
 ```
 
 ## Best Practices
-- Use stable, readable key names: e.g., `draft`, `suggestions`. For complex projects, consider hierarchical naming: `writing.draft`, `review.suggestions`
-- Avoid dumping entire conversation history into State: State is better suited for "structured/reusable intermediate outputs". For historical dialogue, consider using model messages or summaries.
+- Use stable, readable key names: e.g., `draft`, `suggestions`. For complex projects, consider hierarchical naming: `writing.draft`, `review.suggestions`.
+- Avoid stuffing entire conversation history into State: State is better suited for "structured/reusable intermediate outputs". For historical dialogue, consider using model messages or summaries.
 - Include session for streaming outputs too: If you want to share state across multiple steps, ensure the entire Run/RunStream executes under the same session.

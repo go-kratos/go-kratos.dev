@@ -17,14 +17,13 @@ reference: ["https://github.com/go-kratos/blades/tree/main/examples/state","http
 
 ## State
 
-#### 数据结构
 在 Blades 中，State 本质上可以理解为：`map[string]any`
 
 它用于跨步骤（跨 Agent）共享数据：上一步写入，下一个 Agent 的 Prompt 模板直接读取。
 
 > 你原文里单独出现的 “Kratos” 一行看起来像误粘贴，建议删掉，避免读者困惑。
 
-#### 用 `WithOutputKey` 进行保存运行结果
+#### Agent：保存运行结果
 在 Agent 的配置里，可以通过 `WithOutputKey` 方法，指定某个步骤的输出结果要写入 State 里的哪个 key。
 
 比如 WriterAgent 负责产出草稿，把输出落到 draft：
@@ -58,8 +57,7 @@ Here are the suggestions to consider:
 
 ## Session
 
-#### 创建 Session（可选初始化 State）
-你既可以创建空会话：
+创建 Session（可选初始化 State）：
 ```go
 session := blades.NewSession()
 ```
