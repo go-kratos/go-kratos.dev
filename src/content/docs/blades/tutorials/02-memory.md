@@ -6,18 +6,18 @@ reference: ["https://github.com/go-kratos/blades/tree/main/examples/tools-memory
 
 In multi-turn and multiple sessions, an Agent often needs to "remember what happened before": such as user preferences, historical conclusions, previously confirmed facts, etc. Blades provides Memory capabilities for storing and retrieving information across multiple Sessions, allowing the Agent to "recall" context in new conversations, thereby reducing repetitive questioning and improving consistency.
 
-## What problem does Memory solve?
+### What problem does Memory solve?
 
 - Session / State addresses the organization and temporary data management "within the current conversation thread" (the tutorial is covered in the previous chapter).
 - Memory is oriented towards "historical information across multiple sessions," which can be retrieved to assist in current responses. It can be understood as the Agent's "retrievable archive/knowledge base."
 
-## Enabling the Agent with Memory Retrieval Capabilities
+### Enabling the Agent with Memory Retrieval Capabilities
 The Memory usage process in Blades can be summarized in 4 steps:
 1. Create a MemoryStore (memory library)
 2. Create a MemoryTool (enabling the Agent to actively retrieve memories)
 3. Inject the MemoryTool into the Agent (WithTools), then run the conversation
 
-## Creating a Memory Database
+### Creating a Memory Database
 
 NewInMemoryStore() creates an in-memory version of MemoryStore, suitable for examples and local development.
 
@@ -25,7 +25,7 @@ NewInMemoryStore() creates an in-memory version of MemoryStore, suitable for exa
 memoryStore := memory.NewInMemoryStore()
 ```
 
-## Creating an Agent and Adding Memory Tools
+### Creating an Agent and Adding Memory Tools
 
 In the Agent configuration, add `memory tools` (the example uses blades.WithTools(memoryTool)), and prompt the model in the Instruction to "use the Memory tool when necessary to query memory content."
 
