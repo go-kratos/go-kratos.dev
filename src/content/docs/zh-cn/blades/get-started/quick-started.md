@@ -4,13 +4,19 @@ title: 快速开始
 Blades 是一个基于 Go 语言的多模态 AI Agent 框架，支持自定义模型、工具、记忆、中间件等，适用于多轮对话、链式推理和结构化输出场景。
 
 ## 环境安装
-确保你已安装 Go 1.20+，然后通过以下命令初始化你的项目并引入 Blades：
+确保你已安装 Go 1.24+，然后通过以下命令初始化你的项目并引入 Blades：
 
 ```shell
 cd your-project-name
 go mod init your-project-name
 go get github.com/go-kratos/blades
 ```
+**前置条件**
+
+运行前需要准备模型侧的鉴权与地址配置（不同 Provider 变量名可能不同，关键是确保 API Key 与 Base URL 可用）：
+- OPENAI_BASE_URL
+- OPENAI_API_KEY
+- OPENAI_MODEL
 
 ## 创建智能体
 下面是一个使用 OpenAI 模型构建简单聊天 Agent 的完整示例：
@@ -28,7 +34,7 @@ import (
 
 func main() {
     // Configure OpenAI API key and base URL using environment variables:
-    model := openai.NewModel("gpt-5", openai.Config{
+    model := openai.NewModel(os.Getenv("OPENAI_MODEL"), openai.Config{
         APIKey: os.Getenv("OPENAI_API_KEY"),
     })
 	agent, err := blades.NewAgent(

@@ -2,21 +2,15 @@
 title: "构建生成式智能体"
 ---
 
-# 同步调用
+# 构建生成式智能体
 
-使用Blades同步调用让Agent一次返回完整回答。
+本节介绍如何使用 Blades 的同步模式运行一个 Agent：调用 runner.Run(...) 后阻塞等待，直到模型生成完整回复并一次性返回 Message。
 
-    行为：同步调用Run发送请求后阻塞等待，直到模型生成完整回复，一次性返回结果。
-    返回值：一个完整的Message对象
+**适用场景**
+- 你希望一次拿到完整答案（适合：API 响应、批处理、单轮问答）
+- 不需要流式输出（如终端流式打印、Websocket、SSE 等）
 
-## 代码示例
-
-前置条件
-
-1. 安装Blades：`go get github.com/go-kratos/blades`
-2. 配置模型提供者（如OpenAI）：设置环境变量`OPENAI_API_KEY`和`OPENAI_BASE_URL`
-
-### 创建智能体
+### 创建智能体（同步调用）
 
 在 Blades 中，想要创建一个智能体，使用 **NewAgent** 方法，该方法用于创建一个新的Agent实例。**Agent** 是 Blades 框架中的核心组件，负责协调模型、工具、提示词等资源来执行各种AI任务。
 
@@ -24,7 +18,7 @@ title: "构建生成式智能体"
 
 ```go
 // Configure OpenAI API key and base URL using environment variables:
-model := openai.NewModel("gpt-5", openai.Config{
+model := openai.NewModel(os.Getenv("OPENAI_MODEL"), openai.Config{
 	APIKey: os.Getenv("OPENAI_API_KEY"),
 })
 agent, err := blades.NewAgent(
