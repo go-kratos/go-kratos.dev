@@ -45,10 +45,3 @@ if err != nil {
 }
 log.Println(output.Text())
 ```
-
-### Run
-
-runner.Run 是 Blades 框架中 Agent 的核心执行方法，用于运行一次完整的 AI 交互流程。该方法会根据提供的提示词（Prompt）与配置的模型进行交互，并返回模型的响应结果。该方法参数如下：
-
-1. **`ctx (context.Context)`**: 上下文参数，用于控制请求的生命周期，可用于设置超时、取消等操作。
-2. **`input (Message)`**: 提示词对象，包含用户输入的信息，可以通过 blades.UserMessage("user prompt") 进行创建。
