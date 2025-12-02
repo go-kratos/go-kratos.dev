@@ -1,22 +1,19 @@
 ---
 title: "Building Streaming Agents"
 ---
-# Streaming Calls
-Streaming calls (Streaming) are an API communication mode that returns data as it is being generated. Unlike the traditional approach of "waiting for the complete response before returning," streaming interfaces send data in chunks to the client in real-time as the server generates the content, allowing the client to process and display it immediately.
 
-    Features: Low latency perception, memory-friendly, real-time feedback.
-    Applicable to: Chatbots, code completion, real-time translation, pre-processing for speech synthesis, and other scenarios with high requirements for "immediacy."
+# What is Streaming Invocation
+Streaming invocation is an interactive method of "generating while returning": the model continuously pushes responses to the client in chunks as it generates content; the client can render or process them in real-time, rather than waiting for the complete result to be returned all at once.
 
-## Code Example
-Prerequisites
+**Applicable Scenarios**
+- Real-time output for chatbots
+- Code completion/output while typing
+- More suitable for real-time display or incremental processing
 
-    1. Install Blades: `go get github.com/go-kratos/blades`
-    2. Configure the model provider (e.g., OpenAI): Set environment variables `OPENAI_API_KEY` and `OPENAI_BASE_URL`
+### Streaming Invocation Example
+Blades implements streaming invocation through the RunStream method. Its input parameters are largely the same as the synchronous Run method, but it returns an iterable stream object from which you can continuously receive model output messages within a for range loop.
 
-### Runstream
-In Blades, the parameters for streaming calls are essentially the same as for synchronous calls. The difference is that streaming calls do not wait for the model to fully generate the response before returning; instead, they immediately return a **streaming interface**, allowing the gradual reception of the model's response content. Streaming calls use the **Runstream** method, and all input parameters are the same as the Run method.
-
-An example of using the **Runstream** method is as follows:
+Example using the **RunStream** method:
 ```go
 package main
 

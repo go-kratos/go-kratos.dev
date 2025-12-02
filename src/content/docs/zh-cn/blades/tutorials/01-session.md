@@ -5,36 +5,83 @@ description: "blades为在单次对话中存储上下文对话记录和多模态
 reference: ["https://github.com/go-kratos/blades/tree/main/examples/state","https://github.com/go-kratos/blades/tree/main/examples/session"]
 
 ---
-Agent常常需要在单次对话中获取对话历史，来确保已经说过和做过什么，避免保持连贯性和避免重复。Blades通过Session、State 来为Agent提供基础功能。
+
 ## 核心概念
-`Session`、`State` 是Blades中用于提供对话上下文信息的核心概念。但两者有所不同，适合于不同的场景。
 
-- **Session**：表示当前对话线程，表示用户和Agent时1v1单次、持续的交互。
+在多轮对话或多 Agent 协作流程里，系统需要一个地方来承载上下文并沉淀中间产物，这样后续步骤才能“接着上一步继续做”，而不是每次从零开始。
 
-- **State**：存储当前对话中的数据（例如：对话中的pdf文档等）。
+- Session（会话）：一次对话线程的容器。它负责在一次 Run/RunStream 的链路里，维护这一轮交互共享的上下文与状态。
+- State（状态）：会话内的共享数据存储，用于保存“可复用的中间结果”（例如草稿 draft、审阅建议 suggestions、工具输出、解析后的文本等）。
 
-下面用一个生动形象的比喻可以说明三者的关系：
-
-现在你是一名侦探，正在调查一个“失踪的砖石”案件，Agent就是你的小助手。
-
-**State** 就是你随身携带的便签纸，用来临时记录当前调查中的重要线索，在侦查过程中，你的小助手查看了“砖石最后的监控录像”，则你的便签纸就记下了信息：`session.PutState("last_seen_location", "图书馆")` 。
-
-**Session** 则为整个案件的卷宗，在破案过程中使用 `session := blades.NewSession()` 拿出一份新卷宗，写上“钻石失窃案”，并使用 `runner.Run(ctx, input, blades.WithSession(session))` 告诉小助手：我们接下来的讨论和发现都记录在这个卷宗内。
+一句话理解：
+- Session = 运行时上下文容器
+- State = 容器里的键值数据（map[string]any）
 
 ## State
-**`State`** 实质为存储键值数据对 **`map[string]any`** ,在Blades中可以使用session的 **PutState** 方法存储。
+
+在 Blades 中，State 本质上可以理解为：`map[string]any`
+
+它用于跨步骤（跨 Agent）共享数据：上一步写入，下一个 Agent 的 Prompt 模板直接读取。
+
+#### Agent：保存运行结果
+在 Agent 的配置里，可以通过 `WithOutputKey` 方法，指定某个步骤的输出结果要写入 State 里的哪个 key。
+
+比如 WriterAgent 负责产出草稿，把输出落到 draft：
+```go
+writerAgent, err := blades.NewAgent(
+  "WriterAgent",
+  blades.WithModel(model),
+  blades.WithInstruction("Draft a short paragraph on climate change."),
+  blades.WithOutputKey("draft"),
+)
+```
+同理 ReviewerAgent 的输出落到 suggestions：
+```go
+reviewerAgent, err := blades.NewAgent(
+  "ReviewerAgent",
+  blades.WithModel(model),
+  blades.WithInstruction("Review the draft and suggest improvements."),
+  blades.WithOutputKey("suggestions"),
+)
+```
+
+#### 在 Prompt 里读取 State：模板变量直接引用
+当你在 WithInstruction 里写 Go template（{{.draft}} / {{.suggestions}}），Blades 会把当前 Session 的 State 注入模板上下文，于是你能像下面这样直接使用：
+```go
+**Draft**
+{{.draft}}
+
+Here are the suggestions to consider:
+{{.suggestions}}
+```
+
+## Session
+
+创建 Session（可选初始化 State）：
 ```go
 session := blades.NewSession()
-session.PutState(agent.Name(), output.Text())
 ```
-## Session
-在blades中创建 `Session` 十分简单，只需要执行 **NewSession** 方法,在方法中可传入对话中存储的数据State。
+也可以带着初始状态启动（常用于：已有草稿、已有用户信息、或恢复一次中断的流程）：
 ```go
-session := blades.NewSession(states)
+session := blades.NewSession(map[string]any{
+  "draft": "Climate change refers to long-term shifts in temperatures and weather patterns...",
+})
 ```
-其中states的类型为 **`map[string]any`** 。能够在 **`Session`** 中导入多个 **`State`** 内容。
-### Session示例
-在blades中使用 **`Session`** 时，只需要在 **`NewRunner`** 方法中传入 **`Session`** 参数即可。
+
+#### 将 Session 注入 Runner：让同一链路共享 State
+只有把 session 注入运行（blades.WithSession(session)），你前面说的 State 才会在该次运行链路里共享起来。
+
+- 如果你用 runner.Run(...)：把 blades.WithSession(session) 作为 option 传入即可。
+- 如果你用 runner.RunStream(...)：同样可以传入 session option。
+
+#### 完整示例：Writer/Reviewer 在 Loop 中共享 draft & suggestions
+
+你的代码本质是一个“写作-审阅”闭环：
+1. WriterAgent 生成草稿 → 写入 draft
+2. ReviewerAgent 给建议 → 写入 suggestions
+3. Loop 条件检查：如果 reviewer 认为 “draft is good” 则停止，否则继续迭代
+4. 下一轮 WriterAgent 会在 instruction 里读到 draft 与 suggestions，进行定向改写
+
 ```go
 package main
 
@@ -42,33 +89,73 @@ import (
 	"context"
 	"log"
 	"os"
+	"strings"
 
 	"github.com/go-kratos/blades"
 	"github.com/go-kratos/blades/contrib/openai"
+	"github.com/go-kratos/blades/flow"
 )
 
 func main() {
 	model := openai.NewModel(os.Getenv("OPENAI_MODEL"), openai.Config{
 		APIKey: os.Getenv("OPENAI_API_KEY"),
 	})
-	agent, err := blades.NewAgent(
-		"History Tutor",
+	writerAgent, err := blades.NewAgent(
+		"WriterAgent",
 		blades.WithModel(model),
-		blades.WithDescription("You are a knowledgeable history tutor. Provide detailed and accurate information on historical events."),
+		blades.WithInstruction(`Draft a short paragraph on climate change.
+			{{if .suggestions}}	
+			**Draft**
+			{{.draft}}
+
+			Here are the suggestions to consider:
+			{{.suggestions}}
+			{{end}}
+		`),
+		blades.WithOutputKey("draft"),
 	)
 	if err != nil {
 		log.Fatal(err)
 	}
-	input := blades.UserMessage("Can you tell me about the causes of World War II?")
-	// Create a new session
-	session := blades.NewSession()
-	// Run the agent
-	ctx := context.Background()
-	runner := blades.NewRunner(agent)
-	output, err := runner.Run(ctx, input, blades.WithSession(session))
+	reviewerAgent, err := blades.NewAgent(
+		"ReviewerAgent",
+		blades.WithModel(model),
+		blades.WithInstruction(`Review the draft and suggest improvements.
+			If the draft is good, respond with "The draft is good".
+
+			**Draft**
+			{{.draft}}	
+		`),
+		blades.WithOutputKey("suggestions"),
+	)
 	if err != nil {
 		log.Fatal(err)
 	}
-	log.Println(output.Text())
+	loopAgent := flow.NewLoopAgent(flow.LoopConfig{
+		Name:          "WritingReviewFlow",
+		Description:   "An agent that loops between writing and reviewing until the draft is good.",
+		MaxIterations: 3,
+		Condition: func(ctx context.Context, output *blades.Message) (bool, error) {
+			return !strings.Contains(output.Text(), "The draft is good"), nil
+		},
+		SubAgents: []blades.Agent{
+			writerAgent,
+			reviewerAgent,
+		},
+	})
+	input := blades.UserMessage("Please write a short paragraph about climate change.")
+	runner := blades.NewRunner(loopAgent)
+	stream := runner.RunStream(context.Background(), input)
+	for message, err := range stream {
+		if err != nil {
+			log.Fatal(err)
+		}
+		log.Println(message.Author, message.Text())
+	}
 }
 ```
+
+## 最佳实践
+- key 命名要稳定、可读：如 draft、suggestions，复杂项目建议用层级：writing.draft、review.suggestions
+- 避免把大段历史对话全塞进 State：State 更适合“结构化/可复用中间产物”，历史对话建议走模型消息或摘要
+- 流式输出也要带 session：只要希望多步共享状态，就让整个 Run/RunStream 在同一个 session 下执行

@@ -13,6 +13,7 @@ type Middleware func(Handler) Handler
 ```
 
 Middleware is a function that takes a **Handler** as a parameter and returns a **Handler**. An example of creating middleware is shown below:
+
 ```go
 func Logging() blades.Middleware {
 	return func(next blades.Handler) blades.Handler {
@@ -25,11 +26,13 @@ func Logging() blades.Middleware {
 	}
 }
 ```
+
 :::note
 When creating, `Handler` is a method interface of the function type **HandleFunc**, so it is necessary to return the corresponding implementation method.
 :::
 
 ## Code Example
+
 :::tip
 Before running this example, please check if the APIKEY is set.
 :::
@@ -77,22 +80,26 @@ func (m *Logging) Handle(ctx context.Context, invocation *blades.Invocation) bla
 }
 ```
 
-
 ### 2. Use Middleware
+
 :::tip
 To use middleware in an Agent, simply pass it via the WithMiddleware option when creating the Agent.
 :::
+
 ```go
 // Create a blades agent with logging middleware
 model := openai.NewModel("gpt-5", openai.Config{
 	APIKey: os.Getenv("OPENAI_API_KEY"),
 })
-agent := blades.NewAgent(
+agent, err := blades.NewAgent(
     "Example Agent",
     blades.WithModel(model),
     blades.WithInstruction("You are a helpful assistant."),
     blades.WithMiddleware(Logging()), // Use the logging middleware
 )
+if err != nil {
+    log.Fatal(err)
+}
 // Create a prompt
 input := blades.UserMessage("What is the capital of France?")
 // Run the agent
@@ -105,15 +112,17 @@ log.Println(output.Text())
 ```
 
 ## Middleware Chain
+
 :::tip
 Multiple middlewares can be chained together, and they will execute in the specified order.
 :::
+
 ```go
 // Create multiple middlewares
 model := openai.NewModel("gpt-5", openai.Config{
 	APIKey: os.Getenv("OPENAI_API_KEY"),
 })
-agent := blades.NewAgent(
+agent, err := blades.NewAgent(
     "Chained Middleware Agent",
     blades.WithModel(model),
     // Chain multiple middlewares
@@ -123,11 +132,16 @@ agent := blades.NewAgent(
         Metrics(),
     ),
 )
+if err != nil {
+    log.Fatal(err)
+}
 ```
+
 :::tip
 The execution order of middleware follows the onion model:
+
 - The request passes through the pre-processing logic of all middlewares from the outside to the inside
 - Reaches the core processing logic (Agent)
 - The response passes through the post-processing logic of all middlewares from the inside to the outside
-:::
-This design makes it convenient to add various functionalities through middleware while maintaining code clarity and maintainability.
+  :::
+  This design makes it convenient to add various functionalities through middleware while maintaining code clarity and maintainability.

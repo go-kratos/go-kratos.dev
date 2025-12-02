@@ -54,6 +54,7 @@ import (
 	"context"
 	"log"
 	"os"
+	"os"
 
 	"github.com/go-kratos/blades"
 	"github.com/go-kratos/blades/contrib/openai"
@@ -78,6 +79,7 @@ func main() {
 		},
 	)
 	// Create an agent with memory tool
+	model := openai.NewModel(os.Getenv("OPENAI_MODEL"), openai.Config{
 	model := openai.NewModel(os.Getenv("OPENAI_MODEL"), openai.Config{
 		APIKey: os.Getenv("OPENAI_API_KEY"),
 	})

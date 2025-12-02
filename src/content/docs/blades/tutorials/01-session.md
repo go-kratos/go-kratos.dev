@@ -25,7 +25,6 @@ Imagine you are a detective investigating a "missing diamond" case, and the Agen
 **`State`** is essentially a key-value data store **`map[string]any`**. In Blades, you can use the **PutState** method of a session to store data.
 ```go
 session := blades.NewSession()
-session.PutState(agent.Name(), output.Text())
 ```
 ## Session
 Creating a `Session` in Blades is straightforward—simply call the **NewSession** method, which can optionally accept State data to store in the conversation.
@@ -45,14 +44,16 @@ import (
 
 	"github.com/go-kratos/blades"
 	"github.com/go-kratos/blades/contrib/openai"
+	"github.com/go-kratos/blades/flow"
 )
 
 func main() {
 	model := openai.NewModel(os.Getenv("OPENAI_MODEL"), openai.Config{
+	model := openai.NewModel(os.Getenv("OPENAI_MODEL"), openai.Config{
 		APIKey: os.Getenv("OPENAI_API_KEY"),
 	})
-	agent, err := blades.NewAgent(
-		"History Tutor",
+	writerAgent, err := blades.NewAgent(
+		"WriterAgent",
 		blades.WithModel(model),
 		blades.WithDescription("You are a knowledgeable history tutor. Provide detailed and accurate information on historical events."),
 	)
@@ -69,6 +70,31 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
-	log.Println(output.Text())
+	loopAgent := flow.NewLoopAgent(flow.LoopConfig{
+		Name:          "WritingReviewFlow",
+		Description:   "An agent that loops between writing and reviewing until the draft is good.",
+		MaxIterations: 3,
+		Condition: func(ctx context.Context, output *blades.Message) (bool, error) {
+			return !strings.Contains(output.Text(), "The draft is good"), nil
+		},
+		SubAgents: []blades.Agent{
+			writerAgent,
+			reviewerAgent,
+		},
+	})
+	input := blades.UserMessage("Please write a short paragraph about climate change.")
+	runner := blades.NewRunner(loopAgent)
+	stream := runner.RunStream(context.Background(), input)
+	for message, err := range stream {
+		if err != nil {
+			log.Fatal(err)
+		}
+		log.Println(message.Author, message.Text())
+	}
 }
 ```
+
+## Best Practices
+- Use stable, readable key names: e.g., `draft`, `suggestions`. For complex projects, consider hierarchical naming: `writing.draft`, `review.suggestions`.
+- Avoid stuffing entire conversation history into State: State is better suited for "structured/reusable intermediate outputs". For historical dialogue, consider using model messages or summaries.
+- Include session for streaming outputs too: If you want to share state across multiple steps, ensure the entire Run/RunStream executes under the same session.
