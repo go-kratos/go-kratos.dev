@@ -1,80 +1,18 @@
 ---
 title: "Memory"
-description: "blades provides memory capabilities for Agent"
+description: "Blades provides memory capabilities for Agents"
 reference: ["https://github.com/go-kratos/blades/tree/main/examples/tools-memory","https://github.com/go-kratos/blades/tree/main/examples/state","https://github.com/go-kratos/blades/tree/main/examples/session"]
 ---
-Agents often need to access conversation history to ensure what has been said and done, maintaining coherence and avoiding repetition. Blades provides basic functionality for Agents through Session, State, and Memory.
+Agents often need to recall context from previous conversations across multiple interactions. Therefore, it is necessary to save previous dialogue information and import it into new conversations, retrieving past dialogue history to ensure awareness of what has been said and done, maintaining coherence and avoiding repetition. Blades provides foundational functionality through Memory.
 ## Core Concepts
-`Session`, `State`, and `Memory` are the core concepts in Blades used to provide memory storage functionality. However, they differ and are suitable for different scenarios.
+The usage scope of `Memory` differs from `Session` and `State`, each suitable for different scenarios.
 
-- **Session**: Represents the current conversation thread, indicating a one-on-one, single, continuous interaction between the user and the Agent.
+- **Memory**: Can retrieve dialogue information from multiple past sessions, allowing the Agent to recall context and details from previous conversations.
 
-- **State**: Stores data from the current conversation (e.g., PDF documents in the conversation).
+The relationship between `Session` and `State` has been explained in previous examples. In the context of solving a case, `Memory` can be thought of as the detective's archive of old case files. During the investigation, the detective can check `Memory` to see if similar modus operandi have been recorded. (`Equivalent to a knowledge base`)
 
-- **Memory**: Can retrieve conversation information from multiple past sessions, allowing the Agent to recall context and details from previous conversations.
-
-The relationship between the three can be illustrated with a vivid analogy:
-
-Imagine you are a detective investigating a "missing diamond" case, and the Agent is your assistant.
-
-**State** is like the sticky notes you carry with you, used to temporarily record important clues from the current investigation. During the investigation, if your assistant checks "the last surveillance footage of the diamond," your sticky note records the information: `session.PutState("last_seen_location", "library")`.
-
-**Session** is the entire case file. During the investigation, you use `session := blades.NewSession()` to take out a new case file, write "Diamond Theft Case" on it, and use `runner := blades.NewRunner(agent, blades.WithSession(session))` to tell your assistant: all our subsequent discussions and findings will be recorded in this case file.
-
-**Memory** is the detective's archive of old case files. During the investigation, you can check the `Memory` to see if there are records of similar modus operandi. (`Equivalent to a knowledge base`)
-
-## State
-**`State`** is essentially a key-value data pair storage **`map[string]any`**. In Blades, you can use the session's **PutState** method to store it.
-```go
-session := blades.NewSession()
-session.PutState(agent.Name(), output.Text())
-```
-## Session
-Creating a `Session` in blades is very simple; just execute the **NewSession** method, which can accept the State data to be stored in the conversation.
-```go
-session := blades.NewSession(states)
-```
-Here, the type of states is **`map[string]any`**. Multiple **`State`** contents can be imported into a **`Session`**.
-### Session Example
-When using **`Session`** in blades, simply pass the **`Session`** parameter in the **`NewRunner`** method.
-```go
-package main
-
-import (
-	"context"
-	"log"
-
-	"github.com/go-kratos/blades"
-	"github.com/go-kratos/blades/contrib/openai"
-)
-
-func main() {
-    // Configure OpenAI API key and base URL using environment variables:
-    model := openai.NewModel("gpt-5", openai.Config{
-		APIKey: os.Getenv("OPENAI_API_KEY"),
-	})
-	agent, err := blades.NewAgent(
-		"History Tutor",
-		blades.WithModel(model),
-		blades.WithInstruction("You are a knowledgeable history tutor. Provide detailed and accurate information on historical events."),
-	)
-	if err != nil {
-		log.Fatal(err)
-	}
-	input := blades.UserMessage("Can you tell me about the causes of World War II?")
-	// Create a new session
-	session := blades.NewSession()
-	// Run the agent
-	runner := blades.NewRunner(agent, blades.WithSession(session))
-	output, err := runner.Run(context.Background(), input)
-	if err != nil {
-		log.Fatal(err)
-	}
-	log.Println(output.Text())
-}
-```
 ## Memory
-**`Memory`** can store conversation information from multiple **`Session`**s, allowing the Agent to recall context and details from previous conversations. In Blades, this can be implemented using the **`memory`** module. First, you need to initialize a "memory database":
+**`Memory`** can store dialogue information from multiple **`Session`**s, enabling the Agent to recall context and details from previous conversations. In Blades, the **`memory`** module can be used to implement this. First, a "memory database" needs to be initialized:
 
 ```go
 memoryStore := memory.NewInMemoryStore()
@@ -88,7 +26,7 @@ type Memory struct {
 }
 ```
 
-- **NewMemoryTool()** allows the Agent to actively search and retrieve information from the **MemoryStore**. When initializing the Agent later, you can directly add the **MemoryStore** to the Agent via the **`blades.WithTool`** method.
+- **NewMemoryTool()** allows the Agent to actively search and retrieve information from the **MemoryStore**. When initializing the Agent later, the **MemoryStore** can be added to the Agent directly via the **`blades.WithTool`** method.
 
 ```go
 memoryTool, err := memory.NewMemoryTool(memoryStore)
@@ -97,7 +35,7 @@ if err != nil {
 }
 ```
 
-- You can add information (`Memory`) to the **MemoryStore** using its `AddMemory` method.
+- Information (`Memory`) can be added to the **MemoryStore** using its `AddMemory` method.
 ```go
 // Add a memory entry
 memoryStore.AddMemory(ctx, 
@@ -115,6 +53,7 @@ package main
 import (
 	"context"
 	"log"
+	"os"
 
 	"github.com/go-kratos/blades"
 	"github.com/go-kratos/blades/contrib/openai"
@@ -128,18 +67,18 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
-	memoryStore.AddMemory(ctx, 
+	memoryStore.AddMemory(ctx,
 		&memory.Memory{
-            Content: blades.AssistantMessage("My favorite project is the Blades Agent kit."),
-        },
+			Content: blades.AssistantMessage("My favorite project is the Blades Agent kit."),
+		},
 	)
-	memoryStore.AddMemory(ctx, 
+	memoryStore.AddMemory(ctx,
 		&memory.Memory{
-            Content: blades.AssistantMessage("My favorite programming language is Go."),
-        },
+			Content: blades.AssistantMessage("My favorite programming language is Go."),
+		},
 	)
 	// Create an agent with memory tool
-    model := openai.NewModel("gpt-5", openai.Config{
+	model := openai.NewModel(os.Getenv("OPENAI_MODEL"), openai.Config{
 		APIKey: os.Getenv("OPENAI_API_KEY"),
 	})
 	agent, err := blades.NewAgent(
@@ -160,4 +99,5 @@ func main() {
 	}
 	log.Println(output.Text())
 }
+
 ```
