@@ -15,16 +15,16 @@ reference: ["https://github.com/go-kratos/blades/tree/main/examples/state","http
 - Session = 运行时上下文容器
 - State = 容器里的键值数据（map[string]any）
 
-## State：用键值方式沉淀中间结果
+## State
 
-### 数据结构
+#### 数据结构
 在 Blades 中，State 本质上可以理解为：`map[string]any`
 
 它用于跨步骤（跨 Agent）共享数据：上一步写入，下一个 Agent 的 Prompt 模板直接读取。
 
 > 你原文里单独出现的 “Kratos” 一行看起来像误粘贴，建议删掉，避免读者困惑。
 
-### 写入 State：用 WithOutputKey 把输出落到指定 key
+#### 用 `WithOutputKey` 进行保存运行结果
 在 Agent 的配置里，可以通过 `WithOutputKey` 方法，指定某个步骤的输出结果要写入 State 里的哪个 key。
 
 比如 WriterAgent 负责产出草稿，把输出落到 draft：
@@ -46,7 +46,7 @@ reviewerAgent, err := blades.NewAgent(
 )
 ```
 
-### 在 Prompt 里读取 State：模板变量直接引用
+#### 在 Prompt 里读取 State：模板变量直接引用
 当你在 WithInstruction 里写 Go template（{{.draft}} / {{.suggestions}}），Blades 会把当前 Session 的 State 注入模板上下文，于是你能像下面这样直接使用：
 ```go
 **Draft**
@@ -56,9 +56,9 @@ Here are the suggestions to consider:
 {{.suggestions}}
 ```
 
-## Session：创建、初始化、并在一次运行链路中复用
+## Session
 
-### 创建 Session（可选初始化 State）
+#### 创建 Session（可选初始化 State）
 你既可以创建空会话：
 ```go
 session := blades.NewSession()
@@ -70,13 +70,13 @@ session := blades.NewSession(map[string]any{
 })
 ```
 
-### 将 Session 注入 Runner：让同一链路共享 State
+#### 将 Session 注入 Runner：让同一链路共享 State
 只有把 session 注入运行（blades.WithSession(session)），你前面说的 State 才会在该次运行链路里共享起来。
 
 - 如果你用 runner.Run(...)：把 blades.WithSession(session) 作为 option 传入即可。
 - 如果你用 runner.RunStream(...)：同样可以传入 session option。
 
-## 完整示例：Writer/Reviewer 在 Loop 中共享 draft & suggestions
+#### 完整示例：Writer/Reviewer 在 Loop 中共享 draft & suggestions
 
 你的代码本质是一个“写作-审阅”闭环：
 1. WriterAgent 生成草稿 → 写入 draft
