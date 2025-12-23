@@ -45,8 +45,8 @@ The tool role, representing the result of executing an external tool, function, 
 ### Message
 In `Blades`, all message roles support input of multiple message types:
 - `TextPart`: Plain text content
-- `FilePart`: File content
-- `DataPart`: File reference
+- `FilePart`: File reference
+- `DataPart`: File content
 - `ToolPart`: Tool output content
 
 You can use the method corresponding to each role to add one or more pieces of information. Here, `blades.UserMessage` is used as an example:
