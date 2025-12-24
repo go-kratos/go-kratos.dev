@@ -48,16 +48,18 @@ type Logging struct {
 }
 
 // NewLogging creates a new Logging middleware.
-func NewLogging(next blades.Handler) blades.Handler {
-	return &Logging{next}
+func NewLogging() blades.Middleware {
+	return func(next blades.Handler) blades.Handler {
+		return &Logging{next}
+	}
 }
 
 func (m *Logging) onError(start time.Time, agent blades.AgentContext, invocation *blades.Invocation, err error) {
-	log.Printf("logging: model(%s) prompt(%s) failed after %s: %v", agent.Model(), invocation.Message.String(), time.Since(start), err)
+	log.Printf("logging: model(%s) prompt(%s) failed after %s: %v", agent.Name(), invocation.Message.String(), time.Since(start), err)
 }
 
 func (m *Logging) onSuccess(start time.Time, agent blades.AgentContext, invocation *blades.Invocation, output *blades.Message) {
-	log.Printf("logging: model(%s) prompt(%s) succeeded after %s: %s", agent.Model(), invocation.Message.String(), time.Since(start), output.String())
+	log.Printf("logging: model(%s) prompt(%s) succeeded after %s: %s", agent.Name(), invocation.Message.String(), time.Since(start), output.String())
 }
 
 func (m *Logging) Handle(ctx context.Context, invocation *blades.Invocation) blades.Generator[*blades.Message, error] {
@@ -98,7 +100,7 @@ agent, err := blades.NewAgent(
     "Example Agent",
     blades.WithModel(model),
     blades.WithInstruction("You are a helpful assistant."),
-    blades.WithMiddleware(Logging()), // Use the logging middleware
+    blades.WithMiddleware(NewLogging()), // Use the logging middleware
 )
 if err != nil {
     log.Fatal(err)
