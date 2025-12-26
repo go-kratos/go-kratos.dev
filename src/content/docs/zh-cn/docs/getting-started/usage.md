@@ -27,13 +27,16 @@ go install github.com/go-kratos/kratos/cmd/kratos/v2@latest
 kratos new helloworld
 ```
 
-使用 `-r` 指定源
+使用指定源
 
 ```bash
 # 国内拉取失败可使用gitee源
-kratos new helloworld -r https://gitee.com/go-kratos/kratos-layout.git
-# 亦可使用自定义的模板
-kratos new helloworld -r xxx-layout.git
+kratos new helloworld
+# 在回车之后的模板选项中，选择“Custom(enter repo URL)”, 输入以下地址
+https://gitee.com/go-kratos/kratos-layout.git
+# 亦可使用自定义的模板,同样在选择“Custom(enter repo URL)”后，输入自定义的地址
+xxx-layout.git
+
 # 同时也可以通过环境变量指定源
 KRATOS_LAYOUT_REPO=xxx-layout.git
 kratos new helloworld
