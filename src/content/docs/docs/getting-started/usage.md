@@ -16,13 +16,16 @@ To create a new project:
 kratos new helloworld
 ```
 
-Use `-r` to specify the source
+Use the specify source
 
 ```bash
-# If pull fails in China, you can use gitee source.
-kratos new helloworld -r https://gitee.com/go-kratos/kratos-layout.git
-# You can also use custom templates
-kratos new helloworld -r xxx-layout.git
+# If pulling fails in China, you can use the Gitee source  
+kratos new helloworld  
+# After pressing Enter, in the template selection prompt, choose "Custom (enter repo URL)" and enter the following URL:  
+https://gitee.com/go-kratos/kratos-layout.git  
+# You can also use a custom template—after selecting "Custom (enter repo URL)", enter your custom repository URL:  
+xxx-layout.git
+
 # You can also specify the source through the environment variable
 KRATOS_LAYOUT_REPO=xxx-layout.git
 kratos new helloworld
