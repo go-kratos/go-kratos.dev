@@ -87,5 +87,5 @@ kratos new <project-name>
 
 ### 推荐阅读
 
-* [Go 工程化 - Project Layout 最佳实践](https://go-kratos.dev/blog/go-project-layout)
-* [Kratos 学习笔记 - 通过 layout 简单分析应用是如何跑起来的](https://go-kratos.dev/blog/go-layout-operation-process)
+* [Go 工程化 - Project Layout 最佳实践](https://go-kratos.dev/zh-cn/blog/kratos/go-project-layout)
+* [Kratos 学习笔记 - 通过 layout 简单分析应用是如何跑起来的](https://go-kratos.dev/zh-cn/blog/kratos/go-layout-operation-process)
