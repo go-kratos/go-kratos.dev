@@ -1,7 +1,7 @@
 ---
 id: log
 title: 日志
-description: Kratos 为了方便业务自适配不同的 log 接入使用，Logger 只包含了最简单的 Log 接口。当业务需要在 kratos 框架内部使用自定义的 log 的时候，只需要简单实现 Log 方法即可
+description: Kratos v3 日志基于 Go 标准库 log/slog，提供结构化属性、可组合 Handler 和 OpenTelemetry 集成。
 keywords:
   - Go
   - Kratos
@@ -13,313 +13,276 @@ keywords:
   - HTTP
 ---
 
-我们可以使用日志来观察程序的行为、诊断问题或者配置相应的告警等。定义良好的结构化日志，能够提高日志的检索效率，使处理问题变得更加方便。
+日志可以帮助我们观察程序行为、诊断故障和配置告警。Kratos v3 使用 Go 标准库的 [`log/slog`](https://pkg.go.dev/log/slog) 模型，日志记录采用结构化形式，可以交给标准库 Handler，也可以接入自定义 Handler。
 
 ## 设计理念
-为了方便使用，Kratos定义了两个层面的抽象，Logger统一了日志的接入方式，Helper接口统一的日志库的调用方式。
 
-在不同的公司、使用不同的基础架构，可能对日志的打印方式、格式、输出的位置等要求各有不同。Kratos为了更加灵活地适配和迁移到各种环境，把日志组件也进行了抽象，这样就可以把业务代码里日志的使用，和日志底层具体的实现隔离开来，提高整体的可维护性。
+v3 日志包主要包含两个标准库基础类型：
 
-Kratos的日志库主要有如下特性：
+- `slog.Logger` 创建日志记录，并提供 `Info`、`Warn`、`Error` 等方法。
+- `slog.Handler` 编码和写出日志记录，可以输出文本或 JSON，也可以设置等级阈值，或者替换为可观测性后端。
 
-* Logger用于对接各种日志库或日志平台，可以用现成的或者自己实现
-* Helper是在您的项目代码中实际需要调用的，用于在业务代码里打日志
-* Filter用于对输出日志进行过滤或魔改（通常用于日志脱敏）
-* Valuer用于绑定一些全局的固定值或动态值（比如时间戳、traceID或者实例id之类的东西）到输出日志中
+Kratos 在这些标准库类型之上提供了简单的构建工具：
 
-### Helper - 在项目代码中打日志
-[Helper](https://github.com/go-kratos/kratos/blob/main/log/helper.go)：高级日志接口，提供了一系列带有日志等级和格式化方法的帮助函数，通常业务逻辑中建议使用这个，能够简化日志代码。
+- `log.NewHandler` 创建带有 Kratos 默认配置的 Handler：输出到 stderr，默认使用文本格式和 `Info` 等级，并自动合并通过 `ContextWithAttrs` 绑定的属性。
+- `log.NewLogger` 用 Kratos 的 context 属性提取和过滤能力包装已有 Handler。
+- 包级别的日志方法使用通过 `log.SetDefault` 注册的默认 Logger。
 
-你可以认为它是一个对Logger的包装，简化了打印时需要传入的参数。
+这样业务代码只依赖 `*slog.Logger`，而 Handler 可以根据环境替换为本地输出、JSON 日志收集或可观测性平台。
 
-它的用法基本上是下面的样子，后面会介绍具体的使用方法
-```go
-helper.Info("hello")
-helper.Errorf("hello %s", "eric")
-```
+## 基本使用
 
-### Logger - 适配各种日志输出方式
-[Logger](https://github.com/go-kratos/kratos/blob/main/log/log.go)：这个是底层日志接口，用于快速适配各种日志库到框架中来，仅需要实现一个最简单的Log方法。
+创建 Handler 和 Logger。如果项目需要随时使用包级别的日志方法，可以在初始化时注册为默认 Logger：
 
 ```go
-type Logger interface {
-	Log(level Level, keyvals ...interface{}) error
-}
-```
-`Level`参数用来标识日志的等级，可以在[level.go](https://github.com/go-kratos/kratos/blob/main/log/level.go)中找到。
-
-`keyvals`是一个平铺的键值数组，它的长度需要是偶数，奇数位上的是key，偶数位上的是value。
-
-
-这个Logger接口在实现完毕后的使用，简单来讲就是如下的样子：
-
-```go
-logger.Log(log.LevelInfo, "msg", "hello", "instance_id", 123)
-```
-
-很显然,直接用它有点难受，所以我们建议在项目中用`Helper`。
-
-它的意义在于，通过简单使用Logger接口，能够快速把您的日志库适配进来，并且用Helper来统一打印的行为。
-
-#### 日志等级
-对于日志等级的定义在[level.go](https://github.com/go-kratos/kratos/blob/main/log/level.go)中，您可以在使用底层的Log方法时传入它们，它们会被输出到日志的`level`字段中。在高级接口`Helper`使用特定的带日志等级的方法比如`.Infof`等，会自动应用等级，无需自己绑定等级。
-
-```go
-log.LevelDebug
-log.LevelInfo
-log.LevelWarn
-log.LevelError
-log.LevelFatal
-```
-
-#### 适配实现
-
-我们已经在[contrib/log](https://github.com/go-kratos/kratos/tree/main/contrib/log)实现好了一些插件，用于适配目前常用的日志库，您也可以参考它们的代码来实现自己需要的日志库的适配：
-
-* [std](https://github.com/go-kratos/kratos/blob/main/log/std.go) 标准输出，Kratos内置
-* [fluent](https://github.com/go-kratos/kratos/tree/main/contrib/log/fluent) 输出到fluentd
-* [zap](https://github.com/go-kratos/kratos/tree/main/contrib/log/zap) 适配了uber的[zap](https://github.com/uber-go/zap)日志库
-* [aliyun](https://github.com/go-kratos/kratos/blob/main/contrib/log/aliyun) 输出到阿里云日志
-
-## 使用
-Kratos日志库使用十分简单，和大部分日志库类似。
-
-### DefaultLogger 默认logger
-如果觉得创建logger很麻烦，可以直接用框架默认初始化好的`log.DefaultLogger`实例，它底层直接调用了go标准库的log，可以打到标准输出。
-
-### stdLogger
-框架内置实现了[stdLogger](https://github.com/go-kratos/kratos/blob/main/log/std.go)，能够打印到标准输出。使用`NewStdLogger`方法传入一个`io.Writer`即可。
-
-```go
-// 输出到控制台
-l := log.DefaultLogger
-l.Log(log.LevelInfo, "stdout_key", "stdout_value")
-
-// 输出到 ./test.log 文件
-f, err := os.OpenFile("test.log", os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0666)
-if err != nil {
-    return
-}
-l = log.NewStdLogger(f)
-l.Log(log.LevelInfo, "file_key", "file_value")
-```
-
-### 初始化
-首先你需要创建一个Logger，这里可以选：自带的std打印到标准输出，或者在contrib下面找一个已经实现好的适配，或者用自己实现的Logger。
-```go
-import "github.com/go-kratos/kratos/v2/log"
-
-h := NewHelper(yourlogger)
-
-// 用默认logger可以直接用
-h := NewHelper(log.DefaultLogger)
-```
-
-或者在[contrib/log](https://github.com/go-kratos/kratos/tree/main/contrib/log)里面找一个插件用，比如这里我们想用fluentd：
-```go
-import "github.com/go-kratos/kratos/contrib/log/fluent/v2"
-
-logger, err := fluent.NewLogger("unix:///var/run/fluent/fluent.sock")
-if err != nil {
-	return 
-}
-h := log.NewHelper(logger)
-```
-
-您可以指定默认的日志打印到的字段，不设的话默认为`msg`
-```go
-NewHelper(logger, WithMessageKey("message"))
-```
-
-### 打印日志
-注意：调用Fatal等级的方法会在打印日志后中断程序运行，请谨慎使用。
-
-直接打印不同等级的日志，会默认打到messageKey里,默认是`msg`
-```go
-h.Debug("Are you OK?")
-h.Info("42 is the answer to life, the universe, and everything")
-h.Warn("We are under attack!")
-h.Error("Houston, we have a problem.")
-h.Fatal("So Long, and Thanks for All the Fish.")
-```
-
-格式化打印不同等级的日志，方法都以f结尾
-```go
-h.Debugf("Hello %s", "boy")
-h.Infof("%d is the answer to life, the universe, and everything", 233)
-h.Warnf("We are under attack %s!", "boss")
-h.Errorf("%s, we have a problem.", "Master Shifu")
-h.Fatalf("So Long, and Thanks for All the %s.", "banana")
-```
-
-格式化打印不同等级的日志，方法都以w结尾，参数为key value对，可以输入多组。
-```go
-h.Debugw("custom_key", "Are you OK?")
-h.Infow("custom_key", "42 is the answer to life, the universe, and everything")
-h.Warnw("custom_key", "We are under attack!")
-h.Errorw("custom_key", "Houston, we have a problem.")
-h.Fatalw("custom_key", "So Long, and Thanks for All the Fish.")
-```
-
-使用底层的Log接口直接打印key和value
-```go
-h.Log(log.LevelInfo, "key1", "value1")
-```
-### Valuer 设置全局字段
-在业务日志中，通常我们会在每条日志中输出一些全局的字段，比如时间戳，实例id，追踪id，用户id，调用函数名等，显然在每条日志中手工写入这些值很麻烦。为了解决这个问题，可以使用Valuer。您可以认为它是logger的“中间件”，用它来打一些全局的信息到日志里。
-
-`log.With`方法会返回一个新的Logger，把参数的Valuer绑上去。
-
-注意要按照key,value的顺序对应写入参数。
-
-使用方法如下：
-```go
-logger = log.With(logger, "ts", log.DefaultTimestamp, "caller", log.DefaultCaller)
-```
-
-框架默认提供了如下Valuer供使用，您也可以参考它们的代码实现自定义Valuer。
-* [log.Caller](https://github.com/go-kratos/kratos/blob/2acede53f3e821cef7d3e167dc1cbd6dac22609b/log/value.go#L32) 打印出调用日志方法的文件名和函数名
-* [log.Timestamp](https://github.com/go-kratos/kratos/blob/2acede53f3e821cef7d3e167dc1cbd6dac22609b/log/value.go#L49) 打印时间戳
-* [tracing.TraceID](https://github.com/go-kratos/kratos/blob/2acede53f3e821cef7d3e167dc1cbd6dac22609b/middleware/tracing/tracing.go#L70) 打印TraceID
-* [tracing.SpanID](https://github.com/go-kratos/kratos/blob/2acede53f3e821cef7d3e167dc1cbd6dac22609b/middleware/tracing/tracing.go#L80) 打印SpanID
-
-
-
-### Filter 日志过滤
-有时日志中可能会有敏感信息，需要进行脱敏，或者只打印级别高的日志，这时候就可以使用Filter来对日志的输出进行一些过滤操作，通常用法是使用Filter来包装原始的Logger，用来创建Helper使用。
-
-它提供了如下参数：
-* `FilterLevel` 按照日志等级过滤，低于该等级的日志将不会被输出。例如这里传入`FilterLevel(log.LevelError)`，则debug/info/warn日志都会被过滤掉不会输出，error和fatal正常输出。
-* `FilterKey(key ...string) FilterOption` 按照key过滤，这些key的值会被`***`遮蔽
-* `FilterValue(value ...string) FilterOption` 按照value过滤，匹配的值会被`***`遮蔽
-* `FilterFunc(f func(level Level, keyvals ...interface{}) bool)` 使用自定义的函数来对日志进行处理，keyvals里为key和对应的value，按照奇偶进行读取即可
-
-```go
-h := NewHelper(
-	NewFilter(logger,
-		// 等级过滤
-		FilterLevel(log.LevelError),
-
-		// 按key遮蔽
-		FilterKey("username"),
-
-		// 按value遮蔽
-		FilterValue("hello"),
-
-		// 自定义过滤函数
-		FilterFunc(
-			func (level Level, keyvals ...interface{}) bool {
-				if level == LevelWarn {
-					return true
-				}
-				for i := 0; i < len(keyvals); i++ {
-					if keyvals[i] == "password" {
-						keyvals[i+1] = fuzzyStr
-					}
-				}
-				return false
-			}
-		),
-	),
-)
-
-h.Log(log.LevelDebug, "msg", "test debug")
-h.Info("hello")
-h.Infow("password", "123456")
-h.Infow("username", "kratos")
-h.Warn("warn log")
-```
-
-### 绑定context
-设置context，使用如下方法将返回一个绑定指定context的helper实例
-```go
-newHelper := h.WithContext(ctx)
-```
-
-### 请求日志中间件
-我们在[middleware/logging](https://github.com/go-kratos/kratos/blob/main/middleware/logging/logging.go)提供了一个日志中间件，使用它可以记录server端或client端每个请求的路由、参数、耗时等信息。使用时建议配合Filter对请求参数日志进行脱敏，避免敏感信息泄漏。
-
-这个middleware的代码也十分清晰地展示了如何在中间件里获取和处理请求和返回信息，具有很大的参考价值，您可以基于它的代码实现自己的日志中间件等。
-
-### 全局日志
-
-如果您在项目中，只想使用简单的日志功能，全局可以随时打印，我们提供了全局日志。
-
-```go
-import "github.com/go-kratos/kratos/v2/log"
-
-log.Info("info")
-log.Warn("warn")
-```
-
-以上为使用默认 `log.DefaultLogger` 标准输出。您也可以在contrib下面找一个已经实现好的适配，或者用自己实现的Logger，使用`log.SetLogger` 设置全局日志的logger。
-
-```go
-// 使用zap日志设置全局logger
+package main
 
 import (
+	"context"
 	"os"
 
-	"go.uber.org/zap"
-	"go.uber.org/zap/zapcore"
-
-	kratoszap "github.com/go-kratos/kratos/contrib/log/zap/v2"
-	"github.com/go-kratos/kratos/v2/log"
+	"github.com/go-kratos/kratos/v3/log"
 )
 
-f, err := os.OpenFile("test.log", os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0666)
-if err != nil {
-    return
+func main() {
+	logger := log.NewLogger(log.NewHandler(
+		log.WithWriter(os.Stdout),
+		log.WithFormat(log.FormatJSON),
+	))
+	log.SetDefault(logger)
+
+	log.Info("service started", "service.name", "helloworld")
+	log.InfoContext(context.Background(), "request completed", "request_id", "req-1")
 }
-writeSyncer := zapcore.AddSync(f)
-
-encoder := zapcore.NewJSONEncoder(zap.NewProductionEncoderConfig())
-core := zapcore.NewCore(encoder, writeSyncer, zapcore.DebugLevel)
-z := zap.New(core)
-
-logger := kratoszap.NewLogger(z)
-log.SetLogger(logger)
-
-// 打印日志
-log.Info("info")
-log.Debug("debug")
 ```
+
+如果直接使用标准库创建 Handler，可以通过 `slog.New` 创建 Logger：
+
+```go
+handler := slog.NewJSONHandler(os.Stdout, &slog.HandlerOptions{
+	Level: slog.LevelInfo,
+})
+logger := slog.New(handler)
+logger.Info("service started", "service.name", "helloworld")
+```
+
+## 全局 Logger
+
+包级别的方法与对应的 `slog.Logger` 方法保持一致。第一个参数是日志消息，后面可以传入键值对或类型明确的 `slog.Attr`：
+
+```go
+log.Debug("cache miss", "key", key)
+log.Info("user created", slog.String("user_id", userID))
+log.Warn("retrying request", "attempt", attempt)
+log.Error("request failed", "error", err)
+log.InfoContext(ctx, "request completed", "request_id", requestID)
+```
+
+在应用初始化时调用 `log.SetDefault`，即可修改这些包级别方法所使用的 Logger。`log.Default` 返回当前的默认 Logger。
+
+```go
+logger := log.NewLogger(log.NewHandler(
+	log.WithFormat(log.FormatJSON),
+	log.WithLevel(log.LevelDebug),
+))
+log.SetDefault(logger)
+```
+
+v3 不再提供 `DefaultLogger`、`SetLogger` 和 `NewHelper`。需要显式依赖日志的组件应直接注入 `*slog.Logger`，不要依赖全局状态。
+
+## Builder 和属性
+
+当项目自己管理日志输出位置时，可以使用 `log.NewHandler`。当项目已经有 `slog.Handler`，或者还需要增加 Kratos 的过滤和 context 属性提取能力时，可以使用 `log.NewLogger`。
+
+```go
+logger := log.NewLogger(
+	log.NewHandler(
+		log.WithWriter(os.Stdout),
+		log.WithFormat(log.FormatJSON),
+		log.WithLevel(log.LevelDebug),
+		log.WithAddSource(true),
+	),
+).With(
+		slog.String("service.name", serviceName),
+		slog.String("service.version", version),
+)
+
+logger.Info("service ready", "addr", address)
+```
+
+使用 `With` 为 Logger 的每条日志添加固定属性。使用 `WithGroup` 可以把相关属性放进同一组：
+
+```go
+requestLogger := logger.WithGroup("request")
+requestLogger.Info("finished", "id", requestID, "latency_ms", latency)
+```
+
+`slog.String`、`slog.Int` 和 `slog.Any` 等类型化属性可以明确值的类型。简单日志可以使用键值对；当属性来自一个切片时，使用 `LogAttrs` 更合适：
+
+```go
+logger.LogAttrs(ctx, log.LevelInfo, "user created",
+		slog.String("user_id", userID),
+		slog.String("source", "api"),
+)
+```
+
+## Context 属性
+
+使用 `ContextWithAttrs` 将请求范围内的属性绑定到 context。`log.NewLogger` 返回的 Logger 或 `log.NewHandler` 创建的 Handler，会在带 context 的日志调用中自动提取这些属性：
+
+```go
+ctx = log.ContextWithAttrs(ctx,
+		slog.String("request_id", requestID),
+		slog.String("trace_id", traceID),
+)
+
+logger.InfoContext(ctx, "handling request")
+```
+
+Context 属性只会添加到使用该 context 的日志调用中。对于整个 Logger 生命周期固定的服务名、版本等属性，应使用 `With`。
+
+如果需要从 context 中提取其他数据，可以实现 `log.Extractor`，并通过 `log.WithExtractor` 传入：
+
+```go
+logger := log.NewLogger(
+	log.NewHandler(),
+	log.WithExtractor(func(ctx context.Context) []slog.Attr {
+		return []slog.Attr{slog.String("tenant_id", tenantIDFromContext(ctx))}
+	}),
+)
+```
+
+## 过滤和脱敏
+
+当日志需要脱敏或丢弃时，使用 `log.WithFilter` 在底层 Handler 之前处理日志记录。
+
+`log.FilterKey` 会把匹配属性的值替换成 `***`。它支持 `password` 这样的叶子键，也支持 `user.password` 这样的点号路径：
+
+```go
+logger := log.NewLogger(
+	log.NewHandler(log.WithFormat(log.FormatJSON)),
+	log.WithFilter(log.FilterKey("password", "token", "user.password")),
+)
+
+logger.Info("login", "username", username, "password", password)
+```
+
+`log.FilterFunc` 接收已经完成键脱敏的日志记录。返回 `true` 时会丢弃该记录：
+
+```go
+logger := log.NewLogger(
+	log.NewHandler(),
+	log.WithFilter(log.FilterFunc(func(_ context.Context, record slog.Record) bool {
+		return record.Level < log.LevelInfo
+	})),
+)
+```
+
+过滤器属于 Logger 配置。所有可能接收敏感数据的 Logger，包括传给请求日志中间件的 Logger，都应使用一致的过滤配置。
+
+## 等级和输出
+
+默认 Handler 将文本日志写入 stderr，并输出 `Info` 及以上等级的记录。可以通过 Builder 选项配置输出位置、格式、等级、源码位置和属性替换：
+
+```go
+logger := log.NewLogger(log.NewHandler(
+	log.WithWriter(os.Stdout),
+	log.WithFormat(log.FormatJSON),
+	log.WithLevel(log.LevelDebug),
+	log.WithAddSource(true),
+	log.WithReplaceAttr(func(groups []string, attr slog.Attr) slog.Attr {
+		if attr.Key == "password" {
+			return slog.String(attr.Key, "***")
+		}
+		return attr
+	}),
+))
+```
+
+Kratos 提供的等级别名包括 `LevelDebug`、`LevelInfo`、`LevelWarn`、`LevelError` 和 `LevelFatal`。包级别的快捷方法包括 `Debug`、`Info`、`Warn` 和 `Error`；需要传入明确等级时使用 `Log` 或 `LogAttrs`。
+
+## 请求日志中间件
+
+`middleware/logging` 会记录服务端和客户端请求的传输类型、操作、状态码、耗时等信息。它接收 `*slog.Logger`：
+
+```go
+import (
+	kratoshttp "github.com/go-kratos/kratos/v3/transport/http"
+	"github.com/go-kratos/kratos/v3/middleware/logging"
+)
+
+srv := kratoshttp.NewServer(
+	kratoshttp.Middleware(logging.Server(logger)),
+)
+```
+
+在 HTTP 或 gRPC 客户端的 middleware 选项中使用 `logging.Client(logger)`，可以记录发出的请求。对于请求对象，如果包含敏感数据，应实现 `Redact() string`；同时还应在 Logger 中通过 `FilterKey` 配置敏感属性脱敏。
+
+## OpenTelemetry 日志
+
+OpenTelemetry Bridge 位于可选的 contrib 模块中。它会把 `slog` 记录转换为 OpenTelemetry Logs；当 context 中存在有效 Span 时，还会增加链路关联属性：
+
+```go
+import (
+	otellog "github.com/go-kratos/kratos/contrib/otel/v3/log"
+	"github.com/go-kratos/kratos/v3/log"
+)
+
+logger := log.NewLogger(otellog.NewHandler("helloworld"))
+log.SetDefault(logger)
+```
+
+可以使用 `otellog.WithLoggerProvider`、`otellog.WithSchemaURL`、`otellog.WithSource` 和 `otellog.WithVersion` 配置 OpenTelemetry `LoggerProvider` 或 Bridge：
+
+```go
+logger := log.NewLogger(
+	otellog.NewHandler("helloworld", otellog.WithLoggerProvider(provider)),
+	log.WithFilter(log.FilterKey("password")),
+).With(slog.String("service.name", "helloworld"))
+```
+
+contrib 的导入路径是 `github.com/go-kratos/kratos/contrib/otel/v3/log`，核心日志包的导入路径是 `github.com/go-kratos/kratos/v3/log`。
 
 ## kratos-layout
 
-在我们的默认项目模板中，我们在[cmd/server/main.go](https://github.com/go-kratos/kratos-layout/blob/cf30efc32d78338e8e4739d3288feeba426388a5/cmd/server/main.go#L49)的`main()`函数，即程序入口处初始化了logger实例，并注入了一些全局的日志值，它们会被打到所有输出的日志中。
-
-您可以修改这里使用的logger，来进行自定义打印的值，或者更换为自己需要的logger实现。
+v3 项目模板会在应用入口初始化 `*slog.Logger`，再注入到各个 service 层。典型配置如下：
 
 ```go
-logger := log.With(log.NewStdLogger(os.Stdout),
-	"ts", log.DefaultTimestamp,
-	"caller", log.DefaultCaller,
-	"service.id", id,
-	"service.name", Name,
-	"service.version", Version,
-	"trace_id", tracing.TraceID(),
-	"span_id", tracing.SpanID(),
+logger := log.NewLogger(log.NewHandler(
+	log.WithWriter(os.Stdout),
+	log.WithFormat(log.FormatJSON),
+)).With(
+		slog.String("service.id", id),
+		slog.String("service.name", Name),
+		slog.String("service.version", Version),
 )
 ```
 
-这个logger将通过依赖注入工具wire的生成，注入到项目的各层中，供其内部使用。
-
-一个具体的内部使用例子可以参考[internal/service/greeter.go](https://github.com/go-kratos/kratos-layout/blob/cf30efc32d78338e8e4739d3288feeba426388a5/internal/service/greeter.go#L21)
-
-我们在这里将注入进来的logger实例，用`log.NewHelper`包装成Helper，绑定到service上，这样就可以在这一层调用这个绑定的的helper对象来打日志了。
+将 Logger 直接注入 service，并使用带 context 的方法：
 
 ```go
-func NewGreeterService(uc *biz.GreeterUsecase, logger log.Logger) *GreeterService {
-	return &GreeterService{uc: uc, log: log.NewHelper(logger)} // 初始化和绑定helper
+func NewGreeterService(uc *GreeterUsecase, logger *slog.Logger) *GreeterService {
+	return &GreeterService{uc: uc, log: logger}
 }
 
 func (s *GreeterService) SayHello(ctx context.Context, in *v1.HelloRequest) (*v1.HelloReply, error) {
-	// 打印日志
-	s.log.WithContext(ctx).Infof("SayHello Received: %v", in.GetName())
-
+	s.log.InfoContext(ctx, "SayHello received", "name", in.GetName())
 	return &v1.HelloReply{Message: "Hello " + in.GetName()}, nil
 }
 ```
 
-其它几个层级的初始化和使用方式也是一样的，在[biz层](https://github.com/go-kratos/kratos-layout/blob/cf30efc32d78338e8e4739d3288feeba426388a5/internal/biz/greeter.go#L23)和[data层](https://github.com/go-kratos/kratos-layout/blob/main/internal/data/greeter.go)中我们也给了logger注入的样例，您可以进行参考。
+当前生成项目的结构可以参考 [kratos-layout](https://github.com/go-kratos/kratos-layout) 仓库。
+
+## 从 v2 迁移
+
+| v2 | v3 |
+| --- | --- |
+| `github.com/go-kratos/kratos/v2/log` | `github.com/go-kratos/kratos/v3/log` |
+| `log.Logger` 和 `log.NewHelper` | `*slog.Logger` 和 `slog.Handler` |
+| `log.DefaultLogger` 和 `log.NewStdLogger` | `log.NewHandler` 和 `log.NewLogger` |
+| `log.SetLogger` | `log.SetDefault` |
+| `Infof`、`Errorf`、`Infow` | `Info`、`Error` 和类型化的 `slog.Attr` |
+| `Valuer` | `Logger.With`、`Logger.WithGroup` 或 `ContextWithAttrs` |
+| `FilterLevel` 和 `FilterValue` | `WithLevel` 和 `FilterKey` |
+
+v3 API 遵循 `log/slog`，已有实现 `slog.Handler` 接口的 Handler 可以继续复用。升级时请同时更新依赖和导入路径，并检查所有敏感字段是否已纳入新的 Handler 配置。
