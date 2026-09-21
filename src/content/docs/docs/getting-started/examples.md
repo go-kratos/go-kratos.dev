@@ -1,78 +1,54 @@
 ---
 id: examples
-title: Examples
-description: Kratos examples
-keywords:
-  - Go
-  - Kratos
-  - Toolkit
-  - Framework
-  - Microservices
-  - Protobuf
-  - gRPC
-  - HTTP
+title: Examples and Source Code
+description: Find complete Kratos v3 services and focused component examples.
 ---
 
-Kratos provides a wealth of sample code/projects for reference
+Use [kratos-layout](https://github.com/go-kratos/kratos-layout) for a complete
+service and the [Kratos source](https://github.com/go-kratos/kratos) package
+tests for focused component examples. Contrib integrations carry their examples
+and tests inside their own modules.
 
-## Components' Usage
+## Complete service
 
-[All Examples](https://github.com/go-kratos/examples)
+The layout contains:
 
-### Configuration
+- a Todo protobuf contract with unary and streaming RPCs;
+- generated HTTP/gRPC bindings and OpenAPI output;
+- `service`, `biz`, and `data` layers wired at compile time;
+- Ent-backed MySQL runtime storage and SQLite repository tests;
+- AIP filtering, ordering, pagination, field masks, and required-field checks;
+- application bootstrap with `slog`, configuration, recovery, validation, and
+  OpenTelemetry trace attribute extraction.
 
-- [config](https://github.com/go-kratos/examples/tree/main/config) example of using config to parse configuration files
-- [apollo](https://github.com/go-kratos/examples/tree/main/config/apollo) exmaple of getting configuration from apollo
+Follow [Build a Service from the Layout](/docs/guide/service-development/) for
+the actual request flow. Read its `go.mod` and source instead of relying on an
+older README description.
 
-### Service Discovery and Registration
+## Component examples
 
-- [etcd](https://github.com/go-kratos/examples/tree/main/registry/etcd) example of service registration on the server side and service registration on the client side using the etcd plug-in.
-- [nacos](https://github.com/go-kratos/examples/tree/main/registry/nacos) example of service registration on the server side and service registration on the client side using the nacos plug-in.
-- [consul](https://github.com/go-kratos/examples/tree/main/registry/consul) example of service registration on the server side and service registration on the client side using the consul plug-in.
-- [zookeeper](https://github.com/go-kratos/examples/tree/main/registry/zookeeper) example of service registration on the server side and service registration on the client side using the zookeeper plug-in.
+Core package tests are the closest executable specification for option defaults
+and edge cases. Useful locations include `config/*_test.go`,
+`transport/http/*_test.go`, `transport/grpc/*_test.go`,
+`middleware/*/*_test.go`, and `selector/*_test.go`. Read the implementation
+beside each test to distinguish public guarantees from test setup details.
 
-### HTTP
+The separate [go-kratos/examples](https://github.com/go-kratos/examples)
+repository contains integration-oriented projects. Before copying one:
 
-- [cors](https://github.com/go-kratos/examples/tree/main/http/cors) example of cross-domain settings
-- [gin](https://github.com/go-kratos/examples/tree/main/http/gin) example of use gin as the router.
-- [mux](https://github.com/go-kratos/examples/tree/main/http/mux) example of use mux as the router.
-- [echo](https://github.com/go-kratos/examples/tree/main/http/echo) example of use echo as the router.
-- [static](https://github.com/go-kratos/examples/tree/main/http/static) example of static files serving.
-- [upload](https://github.com/go-kratos/examples/tree/main/http/upload) example of file upload.
-- [redirect](https://github.com/go-kratos/examples/blob/main/http/redirect) example of redirect.
-- [middleware](https://github.com/go-kratos/examples/tree/main/http/middlewares) example of use middleware in the router.
-- [errors](https://github.com/go-kratos/examples/tree/main/http/errors) example of error response using unified error handling.
+1. Check `go.mod` for `/v3` core and contrib module paths.
+2. Inspect its version and generator configuration.
+3. Run generation only through commands committed by that project.
+4. Run `go test ./...` and `go vet ./...` before adapting it.
+5. Add one integration at a time so failures have a clear owner.
 
-### RPC
+## Apply an example to your service
 
-- [helloworld](https://github.com/go-kratos/examples/tree/main/helloworld) example of remote calls using http and gRPC.
+A compiling example shows that its imports and types agree at the selected
+versions. It does not establish production policy such as TLS trust, registry
+credentials, telemetry sampling, database migrations, or shutdown budgets.
+Those choices must be configured and tested in the consuming service.
 
-### Trace
-
-- [traces](https://github.com/go-kratos/examples/tree/main/traces) example of use jaeger for tracing.
-
-### WebSocket
-
-- [ws](https://github.com/go-kratos/examples/tree/main/ws) example of file WebSocket.
-
-### Authentication
-
-- [jwt](https://github.com/go-kratos/examples/tree/main/auth/jwt) emxaple of use JWT authentication in HTTP, gRPC.
-
-### Log
-
-- [zap](https://github.com/go-kratos/examples/tree/main/log) example of use Zap.
-- [logrus](https://github.com/go-kratos/examples/tree/main/log) example of use logrus.
-
-### Other
-
-- [i18n](https://github.com/go-kratos/examples/tree/main/i18n) example of internationalization support.
-- [header](https://github.com/go-kratos/examples/tree/main/header) example of header.
-- [selector](https://github.com/go-kratos/examples/tree/main/selector) example of Selector. Selection by Load Balancing and Filter
-- [swagger](https://github.com/go-kratos/examples/tree/main/swagger) example of use Swagger automaticlly genereate interface documentation and provide online services.
-
-## Complete Projects
-
-- [blog](https://github.com/go-kratos/examples/tree/main/blog) a simple CRUD project which includes MySQL Redis integration.
-
-- [beer-shop](https://github.com/go-kratos/beer-shop) an online shop application, mono-repo microservices demo for kratos.
+Avoid combining v2 prose with v3 imports or mixing unrelated contrib versions.
+Core and contrib are separate modules even though their source lives in the
+same repository.

@@ -1,78 +1,55 @@
 ---
 id: overview
-title: 简介
-description: Kratos 一套轻量级 Go 微服务框架，包含大量微服务相关框架及工具
-keywords:
-  - Go 
-  - Kratos
-  - Toolkit
-  - Framework
-  - Microservices
-  - Protobuf
-  - gRPC
-  - HTTP
+title: Kratos v3 文档
+description: 使用 Kratos v3 的 HTTP/gRPC transport 与显式、可组合的基础设施构建 Go 微服务。
 ---
 
-Kratos 一套轻量级 Go 微服务框架，包含大量微服务相关框架及工具。  
+Kratos v3 是一个轻量级 Go 云原生服务框架，提供应用生命周期、生成的 HTTP/gRPC transport、middleware、配置、结构化错误、metadata、encoding、日志和服务发现接口。应用通过独立 module 选择持久化、注册中心、遥测和远程配置实现。
 
-> 名字来源于:《战神》游戏以希腊神话为背景，讲述奎托斯（Kratos）由凡人成为战神并展开弑神屠杀的冒险经历。
+文档介绍 v3 API 和当前的 [Kratos 项目 layout](https://github.com/go-kratos/kratos-layout)。Core 与 contrib package 分开说明，方便判断应用需要显式添加哪些依赖。
 
-### 目标
+## 从这里开始
 
-我们致力于提供完整的微服务研发体验，整合相关框架及工具后，微服务治理相关部分可对整体业务开发周期无感，从而更加聚焦于业务交付。对每位开发者而言，整套 Kratos 框架也是不错的学习仓库，可以了解和参考到微服务方面的技术积累和经验。
+1. 按[快速开始](/zh-cn/docs/getting-started/start/)准备工具、复制项目模板、生成代码、运行测试并启动服务。
+2. 阅读[基于 Layout 开发服务](/zh-cn/docs/guide/service-development/)，理解 Todo 示例从 protobuf API 到 Ent repository 的完整流程。
+3. 配置应用、transport、middleware、注册中心或 codec 时查阅[组件文档](/zh-cn/docs/component/application/)。
+4. 已有 v2 服务应先阅读[从 v2 迁移到 v3](/zh-cn/docs/migration/v2-to-v3/)，再按需采用[Kratos v3 新功能](/zh-cn/docs/migration/v3-new-features/)。
 
-#### 原则
+## Core 模型
 
-* **简单**：不过度设计，代码平实简单；
-* **通用**：通用业务开发所需要的基础库的功能；
-* **高效**：提高业务迭代的效率；
-* **稳定**：基础库可测试性高，覆盖率高，有线上实践安全可靠；
-* **健壮**：通过良好的基础库设计，减少错用；
-* **高性能**：性能高，但不特定为了性能做 hack 优化，引入 unsafe ；
-* **扩展性**：良好的接口设计，来扩展实现，或者通过新增基础库目录来扩展功能；
-* **容错性**：为失败设计，大量引入对 SRE 的理解，鲁棒性高；
-* **工具链**：包含大量工具链，比如 cache 代码生成，lint 工具等等；
+应用接收一个或多个 server，并负责其启动和停止生命周期。生成的 binding 把 protobuf 方法适配到 HTTP 和 gRPC。统一的 middleware 类型可以在两种 transport 上包装生成的 handler。配置源、注册中心、selector 和 codec 使用小型接口，不强制具体 provider。
 
-### 特性
+Core module 是 `github.com/go-kratos/kratos/v3`。CLI 和每个 contrib 集成都有独立 Go module，也可能拥有不同版本。复制示例前应先检查 module path。
 
-* **APIs**：协议通信以 HTTP/gRPC 为基础，通过 Protobuf 进行定义；
-* **Errors**：通过 Protobuf 的 Enum 作为错误码定义，以及工具生成判定接口；
-* **Metadata**：在协议通信 HTTP/gRPC 中，通过 Middleware 规范化服务元信息传递；
-* **Config**：支持多数据源方式，进行配置合并铺平，通过 Atomic 方式支持动态配置；
-* **Logger**：标准日志接口，可方便集成三方 log 库，并可通过 fluentd 收集日志；
-* **Metrics**：统一指标接口，可以实现各种指标系统，默认集成 Prometheus；
-* **Tracing**：遵循 OpenTelemetry 规范定义，以实现微服务链路追踪；
-* **Encoding**：支持 Accept 和 Content-Type 进行自动选择内容编码；
-* **Transport**：通用的 HTTP/gRPC 传输层，实现统一的 Middleware 插件支持；
-* **Registry**：实现统一注册中心接口，可插件化对接各种注册中心；
+## v3 提供的能力
 
-### 架构
+| 范围 | Core 行为 |
+| --- | --- |
+| 应用 | 并发 server 生命周期、hook、信号、注册、优雅停止 |
+| API 工具 | Protobuf HTTP/error generator 与项目 CLI |
+| Transport | HTTP/gRPC server 和 client、生成 binding、unary 与 streaming 支持 |
+| Middleware | Recovery、logging、metadata、validation、限流、熔断、选择性执行 |
+| 数据 contract | 结构化错误、transport metadata、codec registry、config value |
+| 路由 | Registry 接口、服务发现集成、selector 与 node filter |
+| 日志 | 标准库 `log/slog` handler、过滤和 context attribute |
 
-<img src="/images/arch.png" alt="kratos architecture" width="650px" />
+JWT 与 OpenTelemetry tracing/metrics 在 v3 中属于 contrib module。数据库、队列、缓存、migration、遥测 exporter 和部署策略仍由应用选择，框架不会隐式配置这些系统。
 
-### 相关资料
+## 参考 Layout
 
-* [Docs](https://go-kratos.dev/)
-* [Examples](https://github.com/go-kratos/examples)
-* [Service Layout](https://github.com/go-kratos/kratos-layout)
+维护中的 layout 展示 protobuf-first API、生成的 HTTP/gRPC binding、Wire 依赖注入、`service`/`biz`/`data` 分层、Ent 存储、MySQL 运行配置、SQLite repository 测试、AIP list 过滤/排序/分页、部分更新和 streaming RPC。
 
-### 社区
+可以把该结构作为经过测试的起点。Kratos 本身并不强制使用 Wire、Ent、MySQL 或完全相同的 package layout。
 
-* [Wechat Group](https://github.com/go-kratos/kratos/issues/682)
-* [Discord Group](https://discord.gg/BWzJsUJ)
-* QQ Group: 716486124
+## 示例可信性
 
-### 公众号
+站点构建会编译并检查示例。中英文页面共享相同代码，发布前也会检查站内链接。
 
-<img src="/images/wechat.png" alt="kratos architecture" width="650px" />
+## 社区与许可证
 
-### 开源证书
+- [Kratos 源码](https://github.com/go-kratos/kratos)
+- [项目 Layout](https://github.com/go-kratos/kratos-layout)
+- [示例](https://github.com/go-kratos/examples)
+- [贡献指南](/zh-cn/docs/community/contribution/)
 
-Kratos is MIT licensed. See the [LICENSE](https://github.com/go-kratos/kratos/blob/main/LICENSE) file for details.
-
-### 贡献者列表
-
-感谢开发者们对本项目的贡献。
-<a href="https://github.com/go-kratos/kratos/graphs/contributors">
-  <img src="https://contrib.rocks/image?repo=go-kratos/kratos" />
-</a>
+Kratos 使用 [MIT License](https://github.com/go-kratos/kratos/blob/main/LICENSE)。

@@ -1,9 +1,9 @@
 ---
 id: design
-title: Design
-description: This document describes the design philosophy of Kratos and introduces the overall situation and main components of the project.
+title: Design Philosophy
+description: The design principles, project structure, and component boundaries of Kratos v3.
 keywords:
-  - Go 
+  - Go
   - Kratos
   - Toolkit
   - Framework
@@ -12,257 +12,369 @@ keywords:
   - gRPC
   - HTTP
 ---
-This document describes the design philosophy of Kratos and introduces the overall situation and main components of the project.
 
-## Design Philosophy
-Kratos is a microservice framework implemented in Go language. To be more precise, it's more like a toolbox for building microservices in Go. Developers can choose or customize the components according to their own habits to create their own microservices. Kratos is not bound to a specific infrastructure, not limited to a certain registry, or database ORM. So that you can easily integrate any library into your project and work with Kratos.
+Kratos is a Go framework for building services. More precisely, it is a toolbox:
+applications select the parts they need and keep control of their own
+architecture and infrastructure. Kratos does not require a particular database,
+ORM, cache, message queue, registry, configuration center, or deployment
+platform.
 
-Around this core design concept, we have designed the following project ecology：
+This design began with the v2 rewrite and remains the foundation of v3. V3
+updates the public APIs and toolchain, but it continues to favor small
+interfaces, explicit assembly, generated transport adapters, and replaceable
+infrastructure.
 
-* [kratos](https://github.com/go-kratos/kratos) Kratos framework core. It mainly includes basic CLI tools, HTTP/gRPC interface generation tools and service life cycle management. Provides components and interface definitions for link tracking, configuration, logging, service discovery, and monitoring.
-* [contrib](https://github.com/go-kratos/kratos/tree/main/contrib) A series of components such as configuration, logging, service discovery, monitoring, etc. You can use them directly. Or you can refer to their code to adapt the services you need to integrate them into the kratos project.
-* [aegis](https://github.com/go-kratos/aegis) We put the service availability algorithm (current limit, circuit breaker, etc.) in this independent project. It has few external dependencies, nor does it depend on Kratos. You can easily integrate it into Kratos to improve the usability of the service. Or you can use it directly in any project.
-* [layout](https://github.com/go-kratos/kratos-layout) A default project template we designed. It contains a project structure, Makefile script and Dockerfile with reference to DDD and clean architecture design. But this project template is not required. You can modify it however you want, or use a project structure of your own design and Kratos will still work. The framework is highly customizable and does not make any assumptions or restrictions on the project structure itself. You can use it according to your own ideas.
-* [gateway](https://github.com/go-kratos/gateway) This is the API Gateway we just started developing with Go. Later, you can use it as a gateway for your Kratos microservices for the governance of microservice APIs. The project is under construction, please pay attention.
+## Design principles
 
-## Community
-* GitHub：[https://github.com/go-kratos](https://github.com/go-kratos)
-* Documents：[https://go-kratos.dev/](https://go-kratos.dev/)
-* Wechat：[go-kratos Official WeChat Group](https://github.com/go-kratos/kratos/issues/682)
-* Discord：[go-kratos](https://discord.com/invite/BWzJsUJ)
+The original Kratos design set out several goals that still guide the project:
 
-## Why Kratos V2 was completely redesigned
-Those who have paid attention to the kratos project before may know that the v1 version of Kratos has been open source for a long time, and it is also a relatively complete framework. So why not continue to iterate directly based on v1, but start over and launch a completely redesigned v2?
+- **Simple:** use ordinary Go and avoid unnecessary framework machinery.
+- **General:** provide reusable service capabilities rather than encode one
+  company's business conventions.
+- **Efficient:** reduce repeated integration and code-generation work so teams
+  can focus on service behavior.
+- **Stable and robust:** keep core contracts testable and make common failures
+  explicit.
+- **Performance-conscious:** provide suitable performance without relying on
+  opaque or unsafe application patterns.
+- **Extensible:** define focused interfaces that applications and contrib
+  modules can implement.
+- **Fault-aware:** include timeouts, graceful shutdown, rate limiting, circuit
+  breaking, recovery, and observable errors as normal service concerns.
+- **Tool-supported:** keep API, configuration, and dependency-wiring generation
+  repeatable through project-owned commands.
 
-A fall into a ditch makes you wiser.
+These principles explain why Kratos leaves business architecture and provider
+selection to the application. A framework default should be useful, but it
+should not make a database or vendor SDK part of the business model.
 
-We found that with the continuous iteration of the business and the continuous expansion of the project, the past framework and project structure design led to a gradual increase in the cost of code changes. And there is no reasonable abstraction, which makes it more difficult to test modules, and it is more difficult to adapt and migrate third-party basic libraries. This reduces productivity to some extent.
+## Project ecosystem
 
-Therefore, we have redesigned the project structure of microservices with reference to a large number of advanced design concepts in the industry such as DDD and Clean Architecture. And this structure will be further iterated with our follow-up research, making it the best practice for microservice project structure.
+The main projects have distinct responsibilities:
 
-That's right, the new version starts with kratos-layout. Maybe you will feel uncomfortable when you are new to this project structure. But as the project iterates and the code complexity increases, this well-defined structure will keep the project excellent code readability, testability, and satisfactory development efficiency and maintainability.
+- [`go-kratos/kratos`](https://github.com/go-kratos/kratos) contains the core
+  runtime, CLI and protobuf generators, transports, middleware, configuration,
+  errors, logging, registry contracts, and selector implementations.
+- [`go-kratos/kratos-layout`](https://github.com/go-kratos/kratos-layout) is the
+  reference service template. It demonstrates dependency direction, Buf and
+  Wire generation, HTTP/gRPC servers, configuration, and a data layer.
+- [`contrib`](https://github.com/go-kratos/kratos/tree/main/contrib) contains
+  optional integrations. In v3, integrations such as OpenTelemetry are
+  independently versioned modules and must be added explicitly by an
+  application.
+- [`go-kratos/gateway`](https://github.com/go-kratos/gateway) is a separate API
+  gateway project. A Kratos service does not require it.
 
-More importantly, this time we want to design and develop this framework for the community. Get more developers to use our framework to be more productive while participating in our projects.
+The layout is an example rather than a condition for using the framework. A
+team can modify its directories, use another dependency-injection approach, or
+adopt an existing project structure while continuing to use Kratos transports
+and components.
 
-So we designed the entire framework as a socket, and we hoped that the entire framework would be lightweight, plug-in, and customizable. For almost every functional module related to microservices, we have designed standardized interfaces, and designed plug-ins for third-party libraries. This makes it possible to quickly integrate arbitrary infrastructure into projects using Kratos. So, no matter what infrastructure your company uses or what specifications you have, you can easily customize Kratos to match your development and production environments.
+## Why v2 was redesigned
 
-Without destruction there can be no construction. The V2 is a complete overhaul from the inside out. We were unable to tinker on the old version and chose to redesign and develop the new version. At present, the v2 version has also been used in many production environments. We will also continue to iterate and improve this framework. At the same time, all developers are welcome to participate and make it better together.
+Kratos v1 already provided a broad set of microservice libraries. As services
+and teams grew, however, tightly coupled framework and project structures made
+changes more expensive. Modules were harder to test in isolation, and replacing
+third-party infrastructure required work across business code.
 
-## Database/Cache/Message Queue/...
+V2 addressed this by redesigning the framework and `kratos-layout` around ideas
+from Domain-Driven Design and Clean Architecture. The key result was dependency
+direction: business rules define the interfaces they need, while transport and
+infrastructure code implement adapters at the edges. This structure improves
+readability, testing, and the ability to replace external systems as a service
+evolves.
 
-As mentioned earlier, the Kratos framework does not restrict you to use any third-party library for project development, so you can choose a library for integration according to your preference. We will also gradually develop plugins for more widely used third-party libraries.
+The framework was deliberately designed like a socket. Core packages provide
+standard connection points; an application plugs in implementations that match
+its production environment. That approach also lets the community add
+integrations without expanding the core runtime for every provider.
 
-Here is some popular libary:
+## How v3 extends the design
 
-Database:
-* [database/sql](https://pkg.go.dev/database/sql)
-* [gorm](https://github.com/go-gorm/gorm) 
-* [ent](https://github.com/ent/ent)
+V3 keeps the v2 architecture and sharpens its boundaries:
 
-Cache:
-* [go-redis](https://github.com/go-redis/redis)
-* [redigo](https://github.com/gomodule/redigo)
-* [gomemcache](https://github.com/bradfitz/gomemcache)
+- Core imports use the `/v3` module path and require the v3 Go toolchain.
+- Logging uses the standard `log/slog` API instead of a Kratos-specific
+  `Logger`/`Helper` abstraction.
+- OpenTelemetry tracing and metrics and JWT middleware are independent contrib
+  modules, so applications own their setup and shutdown.
+- Go JSON and protobuf JSON are separate codecs with explicit wire behavior.
+- HTTP code generation supports server streams with SSE and client or
+  bidirectional streams with WebSocket.
+- Configuration adds typed `config.Get[T]`, validation accepts custom validator
+  functions, and errors add helpers such as `Join` and `TooManyRequests`.
+- Rate limiting and circuit breaking have core default implementations without
+  requiring Aegis; custom implementations still use the exposed interfaces.
 
-Message Queue:
-* [sarama](https://github.com/Shopify/sarama) kafka client
-* [kafka-go](https://github.com/segmentio/kafka-go)
+These changes update how components are integrated. They do not require a new
+business-layer architecture. See [New Features in Kratos
+v3](/docs/migration/v3-new-features/) and [Migrate from v2 to
+v3](/docs/migration/v2-to-v3/) for the feature and migration details.
 
-Want more？ Please visit [awesome-go](https://github.com/avelino/awesome-go)
+## Application lifecycle
 
-## CLI Tool
+`kratos.App` is a lifecycle coordinator. It accepts service identity, one or
+more `transport.Server` values, an optional registrar, hooks, a logger, and
+shutdown timeouts. It does not construct databases or providers implicitly.
 
-CLI are currently mainly used to create projects from templates, maintain dependency package versions, etc. For more details please visit [Document](https://go-kratos.dev/docs/getting-started/usage)
+```go
+app := kratos.New(
+	kratos.ID(instanceID),
+	kratos.Name("todo"),
+	kratos.Version(version),
+	kratos.Metadata(map[string]string{"region": region}),
+	kratos.Logger(logger),
+	kratos.Server(httpServer, grpcServer),
+	kratos.Registrar(registrar),
+	kratos.StopTimeout(10*time.Second),
+)
 
-## API
+if err := app.Run(); err != nil {
+	return err
+}
+```
 
-Kratos uses Protobuf for API definition. Protobuf is a language-neutral data serialization protocol developed by Google. It has the characteristics of clear structure definition, good scalability, small size, and excellent performance, and is widely used in many companies and projects.
+`Run` executes `BeforeStart` hooks, starts the servers, registers the resulting
+service instance, and then runs `AfterStart` hooks. A configured signal, an
+explicit `Stop`, or a server failure begins shutdown. `Stop` executes
+`BeforeStop`, deregisters the instance, cancels the application context, and
+lets each server stop within the configured budget; `AfterStop` runs after the
+servers have exited.
 
-In a project using Kratos, you will use the following IDL for your interface definition, and use the `protoc` tool to generate the corresponding `.pb.go` file, which contains the server and client code generated according to the definition. Then you can register server-side code for use within your own project, or reference client-side code to make remote calls.
+Server endpoints are collected through `transport.Endpointer` unless explicit
+endpoints are supplied. Lifecycle hooks receive a context containing `AppInfo`,
+which exposes the current ID, name, version, metadata, and endpoints. See
+[Application and lifecycle](/docs/component/application/) for ordering and
+failure behavior.
 
-Kratos only generates the code of the gRPC interface by default. If you need to generate HTTP code, please use `option (google.api.http)` in the proto file to add the definition of the HTTP part before generating it. By default, the HTTP interface will use JSON as the serialization format. If you want to use other serialization formats (form, XML, etc.), please refer to [Serialization](https://go-kratos.dev/docs/component/encoding).
+## Reference project structure
 
-```protobuf
+The current layout keeps the v2 dependency-boundary design and applies it to a
+complete Todo service:
+
+```text
+api/                    Protobuf contracts and generated clients/servers
+cmd/server/             Process entry point and Wire provider assembly
+configs/                Runtime configuration files
+internal/biz/           Entities, use cases, and repository interfaces
+internal/data/          Repository implementations and external clients
+internal/service/       Transport-facing service implementation
+internal/server/        HTTP and gRPC server construction
+```
+
+Dependencies point toward `internal/biz`. A use case can depend on a repository
+interface, while the concrete Ent repository stays in `internal/data`.
+`internal/service` translates generated API messages to use-case calls, and
+`internal/server` registers that service with HTTP and gRPC. Wire assembles the
+providers in `cmd/server`; it does not act as a runtime service locator.
+
+Kratos does not enforce these directories. Their purpose is to prevent
+transport, persistence, and vendor SDK types from spreading through business
+logic. The [layout guide](/docs/intro/layout/) and [complete service
+walkthrough](/docs/guide/service-development/) explain each layer.
+
+## Infrastructure remains an application choice
+
+Database, cache, and message-queue libraries are outside the core framework.
+Choose them for the service's data model and operational requirements, then
+hide provider-specific types behind repository or client interfaces where
+replacement and focused tests matter.
+
+The reference layout currently demonstrates Ent with a MySQL driver. That is a
+template decision, not a Kratos requirement. An application may use
+`database/sql`, another ORM, a document database, an in-memory implementation,
+or no database. The same rule applies to Redis clients, Kafka clients, and other
+infrastructure: construct them explicitly, inject them into the data layer, and
+close them through the application's dependency lifecycle.
+
+## CLI and generation
+
+The `kratos` CLI creates projects and API/service scaffolding and can run a
+service in development. The layout owns its repeatable generation commands:
+
+```bash
+make api       # generate API protobuf, gRPC, HTTP, and OpenAPI output
+make config    # generate configuration protobuf output
+make generate  # run go generate and go mod tidy
+make all       # run API, configuration, and Go generation
+```
+
+The exact generated files are determined by the project's Buf templates and Go
+tool commands. Generated `*.pb.go`, HTTP/gRPC bindings, OpenAPI documents, and
+`wire_gen.go` are outputs: change their source definition, regenerate, and
+review the diff instead of editing them manually. See [CLI](/docs/getting-started/usage/)
+and [API generation](/docs/component/api/).
+
+## Protobuf-first APIs
+
+Kratos uses Protobuf as the service contract. One RPC definition can produce a
+gRPC binding and, when it has `google.api.http` annotations, an HTTP binding.
+This keeps request types, field numbers, service methods, and generated client
+interfaces aligned across transports.
+
+```proto
 syntax = "proto3";
 
-package helloworld.v1;
+package todo.v1;
 
 import "google/api/annotations.proto";
 
-option go_package = "github.com/go-kratos/kratos-layout/api/helloworld/v1;v1";
+option go_package = "example/api/todo/v1;v1";
 
-// The greeting service definition.
-service Greeter {
-  // Sends a greeting
-  rpc SayHello (HelloRequest) returns (HelloReply)  {
-        option (google.api.http) = {
-            get: "/helloworld/{name}"
-        };
-    }
-}
+service TodoService {
+  rpc GetTodo (GetTodoRequest) returns (Todo) {
+    option (google.api.http) = { get: "/v1/todos/{id}" };
+  }
 
-// The request message containing the user's name.
-message HelloRequest {
-  string name = 1;
-}
-
-// The response message containing the greetings
-message HelloReply {
-  string message = 1;
+  rpc WatchTodos (WatchTodosRequest) returns (stream TodoEvent) {
+    option (google.api.http) = { get: "/v1/todos/watch" };
+  }
 }
 ```
-It should be noted that although the API defined by Protobuf is more reliable, the flexibility of the field structure is weaker than that of JSON. Therefore, if you have a file upload interface, or some JSON structure that cannot correspond to proto. You can define these interfaces outside of our API-System, implement as normal `http.Handler` and mount it on the route, or just use `struct` to define your fields. Here is an example of [upload](https://github.com/go-kratos/kratos/blob/main/examples/http/upload/main.go).
+
+V3 maps the server-streaming HTTP method to SSE. Client-streaming and
+bidirectional HTTP methods use WebSocket, while gRPC retains its native stream.
+See [HTTP Streaming with SSE and
+WebSocket](/docs/component/transport/http-streaming/).
+
+Protobuf does not have to describe every endpoint. File uploads, provider
+callbacks, or formats that do not fit a protobuf contract can use a native
+`net/http.Handler`, a Kratos `http.HandlerFunc`, or a manually defined struct
+on the HTTP router. This escape hatch is an intentional part of the transport
+design.
+
+## Error contract
+
+Kratos errors carry four public fields with distinct purposes:
+
+1. `code` is the broad status category. It uses HTTP status semantics and maps
+   to a gRPC status for the gRPC transport.
+2. `reason` is a stable, readable service error identifier such as
+   `USER_NOT_FOUND`. Callers should branch on this value instead of the message.
+3. `message` is a client-facing explanation and must be safe to expose.
+4. `metadata` contains optional structured details and must not contain secrets.
+
+```json
+{
+  "code": 404,
+  "reason": "USER_NOT_FOUND",
+  "message": "user does not exist",
+  "metadata": {
+    "resource": "users/42"
+  }
+}
+```
+
+`WithCause` retains an internal Go cause without changing the public response.
+`errors.Is`, `Code`, `Reason`, and `FromError` inspect wrapped errors, and v3's
+`errors.Join` can preserve multiple failures. Build stable public errors at the
+business or service boundary; keep driver and SDK errors inside the data layer.
+See [Errors](/docs/component/errors/).
+
+## Configuration and dynamic state
+
+The configuration abstraction consists of `Source`, `Watcher`, `Config`, and
+`Value`. A source loads key-value data and may watch for updates. `Config`
+decodes, merges, resolves placeholders, caches observed values, and notifies
+key-specific observers.
+
+Core supplies file and environment sources. Remote systems are contrib modules
+that implement the same contracts. Later sources override earlier values, so a
+service can load checked-in defaults and then deployment-specific overrides.
+Use `Scan` for the complete tree or v3's `config.Get[T]` for one key.
+
+Dynamic updates are deliberately low-level: the observer must validate the new
+value and safely replace application state. Listener addresses, drivers, and
+other startup-only dependencies usually require a controlled restart. See
+[Configuration](/docs/component/config/).
+
+## Registry, discovery, and load balancing
+
+`registry.Registrar` publishes a `ServiceInstance`; `registry.Discovery`
+watches instances for a service name. `App` registers after server startup has
+begun and deregisters before canceling its server context. HTTP and gRPC clients
+can combine a discovery implementation with a `discovery:///service-name`
+endpoint.
+
+Discovery answers which instances exist. `selector.Selector` decides which
+eligible node receives a call. Kratos includes weighted round-robin, P2C,
+random, and other selector implementations; HTTP and gRPC clients initialize
+weighted round-robin as the global default. Node filters and subsets can narrow
+the candidate set before selection, and the returned `DoneFunc` records the
+result for adaptive selectors. See [Registry](/docs/component/registry/) and
+[Selector](/docs/component/selector/).
 
 ## Metadata
 
-For API calls between services, if there is some meta information that needs passing with no expected appearance in the payload message, you can use the Metadata package for field setting and extraction. For more detail, please refer to the [document](https://go-kratos.dev/docs/component/metadata)
+Metadata carries request-scoped values outside the protobuf payload. Transport
+middleware converts selected HTTP headers or gRPC metadata into the Kratos
+metadata context and can forward selected values to an outgoing call.
 
-## Error Handling
-Kratos' [errors](https://github.com/go-kratos/kratos/tree/main/errors) module provides an error wrapper. The framework also pre-defines a set of [standard errors](https://github.com/go-kratos/kratos/blob/main/errors/types.go) for use.
+Propagation is a protocol decision. Kratos does not forward every header by
+default: local metadata remains in the current service, while global metadata
+can cross a service boundary. Define a small allowlist for request IDs, locale,
+tenant context, or other approved fields, and keep credentials under the
+authentication middleware's policy. See [Metadata](/docs/component/metadata/).
 
-The design of error handling was settled after a long discussion. The main design concepts are as follows:
+## Logging and observability
 
-1. `code` The semantics are similar to the HTTP Status Code (for example, 400 is used for parameter errors), and it is also used as a major type of error. The advantage is that the gateway layer can trigger corresponding policies (retry, current limit, fuse, etc.) according to this code.
-2. `reason` The specific error code of the service. A readable string that should be unique within the same service.
-3. `message` Messages are user-readable and can be used as user prompts.
-4. `metadata` Meta-information, which adds additional extensible information for errors.
+V3 uses `*slog.Logger` throughout the application and middleware APIs. The core
+log package can build text or JSON handlers, filter records or attributes, and
+attach `slog.Attr` values to a context. Standard slog handlers from other
+libraries can be supplied directly or wrapped by `log.NewLogger`.
 
-Taking the HTTP interface as an example, the structure of the returned error message is as follows:
-```json
-{
-    // Error code, which is the same as HTTP-status and can be converted to grPC-status in GRPC.
-    "code": 500,
-    // The error cause is defined as the service decision error code. 
-    "reason": "USER_NOT_FOUND",
-    // Error messages are user-readable and can be used as user prompts. 
-    "message": "invalid argument error",
-    // Error meta-information, which adds additional extensible information for errors.
-    "metadata": {"some-key": "some-value"}
-}
-```
+Tracing and metrics are provided by the independent
+`github.com/go-kratos/kratos/contrib/otel/v3` module. The application constructs
+the OpenTelemetry providers and exporters, installs server and client
+middleware, and shuts providers down after transports stop. This ownership
+keeps credentials, resources, sampling, export policy, and flush errors visible
+to the application. See [Logging](/docs/component/log/),
+[Tracing](/docs/component/middleware/tracing/), and
+[Metrics](/docs/component/metrics/).
 
-In Kratos, you can use proto files to define your business errors, and generate corresponding processing logic and methods through tools.(such as `make errors` used in layout)
+## Middleware and resilience
 
-Error Definition:
-```protobuf
-syntax = "proto3";
+HTTP and gRPC unary calls use the same `middleware.Middleware` shape. Middleware
+wraps generated handlers and is the extension point for recovery, logging,
+validation, authentication, metadata, rate limiting, circuit breaking, and
+telemetry. Order matters: in `middleware.Chain(a, b)`, `a` is the outer wrapper
+and observes the call before and after `b`.
 
-package api.blog.v1;
-import "errors/errors.proto";
+The core rate-limit middleware uses its built-in limiter unless
+`WithLimiter` supplies another implementation. The client circuit breaker keeps
+one breaker per operation and can replace its factory with
+`WithBreakerFactory`. These mechanisms reject or contain work; they do not
+choose retry safety, timeouts, or idempotency for the application. Stream RPCs
+also need their transport-specific middleware and lifetime handling. See the
+[middleware overview](/docs/component/middleware/overview/).
 
-option go_package = "github.com/go-kratos/kratos/examples/blog/api/v1;v1";
+## Encoding
 
-enum ErrorReason {
-  // default error code
-  option (errors.default_code) = 500;
-  
-  // custome error code
-  USER_NOT_FOUND = 0 [(errors.code) = 404];
-  CONTENT_MISSING = 1 [(errors.code) = 400];;
-}
-```
+HTTP codecs are registered by subtype and selected from `Content-Type` and
+`Accept`. V3 separates standard Go `encoding/json` under `json` from protobuf
+JSON under `protojson`. This makes wire behavior explicit, including field
+names, enums, well-known types, and default values.
 
-Error Creation:
-```go
-// Created by errors.New()
-errors.New(500, "USER_NAME_EMPTY", "user name is empty")
+Codec registration is global, and registering another codec with the same name
+replaces the previous value. Import only the formats the service intends to
+support and test public response bytes before changing an existing API. See
+[Encoding and serialization](/docs/component/encoding/).
 
-// Created by the code that is generated by proto
-api.ErrorUserNotFound("user %s not found", "kratos")
+## Extension and evolution
 
-// Passing metadata
-err := errors.New(500, "USER_NAME_EMPTY", "user name is empty")
-err = err.WithMetadata(map[string]string{
-    "foo": "bar",
-})
-```
+Use core interfaces at the boundary and keep provider lifecycle in the
+application. A contrib module can supply a registry, configuration source,
+middleware, logger handler, or other integration, but its SDK types should stay
+behind those interfaces or inside the data layer. Because contrib modules are
+versioned independently, declare and upgrade each one explicitly.
 
-Error Assertion:
-```go
-err := wrong()
+The same rule applies to project examples: check their module path and generated
+tool configuration before copying code. Start with the [current
+layout](/docs/intro/layout/), use the [example index](/docs/getting-started/examples/)
+for focused integrations, and see [Plugins](/docs/getting-started/plugin/) for
+the wider ecosystem.
 
-// Asserte by errors.Is()
-if errors.Is(err,errors.BadRequest("USER_NAME_EMPTY","")) {
-    // do something
-}
-
-// Asserte by *Error.Reason and *Error.Code
-e := errors.FromError(err)
-if  e.Reason == "USER_NAME_EMPTY" && e.Code == 500 {
-    // do something
-}
-
-// Asserte by the code that is generated by proto
-if api.IsUserNotFound(err) {
-        // do something
-})
-```
-
-## Configuration
-
-Kratos provides a unified interface that supports loading a configuration file and subscribing to its changes.Any configuration source (local or remote) can be adapted by implementing [Source and Watcher](https://github.com/go-kratos/kratos/blob/main/config/source.go)
-
-Here is some plugins ready for use:
-
-* [file](https://github.com/go-kratos/kratos/blob/main/config/file/file.go) built-in
-* [apollo](https://github.com/go-kratos/kratos/tree/main/contrib/config/apollo)
-* [etcd](https://github.com/go-kratos/kratos/tree/main/contrib/config/etcd)
-* [kubernetes](https://github.com/go-kratos/kratos/tree/main/contrib/config/kubernetes)
-* [nacos](https://github.com/go-kratos/kratos/tree/main/contrib/config/nacos)
-
-
-## Registrar&Discovery
-Kratos defines a unified registration interface. By implementing [Registrar and Discovery](https://github.com/go-kratos/kratos/blob/main/registry/registry.go), you can easily connect Kratos to your registry.
-
-Here is some plugins ready for use:
-
-* [consul](https://github.com/go-kratos/kratos/tree/main/contrib/registry/consul)
-* [discovery](https://github.com/go-kratos/kratos/tree/main/contrib/registry/discovery)
-* [etcd](https://github.com/go-kratos/kratos/tree/main/contrib/registry/etcd)
-* [kubernetes](https://github.com/go-kratos/kratos/tree/main/contrib/registry/kubernetes)
-* [nacos](https://github.com/go-kratos/kratos/tree/main/contrib/registry/nacos)
-* [zookeeper](https://github.com/go-kratos/kratos/tree/main/contrib/registry/zookeeper)
-
-
-## Log
-Kratos' logging module consists of two parts:
-
-1. [Logger](https://github.com/go-kratos/kratos/blob/main/log/log.go): Low-level logging interface. It is used to quickly adapt various log libraries to the framework. Provides only one of the simplest `Log` methods.
-2. [Helper](https://github.com/go-kratos/kratos/blob/main/log/helper.go): Advanced logging interface. A series of helper functions with log levels and formatting methods are provided. It is usually recommended to use this in business logic to simplify logging code.
-
-We have implemented plug-ins to for some current logging library. You can also refer to their code for the log library adaptation you need:
-
-* [std](https://github.com/go-kratos/kratos/blob/main/log/std.go) Kratos built-in stdout
-* [fluent](https://github.com/go-kratos/kratos/tree/main/contrib/log/fluent)
-* [zap](https://github.com/go-kratos/kratos/tree/main/contrib/log/zap)
-
-## Metrics
-In terms of monitoring alarms, you can report service statistics to the monitoring platform by implementing [Metrics](https://github.com/go-kratos/kratos/blob/main/metrics/metrics.go).
-
-Here is some plugins ready for use:
-
-* [datadog](https://github.com/go-kratos/kratos/tree/main/contrib/metrics/datadog)
-* [prometheus](https://github.com/go-kratos/kratos/tree/main/contrib/metrics/prometheus)
-
-## Tracing
-Kratos uses [OpenTelemetry](https://opentelemetry.io/) as the standard for distributed link tracing. You can configure the [tracing middleware](https://go-kratos.dev/docs/component/middleware/tracing) when the client and server are initialized to connect the service to the link tracing platform (such as [jaeger](https://www.jaegertracing.io/), etc.). In this way, the interface calling relationship, time-consuming, errors, etc. of the service are tracked.
-
-## Load Balancing
-Kratos has several built-in load [balancing algorithms](https://github.com/go-kratos/kratos/tree/main/selector), such as Weighted round robin (default), P2C, Random, etc. You can use them by configuring them during [client initialization](https://go-kratos.dev/docs/component/selector).
-
-## Ratelimit
-
-Kratos provides [Ratelimit](https://go-kratos.dev/docs/component/middleware/ratelimit) and [Circuitbreaker](https://go-kratos.dev/docs/component/middleware/circuitbreaker) middleware, which are used to automatically limit traffic when microservices fail abnormally, improve service robustness, and avoid avalanches. The algorithms used by these two middleware can also be found in our availability algorithm repository [Aegis](https://github.com/go-kratos/aegis). These algorithms can be used directly independently of Kratos.
-
-## Middleware
-You can unify some common logic of the microservice interface through Kratos' middleware mechanism. For the function plugin mentioned above, you can write middleware that Kratos can use by implementing `Middleware`.
-
-You can find a series of middleware provided by us in the [middleware](https://github.com/go-kratos/kratos/tree/main/middleware) directory of the repository.
-
-## Plugins
-
-In addition to the plugins mentioned above, we also provide some other plugins. Please visit [Plugins](https://go-kratos.dev/docs/getting-started/plugin)
-
-## Examples
-
-If you still have doubts about the use of some components after reading the documentation, or want to find some inspiration for writing projects in Kratos, we provide a lot of code for reference in the [examples repository](https://github.com/go-kratos/examples) directory.
+Kratos evolves through its public contracts and community. Preserve protobuf
+field numbers, HTTP paths, error reasons, and serialization behavior when
+services of different versions coexist. Changes that affect callers should be
+tested at the transport boundary and documented as part of the service API.

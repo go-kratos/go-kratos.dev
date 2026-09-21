@@ -1,152 +1,100 @@
 ---
 id: contribution
 title: 贡献指南
-description: 贡献指南
-keywords:
-  - Go
-  - Kratos
-  - Toolkit
-  - Framework
-  - Microservices
-  - Protobuf
-  - gRPC
-  - HTTP
+description: 如何向 Kratos 报告问题和贡献代码
 ---
 
-Kratos 社区希望能够得到广大开发者的帮助，所以希望您在要提 issue 或者 pull request 之前花几分钟来阅读一遍这篇指南。
+Kratos 通过 GitHub issue 和 pull request 开发框架。开始前先搜索已有 issue 和
+pull request，并让一个 pull request 只处理一项完整且连贯的变更。
 
-## Bug 修复
+## 报告缺陷
 
-Kratos 使用 Github Issues 来管理问题。 如果您希望提交 bug 报告或帮忙修复 bug 时，请先确保已经搜索过已有的 issues 和 pull requests 并且阅读了我们的 [常见问题](https://go-kratos.dev/docs/intro/faq)。
+使用仓库的 bug report 模板。一份有效报告应包含：
 
-提交 bug 报告时，请使用我们提供的 issue 模板，清楚地描述遇到的问题和复现方式，如果方便，最好是可以提供一个最小复现仓库。
+- Kratos 模块与版本、Go 版本和操作系统；
+- 能复现问题的最小代码或仓库；
+- 准确的命令、输入、实际结果和预期结果；
+- 移除凭据和个人数据后的日志或 stack trace；
+- 问题是否能在最新支持版本或 `main` 上复现。
 
-## 新增功能
+问题咨询和配置问题有各自的 issue 模板。需要私下披露的安全问题不能提交为公开
+issue，应遵守仓库安全策略。
 
-为了准确的区分用户提出的需求是否为大多数用户的需求或合理需求，分为 提案流程、向社区征集意见、社区采纳提案，作为新功能实现 这三个步骤来进行。  
-提案流程为了尽可能的简单，将流程分为 **Feature**、**Proposal** 和 **PR** 三个阶段，其中 **Feature**、**Proposal** 为 issue，**PR** 为具体的功能实现。具体流程如下：
+## 提议新功能
 
-- 为了方便社区正确的理解提案的需求，Feature issue 中需要详细的描述功能的需求，和相关的参考资料或文献。
-- 当大多数社区用户赞同这个提案时，将会创建一个 Proposal issue 来关联 Feature issue，Proposal issue 中需要详细的描述功能的实现方式，以及功能演示，作为最后功能实现的参考。
-- 当功能实现完毕后，发起合并请求（PR）并关联 Feature issue 和 Proposal issue，合并完成后，关闭所有 issue。
+较大的功能会经过 proposal、feature 和实现三个阶段。先创建 proposal issue，
+说明用户问题、期望行为、备选方案、兼容性影响和相关资料。社区同意方向后，再用
+feature issue 描述具体 API 与实现，并把实现 pull request 同时关联到两者。
 
-## 如何提交代码
+投入大型修改前应先讨论公开 API 和行为。新增核心依赖、改变传输语义或引入破坏性
+变化时，需要更清楚地说明动机，因为每个 Kratos 服务都可能承担后续维护成本。
 
-如果您从未在 Github 上提交过代码，请跟随如下步骤：
+## 准备代码变更
 
-- 首先请 fork 项目到自己的 Github 账户中
-- 然后基于 **main 分支** 创建一个新的功能分支，并以功能命名如 feature-log
-- 编写代码
-- 提交代码到远端分支
-- 在 Github 中提交 PR 请求
-- 等待 review 后合并到 main 分支
+Fork 仓库，从最新 `main` 创建分支，并完成解决问题所需的最小完整变更。
 
-## Commit 提交规范
-
-**注意在您提交 PR 请求时首先保证代码使用了正确的编码规范，并有完整的测试用例，提交 PR 的信息中最好关联相关的 issue，以减轻审核人员的工作负担。**
-
-遵循 [Conventional Commits](https://www.conventionalcommits.org/zh-hans/v1.0.0//#summary) 来规范化 commit message
-
+```bash
+git checkout -b fix/http-timeout
+make clean
+make lint
+make test
 ```
-<type>[optional scope]: <description>
+
+`make clean` 通过仓库工具整理模块，`make lint` 运行配置的 linter，`make test`
+运行模块测试。为改变的行为补充针对性测试，并重新生成受影响的 Protobuf 代码。
+核心 CI 测试 Go 1.25.x 和 1.26.x，因此代码必须在两条支持版本线上编译。
+
+仓库包含多个嵌套 Go 模块，尤其是 `contrib` 目录。应在 pull request 修改的每个
+模块中运行检查，不要更新无关模块文件或生成产物。
+
+## 提交 pull request
+
+按照 pull request 模板说明具体问题、变更后的行为、验证方式、兼容性影响和关联
+issue。工作未完成时先开 draft。调用方需要修改代码时必须给出迁移说明；公开行为
+变化时同步更新英文和中文文档。
+
+审阅者应能通过描述和测试复现修复。若重构会遮蔽需要审阅的行为，应把它拆开。
+
+## Commit 与 pull request 标题
+
+Kratos 使用 Conventional Commit 风格：
+
+```text
+<type>[optional scope][!]: <description>
 
 [optional body]
 
-[optional footer(s)]
+[optional footer]
 ```
 
-### type
+常用 type 包括：
 
-提交的 commit 类型主要有以下几种:
+| Type | 用途 |
+| --- | --- |
+| `feat` | 新行为 |
+| `fix` | 缺陷修复 |
+| `deps` | 依赖变化 |
+| `break` 或 `!` | 破坏性变化 |
+| `docs` | 只修改文档 |
+| `refactor` | 不改变行为的代码重构 |
+| `test` | 新增或修正测试 |
+| `chore` | 维护工作与示例 |
+| `ci` | CI 配置 |
 
-#### 主要类型
+常用 scope 包括 `transport`、`middleware`、`config`、`cmd` 和 `examples`。描述应
+使用祈使句现在时，保持简洁，结尾不加句号。
 
-- fix 修复 bug
-- feat 新增功能
-- deps 依赖修改
-- break 不兼容修改
-
-#### 其他类型
-
-- docs 文档修改
-- refactor 重构
-- style 代码格式
-- test 测试用例
-- chore 日常工作，如文档修改，示例等
-- ci 构建脚本
-
-### scope
-
-提交的代码修改的代码文件范围：
-
-- transport
-- examples
-- middleware
-- config
-- cmd
-- etc.
-
-### description
-
-用简短的话语清晰的描述提交的代码做了什么事。
-
-### body
-
-补充说明，用于描述原因、目的、实现逻辑等可以省略。
-
-### footer
-
-- **当存在不兼容(breaking change)更新时，需要描述原因以及影响范围。**
-- 关联相关的 issue，如 Refs #133。
-- 可能涉及到的文档更新和其他模块的更新的 PR 关联。
-
-### Commit Examples
-
-#### 只有提交信息
-
-```
-fix: The log debug level should be -1
+```text
+fix(transport/http): honor shutdown deadline
 ```
 
-#### 需要引起关注
+Body 用于解释动机和行为细节。不兼容变更使用 `BREAKING CHANGE:` footer；能完整
+解决某个 issue 时使用 `Fixes #1234`。
 
-```
-refactor!(transport/http): replacement underlying implementation
-```
+## Release note
 
-#### 包含全部结构
+维护者可使用 `kratos changelog dev` 收集上次发布后的变化，并归类为破坏性变化、
+依赖、缺陷修复和其他变化。生成文本只是起点；发布前应检查链接、改写不清楚的
+条目，并补充迁移指南。
 
-```
-fix(log): [BREAKING-CHANGE] unable to meet the requirement of log Library
-
-Explain the reason, purpose, realization method, etc.
-
-Close #777
-Doc change on doc/#111
-BREAKING CHANGE:
-  Breaks log.info api, log.log should be used instead
-```
-
-## Release 版本发布
-
-**Release** 时可以使用 `kratos changelog dev`命令生成 **Release** 说明，工具会筛选出来从上一次 **Release** 到现在的所有提交信息，然后根据提交的分类不同，主要汇总成以下几类:
-
-- Breaking Change
-- Dependencies
-- Bug Fixes
-- Others
-
-### 示例
-
-通过 `kratos changelog dev` 生成的文本，只需简单修改即可作为 **Release** 版本发布的说明.
-
-```
-### New Features
-- feat(cmd): add kratos changelog command (#1140)
-- feat(examples): add  benchmark example (#1134)
-- feat: add int/int32/Stringer support when get atomicValue (#1130)
-### Others
-- add form encoding (#1138)
-- upgrade otel to v1 rc1 (#1132)
-- http stop should use ctx (#1131)
-```
+只修改文档时，请继续阅读[文档贡献指南](/zh-cn/docs/community/documentation/)。

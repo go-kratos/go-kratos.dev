@@ -29,20 +29,48 @@ env:
   # BUILD_PATH: subfolder
 
 jobs:
+  examples:
+    name: Go examples (${{ matrix.go-version }})
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        go-version: ["1.25.x", "1.26.x"]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Setup Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: ${{ matrix.go-version }}
+          cache-dependency-path: examples/docs-v3/go.sum
+      - name: Verify documented Go examples
+        run: cd examples/docs-v3 && go test ./... && go vet ./...
+
   build:
     name: Build
+    needs: examples
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-      - name: Setup pnpm and Node
-        uses: pnpm/setup@v1
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
         with:
-          runtime: node@22
-          cache: true
+          version: 8.15.9
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: pnpm
+          cache-dependency-path: ${{ env.BUILD_PATH }}/pnpm-lock.yaml
       - name: Setup Pages
         id: pages
         uses: actions/configure-pages@v5
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+        working-directory: ${{ env.BUILD_PATH }}
+      - name: Verify Kratos v3 documentation
+        run: pnpm docs:verify
       - name: Build with Astro
         run: |
           pnpm astro build \

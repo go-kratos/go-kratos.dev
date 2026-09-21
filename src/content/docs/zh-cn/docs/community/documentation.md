@@ -1,56 +1,78 @@
 ---
 id: documentation
-title: 文档维护
-description: 文档维护
-keywords:
-  - Go
-  - Kratos
-  - Toolkit
-  - Framework
-  - Microservices
-  - Protobuf
-  - gRPC
-  - HTTP
+title: 文档贡献指南
+description: 如何编辑和检查 Kratos 文档站点
 ---
 
-本文档维护在 [go-kratos/go-kratos.dev](https://github.com/go-kratos/go-kratos.dev) 仓库中，采用 [docusaurus](https://docusaurus.io/) 作为文档系统。仓库内容更新后，会自动触发 Github Actions 对文档进行生成和部署。
+文档站点维护在
+[go-kratos/go-kratos.dev](https://github.com/go-kratos/go-kratos.dev)，使用
+Astro 和 Starlight 构建。框架文档包含一一对应的英文与简体中文目录树。
 
-## 添加/修改文档
+## 设置站点
 
-首先 fork 文档仓库，并 clone 到本地。
+使用与部署 workflow 一致的 Node 20 和 pnpm 8：
 
-然后在 docs 目录中的对应子目录下可以添加或修改相应的文档。文档格式为 Markdown，并支持一些扩展的语法，具体支持的语法请参考 [Docusaurus: Markdown Features](https://docusaurus.io/docs/markdown-features)
+```bash
+pnpm install --frozen-lockfile
+pnpm dev
+```
 
-注意下列事项：
+英文页面位于 `src/content/docs/docs`，中文页面位于
+`src/content/docs/zh-cn/docs`。内容集合在 `src/content.config.ts` 中配置。
 
-- 文档正文的子标题请使用二级或更低等级的标题，即`##`或`###`等，避免使用一级标题。
-- 对于文档内其它页面可以直接通过类似`[document in a subfolder](subfolder/doc3.md)`进行引用
-- 如果添加了新的文档，请按照后文的说明进行侧边栏的修改，以便文档能够展示在侧边栏中。
+## 添加或修改页面
 
-提交到 Github 后，向源仓库`main`分支发起 Pull Request, 等待维护团队合并。
+两种语言应使用相同相对路径和 frontmatter `id`。例如：
 
-## 修改侧边栏
+```text
+src/content/docs/docs/component/application.md
+src/content/docs/zh-cn/docs/component/application.md
+```
 
-侧边栏的条目维护在文件 [sidebars.js](https://github.com/go-kratos/go-kratos.dev/blob/main/sidebars.js) 中，如果需要修改侧边栏，请编辑此文件。
-将`docs`下面的目录名和文档 id 填入 json 中。
+页面标题使用 frontmatter `title`，正文小节从 `##` 开始，不要再写一级标题。站内
+链接使用站点绝对路径，中文链接需要包含 locale：
 
-该文件的具体配置方法请参考 [Docusaurus: Sidebar](https://docusaurus.io/docs/sidebar)
+```markdown
+[Errors](/docs/component/errors/)
+[错误处理](/zh-cn/docs/component/errors/)
+```
 
-## 文档翻译
+`astro.config.mjs` 的 sidebar 配置会根据目录自动生成主题页面，普通页面会自动
+出现。只有新增或重组整个章节时才修改顶层主题，并同时更新英文和中文标签。
 
-如果您要维护多语言翻译，请将文档仓库 clone 到本地。
+## 编写有用的框架文档
 
-在`i18n`目录下的对应语言目录，如英文版本在`i18n/en/docusaurus-plugin-content-docs/current`可以找到或创建与`docs`目录对应的文件，注意 id 要与`docs`中对应文件的 id 相同。进行相应的文档翻译后提交即可。
+文档应描述可观察行为和公开 API。所有说法都应以框架源码和项目模板为依据，不要
+复制旧页面或过期 README。一个组件页面应说明：
 
-具体文档翻译功能的扩展使用，请参考 [Docusaurus: i18n - Using git](https://docusaurus.io/docs/i18n/git)
+- 组件负责什么，哪些工作仍由应用负责；
+- 构造函数、重要选项、默认值和生命周期；
+- 包含必要 import 与上下文的完整示例；
+- 相关的错误、取消、并发和停止行为；
+- 用户完成下一步所需的教程或组件链接。
 
-## 文档规范
+示例应便于理解，同时保留必要的错误处理和资源清理，并使用当前 v3 模块路径。
+英文与中文展示同一个例子时，代码围栏内容应完全相同，避免两边逐渐不一致。
 
-- 内容要完整，需要充分体现组件的功能，并附带简要的示例或者示例的链接。力求达到用户看文档即可答疑。
-- 代码的缩进，一定要设置为空格缩进再复制。
-- 层级目录采用 [Google AIP](https://google.aip.dev/121) 结构。
-- 对于中文内容，**数字与中文**、**中英文**之间需要添加空格，具体参照[中文文案排版](https://github.com/sparanoid/chinese-copywriting-guidelines)。对于英文内容，**标点符号**和**后文**之间需要加空格，例如 `Hello Kratos. Its my PR.`。推荐使用 **Prettier** 之类的 formatter 进行格式化。
-- 在 commit 前尽量减少 diff，以减轻 review 的负担。
-- 因为各个平台默认的 **行分隔符(EOL)** 不相同，为了防止 commit 时出现大面积的 diff，请统一将编辑器的 **End Of Line(EOL)** 选项改为 **LF(\n)**。
-- Kratos 统一写法。K 大写。
-- 翻译完自己读一遍，要通顺，要能理解。不追求严格一致，可以意译。review 的时候也会检验。不会翻译的词汇可以不翻译，review 的时候会查看。翻译完还是要自己先 review 一遍，不要出现遗漏段落。
+## 运行检查
+
+提交 pull request 前运行：
+
+```bash
+pnpm docs:verify
+pnpm examples:verify
+pnpm build
+```
+
+`docs:verify` 检查语言页面配对、相同 ID、对应代码块、站内链接和意外的 v2 import；
+`examples:verify` 用支持的 Go 工具链编译、vet 可执行文档示例；`pnpm build` 校验
+内容 schema 并渲染完整站点。
+
+代码示例依赖生成的应用类型时，应根据用途更新完整服务教程或项目模板链接。可复用
+的框架示例应放入 `examples/docs-v3`，由测试检查实际行为。
+
+## 提交修改
+
+Pull request 应保持聚焦，说明改善了哪个用户流程以及运行过哪些检查。框架内容需要
+同时提供两种语言。分支、commit 和 pull request 约定见
+[贡献指南](/zh-cn/docs/community/contribution/)。

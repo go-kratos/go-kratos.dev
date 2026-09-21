@@ -1,89 +1,41 @@
 ---
 id: circuitbreaker
 title: Circuit Breaker
-keywords:
-  - Go
-  - Kratos
-  - Toolkit
-  - Framework
-  - Microservices
-  - Protobuf
-  - gRPC
-  - HTTP
 ---
 
-Circuit breaker middleware for providing client-side breaker functionality, with [sre breaker](https://github.com/go-kratos/aegis/tree/main/circuitbreaker/sre) algorithm implemented by default。
-
-### Configuration
-
-#### `WithGroup`
-
-breaker depends on `container/group` to implement the use of mutually independent breaker for different `Operation`.
-use `WithGroup` to configure a costom Breaker to replace the default breaker algorithm：
+`circuitbreaker.Client()` protects outgoing calls. It maintains a breaker for each client operation and returns `circuitbreaker.ErrNotAllowed` (HTTP 503) when a request is rejected locally.
 
 ```go
-// WithGroup with circuit breaker group.
-// NOTE: implements generics circuitbreaker.CircuitBreaker
-func WithGroup(g *group.Group) Option {
-	return func(o *options) {
-		o.group = g
-	}
-}
+conn, err := grpc.NewClient(ctx,
+    grpc.WithEndpoint("dns:///orders.example:9000"),
+    grpc.WithMiddleware(circuitbreaker.Client()),
+)
 ```
 
-The default configuration generates separate breakers for different `Operation`(s).
+The default v3 breaker is internal to Kratos; v3 does not make Aegis a core dependency. To provide another implementation, pass `circuitbreaker.WithBreakerFactory(func() circuitbreaker.CircuitBreaker { ... })`. The breaker marks Internal Server, Service Unavailable, and Gateway Timeout errors as failures; other replies mark success.
+
+## Configure behavior
+
+The factory is called lazily for each client operation. Return an independent `CircuitBreaker` instance from it; sharing mutable breaker state across unrelated operations changes isolation semantics. A breaker implementation must decide admission in `Allow` and record the result with `MarkSuccess` or `MarkFailed`.
 
 ```go
-opt := &options{
-	group: group.NewGroup(func() interface{} {
-		return sre.NewBreaker()
-	}),
-}
-```
-
-**group.Group** is a `lazy load container` . The instance of **group.Group** should be implement the **CircuitBreaker** interface in `aegis/circuitbreaker` 
-
-```go
-// CircuitBreaker is a circuit breaker.
 type CircuitBreaker interface {
-	Allow() error // it means rejected when return error
-  MarkSuccess() 
-	MarkFailed() 
+	Allow() error
+	MarkSuccess()
+	MarkFailed()
 }
 ```
 
+Kratos marks a call as failed only when its returned error maps to Internal
+Server Error, Service Unavailable, or Gateway Timeout. Other errors, including
+client input and authorization failures, call `MarkSuccess` because they do not
+show that the dependency is unavailable. A locally rejected request also calls
+`MarkFailed` so the breaker's drop observation continues.
 
+Circuit breaking is client-side protection, not a substitute for timeouts, capacity planning, or server-side load shedding. Log the operation and rejection reason, and ensure fallback behavior does not immediately retry the same rejected call.
 
-### 
-
-### Usage
-
-#### Use circuit breaker in client
-
-```go
-// http
-conn, err := http.NewClient(
-	context.Background(),
-	http.WithMiddleware(
-		circuitbreaker.Client(),
-	),
-	http.WithEndpoint("127.0.0.1:8000"),
-)
-// grpc 
-conn,err := transgrpc.Dial(
-  context.Background(), 
-	grpc.WithMiddleware(
-		circuitbreaker.Client(),
-	),
-  grpc.WithEndpoint("127.0.0.1:9000"),
-)
-```
-
-#### Trigger circuit breaker
-
-When the breaker is triggered, the client call for this `Operation` fails quickly for a period of time and returns the error `ErrNotAllowed` immediately，which defined as follows：
-
-```go
-// ErrNotAllowed is request failed due to circuit breaker triggered.
-var ErrNotAllowed = errors.New(503, "CIRCUITBREAKER", "request failed due to circuit breaker triggered")
-```
+The middleware obtains its key from the client transport context, so install it
+through an HTTP or gRPC client. Applying it to a handler without a client
+transport context is unsupported. When used as stream middleware, the returned
+result describes stream establishment; later `Send` and `Recv` failures are not
+fed back to this middleware automatically.

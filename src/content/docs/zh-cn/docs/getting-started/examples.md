@@ -1,78 +1,38 @@
 ---
 id: examples
-title: 代码示例
-description: Kratos 代码示例
-keywords:
-  - Go
-  - Kratos
-  - Toolkit
-  - Framework
-  - Microservices
-  - Protobuf
-  - gRPC
-  - HTTP
+title: 示例与源码
+description: 查找完整 Kratos v3 服务和组件示例。
 ---
 
-Kratos 提供了丰富的示例代码/项目供参考
+完整服务应参考 [kratos-layout](https://github.com/go-kratos/kratos-layout)，单个组件应参考 [Kratos 源码](https://github.com/go-kratos/kratos)中的 package 测试。Contrib 集成的示例和测试位于各自 module 中。
 
-## 组件使用
+## 完整服务
 
-[全部示例](https://github.com/go-kratos/examples)
+Layout 包含：
 
-### 配置
+- 带 unary 和 streaming RPC 的 Todo protobuf contract；
+- 生成的 HTTP/gRPC binding 和 OpenAPI 输出；
+- 通过编译期 Wire 连接的 `service`、`biz` 和 `data` 层；
+- 运行时使用 MySQL 的 Ent 存储，以及 SQLite repository 测试；
+- AIP filtering、ordering、pagination、field mask 和 required-field 检查；
+- 使用 `slog`、配置、recovery、validation 和 OpenTelemetry trace attribute 提取的应用启动代码。
 
-- [config](https://github.com/go-kratos/examples/tree/main/config) 使用 config 组件解析配置文件的示例
-- [apollo](https://github.com/go-kratos/examples/tree/main/config/apollo) 从 apollo 中获取配置的示例
+真实请求流程见[基于 Layout 开发服务](/zh-cn/docs/guide/service-development/)。应读取 repository 的 `go.mod` 和源码，不能依赖旧版 README 的描述。
 
-### 服务发现&服务注册
+## 组件示例
 
-- [etcd](https://github.com/go-kratos/examples/tree/main/registry/etcd) 使用 etcd 插件，在 server 端进行服务注册和在 client 端进行服务注册的示例
-- [nacos](https://github.com/go-kratos/examples/tree/main/registry/nacos) 使用 nacos 插件，在 server 端进行服务注册和在 client 端进行服务注册的示例
-- [consul](https://github.com/go-kratos/examples/tree/main/registry/consul) 使用 consul 插件，在 server 端进行服务注册和在 client 端进行服务注册的示例
-- [zookeeper](https://github.com/go-kratos/examples/tree/main/registry/zookeeper) 使用 zookeeper 插件，在 server 端进行服务注册和在 client 端进行服务注册的示例
+Core package 测试是 option 默认值和边界条件最接近可执行规格的参考。重点位置包括 `config/*_test.go`、`transport/http/*_test.go`、`transport/grpc/*_test.go`、`middleware/*/*_test.go` 和 `selector/*_test.go`。应同时阅读实现，区分公开保证与测试环境细节。
 
-### HTTP
+独立的 [go-kratos/examples](https://github.com/go-kratos/examples) repository 包含集成型项目。复制前应：
 
-- [cors](https://github.com/go-kratos/examples/tree/main/http/cors) 跨域设置示例
-- [gin](https://github.com/go-kratos/examples/tree/main/http/gin) 将 gin 作为 router 集成进 Kratos 项目的示例
-- [mux](https://github.com/go-kratos/examples/tree/main/http/mux) 将 mux 作为 router 集成进 Kratos 项目的示例
-- [echo](https://github.com/go-kratos/examples/tree/main/http/echo) 将 echo 作为 router 集成进 Kratos 项目的示例
-- [static](https://github.com/go-kratos/examples/tree/main/http/static) 通过 HTTP 提供静态文件服务的示例
-- [upload](https://github.com/go-kratos/examples/tree/main/http/upload) 通过 HTTP 上传文件的示例
-- [redirect](https://github.com/go-kratos/examples/blob/main/http/redirect) 重定向的示例
-- [middleware](https://github.com/go-kratos/examples/tree/main/http/middlewares) 在路由中使用中间件的示例
-- [errors](https://github.com/go-kratos/examples/tree/main/http/errors) 使用统一的错误处理进行错误响应的示例
+1. 检查 `go.mod` 是否使用 `/v3` core 和 contrib module path。
+2. 检查版本与 generator 配置。
+3. 只通过该项目已提交的命令执行生成。
+4. 适配前运行 `go test ./...` 和 `go vet ./...`。
+5. 每次只加入一个集成，使失败责任清晰。
 
-### RPC
+## 把示例应用到自己的服务
 
-- [helloworld](https://github.com/go-kratos/examples/tree/main/helloworld) 分别使用 HTTP 和 gRPC 进行远程调用的样例
+示例可编译表示其 import 和 type 在所选版本下匹配，但不能确定 TLS trust、注册中心凭据、telemetry sampling、数据库 migration 或停机预算等生产策略。使用方仍要自行配置并测试这些选择。
 
-### Trace
-
-- [traces](https://github.com/go-kratos/examples/tree/main/traces) 使用 Jaeger 对两个服务进行分布式追踪的样例
-
-### WebSocket
-
-- [ws](https://github.com/go-kratos/examples/tree/main/ws) 提供 WebSocket 接口的样例
-
-### 鉴权
-
-- [jwt](https://github.com/go-kratos/examples/tree/main/auth/jwt) 在 HTTP、gRPC 中使用 JWT 进行鉴权的示例
-
-### 日志
-
-- [zap](https://github.com/go-kratos/examples/tree/main/log) 使用 zap 日志库的示例
-- [logrus](https://github.com/go-kratos/examples/tree/main/log) 使用 logrus 日志库的示例
-
-### 其他
-
-- [i18n](https://github.com/go-kratos/examples/tree/main/i18n) 国际化支持的示例
-- [header](https://github.com/go-kratos/examples/tree/main/header) 请求头处理示例
-- [selector](https://github.com/go-kratos/examples/tree/main/selector) 选择器示例，可通过负载均衡和 Filter 进行选择
-- [swagger](https://github.com/go-kratos/examples/tree/main/swagger) 使用 Swagger 插件自动生成接口文档并提供在线服务的示例
-
-## 综合项目
-
-- [blog](https://github.com/go-kratos/examples/tree/main/blog) 简单的 CRUD 工程，包含 MySQL 和 Redis 的使用，展示使用 kratos-layout 创建的项目的完整结构
-
-- [beer-shop](https://github.com/go-kratos/beer-shop) 一个模拟电商的完整微服务应用，展示如何使用 kratos 构建大型微服务项目
+不要把 v2 说明与 v3 import 混用，也不要混合无关的 contrib version。Core 和 contrib 即使位于同一 repository 源码中，也仍是独立 module。

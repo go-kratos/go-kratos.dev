@@ -1,218 +1,43 @@
 ---
 id: metrics
-title: 监控
-keywords:
-  - Go
-  - Kratos
-  - Toolkit
-  - Framework
-  - Microservices
-  - Protobuf
-  - gRPC
-  - HTTP
+title: 指标 Middleware
+description: 使用 OpenTelemetry instrument 记录 Kratos v3 client/server 请求指标。
 ---
 
-Metrics 中间件用于实现服务的性能指标监控，统计了请求耗时和请求计数。
+安装 v3 OpenTelemetry contrib module；旧 core `middleware/metrics` package 在 v3 中不存在。
 
-### 配置
+```bash
+go get github.com/go-kratos/kratos/contrib/otel/v3
+```
 
-Metrics 中间件中提供了两个配置方法 `WithSeconds()` 和 `WithRequests()`。
+使用应用的 meter 创建 instrument，再传给 server 或 client middleware：
 
-#### `WithSeconds()`
 ```go
-func WithSeconds(c metrics.Observer) Option {
-	return func(o *options) {
-		o.seconds = c
-	}
+meter := otel.Meter("todo-service")
+requests, err := metrics.DefaultRequestsCounter(meter, metrics.DefaultServerRequestsCounterName)
+if err != nil {
+	return err
 }
-```
-用于设置 metrics 中间件统计请求耗时的 `Observer` 直方图。
-
-#### `WithRequests()`
-
-```go
-func WithRequests(c metrics.Counter) Option {
-	return func(o *options) {
-		o.requests = c
-	}
+seconds, err := metrics.DefaultSecondsHistogram(meter, metrics.DefaultServerSecondsHistogramName)
+if err != nil {
+	return err
 }
+
+srv := http.NewServer(http.Middleware(
+	metrics.Server(metrics.WithRequests(requests), metrics.WithSeconds(seconds)),
+))
 ```
 
-用于设置 metrics 中间件统计请求计数的 `Counter` 计数器。
+出站 client 应使用 client constant name 和 `metrics.Client`。Server middleware 未传入 instrument 时会直接调用下一个 handler；client middleware 同样只记录非 nil instrument。
 
-### 使用方式 (kratos < 2.8.0)
+## Histogram view
 
-#### 使用 prometheus
-```go
-// 详见 https://github.com/go-kratos/examples/tree/main/metrics
+`DefaultSecondsHistogramView(name)` 返回使用相同显式 bucket 的 SDK view。如果需要该 aggregation，应在构造 SDK meter provider 时注册。View 在 provider 构造时影响匹配 instrument；meter 已开始工作后再加入就太晚了。
 
-_metricSeconds = prometheus.NewHistogramVec(prometheus.HistogramOpts{
-	Namespace: "server",
-	Subsystem: "requests",
-	Name:      "duration_sec",
-	Help:      "server requests duratio(sec).",
-	Buckets:   []float64{0.005, 0.01, 0.025, 0.05, 0.1, 0.250, 0.5, 1},
-}, []string{"kind", "operation"})
+`EnableOTELExemplar` 设置 `OTEL_GO_X_EXEMPLAR=true` 并返回环境修改错误。由于运行中修改环境是进程全局状态，条件允许时应在启动前通过部署环境配置。
 
-_metricRequests = prometheus.NewCounterVec(prometheus.CounterOpts{
-	Namespace: "client",
-	Subsystem: "requests",
-	Name:      "code_total",
-	Help:      "The total number of processed requests",
-}, []string{"kind", "operation", "code", "reason"})
-	
-prometheus.MustRegister(_metricSeconds, _metricRequests)
-```
-#### Server 中使用 metrics
+## 放置位置
 
-```go
-import (
-	prom "github.com/go-kratos/kratos/contrib/metrics/prometheus/v2"
-)
+Server metrics 必须在 transport context 创建后执行；通过 Kratos server option 注册 middleware 时会满足这一点。Middleware 从 transport context 读取 operation 和 kind，并从返回的 Kratos error 得到 code/reason。它在链中的位置决定覆盖哪些 middleware 和 handler 工作。
 
-// grpc service
-grpcSrv := grpc.NewServer(
-	grpc.Address(":9000"),
-	grpc.Middleware(
-		metrics.Server(
-			metrics.WithSeconds(prom.NewHistogram(_metricSeconds)),
-			metrics.WithRequests(prom.NewCounter(_metricRequests)),
-		),
-	),
-)
-
-// http service
-httpSrv := http.NewServer(
-	http.Address(":8000"),
-	http.Middleware(
-		metrics.Server(
-			metrics.WithSeconds(prom.NewHistogram(_metricSeconds)),
-			metrics.WithRequests(prom.NewCounter(_metricRequests)),
-		),
-	),
-)
-httpSrv.Handle("/metrics", promhttp.Handler())
-```
-
-#### Client 中使用 metrics
-
-```go
-// grpc client
-conn, err := grpc.DialInsecure(
-	context.Background(),
-	grpc.WithEndpoint("127.0.0.1:9000"),
-	grpc.WithMiddleware(
-		metrics.Client(
-			metrics.WithSeconds(prom.NewHistogram(_metricSeconds)),
-			metrics.WithRequests(prom.NewCounter(_metricRequests)),
-		),
-	),
-)
-
-// http client
-conn, err := http.NewClient(
-	context.Background(),
-	http.WithEndpoint("127.0.0.1:8000"),
-	http.WithMiddleware(
-		metrics.Client(
-			metrics.WithSeconds(prom.NewHistogram(_metricSeconds)),
-			metrics.WithRequests(prom.NewCounter(_metricRequests)),
-		),
-	),
-)
-```
-
-### 使用方式 (kratos >= 2.8.0)
-kratos 从 [v2.8.0](https://github.com/go-kratos/kratos/releases/tag/v2.8.0) 开始使用 otel.Metrics，需要用以下方法 export 数据到 prometheus。
-
-#### 使用 prometheus
-```go
-import (
-	"github.com/go-kratos/kratos/v2/middleware/metrics"
-	"go.opentelemetry.io/otel/exporters/prometheus"
-	"go.opentelemetry.io/otel/metric"
-	sdkmetric "go.opentelemetry.io/otel/sdk/metric"
-)
-
-// Detailed reference https://github.com/go-kratos/examples/tree/main/metrics
-func init() {
-	exporter, err := prometheus.New()
-	if err != nil {
-		panic(err)
-	}
-	provider := sdkmetric.NewMeterProvider(sdkmetric.WithReader(exporter))
-	meter := provider.Meter(Name)
-
-	_metricRequests, err = metrics.DefaultRequestsCounter(meter, metrics.DefaultServerRequestsCounterName)
-	if err != nil {
-		panic(err)
-	}
-
-	_metricSeconds, err = metrics.DefaultSecondsHistogram(meter, metrics.DefaultServerSecondsHistogramName)
-	if err != nil {
-		panic(err)
-	}
-}
-```
-
-#### Server 中使用 metrics
-```go
-import (
-	"github.com/prometheus/client_golang/prometheus/promhttp"
-)
-
-// grpc service
-grpcSrv := grpc.NewServer(
-	grpc.Address(":9000"),
-	grpc.Middleware(
-		metrics.Server(
-			metrics.WithSeconds(_metricSeconds),
-			metrics.WithRequests(_metricRequests),
-		),
-	),
-)
-
-// http service
-httpSrv := http.NewServer(
-	http.Address(":8000"),
-	http.Middleware(
-		metrics.Server(
-			metrics.WithSeconds(_metricSeconds),
-			metrics.WithRequests(_metricRequests),
-		),
-	),
-)
-httpSrv.Handle("/metrics", promhttp.Handler())
-```
-
-#### Client 中使用 metrics
-```go
-// grpc client
-conn, err := grpc.DialInsecure(
-	context.Background(),
-	grpc.WithEndpoint("127.0.0.1:9000"),
-	grpc.WithMiddleware(
-		metrics.Client(
-			metrics.WithSeconds(_metricSeconds),
-			metrics.WithRequests(_metricRequests),
-		),
-	),
-)
-
-// http client
-conn, err := http.NewClient(
-	context.Background(),
-	http.WithEndpoint("127.0.0.1:8000"),
-	http.WithMiddleware(
-		metrics.Client(
-			metrics.WithSeconds(_metricSeconds),
-			metrics.WithRequests(_metricRequests),
-		),
-	),
-)
-```
-
-### References
-* https://prometheus.io/docs/concepts/metric_types/
-* https://github.com/go-kratos/examples/tree/main/metrics
-* https://pkg.go.dev/go.opentelemetry.io/otel/exporters/prometheus
+Provider shutdown 仍是应用代码。Middleware constructor 不会创建、flush 或关闭 exporter。

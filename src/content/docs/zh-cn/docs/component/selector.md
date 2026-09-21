@@ -1,84 +1,32 @@
 ---
 id: selector
 title: 路由与负载均衡
-description: 路由与负载均衡主要的接口是 Selector，但在同目录下也提供了一个默认的 Selector 实现，该实现可以通过替换 NodeBuilder、Filter、Balancer 来分别实现节点权重计算、路由过滤、负载均衡算法的可插拔
-keywords:
-  - Go
-  - Kratos
-  - Framework
-  - Microservices
-  - Protobuf
-  - gRPC
-  - HTTP
-  - Balancer
-  - Route
-  - Selector
 ---
 
-## 接口实现
+`selector.Selector` 从发现到的服务节点中选择一个，并返回完成回调。核心包含加权轮询（`selector/wrr`）、二选一（`selector/p2c`）和随机（`selector/random`）策略。
 
-路由与负载均衡主要的接口是 Selector，在同目录下也提供了一个默认的 Selector 实现，该实现可以通过替换 **NodeBuilder**、**Filter**、**Balancer** 来分别实现节点权重计算算法、服务路由过滤策略、负载均衡算法的可插拔
+## 接口实现与内置策略
 
-```go
-type Selector interface {
-  // Selector 内部维护的服务节点列表通过 Rebalancer 接口来更新
-  Rebalancer
+selector 通过 rebalancer 接收节点，在 `Select` 中选择节点，并返回选中节点与完成回调。默认 transport 集成从 discovery 更新节点并提供 operation context。`selector/wrr` 提供加权轮询，`selector/p2c` 与 `selector/random` 提供其他策略。应根据可观测的服务行为选择算法，而不是为了形式替换它。
 
-  // Select nodes
-  // if err == nil, selected and done must not be empty.
-  Select(ctx context.Context, opts ...SelectOption) (selected Node, done DoneFunc, err error)
-}
+## 在 client 中使用
 
-// 通过 Rebalancer 实现服务节点变更感知
-type Rebalancer interface {
-  Apply(nodes []Node)
-}
-```
+创建 HTTP/gRPC client 时传入 discovery endpoint 与 `WithDiscovery`，需要将 request 路由到兼容子集时添加 node filter。endpoint 必须使用 discovery scheme，例如 `discovery:///orders`。直接 endpoint 不涉及 discovery 或 selector 负载均衡。
 
-已支持的实现：
-
-- [wrr](https://github.com/go-kratos/kratos/tree/main/selector/wrr) : Weighted round robin (Kratos Client 内置默认算法)
-- [p2c](https://github.com/go-kratos/kratos/tree/main/selector/p2c) : Power of two choices
-- [random](https://github.com/go-kratos/kratos/tree/main/selector/random) : Random
-
-## 使用方式
-
-### HTTP Client
+在 transport client 中使用 `http.WithNodeFilter(...)` 或 `grpc.WithNodeFilter(...)`，可按版本、metadata 或其他路由规则选择实例。client 会组合 discovery、endpoint、selector 和 filter options；endpoint 必须使用 discovery scheme。`selector.WithNodeFilter` 是直接调用 selector 时使用的低层 select-call option。只有直接实现 selector 或自定义 client 集成时才需要调用 selector 返回的完成回调。
 
 ```go
-import	"github.com/go-kratos/kratos/v2/selector/wrr"
-import	"github.com/go-kratos/kratos/v2/selector/filter"
-
-// 创建路由 Filter：筛选版本号为"2.0.0"的实例
-filter :=  filter.Version("2.0.0")
-// 创建 P2C 负载均衡算法 Selector，并将路由 Filter 注入
-selector.SetGlobalSelector(wrr.NewBuilder())
-
-hConn, err := http.NewClient(
-  context.Background(),
-  http.WithEndpoint("discovery:///helloworld"),
-  http.WithDiscovery(r),
-  http.WithNodeFilter(filter)
+conn, err := http.NewClient(ctx,
+	http.WithEndpoint("discovery:///orders"),
+	http.WithDiscovery(discovery),
+	http.WithNodeFilter(filter.Version("v3.0.0")),
 )
 ```
 
-### gRPC Client
+## 路由策略
 
-```go
-import	"github.com/go-kratos/kratos/v2/selector/wrr"
-import	"github.com/go-kratos/kratos/v2/selector/filter"
+node filter 在负载均衡前缩小候选集。将其用于明确的兼容性规则（如版本或区域），而不是将缺少实例隐式回退。使路由 key 在日志和 metrics 中可观测，方便诊断空候选集。
 
-// 创建路由 Filter：筛选版本号为"2.0.0"的实例
-filter :=  filter.Version("2.0.0")
-// 由于 gRPC 框架的限制，只能使用全局 balancer name 的方式来注入 selector
-selector.SetGlobalSelector(wrr.NewBuilder())
+标准 transport client 负责 discovery 更新和 selector 调用。只有服务需要全进程一致策略时才自定义 global selector；否则将路由策略保持在拥有 client 构造的代码附近。自定义 selector 必须处理空节点列表，并且对选中节点的完成回调恰好调用一次。
 
-conn, err := grpc.DialInsecure(
-  context.Background(),
-  grpc.WithEndpoint("discovery:///helloworld"),
-  grpc.WithDiscovery(r),
-
-  // 通过 grpc.WithFilter 注入路由 Filter
-  grpc.WithNodeFilter(filter),
-)
-```
+`DoneInfo` 会把 reply metadata 和错误结果报告给所选 node。Adaptive balancer 依赖这个 completion signal，漏调或调用两次都会破坏其观测。没有可选 node 时，标准错误为 `selector.ErrNoAvailable`。

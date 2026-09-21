@@ -1,109 +1,48 @@
 ---
 id: logging
-title: Logging
-keywords:
-  - Go
-  - Kratos
-  - Toolkit
-  - Framework
-  - Microservices
-  - Protobuf
-  - gRPC
-  - HTTP
+title: Logging Middleware
+description: Record completed Kratos v3 transport calls with log/slog.
 ---
 
-Logging middleware is used to print the details of requests received or initiated by the service.
-
-### Usage
-
-#### gRPC server
-By passing `logging.Server()` in `grpc.ServerOption`, Kratos will print detailed request information every time a gRPC request is received.
+Logging middleware emits one structured record after each handler completes.
+It accepts `*slog.Logger`; passing `nil` uses `slog.Default()`.
 
 ```go
-logger := log.DefaultLogger
-var opts = []grpc.ServerOption{
-	grpc.Middleware(
-		logging.Server(logger),
-	),
-}
-srv := grpc.NewServer(opts...)
+logger := log.NewLogger(log.NewHandler(log.WithWriter(os.Stdout)))
+srv := http.NewServer(http.Middleware(logging.Server(logger)))
 ```
 
-#### gRPC client
+Use `logging.Server` for incoming calls and `logging.Client` for outbound
+calls. Both read normalized transport information and Kratos errors.
 
-By passing `logging.Client()` in `grpc.WithMiddleware`, Kratos will print detailed request information every time a grpc request is initiated.
+## Recorded attributes
 
-```go
-logger := log.DefaultLogger
-var opts = []http.ServerOption{
-	http.Middleware(
-		logging.Server(logger),
-	),
-}
-srv := http.NewServer(opts...)
-```
+Records include side (`client` or `server`), transport kind, canonical RPC
+operation, formatted request arguments, HTTP-equivalent status code, error
+reason, and latency in seconds. Failures also include the error and its
+formatted stack text. Successful calls log at info; calls returning an error
+log at error.
 
-#### HTTP client
+Request formatting follows this order:
 
-By passing `logging.Client()` in `http.WithMiddleware`, Kratos will print detailed request information every time an Http request is initiated.
+1. Call `Redact() string` when the request implements `logging.Redacter`.
+2. Otherwise call `String()` for `fmt.Stringer` values, which includes generated
+   protobuf messages.
+3. Otherwise format the value with `%+v`.
 
-```go
-logger := log.DefaultLogger
-conn, err := http.NewClient(
-	context.Background(),
-	http.WithMiddleware(
-		logging.Client(logger),
-	),
-	http.WithEndpoint("127.0.0.1:8000"),
-)
-```
+Implement `Redact` on application request types that may contain secrets.
+Logger key filters can provide a second layer, but they cannot redact text that
+has already been flattened into the `args` string.
 
-The Logging middleware only prints `trace_id` in the server and does not collect data.
+## Context attributes
 
-### Use in the project
+Attach request values through `log.ContextWithAttrs`, then write application
+logs with the same context. A logger created by `log.NewLogger` merges those
+attributes into handled records.
 
-#### grpc-server internal/server/grpc.go
+Keep logging inside metadata/tracing middleware when it needs values those
+middlewares add to the context. Place logging outside recovery when a recovered
+panic should return to logging as an error and produce a completed-call record.
 
-```go
-exporter, err := stdouttrace.New(stdouttrace.WithWriter(ioutil.Discard))
-if err != nil {
-	fmt.Printf("creating stdout exporter: %v", err)
-	panic(err)
-}
-
-tp := tracesdk.NewTracerProvider(
-	tracesdk.WithBatcher(exporter),
-	tracesdk.WithResource(resource.NewSchemaless(
-		semconv.ServiceNameKey.String(Name)),
-	)
-)
-
-var opts = []grpc.ServerOption{
-  grpc.Middleware(
-    tracing.Server(tracing.WithTracerProvider(tp)),
-  ),
-}
-
-srv := grpc.NewServer(opts...)
-```
-
-Add the `trace_id` field to the output log, cmd/project_name/main.go.
-
-```go
-logger := log.With(
-  log.NewStdLogger(os.Stdout),
-  "ts", log.DefaultTimestamp,
-  "caller", log.DefaultCaller,
-  "service.id", id,
-  "service.name", Name,
-  "service.version", Version,
-  "trace_id", log.TraceID(),
-  "span_id", log.SpanID(),
-)
-```
-
-Log `trace_id`
-
-```go
-log.WithContext(ctx).Errorf("Field created: %s", err)
-```
+The v2 `log.Logger`, `log.Helper`, and `log.NewStdLogger` APIs are not compatible
+with v3. See [Logging](/docs/component/log/) for handler configuration.

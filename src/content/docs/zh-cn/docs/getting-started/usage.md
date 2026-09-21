@@ -1,314 +1,77 @@
 ---
 id: usage
-title: CLI工具
-description: Kratos 工具使用，创建 Protobuf 模板，创建 Go 工程项目，创建 Service 模板
-keywords:
-  - Go
-  - Kratos
-  - Toolkit
-  - Framework
-  - Microservices
-  - Protobuf
-  - gRPC
-  - HTTP
+title: CLI 参考
+description: 使用 Kratos v3 CLI，并以生成项目自身的构建流程为准。
 ---
 
-### 安装
+v3 CLI 是独立 Go module。安装后应检查该版本实际提供的命令：
 
 ```bash
-go install github.com/go-kratos/kratos/cmd/kratos/v2@latest
+go install github.com/go-kratos/kratos/cmd/kratos/v3@latest
+kratos --help
+kratos --version
 ```
 
-### 创建项目
+Root command 为 `new`、`proto`、`upgrade`、`changelog` 和 `run`。不存在 `kratos change` 或通用的运行时 plugin 命令。
 
-通过 kratos 命令创建项目模板：
-
-```bash
-kratos new helloworld
-```
-
-使用 `-r` 指定源
-
-```bash
-# 国内拉取失败可使用gitee源
-kratos new helloworld -r https://gitee.com/go-kratos/kratos-layout.git
-# 亦可使用自定义的模板
-kratos new helloworld -r xxx-layout.git
-# 同时也可以通过环境变量指定源
-KRATOS_LAYOUT_REPO=xxx-layout.git
-kratos new helloworld
-```
-
-使用 `-b` 指定分支
-
-```bash
-kratos new helloworld -b main
-```
-
-使用 `--nomod` 添加服务，共用 `go.mod` ，大仓模式
+## 创建项目
 
 ```bash
 kratos new helloworld
-cd helloworld
-kratos new app/user --nomod
+kratos new --repo https://github.com/your-org/layout.git --branch main helloworld
 ```
 
-输出:
+`new` 会复制 Git repository 模板。相关 flag 为 `--repo`、`--branch`、`--timeout` 和 `--nomod`。默认 repository 与 CLI 独立维护，开始开发前应检查新项目的 `go.mod`、Makefile 和 generator 配置。
+
+## 生成 protobuf scaffold
 
 ```bash
-.
-├── Dockerfile
-├── LICENSE
-├── Makefile
-├── README.md
-├── api
-│   └── helloworld
-│       └── v1
-│           ├── error_reason.pb.go
-│           ├── error_reason.proto
-│           ├── greeter.pb.go
-│           ├── greeter.proto
-│           ├── greeter_grpc.pb.go
-│           └── greeter_http.pb.go
-├── app
-│   └── user
-│       ├── Dockerfile
-│       ├── Makefile
-│       ├── cmd
-│       │   └── user
-│       │       ├── main.go
-│       │       ├── wire.go
-│       │       └── wire_gen.go
-│       ├── configs
-│       │   └── config.yaml
-│       ├── internal
-│       │   ├── biz
-│       │   │   ├── biz.go
-│       │   │   └── greeter.go
-│       │   ├── conf
-│       │   │   ├── conf.pb.go
-│       │   │   └── conf.proto
-│       │   ├── data
-│       │   │   ├── data.go
-│       │   │   └── greeter.go
-│       │   ├── server
-│       │   │   ├── grpc.go
-│       │   │   ├── http.go
-│       │   │   └── server.go
-│       │   └── service
-│       │       ├── greeter.go
-│       │       └── service.go
-│       └── openapi.yaml
-├── cmd
-│   └── helloworld
-│       ├── main.go
-│       ├── wire.go
-│       └── wire_gen.go
-├── configs
-│   └── config.yaml
-├── go.mod
-├── go.sum
-├── internal
-│   ├── biz
-│   │   ├── README.md
-│   │   ├── biz.go
-│   │   └── greeter.go
-│   ├── conf
-│   │   ├── conf.pb.go
-│   │   └── conf.proto
-│   ├── data
-│   │   ├── README.md
-│   │   ├── data.go
-│   │   └── greeter.go
-│   ├── server
-│   │   ├── grpc.go
-│   │   ├── http.go
-│   │   └── server.go
-│   └── service
-│       ├── README.md
-│       ├── greeter.go
-│       └── service.go
-├── openapi.yaml
-└── third_party
-    ├── README.md
-    ├── errors
-    │   └── errors.proto
-    ├── google
-    │   ├── api
-    │   │   ├── annotations.proto
-    │   │   ├── client.proto
-    │   │   ├── field_behavior.proto
-    │   │   ├── http.proto
-    │   │   └── httpbody.proto
-    │   └── protobuf
-    │       └── descriptor.proto
-    └── validate
-        ├── README.md
-        └── validate.proto
+kratos proto add api/helloworld/v1/greeter.proto
+kratos proto client api/helloworld/v1/greeter.proto
+kratos proto server api/helloworld/v1/greeter.proto --target-dir internal/service
 ```
 
-### 添加 Proto 文件
+`proto add` 使用从 `go.mod` 读取的 module path 创建 proto 模板，传入 path 必须有目录层级。`proto client` 为文件调用配置的 protoc 流程；`proto server` 生成 service 实现 scaffold。这些命令不能替代 layout 的完整 `make api`/`make all` 流程，后者会生成全部已配置输出。
 
-> kratos-layout 项目中对 proto 文件进行了版本划分，放在了 v1 子目录下
-
-```bash
-kratos proto add api/helloworld/v1/demo.proto
-```
-
-输出:
-
-api/helloworld/v1/demo.proto
-
-```protobuf
-syntax = "proto3";
-
-package api.helloworld.v1;
-
-option go_package = "helloworld/api/helloworld/v1;v1";
-option java_multiple_files = true;
-option java_package = "api.helloworld.v1";
-
-service Demo {
-	rpc CreateDemo (CreateDemoRequest) returns (CreateDemoReply);
-	rpc UpdateDemo (UpdateDemoRequest) returns (UpdateDemoReply);
-	rpc DeleteDemo (DeleteDemoRequest) returns (DeleteDemoReply);
-	rpc GetDemo (GetDemoRequest) returns (GetDemoReply);
-	rpc ListDemo (ListDemoRequest) returns (ListDemoReply);
-}
-
-message CreateDemoRequest {}
-message CreateDemoReply {}
-
-message UpdateDemoRequest {}
-message UpdateDemoReply {}
-
-message DeleteDemoRequest {}
-message DeleteDemoReply {}
-
-message GetDemoRequest {}
-message GetDemoReply {}
-
-message ListDemoRequest {}
-message ListDemoReply {}
-```
-
-### 生成 Proto 代码
-
-```bash
-# 可以直接通过 make 命令生成
-make api
-
-# 或使用 kratos cli 进行生成
-kratos proto client api/helloworld/v1/demo.proto
-```
-
-会在 proto 文件同目录下生成:
-
-```bash
-api/helloworld/v1/demo.pb.go
-api/helloworld/v1/demo_grpc.pb.go
-# 注意 http 代码只会在 proto 文件中声明了 http 时才会生成
-api/helloworld/v1/demo_http.pb.go
-```
-
-### 生成 Service 代码
-
-通过 proto 文件，可以直接生成对应的 Service 实现代码：
-
-使用 `-t` 指定生成目录
-
-```bash
-kratos proto server api/helloworld/v1/demo.proto -t internal/service
-```
-
-输出:  
-internal/service/demo.go
-
-```go
-package service
-
-import (
-	"context"
-
-	pb "helloworld/api/helloworld"
-)
-
-type DemoService struct {
-	pb.UnimplementedDemoServer
-}
-
-func NewDemoService() *DemoService {
-	return &DemoService{}
-}
-
-func (s *DemoService) CreateDemo(ctx context.Context, req *pb.CreateDemoRequest) (*pb.CreateDemoReply, error) {
-	return &pb.CreateDemoReply{}, nil
-}
-func (s *DemoService) UpdateDemo(ctx context.Context, req *pb.UpdateDemoRequest) (*pb.UpdateDemoReply, error) {
-	return &pb.UpdateDemoReply{}, nil
-}
-func (s *DemoService) DeleteDemo(ctx context.Context, req *pb.DeleteDemoRequest) (*pb.DeleteDemoReply, error) {
-	return &pb.DeleteDemoReply{}, nil
-}
-func (s *DemoService) GetDemo(ctx context.Context, req *pb.GetDemoRequest) (*pb.GetDemoReply, error) {
-	return &pb.GetDemoReply{}, nil
-}
-func (s *DemoService) ListDemo(ctx context.Context, req *pb.ListDemoRequest) (*pb.ListDemoReply, error) {
-	return &pb.ListDemoReply{}, nil
-}
-```
-
-### 运行项目
-
-- 如子目录下有多个项目则出现选择菜单
+## 开发时运行
 
 ```bash
 kratos run
+kratos run --work ./cmd/server
 ```
 
-### 查看版本
+`run` 查找 `cmd` 下的目录，然后对所选 command 执行 `go run`。它不会监听文件，也不会重新生成代码。`--work` 会改变子进程的工作目录。部署时应运行项目编译产物。
 
-查看工具版本：
-
-```bash
-kratos -v
-```
-
-输出:
-
-```bash
-kratos version v2.2.0
-```
-
-### 工具升级
-
-将升级以下工具
-
-- Kratos 与工具自身
-- protoc 相关的生成插件
+## 升级工具
 
 ```bash
 kratos upgrade
 ```
 
-### 更新日志
+`upgrade` 会安装最新版 CLI、Kratos HTTP/error generator、Go protobuf generator 和 OpenAPI generator。它并不是完整的应用主版本迁移。Module path、公开 API 变化、生成代码和应用测试仍要分别审查。已有 v2 服务请阅读[v2 到 v3 指南](/zh-cn/docs/migration/v2-to-v3/)。
+
+## 生成 changelog
 
 ```bash
-# 等同于打印 https://github.com/go-kratos/kratos/releases/latest 的版本更新日志
-kratos changelog
-
-# 打印指定版本更新日志
-kratos changelog v2.1.4
-
-# 查看从 latest 版本发布后至今的更新日志
 kratos changelog dev
+kratos changelog v3.0.0
 ```
 
-### 查看帮助
+`changelog` 从 GitHub repository 读取 release 或 commit 信息。可通过 `--repo-url` 选择其它 repository。命令需要网络和 repository 历史；发布前应人工审查生成的文字。
 
-任何命令下加 `-h` 查看帮助
+## 以项目命令为准
+
+模板创建后，其 Makefile 和生成配置就是构建 contract：
 
 ```bash
-kratos -h
-kratos new -h
+make init
+make api
+make config
+make all
+go test ./...
+make build
 ```
+
+公开 protobuf 变化后执行 `make api`，配置 proto 变化后执行 `make config`，构造函数、provider set 或 Ent schema 变化后执行 `make all`。生成输出应与 source 一起提交。
+
+使用 `kratos <command> --help` 查看已安装版本的准确行为。

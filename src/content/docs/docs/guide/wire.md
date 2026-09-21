@@ -3,94 +3,102 @@ id: wire
 title: Dependency Injection
 ---
 
-**Wire** is a compile-time dependency injection tool.
+The project template uses Google Wire for compile-time dependency injection.
+Wire reads constructors and provider sets, then generates ordinary Go code that
+calls them in dependency order. Kratos itself does not require Wire at runtime.
 
-It is recommended that doing explicit initialization rather than using global variables.
+## Provider sets by layer
 
-Generating the initialization codes by *Wire* can reduce the coupling among components and increase the maintainability of the project.
+Each application layer exports a small provider set:
 
-### Installation
+```go
+var ProviderSet = wire.NewSet(NewData, NewTodoRepo)
+```
+
+The template has sets for `data`, `biz`, `service`, and `server`. Constructors
+declare dependencies in their parameters and outputs. A constructor may return
+`(value, error)` when initialization can fail, and `(value, cleanup, error)`
+when it owns a long-lived resource such as a database client.
+
+Keep sets close to the constructors they expose. Return business repository
+interfaces from data constructors, and avoid a provider set that silently
+constructs mutable global state.
+
+## Define the injector
+
+`cmd/server/wire.go` is an injector declaration compiled only with the
+`wireinject` build tag:
+
+```go
+//go:build wireinject
+
+func wireApp(*conf.Server, *conf.Data, *slog.Logger) (*kratos.App, func(), error) {
+	panic(wire.Build(
+		server.ProviderSet,
+		data.ProviderSet,
+		biz.ProviderSet,
+		service.ProviderSet,
+		newApp,
+	))
+}
+```
+
+The apparent panic is a Wire declaration, not runtime code. Wire replaces it
+with `wire_gen.go`, which calls `NewData`, constructs the repository, use case,
+service and transports, then calls `newApp`. If setup fails, the generated code
+returns the error and runs cleanup for resources already created.
+
+## Generate the injector
+
+Do not edit `wire_gen.go`. After adding a constructor argument or changing a
+provider set, run:
 
 ```bash
-# Import into project
-go get -u github.com/google/wire
-
-# Install cmd
-go install github.com/google/wire/cmd/wire
+make all
+go test ./...
 ```
 
-### Terms
+In the template, `make all` runs API generation, configuration generation, and
+`make generate`. The last target runs `go generate ./...` and `go mod tidy`;
+the Wire directive in `wire_gen.go` regenerates the injector. `make init`
+installs Wire and Buf for local development.
 
-There are two basic terms in wire, *Provider* and *Injector*.
+Commit `wire.go` and `wire_gen.go` together. A clean regeneration check in CI
+detects an injector that was not updated after constructor changes.
 
-Provider is a *Go Func*, it can also receive the values from other *Provider*s for dependency injection.
+## Own cleanup in main
 
-```go
-// provides a config file
-func NewConfig() *conf.Data {...}
-
-// provides the data component (the initialization of database, cache and etc.) which depends on the data config.
-func NewData(c *conf.Data) (*Data, error) {...}
-
-// provides persistence components (implementation of CRUD persistence) which depends on the data component.
-func NewUserRepo(d *data.Data) (*UserRepo, error) {...}
-```
-
-### Usage
-
-In Kratos project, there are four major modules, *server, service, biz and data*. They will be initialized by *Wire*.
-
-<img src="/images/wire.png" alt="kratos ddd" width="650px" />
-
-A *ProviderSet* should be provided in every module so that wire could scan them and generate the DI codes.
-
-First, you should define ProviderSet in the entry of every module.
-The
-```go
--data
---data.go    // var ProviderSet = wire.NewSet(NewData, NewGreeterRepo)
---greeter.go // func NewGreeterRepo(data *Data, logger log.Logger) biz.GreeterRepo {...}
-```
-Then put these *ProviderSet* in the *wire.go* for DI configuration.
-
-### Component Initialization
-`wire.go` is required for DI. The kratos application is for lifecycle management.
+The injector returns a cleanup function assembled from provider cleanup
+functions. Call it only after successful construction and defer it before
+running the application:
 
 ```go
-// the entry point of the application
-cmd
--main.go
--wire.go
--wire_gen.go
-
-// main.go creates the kratos application for lifecycle management.
-func newApp(logger log.Logger, hs *http.Server, gs *grpc.Server, greeter *service.GreeterService) *kratos.App {
-    pb.RegisterGreeterServer(gs, greeter)
-    pb.RegisterGreeterHTTPServer(hs, greeter)
-    return kratos.New(
-        kratos.Name(Name),
-        kratos.Version(Version),
-        kratos.Logger(logger),
-        kratos.Server(
-            hs,
-            gs,
-        ),
-    )
+app, cleanup, err := wireApp(bc.Server, bc.Data, logger)
+if err != nil {
+	panic(err)
 }
+defer cleanup()
 
-// wire.go initialization
-func initApp(*conf.Server, *conf.Data, log.Logger) (*kratos.App, error) {
-    //  builds ProviderSet in every modules, for the generation of wire_gen.go
-    panic(wire.Build(server.ProviderSet, data.ProviderSet, biz.ProviderSet, service.ProviderSet, newApp))
+if err := app.Run(); err != nil {
+	panic(err)
 }
 ```
-run `go generate` command in main directory to generate DI codes.
-```
-go generate ./...
-```
 
-## References
+`App.Run` stops transports and unregisters the service. Wire cleanup then closes
+data clients and other constructed resources. Constructors should make their
+cleanup safe after partial initialization and return useful errors rather than
+calling `panic` themselves.
 
-* https://blog.golang.org/wire
-* https://github.com/google/wire
-* https://medium.com/@dche423/master-wire-cn-d57de86caa1b
+## Diagnose generation errors
+
+- **No provider found:** add the constructor's provider set or pass the value as
+  an injector input.
+- **Multiple providers:** remove the ambiguous provider or split injectors for
+  different implementations.
+- **Interface is not provided:** return the interface from the constructor or
+  use `wire.Bind` when the constructor returns a concrete implementation.
+- **Initialization cycle:** move the shared responsibility behind an interface
+  or change ownership; Wire cannot construct a runtime dependency cycle.
+
+Wire verifies construction, not behavior. Continue to unit-test use cases,
+services, and repositories independently.

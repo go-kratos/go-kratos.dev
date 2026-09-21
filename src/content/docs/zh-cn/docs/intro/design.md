@@ -1,9 +1,9 @@
 ---
 id: design
 title: 设计理念
-description: 本篇文档阐述Kratos的设计理念，介绍Kratos项目的整体情况和主要组件
+description: Kratos v3 的设计原则、项目结构与组件边界。
 keywords:
-  - Go 
+  - Go
   - Kratos
   - Toolkit
   - Framework
@@ -12,277 +12,312 @@ keywords:
   - gRPC
   - HTTP
 ---
-本篇文档阐述Kratos的设计理念，介绍Kratos项目的整体情况和主要组件。
 
-## 设计哲学
+Kratos 是用于构建服务的 Go 框架。更准确地说，它是一套工具箱：应用按需选择
+组件，并继续掌握自身架构和基础设施。Kratos 不要求特定数据库、ORM、缓存、消息
+队列、注册中心、配置中心或部署平台。
 
-Kratos是一个Go语言实现的微服务框架，说得更准确一点，它更类似于一个使用Go构建微服务的工具箱，开发者可以按照自己的习惯选用或定制其中的组件，来打造自己的微服务。也正是由于这样的原因，Kratos并不绑定于特定的基础设施，不限定于某种注册中心，或数据库ORM等，所以您可以十分轻松地将任意库集成进项目里，与Kratos共同运作。
+这一设计始于 v2 的重构，并继续作为 v3 的基础。v3 更新了公开 API 和工具链，
+但仍然坚持小型接口、显式组装、生成 transport adapter 和可替换基础设施。
 
-围绕这样的核心设计理念，我们设计了如下的项目生态：
+## 设计原则
 
-* [kratos](https://github.com/go-kratos/kratos) Kratos框架核心，主要包含了基础的CLI工具，内置的HTTP/gRPC接口生成和服务生命周期管理，提供链路追踪、配置文件、日志、服务发现、监控等组件能力和相关接口定义。
-* [contrib](https://github.com/go-kratos/kratos/tree/main/contrib) 基于上述核心定义的基础接口，对配置文件、日志、服务发现、监控等服务进行具体实现所形成的一系列插件，可以直接使用它们，也可以参考它们的代码，做您需要的服务的适配，从而集成进kratos项目中来。
-* [aegis](https://github.com/go-kratos/aegis) 我们将服务可用性相关的算法：如限流、熔断等算法放在了这个独立的项目里，几乎没有外部依赖，它更不依赖Kratos，您可以在直接在任意项目中使用。您也可以轻松将它集成到Kratos中使用，提高服务的可用性。
-* [layout](https://github.com/go-kratos/kratos-layout) 我们设计的一个默认的项目模板，它包含一个参考了DDD和简洁架构设计的项目结构、Makefile脚本和Dockerfile文件。但这个项目模板不是必需的，您可以任意修改它，或使用自己设计的项目结构，Kratos依然可以正常工作。框架本身不对项目结构做任何假设和限制，您可以按照自己的想法来使用，具有很强的可定制性。
-* [gateway](https://github.com/go-kratos/gateway) 这个是我们刚刚起步，用Go开发的API Gateway，后续您可以使用它来作为您Kratos微服务的网关，用于微服务API的治理，项目正在施工中，欢迎关注。
+Kratos 最初确立的下列目标至今仍在指导项目：
 
-## 仓库、文档和社区
+- **简单：** 使用普通 Go，避免不必要的框架机制。
+- **通用：** 提供可复用的服务能力，不把某一家公司的业务约定编码进框架。
+- **高效：** 减少重复的集成和代码生成工作，让团队专注于服务行为。
+- **稳定和健壮：** 保持 core contract 可测试，并显式处理常见失败。
+- **关注性能：** 提供合适的性能，不要求应用使用不透明或 unsafe 的方式。
+- **可扩展：** 定义职责集中的 interface，供应用与 contrib module 实现。
+- **面向故障：** 把 timeout、优雅停机、限流、熔断、恢复和可观测错误视为服务的
+  正常组成部分。
+- **工具支持：** 通过项目自行维护的命令，使 API、配置和依赖组装生成可重复。
 
-* GitHub仓库：[https://github.com/go-kratos](https://github.com/go-kratos)
-* 文档：[https://go-kratos.dev/](https://go-kratos.dev/)
-* 微信群：[go-kratos 官方微信群](https://github.com/go-kratos/kratos/issues/682)
-* Discord：[go-kratos](https://discord.com/invite/BWzJsUJ)
+这些原则解释了为什么 Kratos 把业务架构和 provider 选择留给应用。框架默认值应
+便于使用，但不应让某种数据库或厂商 SDK 进入业务模型。
 
-## 为什么v2完全重新设计
+## 项目生态
 
-以前关注过 `kratos` 项目的可能知道，Kratos的[v1](https://github.com/go-kratos/kratos/tree/v1.0.x)版本已经开源了很久，也是个较为完善的框架。那么为什么不直接基于v1继续迭代，而是要推倒重来，推出完全重新设计的v2呢？
+主要项目承担不同职责：
 
-经验源自踩坑。
+- [`go-kratos/kratos`](https://github.com/go-kratos/kratos) 包含 core runtime、CLI
+  与 protobuf generator、transport、middleware、配置、错误、日志、注册接口和
+  selector 实现。
+- [`go-kratos/kratos-layout`](https://github.com/go-kratos/kratos-layout) 是参考服务
+  模板，演示依赖方向、Buf/Wire 生成、HTTP/gRPC server、配置和 data layer。
+- [`contrib`](https://github.com/go-kratos/kratos/tree/main/contrib) 包含可选集成。
+  在 v3 中，OpenTelemetry 等集成是独立版本化的 module，应用必须显式添加。
+- [`go-kratos/gateway`](https://github.com/go-kratos/gateway) 是独立的 API gateway
+  项目，Kratos 服务不依赖它。
 
-在业务不断迭代、项目不断膨胀的情况下，我们发现，过去的框架和项目结构设计，导致代码变更成本逐渐升高，而没有进行合理的抽象，导致更难进行模块的测试，也更难对第三方基础库进行适配和迁移，这在一定程度上拉低了生产力。
+layout 是示例，不是使用框架的前提。团队可以修改目录、采用其他依赖注入方式，
+或者沿用已有项目结构，同时继续使用 Kratos transport 和组件。
 
-因此，我们参考了大量的DDD和Clean Architecture等业界先进设计理念，重新设计了微服务的项目结构，并且这个结构随着我们的后续研究，会进一步进行迭代，让它成为微服务项目结构的最佳实践。
+## 为什么 v2 要重新设计
 
-没错，新版本的是从kratos-layout开始的。也许刚接触这个项目结构时会觉得不适应，但随着项目迭代，代码复杂度的提高，这个定义良好的结构，将使项目保持优秀的代码可读性、可测试性，以及令人满意的开发效率和可维护性。
+Kratos v1 已经提供了较完整的微服务基础库。然而，随着服务和团队扩大，紧密耦合
+的框架与项目结构让修改成本逐步上升，模块难以隔离测试，替换第三方基础设施时也
+需要修改业务代码。
 
-更重要的一点是，这一次我们想面向社区来设计和开发这个框架。让更多的开发者能够使用我们的框架来提高生产力，同时参与到我们的项目中来。
+v2 参考领域驱动设计和 Clean Architecture，重新设计框架与 `kratos-layout`。关键
+结果是依赖方向：业务规则定义自己需要的 interface，transport 和基础设施代码在
+边缘实现 adapter。随着服务演进，这种结构能提高可读性、可测试性以及替换外部
+系统的能力。
 
-所以我们把整个框架设计成为一个插座，我们希望整个框架轻量，插件化，可定制。对于几乎每一个微服务相关的功能模块，我们都设计了标准化接口，对于第三方库设计为插件，这样就能迅速把任意基础设施集成到使用Kratos的项目里，因此，无论您的公司使用何种基础设施，有何种规范，您都可以轻松将Kratos定制成与您的开发、生产环境相匹配的样子。
+框架被有意设计成一个“插座”。Core package 提供标准连接点，应用插入符合自身
+生产环境的实现。社区也能在不为每个 provider 扩大 core runtime 的前提下增加
+集成。
 
-不破不立，v2是一次从内到外的彻底革新，我们无法在旧版本上修修补补，而是选择重新设计和开发新版本。而目前v2版本也已经在很多生产环境使用，我们也将持续迭代和完善这个框架，同时也更欢迎各位开发者参与进来，一起让它变得更好。
+## v3 如何扩展这一设计
 
-## 数据库/缓存/消息队列/
+v3 保留 v2 的架构，同时进一步明确边界：
 
-正如前文提到的，Kratos框架不限制您使用任何第三方库来进行项目开发，因此您可以根据喜好来选择库进行集成。我们也会逐步针对更多被广泛使用的第三方库开发插件。
+- Core import 使用 `/v3` module path，并要求 v3 对应的 Go 工具链。
+- 日志使用标准 `log/slog` API，取代 Kratos 特有的 `Logger`/`Helper` 抽象。
+- OpenTelemetry tracing/metrics 和 JWT middleware 成为独立 contrib module，应用
+  自行管理配置与关闭。
+- Go JSON 与 protobuf JSON 成为 wire 行为明确的独立 codec。
+- HTTP 代码生成支持以 SSE 承载服务端流，以 WebSocket 承载客户端流和双向流。
+- 配置增加类型安全的 `config.Get[T]`，校验支持自定义 validator function，错误
+  增加 `Join`、`TooManyRequests` 等 helper。
+- 限流与熔断在 core 中拥有不依赖 Aegis 的默认实现，同时仍可通过公开 interface
+  替换。
 
-这里给出一些被广泛使用的库供参考：
+这些变化更新了组件的集成方式，并不要求重新设计业务层。功能和迁移细节分别见
+[Kratos v3 新功能](/zh-cn/docs/migration/v3-new-features/)与
+[从 v2 迁移到 v3](/zh-cn/docs/migration/v2-to-v3/)。
 
-数据库：
+## 应用生命周期
 
-* [database/sql](https://pkg.go.dev/database/sql) 官方库
-* [gorm](https://github.com/go-gorm/gorm)
-* [ent](https://github.com/ent/ent)
+`kratos.App` 是生命周期协调器。它接收服务身份、一个或多个 `transport.Server`、
+可选 registrar、hook、logger 和停机 timeout，不会隐式构造数据库或 provider。
 
-缓存：
+```go
+app := kratos.New(
+	kratos.ID(instanceID),
+	kratos.Name("todo"),
+	kratos.Version(version),
+	kratos.Metadata(map[string]string{"region": region}),
+	kratos.Logger(logger),
+	kratos.Server(httpServer, grpcServer),
+	kratos.Registrar(registrar),
+	kratos.StopTimeout(10*time.Second),
+)
 
-* [go-redis](https://github.com/go-redis/redis)
-* [redigo](https://github.com/gomodule/redigo)
-* [gomemcache](https://github.com/bradfitz/gomemcache)
+if err := app.Run(); err != nil {
+	return err
+}
+```
 
-消息队列：
+`Run` 依次执行 `BeforeStart` hook、启动 server、注册生成的 service instance，再执行
+`AfterStart`。配置的信号、显式 `Stop` 或 server 失败都会开始停机。`Stop` 执行
+`BeforeStop`、注销实例、取消应用 context，并让每个 server 在配置的预算内停止；
+所有 server 退出后执行 `AfterStop`。
 
-* [sarama](https://github.com/Shopify/sarama) kafka客户端
-* [kafka-go](https://github.com/segmentio/kafka-go)
+未显式提供 endpoint 时，应用通过 `transport.Endpointer` 收集 server endpoint。
+生命周期 hook 收到的 context 包含 `AppInfo`，可读取当前 ID、名称、版本、metadata
+与 endpoint。顺序和失败行为见[应用与生命周期](/zh-cn/docs/component/application/)。
 
-其它更多的优秀go库，可以在[awesome-go](https://github.com/avelino/awesome-go)这个仓库中找找。
+## 参考项目结构
 
-## CLI工具
+当前 layout 保留 v2 的依赖边界设计，并用完整 Todo 服务展示它：
 
-kratos命令目前主要用于从模板创建项目，维护依赖包版本等。具体请参考[文档](https://go-kratos.dev/docs/getting-started/usage)
+```text
+api/                    Protobuf contracts and generated clients/servers
+cmd/server/             Process entry point and Wire provider assembly
+configs/                Runtime configuration files
+internal/biz/           Entities, use cases, and repository interfaces
+internal/data/          Repository implementations and external clients
+internal/service/       Transport-facing service implementation
+internal/server/        HTTP and gRPC server construction
+```
 
-## Protobuf定义API
+依赖指向 `internal/biz`。Use case 可以依赖 repository interface，具体 Ent repository
+留在 `internal/data`。`internal/service` 将生成的 API message 转换为 use-case 调用，
+`internal/server` 把 service 注册到 HTTP 和 gRPC。Wire 在 `cmd/server` 中组装
+provider，不充当运行时 service locator。
 
-Kratos使用Protobuf进行API定义。Protobuf是由Google开发的一种语言中立的数据序列化协议。它有结构定义清晰、可扩展性好、体积小、性能优秀等特点，在众多公司和项目被广泛使用。
+Kratos 不强制这些目录。其目的是避免 transport、持久化和厂商 SDK type 扩散进
+业务逻辑。每层职责见[项目结构](/zh-cn/docs/intro/layout/)和
+[基于 Layout 开发服务](/zh-cn/docs/guide/service-development/)。
 
-在使用Kratos的项目中，您将使用如下的IDL进行您的接口定义，并且通过`protoc`工具生成相应的`.pb.go`文件，其中包含根据定义生成的服务端和客户端代码。随后您就可以在自己的项目内部注册服务端代码使用，或引用客户端代码进行远程调用。
+## 基础设施由应用选择
 
-Kratos默认仅生成gRPC接口的代码，如果需要生成HTTP代码，请在proto文件中使用`option (google.api.http)`来添加HTTP部分的定义后再进行生成。默认情况下，HTTP接口将使用JSON作为序列化格式，如果想使用其它序列化格式（form，XML等），请参考文档[序列化](https://go-kratos.dev/docs/component/encoding)进行相应的配置即可。
+数据库、缓存和消息队列库不属于 core framework。应根据服务的数据模型与运维
+要求选择它们；需要替换能力和聚焦测试时，把 provider-specific type 隔离在
+repository 或 client interface 之后。
 
-```protobuf
+参考 layout 当前演示 Ent 与 MySQL driver。这是模板选择，不是 Kratos 要求。
+应用可以使用 `database/sql`、其他 ORM、文档数据库、内存实现，或者完全不使用
+数据库。Redis client、Kafka client 和其他基础设施同理：显式构造，注入 data
+layer，并通过应用的依赖生命周期关闭。
+
+## CLI 与代码生成
+
+`kratos` CLI 用于创建项目、生成 API/service 脚手架，也能在开发期运行服务。
+layout 自行维护可重复的生成命令：
+
+```bash
+make api       # generate API protobuf, gRPC, HTTP, and OpenAPI output
+make config    # generate configuration protobuf output
+make generate  # run go generate and go mod tidy
+make all       # run API, configuration, and Go generation
+```
+
+实际输出由项目的 Buf template 和 Go tool command 决定。生成的 `*.pb.go`、
+HTTP/gRPC binding、OpenAPI document 和 `wire_gen.go` 都是输出：修改其源定义，
+重新生成并审查 diff，不要手工编辑。详见 [CLI](/zh-cn/docs/getting-started/usage/)
+和 [API 生成](/zh-cn/docs/component/api/)。
+
+## Protobuf 优先的 API
+
+Kratos 使用 Protobuf 作为服务 contract。一条 RPC 定义可以生成 gRPC binding；
+添加 `google.api.http` 注解后，还可生成 HTTP binding，从而让 request type、field
+number、service method 和生成的 client interface 在两种 transport 之间保持一致。
+
+```proto
 syntax = "proto3";
 
-package helloworld.v1;
+package todo.v1;
 
 import "google/api/annotations.proto";
 
-option go_package = "github.com/go-kratos/kratos-layout/api/helloworld/v1;v1";
+option go_package = "example/api/todo/v1;v1";
 
-// The greeting service definition.
-service Greeter {
-  // Sends a greeting
-  rpc SayHello (HelloRequest) returns (HelloReply)  {
-        option (google.api.http) = {
-            get: "/helloworld/{name}"
-        };
-    }
-}
+service TodoService {
+  rpc GetTodo (GetTodoRequest) returns (Todo) {
+    option (google.api.http) = { get: "/v1/todos/{id}" };
+  }
 
-// The request message containing the user's name.
-message HelloRequest {
-  string name = 1;
-}
-
-// The response message containing the greetings
-message HelloReply {
-  string message = 1;
+  rpc WatchTodos (WatchTodosRequest) returns (stream TodoEvent) {
+    option (google.api.http) = { get: "/v1/todos/watch" };
+  }
 }
 ```
 
-需要注意，虽然Protobuf定义的API的可靠性更强，但字段结构灵活性相对JSON要弱一些，因此如果您有诸如文件上传接口，或者某些无法对应到proto的JSON结构需要使用，我们还提供了“逃生门”，在我们的Protobuf体系之外定义这些接口，实现为普通的http.Handler并且挂载到路由上，或者用struct来定义您的字段。可以参考我们的[upload例子](https://github.com/go-kratos/examples/blob/main/http/upload/main.go)进行实现。
+v3 将 HTTP 服务端流映射为 SSE，客户端流与双向流映射为 WebSocket；gRPC 仍使用
+原生 stream。详见[使用 SSE 与 WebSocket 实现 HTTP 流式调用](/zh-cn/docs/component/transport/http-streaming/)。
 
-## 元信息传递
+并非所有 endpoint 都必须由 Protobuf 描述。文件上传、provider callback 或无法
+映射到 protobuf contract 的格式，可以在 HTTP router 上使用原生
+`net/http.Handler`、Kratos `http.HandlerFunc` 或手写 struct。这个“逃生门”是
+transport 设计的一部分。
 
-服务之间的API调用，如果有某些元信息需要传递过去，而不是写在payload消息中，可以使用Metadata包进行字段设置和提取，具体细节参考[元信息传递文档](https://go-kratos.dev/docs/component/metadata)
+## 错误 contract
 
-## 错误处理
+Kratos error 的四个公开字段各有用途：
 
-Kratos的[errors](https://github.com/go-kratos/kratos/tree/main/errors)模块提供了error的封装。框架也预定义了一系列[标准错误](https://github.com/go-kratos/kratos/blob/main/errors/types.go)供使用。
-
-错误处理这一块的设计也经过了很久的讨论才定下来，主要设计理念如下：
-
-1. `code` 语义近似HTTP的Status Code（例如客户端传参数错误用400）同时也作为大类错误，在HTTP接口中的HTTP Code会使用它，好处是网关层可以根据这个code触发相应策略（重试、限流、熔断等）。
-2. `reason` 业务的具体错误码，为可读的字符串，能够表明，在同一个服务中应该唯一。
-3. `message` 用户可读的信息，可以在客户端（App、浏览器等）进行相应的展示给用户看。
-4. `metadata` 为一些附加信息，可以作为补充信息使用。
-
-在API返回的错误信息中，以HTTP接口为例，消息结构大概是长这个样子的：
+1. `code` 是错误大类，使用 HTTP status 语义，并在 gRPC transport 中映射为 gRPC
+   status。
+2. `reason` 是稳定、可读的服务错误标识，例如 `USER_NOT_FOUND`。调用方应按它
+   分支，不要判断 message。
+3. `message` 是面向 client 的解释，必须可安全公开。
+4. `metadata` 保存可选结构化细节，不得包含 secret。
 
 ```json
 {
-    // 错误码，跟 http-status 一致，并且在 grpc 中可以转换成 grpc-status
-    "code": 500,
-    // 错误原因，定义为业务判定错误码
-    "reason": "USER_NOT_FOUND",
-    // 错误信息，为用户可读的信息，可作为用户提示内容
-    "message": "invalid argument error",
-    // 错误元信息，为错误添加附加可扩展信息
-    "metadata": {"some-key": "some-value"}
+  "code": 404,
+  "reason": "USER_NOT_FOUND",
+  "message": "user does not exist",
+  "metadata": {
+    "resource": "users/42"
+  }
 }
 ```
 
-在Kratos中您可以使用proto文件定义您的业务错误，并通过工具生成对应的处理逻辑和方法。（如使用layout中提供的`make errors`指令。）
+`WithCause` 保留内部 Go cause，但不改变公开 response。`errors.Is`、`Code`、
+`Reason` 和 `FromError` 可检查被包装的错误，v3 的 `errors.Join` 能保留多个失败。
+应在 biz 或 service 边界构造稳定的公开错误，把 driver 与 SDK error 留在 data
+layer。详见[错误处理](/zh-cn/docs/component/errors/)。
 
-错误定义：
+## 配置与动态状态
 
-```protobuf
-syntax = "proto3";
+配置抽象由 `Source`、`Watcher`、`Config` 与 `Value` 组成。Source 加载 key-value
+数据，并可监听更新；`Config` 负责解码、合并、解析 placeholder、缓存观察值并
+通知指定 key 的 observer。
 
-package api.blog.v1;
-import "errors/errors.proto";
+Core 提供 file 和 environment source。远程系统通过实现相同 contract 的 contrib
+module 接入。后面的 source 覆盖前面的值，因此服务可以先加载版本化默认配置，再
+加载部署环境覆盖。完整配置树使用 `Scan`，单个 key 可使用 v3 的
+`config.Get[T]`。
 
-option go_package = "github.com/go-kratos/examples/blog/api/v1;v1";
+动态更新有意保持为低层能力：observer 必须校验新值，并安全替换应用状态。
+Listener address、driver 和其他只在启动期使用的依赖通常需要受控重启。详见
+[配置](/zh-cn/docs/component/config/)。
 
-enum ErrorReason {
-  // 设置缺省错误码
-  option (errors.default_code) = 500;
-  
-  // 为某个枚举单独设置错误码
-  USER_NOT_FOUND = 0 [(errors.code) = 404];
-  CONTENT_MISSING = 1 [(errors.code) = 400];;
-}
-```
+## 注册、发现与负载均衡
 
-错误创建：
+`registry.Registrar` 发布 `ServiceInstance`，`registry.Discovery` 监听指定服务名
+的实例。`App` 在 server 开始启动后注册，并在取消 server context 前注销。HTTP
+和 gRPC client 可把 discovery 实现与 `discovery:///service-name` endpoint 组合。
 
-```go
-// 通过 errors.New() 响应错误
-errors.New(500, "USER_NAME_EMPTY", "user name is empty")
+Discovery 回答有哪些实例，`selector.Selector` 决定调用哪个符合条件的 node。
+Kratos 提供 weighted round-robin、P2C、random 等 selector；HTTP 和 gRPC client
+将 weighted round-robin 初始化为全局默认值。Node filter 与 subset 可在选择前
+缩小候选集，返回的 `DoneFunc` 为自适应 selector 记录调用结果。详见
+[服务注册与发现](/zh-cn/docs/component/registry/)和
+[Selector](/zh-cn/docs/component/selector/)。
 
-// 通过 proto 生成的代码响应错误，并且包名应替换为自己生成代码后的 package name
-api.ErrorUserNotFound("user %s not found", "kratos")
+## Metadata
 
-// 传递metadata
-err := errors.New(500, "USER_NAME_EMPTY", "user name is empty")
-err = err.WithMetadata(map[string]string{
-    "foo": "bar",
-})
-```
+Metadata 用于在 protobuf payload 外携带 request-scoped value。Transport
+middleware 将选中的 HTTP header 或 gRPC metadata 转入 Kratos metadata context，
+并可把选中的值传给下游调用。
 
-错误断言：
+传播范围属于协议设计。Kratos 默认不会转发所有 header：local metadata 留在当前
+服务，global metadata 可以跨服务边界。应为 request ID、locale、tenant context
+等批准字段定义精简 allowlist，并让 credential 遵循 auth middleware 的策略。
+详见[元数据](/zh-cn/docs/component/metadata/)。
 
-```go
-err := wrong()
+## 日志与可观测性
 
-// 通过 errors.Is() 断言
-if errors.Is(err,errors.BadRequest("USER_NAME_EMPTY","")) {
-  // do something
-}
+v3 在应用与 middleware API 中统一使用 `*slog.Logger`。Core log package 可以构造
+text/JSON handler、过滤 record 或 attribute，并通过 context 携带 `slog.Attr`。
+其他库提供的标准 slog handler 可以直接传入，也可由 `log.NewLogger` 包装。
 
-// 通过判断 *Error.Reason 和 *Error.Code
-e := errors.FromError(err)
-if  e.Reason == "USER_NAME_EMPTY" && e.Code == 500 {
-  // do something
-}
+Tracing 与 metrics 由独立的 `github.com/go-kratos/kratos/contrib/otel/v3` module
+提供。应用构造 OpenTelemetry provider 和 exporter，安装 server/client
+middleware，并在 transport 停止后关闭 provider。这让 credential、resource、
+sampling、export policy 与 flush error 都由应用显式管理。详见
+[日志](/zh-cn/docs/component/log/)、
+[链路追踪](/zh-cn/docs/component/middleware/tracing/)和
+[监控指标](/zh-cn/docs/component/metrics/)。
 
-// 通过 proto 生成的代码断言错误，并且包名应替换为自己生成代码后的 package name
-if api.IsUserNotFound(err) {
-  // do something
-}
-```
+## Middleware 与容错
 
-## 配置文件
+HTTP 与 gRPC unary 调用使用相同的 `middleware.Middleware` 形态。Middleware 包装
+生成的 handler，是 recovery、logging、validation、authentication、metadata、
+rate limiting、circuit breaking 和 telemetry 的扩展点。顺序会影响行为：在
+`middleware.Chain(a, b)` 中，`a` 位于外层，会在 `b` 前后观察调用。
 
-Kratos提供了统一的接口，支持配置文件的加载和变更订阅。
+未传入 `WithLimiter` 时，core ratelimit middleware 使用内置 limiter。Client
+circuit breaker 为每个 operation 保存独立 breaker，并可用
+`WithBreakerFactory` 替换其 factory。这些机制负责拒绝或限制工作，不会替应用
+决定 retry safety、timeout 和 idempotency。Stream RPC 还需要对应 transport 的
+middleware 与生命周期处理。详见[middleware 概览](/zh-cn/docs/component/middleware/overview/)。
 
-通过实现[Source 和 Watcher](https://github.com/go-kratos/kratos/blob/main/config/source.go)即可实现任意配置源（本地或远程）的配置文件加载和变更订阅。
+## 编码
 
-已经实现了下列插件：
+HTTP codec 按 subtype 注册，并根据 `Content-Type` 与 `Accept` 选择。v3 将 subtype
+为 `json` 的标准 Go `encoding/json` 与 subtype 为 `protojson` 的 protobuf JSON
+分离，明确 field name、enum、well-known type 和默认值等 wire 行为。
 
-* [file](https://github.com/go-kratos/kratos/blob/main/config/file/file.go) 本地文件加载，Kratos内置
-* [apollo](https://github.com/go-kratos/kratos/tree/main/contrib/config/apollo)
-* [etcd](https://github.com/go-kratos/kratos/tree/main/contrib/config/etcd)
-* [kubernetes](https://github.com/go-kratos/kratos/tree/main/contrib/config/kubernetes)
-* [nacos](https://github.com/go-kratos/kratos/tree/main/contrib/config/nacos)
+Codec registration 是全局的，同名 codec 会替换之前的值。只引入服务确实需要的
+格式；修改已有 API 前，应测试公开 response byte。详见
+[编码与序列化](/zh-cn/docs/component/encoding/)。
 
-## 服务注册&服务发现
+## 扩展与演进
 
-Kratos定义了统一的注册接口，通过实现[Registrar和Discovery](https://github.com/go-kratos/kratos/blob/main/registry/registry.go)，您可以很轻松地将Kratos接入到您的注册中心中。
+在边界上优先使用 core interface，并由应用管理 provider 生命周期。Contrib module
+可以提供 registry、configuration source、middleware、logger handler 或其他集成，
+但其 SDK type 应保留在这些 interface 之后或 data layer 内部。Contrib module 独立
+版本化，因此要显式声明和升级每一个依赖。
 
-您也可以直接使用我们已经实现好的插件：
+项目示例也遵循同样规则：复制代码前检查其 module path 与生成工具配置。从
+[当前 layout](/zh-cn/docs/intro/layout/)开始，通过[示例索引](/zh-cn/docs/getting-started/examples/)
+查找特定集成，并在[插件](/zh-cn/docs/getting-started/plugin/)了解更多生态组件。
 
-* [consul](https://github.com/go-kratos/kratos/tree/main/contrib/registry/consul)
-* [discovery](https://github.com/go-kratos/kratos/tree/main/contrib/registry/discovery)
-* [etcd](https://github.com/go-kratos/kratos/tree/main/contrib/registry/etcd)
-* [kubernetes](https://github.com/go-kratos/kratos/tree/main/contrib/registry/kubernetes)
-* [nacos](https://github.com/go-kratos/kratos/tree/main/contrib/registry/nacos)
-* [zookeeper](https://github.com/go-kratos/kratos/tree/main/contrib/registry/zookeeper)
-
-## 日志
-
-Kratos的日志模块由两部分组成：
-
-1. [Logger](https://github.com/go-kratos/kratos/blob/main/log/log.go)：底层日志接口，用于快速适配各种日志库到框架中来，仅提供一个最简单的Log方法。
-2. [Helper](https://github.com/go-kratos/kratos/blob/main/log/helper.go)：高级日志接口，提供了一系列带有日志等级和格式化方法的帮助函数，通常业务逻辑中建议使用这个，能够简化日志代码。
-
-我们已经实现好的插件用于适配目前一些日志库，您也可以参考它们的代码来实现自己需要的日志库的适配：
-
-* [std](https://github.com/go-kratos/kratos/blob/main/log/std.go) 标准输出，Kratos内置
-* [fluent](https://github.com/go-kratos/kratos/tree/main/contrib/log/fluent)
-* [zap](https://github.com/go-kratos/kratos/tree/main/contrib/log/zap)
-
-## 监控
-
-监控告警方面，您可以通过实现[metrics相关接口](https://github.com/go-kratos/kratos/blob/main/metrics/metrics.go)将服务的统计数据上报给监控平台。
-
-也可以直接使用我们已经实现好的插件：
-
-* [datadog](https://github.com/go-kratos/kratos/tree/main/contrib/metrics/datadog)
-* [prometheus](https://github.com/go-kratos/kratos/tree/main/contrib/metrics/prometheus)
-
-## 链路追踪
-
-Kratos使用[OpenTelemetry](https://opentelemetry.io/)作为分布式链路追踪所使用的标准，您可以通过对client和server[配置tracing](https://go-kratos.dev/docs/component/middleware/tracing)来将服务接入到链路追踪平台（如[jaeger](https://www.jaegertracing.io/)等），从而对服务的接口调用关系，耗时，错误等进行追踪。
-
-## 负载均衡
-
-Kratos内置了若干种[负载均衡算法](https://github.com/go-kratos/kratos/tree/main/selector)，如Weighted round robin（默认）、P2C，Random等，您可以通过[在client初始化时配置](https://go-kratos.dev/docs/component/selector)来使用他们。
-
-## 限流熔断
-
-Kratos提供了[限流ratelimit](https://go-kratos.dev/docs/component/middleware/ratelimit)和[熔断circuitbreaker](https://go-kratos.dev/docs/component/middleware/circuitbreaker)中间件，用于微服务出现异常故障时自动对流量进行限制，提升服务的健壮性，避免雪崩。这两个中间件使用的算法，也可以在我们的可用性算法仓库[aegis](https://github.com/go-kratos/aegis)中找到，独立于Kratos直接使用。
-
-## 中间件
-
-您可以通过Kratos的middleware机制，统一微服务接口的某些共同逻辑。上面提到的功能插件，您可以通过实现[Middleware](https://github.com/go-kratos/kratos/blob/main/middleware/middleware.go)编写Kratos能够使用的中间件。
-
-同时在仓库的[middleware](https://github.com/go-kratos/kratos/tree/main/middleware)目录下，我们也提供了一系列中间件供您使用。
-
-## 插件
-
-除了上述提到的插件外，我们还提供了一些其它插件，完整的插件列表请参考文档[社区插件](https://go-kratos.dev/docs/getting-started/plugin)
-
-## 示例代码
-
-如果您看过文档后，对某些功能的使用仍有疑惑，或者是希望寻找一些用Kratos写项目的灵感，在[examples仓库](https://github.com/go-kratos/examples)的目录下我们提供了很多代码供参考。
-
-您也可以通过文档中的[示例代码清单](https://go-kratos.dev/docs/getting-started/examples)页面来查阅有哪些示例。
+Kratos 通过公开 contract 和社区持续演进。当不同版本的服务并存时，应保持
+protobuf field number、HTTP path、error reason 与序列化行为。影响调用方的修改
+需要在 transport 边界测试，并作为服务 API 的一部分记录。

@@ -1,61 +1,65 @@
 ---
 id: layout
-title: Layout 
+title: Project Layout
 ---
-The [kratos-layout](https://github.com/go-kratos/kratos-layout) is used by command `kratos new` for new project creation. The directory structures and tool chains are included in this layout project. Which help you be more efficient in developing. This project could also considered as the best practice of building microservices with Go and Kratos.
+The [Kratos project template](https://github.com/go-kratos/kratos-layout) is a
+reference application layout for a v3 service. It demonstrates a protobuf-first
+HTTP and gRPC service with generated dependency injection. The layout is a
+template convention, not an API imposed by the Kratos runtime.
 
-<img src="/images/ddd.png" alt="kratos ddd" width="500px" />
+## Directories
 
-To create a new project:
-
+```text
+api/<domain>/<version>/  Protobuf sources and generated stubs; public contract
+cmd/<app>/               Entrypoint, `main.go`, and Wire injector
+configs/                 Runtime configuration; do not commit secrets
+internal/conf/           Configuration proto and generated Go bindings
+internal/server/         HTTP and gRPC server construction and registration
+internal/service/        Transport adapters, normally one file per resource
+internal/biz/            Domain objects, usecases, repository interfaces, errors
+internal/data/           Repository implementations and storage clients
+buf.yaml                 Buf modules and remote protobuf dependencies
 ```
-kratos new <project-name>
+
+Generated `*.pb.go`, `*_grpc.pb.go`, `*_http.pb.go`, and `wire_gen.go` files are
+outputs. Change their proto or injector input, then regenerate; do not edit the
+generated files directly.
+
+## Layer Boundaries
+
+The template keeps three model shapes distinct:
+
+```text
+client -> DTO -> service -> DO -> biz -> DO -> data -> PO -> storage
 ```
 
-The following directory structures will be generated.
+- `service` converts DTOs at the transport boundary and calls usecases. It may
+    import `api/...` and `biz`, but not `data` or storage clients.
+- `biz` owns domain objects, usecases, business errors, and repository
+    interfaces. It does not depend on `service` or `data`.
+- `data` implements repository interfaces, owns persistent objects and storage
+    client details, and converts between domain and persistent objects. It does
+    not import API DTOs or `service`.
+- `cmd` composes the layers through Wire. `server` constructs transports and
+    registers services; it does not contain transport conversion or business
+    logic.
 
+These boundaries are conventions in the template that make storage and
+transport changes testable without spreading their dependencies through the
+application.
+
+## Generation and Tests
+
+The template provides the following workflow:
+
+```bash
+make init    # install Buf and Wire
+make api     # generate API bindings and OpenAPI output
+make config  # generate configuration bindings
+make all     # run all generation, Wire, and go mod tidy
+go test ./...
 ```
-.
-├── go.mod           
-├── go.sum
-├── LICENSE
-├── README.md
-├── api        // Includes .proto API files and the .go files which generated from them.
-│   └── helloworld
-│       ├── errors
-│       │   ├── helloworld.pb.go
-│       │   ├── helloworld.proto
-│       │   └── helloworld_errors.pb.go
-│       └── v1
-│           ├── greeter.pb.go
-│           ├── greeter.proto
-│           ├── greeter_grpc.pb.go
-│           └── greeter_http.pb.go
-├── cmd    // The entry point of the kratos app
-│   └── server
-│       ├── main.go
-│       ├── wire.go  // wire library is for dependency injection
-│       └── wire_gen.go
-├── configs     // The configuration files for local development.
-│   └── config.yaml
-└── internal    // All the codes which are private. Business logics are often exist in there, under "internal" directory for preventing from unwilling import.
-    ├── conf    // The structure for configuration parsing, generated from .proto file
-    │   ├── conf.pb.go
-    │   └── conf.proto
-    ├── data    // For accessing data sources. This layer is mainly used as the encapsulation of databases, caches etc. The implementation of repo interface which defined in biz layer should be placed here. In order to distinguish from DAO (data access object), the data layer stress on business. Its responsibility is to transform PO to DTO. We dropped the infra layer of DDD.
-    │   ├── README.md
-    │   ├── data.go
-    │   └── greeter.go
-    ├── biz     // The layer for composing business logics. It is similar to the domain layer in DDD. The interface of repo are defined in there, following the Dependence Inversion Principle.
-    │   ├── README.md
-    │   ├── biz.go
-    │   └── greeter.go
-    ├──service  // The service layer which implements API definition. It is similar to the application layer in DDD. The transformations of DTO to DO and the composing of biz are processed in this layer. We should avoid to write complex business logics here. 
-    │   ├── README.md
-    │   ├── greeter.go
-    │   └── service.go
-    └── server  // The creation of http and grpc instance
-        ├── grpc.go
-        ├── http.go
-        └── server.go
-```
+
+Place tests beside the package they cover. The template recommends fake
+usecases or repositories for `service` and `biz` tests, and storage-boundary
+tests for `data` implementations.

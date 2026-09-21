@@ -1,111 +1,103 @@
 ---
 id: start
-title: 项目初始化
-description: Kratos 微服务框架，快速创建项目代码，生成 Go 工程化项目
-keywords:
-  - Go
-  - Kratos
-  - Toolkit
-  - Framework
-  - Microservices
-  - Protobuf
-  - gRPC
-  - HTTP
+title: 快速开始
+description: 使用当前 Kratos v3 项目 layout 创建、生成、测试并运行服务。
 ---
 
-### 环境准备
-首先，您需要安装好对应的依赖环境，以及工具：
-- [go](https://golang.org/dl/)
-- [protoc](https://github.com/protocolbuffers/protobuf)
-- [protoc-gen-go](https://github.com/protocolbuffers/protobuf-go)
+维护中的项目模板是最完整的 v3 服务起点，其中包含 protobuf API、HTTP/gRPC server、Wire、Ent、测试和 OpenAPI 文档。以下命令和目录结构与[当前项目 layout](https://github.com/go-kratos/kratos-layout)一致。
 
-建议开启GO111MODULE
-```bash
-go env -w GO111MODULE=on
-```
+## 前置条件
 
-### kratos 命令工具
+- Go 1.25.7 或兼容且受支持的版本。Core module 要求 Go 1.25；当前 layout 在 `go.mod` 中记录了 patch 版本。
+- Git 和 Make。
+- MySQL，用于模板的默认运行配置。
+- Buf 和 Wire，用于重新生成；layout 通过 `make init` 安装它们。
 
-kratos 是与 Kratos 框架配套的脚手架工具，kratos 能够
-
-- 通过模板快速创建项目
-- 快速创建与生成 protoc 文件
-- 使用开发过程中常用的命令
-- 极大提高开发效率，减轻心智负担
-
-详细使用请参照 [CLI工具](02-usage.md)
-
-为使接下来的步骤能够顺利进行，需要 [安装 kratos 命令工具](02-usage.md#安装)
-
-
-### 创建项目
-```bash
-# 使用默认模板创建项目
-kratos new helloworld
-
-# 如在国内环境拉取失败, 可 -r 指定源
-kratos new helloworld -r https://gitee.com/go-kratos/kratos-layout.git
-
-# 进入项目目录
-cd helloworld
-
-# 拉取项目依赖
-go mod download
-```
-如果拉取依赖遇到网络问题，建议 [配置GOPROXY](https://goproxy.cn/)
-
-
-
-### 代码生成与运行
-#### 生成
-```bash
-# 安装依赖
-go get github.com/google/wire/cmd/wire@latest
-# 生成所有proto源码、wire等等
-go generate ./...
-```
-#### 运行
-```bash
-# 运行项目
-kratos run
-
-# 输出
-INFO msg=config loaded: config.yaml format: yaml # 默认载入 configs/config.yaml 配置文件
-INFO msg=[gRPC] server listening on: [::]:9000 # gRPC服务监听 9000 端口
-INFO msg=[HTTP] server listening on: [::]:8000 # HTTP服务监听 8000 端口
-```
-
-### 测试接口
-测试HTTP接口
-
-相关逻辑代码位于 `internal/service/greeter.go`
+克隆模板并安装开发命令：
 
 ```bash
-curl 'http://127.0.0.1:8000/helloworld/kratos'
-# 输出：
-{
-  "message": "Hello kratos"
-}
-
-
-curl 'http://127.0.0.1:8000/helloworld/error'
-# 输出
-{
-    "code": 404,
-    "reason": "USER_NOT_FOUND",
-    "message": "user not found: error",
-    "metadata": {}
-}
+git clone https://github.com/go-kratos/kratos-layout.git todo-service
+cd todo-service
+make init
 ```
 
-### 项目模板
-Kratos 通过 Git 仓库进行模板管理，创建项目时通过拉取模板进行初始化。对应模板地址：
+`make init` 当前安装 `buf@latest` 和 `wire@latest`。Buf 实际调用的 protoc plugin 版本固定在 `buf.gen.yaml` 中。可重复的 CI 应固定命令版本，不能依赖持续变化的 `latest`。
 
-* [【Github】Kratos Layout](https://github.com/go-kratos/kratos-layout)
-* [【Gitee】Kratos Layout](https://gitee.com/go-kratos/kratos-layout.git)
+## 重命名模板
 
-⭐ 项目布局详解 [Go工程化 - Project Layout 最佳实践](/blog/go-project-layout)
+编辑生成代码或应用代码前，先设置自己的 module path：
 
+```bash
+go mod edit -module github.com/your-org/todo-service
+```
 
-### 自定义项目模板
-您也可以自行创建模板，以减免每次都需要进行的繁琐工作
+替换以 `github.com/go-kratos/kratos-layout` 开头的 import，再按需重命名 command、API package、应用名称和示例 resource。只修改 `go.mod` 会使旧 Go import 无法解析。Todo 代码是参考实现，不是框架内置类型。
+
+## 生成并测试
+
+```bash
+make all
+go test ./...
+go vet ./...
+```
+
+`make all` 会执行 `make api`、`make config` 和 `make generate`。这些 target 根据已提交的项目文件生成 protobuf HTTP/gRPC/OpenAPI 文件、配置 binding、Ent 输出、Wire 输出和 module metadata。不要手工修改生成的 `.pb.go`、`_http.pb.go`、`_grpc.pb.go`、Ent 或 `wire_gen.go` 文件。
+
+## 准备数据库
+
+默认 `configs/config.yaml` 使用 `mysql` driver。它通过配置的 `KRATOS` 环境
+source，从 `KRATOS_DATABASE_SOURCE` 解析 `DATABASE_SOURCE` 占位符，并启用 Ent
+debug 日志和自动建表。启动 MySQL、创建所选数据库，然后设置适合当前环境的 DSN：
+
+```bash
+export KRATOS_DATABASE_SOURCE='root:root@tcp(127.0.0.1:3306)/test?timeout=5s&parseTime=True&loc=Local&charset=utf8mb4'
+```
+
+不要提交生产凭据。生产环境应关闭 `debug` 和 `auto_migrate`，单独执行经过审查的 migration。虽然 module 包含 SQLite，但运行二进制导入的是 MySQL；SQLite 用于 repository 测试。
+
+## 运行服务
+
+```bash
+go run ./cmd/server -conf ./configs
+```
+
+默认监听 HTTP `0.0.0.0:8000` 和 gRPC `0.0.0.0:9000`。如果尚未执行查询，进程启动成功不能证明数据库可访问；应调用 endpoint 完成检查。
+
+创建 Todo、复制返回的 ID，再读取它：
+
+```bash
+curl -sS -X POST http://127.0.0.1:8000/v1/todos/create \
+  -H 'Content-Type: application/json' \
+  -d '{"title":"learn Kratos","content":"run the v3 layout"}'
+
+curl -sS http://127.0.0.1:8000/v1/todos/REPLACE_WITH_ID
+```
+
+Route 来自 API proto 中的 `google.api.http` annotation。替换示例 API 后，这些 Todo path 也会变化。
+
+## 项目结构
+
+```text
+api/              Protobuf API definitions and generated bindings
+cmd/              Application entrypoints and Wire injectors
+configs/          Runtime configuration without secrets
+internal/conf/    Configuration proto and generated bindings
+internal/server/  HTTP and gRPC server construction
+internal/service/ Transport-facing service methods and DTO conversion
+internal/biz/     Usecases, domain objects, errors, repository interfaces
+internal/data/    Ent repository implementations and storage clients
+openapi.yaml      Generated OpenAPI document
+```
+
+继续阅读[基于 Layout 开发服务](/zh-cn/docs/guide/service-development/)了解请求流程和归属规则，并阅读[应用生命周期](/zh-cn/docs/component/application/)了解启动、注册和优雅停止。
+
+## 安装 CLI
+
+项目可在不安装 CLI 的情况下直接使用。需要模板、proto scaffold、run、upgrade 或 changelog 命令时再安装：
+
+```bash
+go install github.com/go-kratos/kratos/cmd/kratos/v3@latest
+kratos --help
+```
+
+CLI 和 layout 是独立 module。应始终检查命令帮助和生成项目的 `go.mod`，不要假设每个 CLI 版本都会生成相同模板。

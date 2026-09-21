@@ -1,159 +1,101 @@
 ---
 id: encoding
 title: Encoding
-keywords:
-  - Go
-  - Kratos
-  - Toolkit
-  - Framework
-  - Microservices
-  - Protobuf
-  - gRPC
-  - HTTP
+description: Understand Kratos v3 codecs, HTTP content negotiation, and protobuf JSON behavior.
 ---
-We've abstracted the `Codec` interface to unify the serialization/deserialization logic for processing requests, and you can implement your own Codec to support more formats. The specific source code is in [encoding](https://github.com/go-kratos/kratos/tree/main/encoding)。
 
-These formats are battery-included.
-* form
-* json
-* protobuf
-* xml
-* yaml
-
-### Interface
-
-You should implement the following Codec interface for your custom codec.
+The global codec registry maps a lowercase content subtype to an
+`encoding.Codec`. A codec supplies `Marshal`, `Unmarshal`, and a stable `Name`,
+and must be safe for concurrent calls.
 
 ```go
-// Codec interface is for serialization and deserialization, notice that these methods must be thread-safe.
 type Codec interface {
-	Marshal(v interface{}) ([]byte, error)
-	Unmarshal(data []byte, v interface{}) error
+	Marshal(v any) ([]byte, error)
+	Unmarshal(data []byte, v any) error
 	Name() string
 }
 ```
 
-### Example of Codec Implementation
+`RegisterCodec` panics for a nil codec or empty name. Registering the same name
+again replaces the previous value without an error. Register application codecs
+during process initialization and do not let reusable libraries silently
+replace a format selected by the application.
 
-You may refer to the included implementations in kratos, such as `json` when you implementing custom `Codec`.
+## Built-in registrations
+
+Importing the top-level `transport` package registers form, standard JSON,
+protobuf binary, protobuf JSON, XML, and YAML codecs through blank imports.
+HTTP and gRPC transport packages import that package, so ordinary transport
+applications receive those registrations automatically. Code using the
+encoding registry without a transport must import the required codec packages.
 
 ```go
-// https://github.com/go-kratos/kratos/blob/main/encoding/json/json.go
-package json
-
 import (
-	"encoding/json"
-	"reflect"
-
-	"github.com/go-kratos/kratos/v2/encoding"
-	"google.golang.org/protobuf/encoding/protojson"
-	"google.golang.org/protobuf/proto"
+	"github.com/go-kratos/kratos/v3/encoding"
+	_ "github.com/go-kratos/kratos/v3/encoding/json"
+	_ "github.com/go-kratos/kratos/v3/encoding/protojson"
 )
 
-// Name is the name registered for the json codec.
-const Name = "json"
-
-var (
-	// MarshalOptions is a configurable JSON format marshaller.
-	MarshalOptions = protojson.MarshalOptions{
-		EmitUnpopulated: true,
-	}
-	// UnmarshalOptions is a configurable JSON format parser.
-	UnmarshalOptions = protojson.UnmarshalOptions{
-		DiscardUnknown: true,
-	}
-)
-
-func init() {
-	encoding.RegisterCodec(codec{})
-}
-
-// codec is a Codec implementation with json.
-type codec struct{}
-
-func (codec) Marshal(v interface{}) ([]byte, error) {
-	switch m := v.(type) {
-	case json.Marshaler:
-		return m.MarshalJSON()
-	case proto.Message:
-		return MarshalOptions.Marshal(m)
-	default:
-		return json.Marshal(m)
-	}
-}
-
-func (codec) Unmarshal(data []byte, v interface{}) error {
-	switch m := v.(type) {
-	case json.Unmarshaler:
-		return m.UnmarshalJSON(data)
-	case proto.Message:
-		return UnmarshalOptions.Unmarshal(data, m)
-	default:
-		rv := reflect.ValueOf(v)
-		for rv := rv; rv.Kind() == reflect.Ptr; {
-			if rv.IsNil() {
-				rv.Set(reflect.New(rv.Type().Elem()))
-			}
-			rv = rv.Elem()
-		}
-		if m, ok := reflect.Indirect(rv).Interface().(proto.Message); ok {
-			return UnmarshalOptions.Unmarshal(data, m)
-		}
-		return json.Unmarshal(data, m)
-	}
-}
-
-func (codec) Name() string {
-	return Name
-}
-```
-
-### Usage
-
-#### Register Custom Codec
-
-```go
-encoding.RegisterCodec(codec{})
-```
-
-#### Get the Codec
-
-```go
 jsonCodec := encoding.GetCodec("json")
+protoJSONCodec := encoding.GetCodec("protojson")
 ```
 
-#### Serialization
+`GetCodec` expects a lowercase subtype and returns `nil` when none is
+registered. Do not call a result without checking it in low-level code.
+
+## Standard JSON and protobuf JSON
+
+v3 deliberately separates the two JSON semantics:
+
+- `encoding/json` registers name `json` and delegates to the standard library,
+  including `json.Marshaler` and `json.Unmarshaler`.
+- `encoding/protojson` registers name `protojson`, accepts only
+  `proto.Message`, emits unpopulated fields by default, and discards unknown
+  fields while decoding by default.
+- `contrib/encoding/json/v3` provides the old mixed behavior under name `json`
+  for migration. It replaces core `json` if both register that name.
+
+`protojson.MarshalOptions` and `UnmarshalOptions` are exported package
+variables. Configure them once before concurrent requests begin; changing
+process-global options while codecs are in use causes inconsistent output.
+
+## HTTP selection
+
+The default HTTP request decoder selects a codec from the request
+`Content-Type`. An unregistered type produces a Bad Request with reason
+`CODEC`; an empty body is accepted without unmarshalling. The response and
+error encoders select from `Accept` and fall back to `json` when no registered
+type matches.
+
+For `google.api.HttpBody`, Kratos bypasses normal codec marshalling and copies
+the raw data with its declared content type, defaulting to
+`application/octet-stream`.
+
+Generated bindings and HTTP context binding also use the form codec for path,
+query, and form values. Its default field tag is `json`; protobuf values use
+the package's protobuf-aware value conversion.
+
+## Custom codec
 
 ```go
-// You should manually import this package if you use it directly: import _ "github.com/go-kratos/kratos/v2/encoding/json"
-jsonCodec := encoding.GetCodec("json")
-type user struct {
-	Name string
-	Age string
-	state bool
+type textCodec struct{}
+
+func (textCodec) Name() string { return "plain" }
+func (textCodec) Marshal(v any) ([]byte, error) {
+	return []byte(fmt.Sprint(v)), nil
 }
-u := &user{
-	Name:  "kratos",
-	Age:   "2",
-	state: false,
+func (textCodec) Unmarshal(data []byte, v any) error {
+	return fmt.Errorf("plain decoding is not implemented for %T", v)
 }
-bytes, _ := jsonCodec.Marshal(u)
-fmt.Println(string(bytes))
-// output {"Name":"kratos","Age":"2"}
+
+encoding.RegisterCodec(textCodec{})
 ```
 
-#### Deserialization
+A production codec should validate destination types, preserve buffer
+ownership, return useful errors, and have tests for malformed and empty input.
+Its name becomes the HTTP content subtype, so changing it is a wire-contract
+change.
 
-```go
-// You should manually import this package if you use it directly:import _ "github.com/go-kratos/kratos/v2/encoding/json"
-jsonCodec := encoding.GetCodec("json")
-type user struct {
-	Name string
-	Age string
-	state bool
-}
-u := &user{}
-jsonCodec.Unmarshal([]byte(`{"Name":"kratos","Age":"2"}`), &u)
-fmt.Println(*u)
-//output &{kratos 2 false}
-```
+For lower-level behavior, see the core
+[`encoding`](https://github.com/go-kratos/kratos/tree/main/encoding) package and
+the [HTTP codec implementation](https://github.com/go-kratos/kratos/blob/main/transport/http/codec.go).

@@ -1,83 +1,41 @@
 ---
 id: selector
 title: Routing and Load Balancing
-description: The main interface for routing and load balancing is Selector, but a default Selector implementation is also provided in the same directory. This implementation can implement node weight calculation, route filtering, and load balancing algorithms by replacing NodeBuilder, Filter, Balancer, and Pluggable
-keywords:
-  - Go
-  - Kratos
-  - Framework
-  - Microservices
-  - Protobuf
-  - gRPC
-  - HTTP
-  - Balancer
-  - Route
-  - Selector
 ---
 
-## Interface Implementation
+`selector.Selector` chooses a discovered service node and returns a completion function. The core includes weighted round-robin (`selector/wrr`), power of two choices (`selector/p2c`), and random (`selector/random`) strategies.
 
-The main interface for routing and load balancing is Selector, and a default Selector implementation is also provided in the same directory. This implementation can implement node weight calculation algorithm, service routing filtering strategy, and load balancing algorithm by replacing **NodeBuilder**, **Filter**, **Balancer**, and Pluggable.
+## Selector interface and implementations
 
-```go
-type Selector interface {
-    // The list of service nodes maintained internally by the Selector is updated through the Rebalancer interface.
-    Rebalancer
+A selector receives nodes through its rebalancer, selects one using `Select`, and returns both the selected node and a completion function. The default transport integration updates nodes from discovery and supplies the operation context. Weighted round-robin is available in `selector/wrr`; `selector/p2c` and `selector/random` provide alternate strategies. Choose an algorithm based on observable service behavior rather than replacing it for cosmetic reasons.
 
-    // Select nodes
-    // if err == nil, selected and done must not be empty.
-    Select(ctx context.Context, opts ...SelectOption) (selected Node, done DoneFunc, err error)
-}
+## Use with clients
 
-// Realize service node change awareness through Rebalancer.
-type Rebalancer interface {
-    Apply(nodes []Node)
-}
-```
+Create HTTP or gRPC clients with a discovery endpoint and `WithDiscovery`, then configure a node filter when a request must be routed to a compatible subset. The endpoint must use the discovery scheme, for example `discovery:///orders`. Direct endpoints do not involve discovery or selector balancing.
 
-Supported implementations:
-
-- [wrr](https://github.com/go-kratos/kratos/tree/main/selector/wrr) : Weighted round robin (Kratos Client built-in default algorithm)
-- [p2c](https://github.com/go-kratos/kratos/tree/main/selector/p2c) : Power of two choices
-- [random](https://github.com/go-kratos/kratos/tree/main/selector/random) : Random
-
-## How to use
-
-### HTTP Client
+Use the transport's `http.WithNodeFilter(...)` or `grpc.WithNodeFilter(...)`
+option to select instances by version, metadata, or another routing rule. The
+client combines discovery, endpoint, selector, and filter options; ensure its
+endpoint uses the discovery scheme. `selector.WithNodeFilter` is the lower-level
+select-call option used when invoking a selector directly. Call the completion
+function returned by a selector only when implementing a selector or custom
+client integration directly.
 
 ```go
-import "github.com/go-kratos/kratos/v2/selector/wrr"
-import "github.com/go-kratos/kratos/v2/selector/filter"
-
-// Create a route Filter: filter instances with version number "2.0.0".
-filter := filter.Version("2.0.0")
-// Create P2C load balancing algorithm Selector, and inject routing Filter.
-selector.SetGlobalSelector(wrr.NewBuilder())
-
-hConn, err := http.NewClient(
-  http.WithEndpoint("discovery:///helloworld"),
-  http.WithDiscovery(r),
-  http.WithNodeFilter(filter)
+conn, err := http.NewClient(ctx,
+	http.WithEndpoint("discovery:///orders"),
+	http.WithDiscovery(discovery),
+	http.WithNodeFilter(filter.Version("v3.0.0")),
 )
 ```
 
-### gRPC Client
+## Routing policy
 
-```go
-import "github.com/go-kratos/kratos/v2/selector/wrr"
-import "github.com/go-kratos/kratos/v2/selector/filter"
+Node filters narrow the candidate set before balancing. Use them for explicit compatibility rules such as a version or region, not as an implicit fallback for missing instances. Make the routing key observable in logs and metrics so an empty candidate set can be diagnosed.
 
-// Create a route Filter: filter instances with version number "2.0.0".
-filter := filter.Version("2.0.0")
-// Due to the limitations of the gRPC framework, only the global balancer name can be used to inject Selector.
-selector.SetGlobalSelector(wrr.NewBuilder())
+The standard transport clients own discovery updates and selector calls. Customize the global selector only when the service needs a consistent process-wide strategy; otherwise keep routing policy close to the client construction that owns it. A custom selector must handle an empty node list and invoke its selected node's completion callback exactly once.
 
-conn, err := grpc.DialInsecure(
-  context.Background(),
-  grpc.WithEndpoint("discovery:///helloworld"),
-  grpc.WithDiscovery(r),
-
-  // Inject routing Filter through grpc.WithFilter.
-  grpc.WithNodeFilter(filter),
-)
-```
+`DoneInfo` reports reply metadata and error outcome to the selected node.
+Adaptive balancers depend on that completion signal, so skipping or invoking
+it twice corrupts their observations. `selector.ErrNoAvailable` is the standard
+error when no node can be selected.

@@ -1,157 +1,115 @@
 ---
 id: contribution
 title: Contribution Guide
-description: Contribution Guide
-keywords:
-  - Go
-  - Kratos
-  - Toolkit
-  - Framework
-  - Microservices
-  - Protobuf
-  - gRPC
-  - HTTP
+description: How to report issues and contribute code to Kratos
 ---
 
-The Kratos community wants to be helped by a wide range of developers, so you'd like to take a few minutes to read this guide before you mention the problem or pull request.
+Kratos uses GitHub issues and pull requests for framework development. Search
+existing issues and pull requests before starting work, and keep one pull
+request focused on one coherent change.
 
-## Reportings Bug or Fixing Bugs
+## Report a bug
 
-We use Github Issues to manage issues. If you want to submit , first make sure you've searched for existing issues, pull requests and read our [FAQ](https://go-kratos.dev/en/docs/intro/faq/).
+Use the repository's bug report template. A useful report includes:
 
-When submitting a bug report, use the issue template we provide to clearly describe the problems encountered and how to reproduce, and if convenient it is best to provide a minimal reproduce repository.
+- the Kratos module and version, Go version, and operating system;
+- the smallest code or repository that reproduces the problem;
+- exact commands, input, actual result, and expected result;
+- logs or stack traces with credentials and personal data removed;
+- whether the problem occurs with the latest supported release or `main`.
 
-## Adding new features
+Questions and configuration problems have separate issue templates. Do not use
+a security-sensitive public issue when private disclosure is required by the
+repository security policy.
 
-In order to accurately distinguish whether the needs put forward by users are the needs or reasonable needs of most users, solicit opinions from the community through the proposal process, and the proposals adopted by the community will be realized as new feature.  
-In order to make the proposal process as simple as possible, the process includes three stages: **Feature**, **Proposal** and **PR**, in which **Feature**, **Proposal** is issue and **PR** is the specific function implementation.
+## Propose a feature
 
-- In order to facilitate the community to correctly understand the requirements of the feature, the feature issue needs to describe the functional requirements and relevant references or literature in detail.
-- When most community users agree with this feature, they will create a Proposal issue associated with the Feature issue.The Proposal issue needs to describe the implementation method and function demonstration in detail as a reference for the final function implementation.
-- After the function is implemented, a merge request will be initiated to associate the feature issue and proposal issue.
-  After the merge is completed, Close all issues.
+Substantial features go through proposal, feature, and implementation stages.
+Start with a proposal issue that explains the user problem, desired behavior,
+alternatives, compatibility effect, and relevant references. After the
+community agrees on the direction, a feature issue can describe the concrete
+API and implementation. Link the implementation pull request to both.
 
-## How to submit code
+Discuss public API and behavior before investing in a large patch. New core
+dependencies, transport semantics, and breaking changes need especially clear
+motivation because every Kratos service may inherit their maintenance cost.
 
-If you've never submitted code on Github, follow these steps:
+## Prepare a code change
 
-- First, please fork items to your Github account
-- Then create a new feature branch based on the **Main** branch and name it features such as feature-log
-- Write code
-- Submit code to the far end branch
-- Submit a PR request in Github
-- Wait for review and merge to the main branch
+Fork the repository, branch from current `main`, and make the smallest complete
+change that solves the issue.
 
-**Note That when you submit a PR request, you first ensure that the code uses the correct coding specifications and that there are complete test cases, and that the information in the submission of the PR is best associated with the relevant issue to ease the workload of the auditor.**
-
-## Conventional Commits
-
+```bash
+git checkout -b fix/http-timeout
+make clean
+make lint
+make test
 ```
-<type>[optional scope]: <description>
+
+`make clean` tidies modules through the repository tooling. `make lint` runs the
+configured linters, and `make test` runs the module tests. Add focused tests for
+changed behavior and regenerate affected protobuf code. The core CI tests Go
+1.25.x and 1.26.x, so code must compile on both supported lines.
+
+The repository contains several nested Go modules, especially under `contrib`.
+Run checks in every module changed by the pull request. Do not update unrelated
+module files or generated output.
+
+## Open the pull request
+
+Use the pull request template to explain the concrete problem, resulting
+behavior, validation, compatibility effect, and linked issues. Open a draft
+pull request while work is incomplete. Include migration notes when callers
+must change code, and update English and Chinese documentation when the public
+behavior changes.
+
+Reviewers must be able to reproduce a fix from the description and tests. Keep
+refactoring separate when it obscures the behavior under review.
+
+## Commit and pull request titles
+
+Kratos uses Conventional Commit style:
+
+```text
+<type>[optional scope][!]: <description>
 
 [optional body]
 
-[optional footer(s)]
+[optional footer]
 ```
 
-> More: [Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0/#summary)
+Common types are:
 
-### type
+| Type | Use |
+| --- | --- |
+| `feat` | New behavior |
+| `fix` | Bug fix |
+| `deps` | Dependency change |
+| `break` or `!` | Breaking change |
+| `docs` | Documentation only |
+| `refactor` | Code restructuring without behavior change |
+| `test` | Test additions or corrections |
+| `chore` | Maintenance and examples |
+| `ci` | CI configuration |
 
-There are the following types of commit:
+Useful scopes include `transport`, `middleware`, `config`, `cmd`, and
+`examples`. Write the description in imperative present tense, keep it concise,
+and omit the final period.
 
-#### Main
-
-- **fix**: A bug fix
-- **feat**: A new feature
-- **deps**: Changes external dependencies
-- **break**: Changes has break change
-
-#### Other
-
-- **docs**: Documentation only changes
-- **refactor**: A code change that neither fixes a bug nor adds a feature
-- **style**: Changes that do not affect the meaning of the code (white-space, formatting, etc)
-- **test**: Adding missing tests or correcting existing tests
-- **chore** Daily work, examples, etc.
-- **ci**: Changes to our CI configuration files and scripts
-
-### scope
-
-The following is the list of supported scopes:
-
-- transport
-- examples
-- middleware
-- config
-- cmd
-- etc.
-
-### description
-
-The description contains a succinct description of the change
-
-- use the imperative, present tense: "change" not "changed" nor "changes"
-- don't capitalize the first letter
-- no dot (.) at the end
-
-### body
-
-The body should include the motivation for the change and contrast this with previous behavior.
-
-### footer
-
-The footer should contain any information about **Breaking Changes** and is also the place to reference Github issues that this commit Closes.
-
-### Examples
-
-#### Only commit message
-
-```
-fix: The log debug level should be -1
+```text
+fix(transport/http): honor shutdown deadline
 ```
 
-#### Attention
+Put motivation and behavior details in the body. Use a footer such as
+`BREAKING CHANGE:` for incompatible changes and `Fixes #1234` for an issue that
+will be fully resolved.
 
-```
-refactor!(transport/http): replacement underlying implementation
-```
+## Release notes
 
-#### Full commit message
+Maintainers can use `kratos changelog dev` to collect changes since the previous
+release and group them into breaking changes, dependencies, bug fixes, and
+other changes. The generated text is a starting point: verify links, rewrite
+unclear entries, and add migration guidance before publishing a release.
 
-```
-fix(log): [BREAKING-CHANGE] unable to meet the requirement of log Library
-
-Explain the reason, purpose, realization method, etc.
-
-Close #777
-Doc change on doc/#111
-BREAKING CHANGE:
-  Breaks log.info api, log.log should be used instead
-```
-
-## Release
-
-You can use `kratos changelog dev` to generate a change log during.
-
-The following is the list of supported types:
-
-- Breaking Change
-- Dependencies
-- Bug Fixes
-- Others
-
-### Example
-
-You can use the `kratos changelog dev` generated log as the describe to **Release**,just need a simple modification.
-
-```
-### New Features
-- feat(cmd): add kratos changelog command (#1140)
-- feat(examples): add  benchmark example (#1134)
-- feat: add int/int32/Stringer support when get atomicValue (#1130)
-### Others
-- add form encoding (#1138)
-- upgrade otel to v1 rc1 (#1132)
-- http stop should use ctx (#1131)
-```
+Documentation-only changes follow the separate
+[Documentation Guide](/docs/community/documentation/).

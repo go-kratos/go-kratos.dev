@@ -1,170 +1,59 @@
 ---
 id: tracing
 title: Tracing
-keywords:
-  - Go
-  - Kratos
-  - Toolkit
-  - Framework
-  - Microservices
-  - Protobuf
-  - gRPC
-  - HTTP
+description: Propagate and record OpenTelemetry spans with the Kratos v3 contrib middleware.
 ---
 
-We use OpenTelemetry for distributed tracing.
-
-### Configuration
-
-There are two methods for configuration `WithTracerProvider()` and `WithPropagator()`.
-
-#### `WithTracerProvider`
+Tracing moved from core to `github.com/go-kratos/kratos/contrib/otel/v3/tracing`.
+The application creates an OpenTelemetry tracer provider and exporter; the
+contrib module supplies transport middleware and propagation.
 
 ```go
-func WithTracerProvider(provider trace.TracerProvider) Option {
-	return func(opts *options) {
-		opts.TracerProvider = provider
-	}
-}    
-```
-
-`WithTracerProvider` is for setting the provider, it accepts `trace.TracerProvider`
-
-#### `WithPropagator`
-
-```go
-func WithPropagator(propagator propagation.TextMapPropagator) Option {
-	return func(opts *options) {
-		opts.Propagator = propagator
-	}
-}
-```
-
-`WithPropagator` is for setting the text map propagator, it accepts `propagation.TextMapPropagator`
-
-### Usage
-
-#### Tracing for Server
-
-```go
-package server
-
-import (
-	"github.com/go-kratos/kratos/v2/middleware/tracing"
-	"github.com/go-kratos/kratos/v2/transport/grpc"
-
-	"go.opentelemetry.io/otel"
-	"go.opentelemetry.io/otel/attribute"
-	"go.opentelemetry.io/otel/exporters/jaeger"
-	"go.opentelemetry.io/otel/sdk/resource"
-	tracesdk "go.opentelemetry.io/otel/sdk/trace"
-	semconv "go.opentelemetry.io/otel/semconv/v1.4.0"
+serverTracing := tracing.Server(
+	tracing.WithTracerProvider(provider),
+	tracing.WithTracerName("todo-service"),
 )
-
-// Set global trace provider
-func initTracer(url string) error {
-	// Create the Jaeger exporter
-	exp, err := jaeger.New(jaeger.WithCollectorEndpoint(jaeger.WithEndpoint(url)))
-	if err != nil {
-		return err
-	}
-	tp := tracesdk.NewTracerProvider(
-		// Set the sampling rate based on the parent span to 100%
-		tracesdk.WithSampler(tracesdk.ParentBased(tracesdk.TraceIDRatioBased(1.0))),
-		// Always be sure to batch in production.
-		tracesdk.WithBatcher(exp),
-		// Record information about this application in an Resource.
-		tracesdk.WithResource(resource.NewSchemaless(
-			semconv.ServiceNameKey.String("kratos-trace"),
-			attribute.String("exporter", "jaeger"),
-			attribute.Float64("float", 312.23),
-		)),
-	)
-	otel.SetTracerProvider(tp)
-	return nil
-}
-
-// NewGRPCServer new a gRPC server.
-func NewGRPCServer(c *conf.Server, executor *service.ExecutorService) *grpc.Server {
-	err := initTracer("http://localhost:14268/api/traces")
-	if err != nil {
-		panic(err)
-	}
-	//tr := otel.Tracer("component-main")
-	var opts = []grpc.ServerOption{
-		grpc.Middleware(
-			tracing.Server(),
-		),
-	}
-	// ...
-}
+clientTracing := tracing.Client(
+	tracing.WithTracerProvider(provider),
+	tracing.WithTracerName("todo-service"),
+)
 ```
 
-#### Tracing for Client
+When no provider is passed, the constructors use the global OpenTelemetry
+provider. The default tracer name is `kratos`. The default propagator combines
+Kratos metadata, W3C baggage, and W3C trace context; use `WithPropagator` only
+when the service fleet has selected another compatible policy.
+
+## Server and client behavior
+
+Server middleware extracts parent context from request headers, starts a server
+span named with the canonical RPC operation, records request attributes, and
+ends the span with the reply or error. Client middleware starts a client span
+and injects propagation headers before the outbound call.
+
+Errors are recorded on the span. Kratos error codes are added as
+`rpc.status_code`; protobuf reply size is recorded when a reply implements
+`proto.Message`. Middleware can only do this when a transport context exists.
+
+## Correlate logs
+
+`TraceID`, `SpanID`, and `TraceAttrs` read the active span context. The current
+layout passes `tracing.TraceAttrs` to `log.WithExtractor`, which adds trace and
+span IDs to logs written with the request context.
 
 ```go
-package client
-
-import (
-	"context"
-
-	"github.com/go-kratos/kratos/v2/middleware/tracing"
-	"github.com/go-kratos/kratos/v2/transport/grpc"
-
-	"go.opentelemetry.io/otel"
-	"go.opentelemetry.io/otel/attribute"
-	"go.opentelemetry.io/otel/exporters/jaeger"
-	"go.opentelemetry.io/otel/sdk/resource"
-	tracesdk "go.opentelemetry.io/otel/sdk/trace"
-	semconv "go.opentelemetry.io/otel/semconv/v1.4.0"
-	googlegrpc "google.golang.org/grpc"
+logger := log.NewLogger(
+	slog.NewTextHandler(os.Stdout, nil),
+	log.WithExtractor(tracing.TraceAttrs),
 )
-
-// Set global trace provider
-func initTracer(url string) error {
-	// Create the Jaeger exporter
-	exp, err := jaeger.New(jaeger.WithCollectorEndpoint(jaeger.WithEndpoint(url)))
-	if err != nil {
-		return err
-	}
-	tp := tracesdk.NewTracerProvider(
-		// Set the sampling rate based on the parent span to 100%
-		tracesdk.WithSampler(tracesdk.ParentBased(tracesdk.TraceIDRatioBased(1.0))),
-		// Always be sure to batch in production.
-		tracesdk.WithBatcher(exp),
-		// Record information about this application in an Resource.
-		tracesdk.WithResource(resource.NewSchemaless(
-			semconv.ServiceNameKey.String("kratos-trace"),
-			attribute.String("exporter", "jaeger"),
-			attribute.Float64("float", 312.23),
-		)),
-	)
-	otel.SetTracerProvider(tp)
-	return nil
-}
-
-func grpcCli() (*googlegrpc.ClientConn, error) {
-	// If the project does not initialize initTracer, please initialize.
-	return grpc.DialInsecure(
-		context.Background(),
-		grpc.WithMiddleware(
-			tracing.Client(),
-		),
-	)
-}
 ```
 
-#### Automatic Data Collection
+Use `InfoContext`/`ErrorContext` with the request context; package helpers that
+use a background context cannot recover the active span.
 
-If you don't want to modify the code manually, you can also use Agent for automatic collection of OpenTelemetry data, such as [Alibaba Go Auto Instrumentation](https://github.com/alibaba/opentelemetry-go-auto-instrumentation) (which will later be officially donated to [OpenTelemetry Official Repository](https://github.com/open-telemetry/opentelemetry-go-compile-instrumentation)).
+## Shutdown and sampling
 
-You can refer to the [documentation](https://github.com/alibaba/opentelemetry-go-auto-instrumentation/blob/main/README.md) to compile your Kratos application.
-
-### References
-
-* https://opentelemetry.io/
-* https://github.com/open-telemetry/opentelemetry-go/tree/main/example
-* https://pkg.go.dev/go.opentelemetry.io/otel
-* https://github.com/alibaba/opentelemetry-go-auto-instrumentation
-* https://github.com/open-telemetry/opentelemetry-go-compile-instrumentation
-
+Create the provider before transport servers and shut it down after they stop,
+allowing a bounded flush interval. Configure resource identity, sampling,
+batching, exporter TLS, and credentials in application-owned code. The Kratos
+middleware does not choose those policies.

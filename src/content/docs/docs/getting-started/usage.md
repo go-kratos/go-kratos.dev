@@ -1,288 +1,99 @@
 ---
 id: usage
-title: Usage
+title: CLI Reference
+description: Use the Kratos v3 CLI and the generated project's own build workflow.
 ---
 
-## Installation
+The v3 CLI is a separate Go module. Install it and inspect the exact command set
+provided by that version:
 
 ```bash
-go install github.com/go-kratos/kratos/cmd/kratos/v2@latest
+go install github.com/go-kratos/kratos/cmd/kratos/v3@latest
+kratos --help
+kratos --version
 ```
 
-## Project Creation
+The root commands are `new`, `proto`,
+`upgrade`, `changelog`, and `run`. There is no `kratos change` or generic
+runtime plugin command.
 
-To create a new project:
-```bash
-kratos new helloworld
-```
-
-Use `-r` to specify the source
-
-```bash
-# If pull fails in China, you can use gitee source.
-kratos new helloworld -r https://gitee.com/go-kratos/kratos-layout.git
-# You can also use custom templates
-kratos new helloworld -r xxx-layout.git
-# You can also specify the source through the environment variable
-KRATOS_LAYOUT_REPO=xxx-layout.git
-kratos new helloworld
-```
-
-Use `-b` to specify the branch
-
-```bash
-kratos new helloworld -b main
-```
-
-Use `--nomod` to add services and working together using ` go.mod `, large warehouse mode
+## Create a project
 
 ```bash
 kratos new helloworld
-cd helloworld
-kratos new app/user --nomod
+kratos new --repo https://github.com/your-org/layout.git --branch main helloworld
 ```
 
-Output:
+`new` copies a Git repository template. Its relevant flags are `--repo`,
+`--branch`, `--timeout`, and `--nomod`. The default repository is maintained
+independently from the CLI, so inspect the new project's `go.mod`, Makefile, and
+generator files before developing against it.
+
+## Scaffold protobuf code
 
 ```bash
-.
-├── Dockerfile
-├── LICENSE
-├── Makefile
-├── README.md
-├── api
-│   └── helloworld
-│       └── v1
-│           ├── error_reason.pb.go
-│           ├── error_reason.proto
-│           ├── greeter.pb.go
-│           ├── greeter.proto
-│           ├── greeter_grpc.pb.go
-│           └── greeter_http.pb.go
-├── app
-│   └── user
-│       ├── Dockerfile
-│       ├── Makefile
-│       ├── cmd
-│       │   └── user
-│       │       ├── main.go
-│       │       ├── wire.go
-│       │       └── wire_gen.go
-│       ├── configs
-│       │   └── config.yaml
-│       ├── internal
-│       │   ├── biz
-│       │   │   ├── biz.go
-│       │   │   └── greeter.go
-│       │   ├── conf
-│       │   │   ├── conf.pb.go
-│       │   │   └── conf.proto
-│       │   ├── data
-│       │   │   ├── data.go
-│       │   │   └── greeter.go
-│       │   ├── server
-│       │   │   ├── grpc.go
-│       │   │   ├── http.go
-│       │   │   └── server.go
-│       │   └── service
-│       │       ├── greeter.go
-│       │       └── service.go
-│       └── openapi.yaml
-├── cmd
-│   └── helloworld
-│       ├── main.go
-│       ├── wire.go
-│       └── wire_gen.go
-├── configs
-│   └── config.yaml
-├── go.mod
-├── go.sum
-├── internal
-│   ├── biz
-│   │   ├── README.md
-│   │   ├── biz.go
-│   │   └── greeter.go
-│   ├── conf
-│   │   ├── conf.pb.go
-│   │   └── conf.proto
-│   ├── data
-│   │   ├── README.md
-│   │   ├── data.go
-│   │   └── greeter.go
-│   ├── server
-│   │   ├── grpc.go
-│   │   ├── http.go
-│   │   └── server.go
-│   └── service
-│       ├── README.md
-│       ├── greeter.go
-│       └── service.go
-├── openapi.yaml
-└── third_party
-    ├── README.md
-    ├── errors
-    │   └── errors.proto
-    ├── google
-    │   ├── api
-    │   │   ├── annotations.proto
-    │   │   ├── client.proto
-    │   │   ├── field_behavior.proto
-    │   │   ├── http.proto
-    │   │   └── httpbody.proto
-    │   └── protobuf
-    │       └── descriptor.proto
-    └── validate
-        ├── README.md
-        └── validate.proto
+kratos proto add api/helloworld/v1/greeter.proto
+kratos proto client api/helloworld/v1/greeter.proto
+kratos proto server api/helloworld/v1/greeter.proto --target-dir internal/service
 ```
 
-## Adding Proto files
+`proto add` creates a proto template using the module path read from `go.mod`.
+The path must be hierarchical. `proto client` invokes the configured protoc
+workflow for a file; `proto server` generates a service implementation
+scaffold. These commands do not replace the layout's full `make api`/`make all`
+workflow, which generates every configured output.
 
-```bash
-kratos proto add api/helloworld/demo.proto
-```
-Output:
-
-api/helloworld/demo.proto
-
-```protobuf
-syntax = "proto3";
-
-package api.helloworld;
-
-option go_package = "helloworld/api/api/helloworld;helloworld";
-option java_multiple_files = true;
-option java_package = "api.helloworld";
-
-service Demo {
-    rpc CreateDemo (CreateDemoRequest) returns (CreateDemoReply);
-    rpc UpdateDemo (UpdateDemoRequest) returns (UpdateDemoReply);
-    rpc DeleteDemo (DeleteDemoRequest) returns (DeleteDemoReply);
-    rpc GetDemo (GetDemoRequest) returns (GetDemoReply);
-    rpc ListDemo (ListDemoRequest) returns (ListDemoReply);
-}
-
-message CreateDemoRequest {}
-message CreateDemoReply {}
-
-message UpdateDemoRequest {}
-message UpdateDemoReply {}
-
-message DeleteDemoRequest {}
-message DeleteDemoReply {}
-
-message GetDemoRequest {}
-message GetDemoReply {}
-
-message ListDemoRequest {}
-message ListDemoReply {}
-```
-
-## Generate Proto Codes
-```bash
-kratos proto client api/helloworld/demo.proto
-```
-Output:
-```bash
-api/helloworld/demo.pb.go
-api/helloworld/demo_grpc.pb.go
-# Attention: The http code will only be generated if http is declared in the proto file.  
-api/helloworld/demo_http.pb.go
-```
-
-## Generate Service Codes
-kratos can generate the bootstrap codes from the proto file.
-```bash
-kratos proto server api/helloworld/demo.proto -t internal/service
-```
-Output:
-internal/service/demo.go
-
-```go
-package service
-
-import (
-	"context"
-
-	pb "helloworld/api/helloworld"
-)
-
-type DemoService struct {
-	pb.UnimplementedDemoServer
-}
-
-func NewDemoService() pb.DemoServer {
-	return &DemoService{}
-}
-
-func (s *DemoService) CreateDemo(ctx context.Context, req *pb.CreateDemoRequest) (*pb.CreateDemoReply, error) {
-	return &pb.CreateDemoReply{}, nil
-}
-func (s *DemoService) UpdateDemo(ctx context.Context, req *pb.UpdateDemoRequest) (*pb.UpdateDemoReply, error) {
-	return &pb.UpdateDemoReply{}, nil
-}
-func (s *DemoService) DeleteDemo(ctx context.Context, req *pb.DeleteDemoRequest) (*pb.DeleteDemoReply, error) {
-	return &pb.DeleteDemoReply{}, nil
-}
-func (s *DemoService) GetDemo(ctx context.Context, req *pb.GetDemoRequest) (*pb.GetDemoReply, error) {
-	return &pb.GetDemoReply{}, nil
-}
-func (s *DemoService) ListDemo(ctx context.Context, req *pb.ListDemoRequest) (*pb.ListDemoReply, error) {
-	return &pb.ListDemoReply{}, nil
-}
-```
-
-## Run project
-
-- If there are multiple items under the subdirectory, the selection menu appears
+## Run during development
 
 ```bash
 kratos run
+kratos run --work ./cmd/server
 ```
 
-## View Version
+`run` locates a directory below `cmd`, then executes `go run` for that command.
+It does not watch files or regenerate code. `--work` changes the child process
+working directory. Use the project's compiled artifact in deployment.
 
-To show the tool version
-
-```bash
-kratos -v
-```
-
-Output:
-
-```
-kratos version v2.2.1
-```
-
-## Tool upgrade
-
-The following tools will be upgraded
-
-- Kratos and the tool itself
-- Protoc related build plugins
+## Upgrade tools
 
 ```bash
 kratos upgrade
 ```
 
-## Changelog
+`upgrade` installs the latest CLI, Kratos HTTP/error generators, Go protobuf
+generators, and the OpenAPI generator. It is not a complete application
+major-version migration: review module paths, public API changes, generated
+code, and application tests separately. Follow the [v2 to v3 guide](/docs/migration/v2-to-v3/)
+for an existing v2 service.
+
+## Generate a changelog
 
 ```bash
-# Equivalent to printing the version changelog of https://github.com/go-kratos/kratos/releases/latest 
-kratos changelog
-
-# Print the update log of the specified version
-kratos changelog v2.1.4
-
-# View the changelog since the latest release to now
 kratos changelog dev
+kratos changelog v3.0.0
 ```
 
-## View help
+`changelog` reads release or commit information from a GitHub repository. Use
+`--repo-url` to select another repository. It requires network and repository
+history; review generated prose before publishing it.
 
-Add `-h` to any command for help
+## Prefer project-owned commands
+
+Once a template exists, its Makefile and generation configs are the build
+contract:
 
 ```bash
-kratos -h
-kratos new -h
+make init
+make api
+make config
+make all
+go test ./...
+make build
 ```
+
+Use `make api` after public protobuf changes, `make config` after configuration
+proto changes, and `make all` after constructors, provider sets, or Ent schema
+changes. Commit generated outputs with their sources.
+
+Use `kratos <command> --help` to inspect the exact behavior of the installed
+version.

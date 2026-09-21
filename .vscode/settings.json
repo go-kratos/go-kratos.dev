@@ -1,0 +1,8 @@
+{
+    "chat.tools.terminal.autoApprove": {
+        "/^\\./node_modules/\\.bin/astro build && bash scripts/verify-kratos-docs\\.sh$/": {
+            "approve": true,
+            "matchCommandLine": true
+        }
+    }
+}
