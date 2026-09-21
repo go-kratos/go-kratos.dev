@@ -1,115 +1,34 @@
 ---
 id: logging
-title: 日志
-keywords:
-  - Go
-  - Kratos
-  - Toolkit
-  - Framework
-  - Microservices
-  - Protobuf
-  - gRPC
-  - HTTP
+title: 日志 Middleware
+description: 使用 log/slog 记录完成的 Kratos v3 transport 调用。
 ---
 
-Logging 中间件用于打印服务收到或发起的请求详情。
-
-### 使用方法
-
-#### grpc server
-在 `grpc.ServerOption` 中引入 `logging.Server()`, 则会在每次收到 gRPC 请求的时候打印详细请求信息。
+Logging middleware 会在每个 handler 完成后输出一条结构化记录。它接收 `*slog.Logger`；传入 `nil` 时使用 `slog.Default()`。
 
 ```go
-logger := log.DefaultLogger
-var opts = []grpc.ServerOption{
-	grpc.Middleware(
-		logging.Server(logger),
-	),
-}
-srv := grpc.NewServer(opts...)
+logger := log.NewLogger(log.NewHandler(log.WithWriter(os.Stdout)))
+srv := http.NewServer(http.Middleware(logging.Server(logger)))
 ```
 
-#### grpc client
+入站调用使用 `logging.Server`，出站调用使用 `logging.Client`。二者都会读取标准化的 transport 信息和 Kratos error。
 
-在 `grpc.WithMiddleware` 中引入 `logging.Client()`, 则会在每次发起 grpc 请求的时候打印详细请求信息。
+## 记录的 attribute
 
-```go
-logger := log.DefaultLogger
-conn, err := grpc.DialInsecure(
-	context.Background(),
-	grpc.WithEndpoint("127.0.0.1:9000"),
-	grpc.WithMiddleware(
-		logging.Client(logger),
-	),
-)
-```
-#### http server
+记录包含方向（`client` 或 `server`）、transport kind、规范 RPC operation、格式化 request 参数、HTTP 等价 status code、error reason 和以秒为单位的 latency。失败时还包含 error 和其格式化 stack text。成功调用使用 info level，返回错误的调用使用 error level。
 
-在 `http.ServerOption` 中引入 `logging.Server()`, 则会在每次收到 Http 请求的时候打印详细请求信息。
+Request 按以下顺序格式化：
 
-```go
-logger := log.DefaultLogger
-var opts = []http.ServerOption{
-	http.Middleware(
-		logging.Server(logger),
-	),
-}
-srv := http.NewServer(opts...)
-```
+1. Request 实现 `logging.Redacter` 时调用 `Redact() string`。
+2. 否则，对实现 `fmt.Stringer` 的值调用 `String()`，生成的 protobuf message 属于此类。
+3. 其它值使用 `%+v` 格式化。
 
-#### http client
+可能包含密钥的应用 request type 应实现 `Redact`。Logger key filter 可作为第二层保护，但无法对已经展平到 `args` string 中的内容脱敏。
 
-在 `http.WithMiddleware` 中引入 `logging.Client()`, 则会在每次发起 Http 请求的时候打印详细请求信息。
+## Context attribute
 
-```go
-logger := log.DefaultLogger
-conn, err := http.NewClient(
-	context.Background(),
-	http.WithMiddleware(
-		logging.Client(logger),
-	),
-	http.WithEndpoint("127.0.0.1:8000"),
-)
-```
+通过 `log.ContextWithAttrs` 添加 request value，并使用同一个 context 写应用日志。`log.NewLogger` 创建的 logger 会把这些 attribute 合并到 record。
 
-Logging 中间件在server 中只打印 trace_id 不采集数据
-### 在项目中使用
+Logging 需要使用 metadata/tracing 加入的 context 值时，应放在它们内层。如果 recovered panic 也要作为 error 返回给 logging 并产生 completed-call record，应把 logging 放在 recovery 外层。
 
-####  grpc-server internal/server/grpc.go
-```go
-exporter, err := stdouttrace.New(stdouttrace.WithWriter(ioutil.Discard))
-if err != nil {
-	fmt.Printf("creating stdout exporter: %v", err)
-	panic(err)
-}
-tp := tracesdk.NewTracerProvider(
-	tracesdk.WithBatcher(exporter),
-	tracesdk.WithResource(resource.NewSchemaless(
-		semconv.ServiceNameKey.String(Name)),
-	))
-var opts = []grpc.ServerOption{
-		grpc.Middleware(
-			tracing.Server(tracing.WithTracerProvider(tp)),
-		),
-	}
-srv := grpc.NewServer(opts...)
-```
-#### 日志增加trace_id字段  cmd/项目名/main.go
-```go
-logger := log.With(log.NewStdLogger(os.Stdout),
-		"ts", log.DefaultTimestamp,
-		"caller", log.DefaultCaller,
-		"service.id", id,
-		"service.name", Name,
-		"service.version", Version,
-		"trace_id", tracing.TraceID(),
-        "span_id", tracing.SpanID(),
-	)
-```
-#### 日志打印trace_id
-```go
-log.WithContext(ctx).Errorf("创建xxx失败: %s", err)
-```
-
-
-
+v2 `log.Logger`、`log.Helper` 和 `log.NewStdLogger` API 与 v3 不兼容。Handler 配置见[日志](/zh-cn/docs/component/log/)。

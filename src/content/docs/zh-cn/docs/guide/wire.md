@@ -1,110 +1,93 @@
 ---
 id: wire
-title: Wire 依赖注入
-description: Kratos 项目模块依赖注入，快速初始化 Go 项目模板，Go 依赖注入工具
-keywords:
-  - Go
-  - Kratos
-  - Toolkit
-  - Framework
-  - Microservices
-  - Protobuf
-  - gRPC
-  - HTTP
+title: 依赖注入
 ---
 
-**Wire** 是一个灵活的依赖注入工具，通过自动生成代码的方式在编译期完成依赖注入。
+项目模板使用 Google Wire 进行编译期依赖注入。Wire 读取构造函数和 provider set，
+再生成按依赖顺序调用它们的普通 Go 代码。Kratos 本身在运行时不依赖 Wire。
 
-在各个组件之间的依赖关系中，通常鼓励显式初始化，而不是全局变量传递。
+## 按层组织 provider set
 
-所以通过 *Wire* 进行初始化代码，可以很好地解决组件之间的耦合，以及提高代码维护性。
+每个应用层导出一个小型 provider set：
 
-### 安装工具
+```go
+var ProviderSet = wire.NewSet(NewData, NewTodoRepo)
+```
+
+模板为 `data`、`biz`、`service` 和 `server` 分别定义 set。构造函数通过参数和
+返回值声明依赖；初始化可能失败时可返回 `(value, error)`，拥有数据库客户端等
+长生命周期资源时可返回 `(value, cleanup, error)`。
+
+Provider set 应靠近它暴露的构造函数。数据层构造函数返回业务仓储接口，并避免
+通过 provider set 暗中创建可变全局状态。
+
+## 定义 injector
+
+`cmd/server/wire.go` 是只在 `wireinject` 构建标签下编译的 injector 声明：
+
+```go
+//go:build wireinject
+
+func wireApp(*conf.Server, *conf.Data, *slog.Logger) (*kratos.App, func(), error) {
+	panic(wire.Build(
+		server.ProviderSet,
+		data.ProviderSet,
+		biz.ProviderSet,
+		service.ProviderSet,
+		newApp,
+	))
+}
+```
+
+这里的 panic 是 Wire 声明，不是运行时代码。Wire 用 `wire_gen.go` 替换它：依次
+调用 `NewData`，构造仓储、usecase、service 和传输，最后调用 `newApp`。初始化
+失败时，生成代码返回错误，并清理已经创建的资源。
+
+## 生成 injector
+
+不要编辑 `wire_gen.go`。新增构造函数参数或修改 provider set 后运行：
 
 ```bash
-# 导入到项目中
-go get -u github.com/google/wire
-
-# 安装命令
-go install github.com/google/wire/cmd/wire
+make all
+go test ./...
 ```
 
-### 工作原理
+模板中的 `make all` 依次执行 API 生成、配置生成和 `make generate`；最后一个
+目标运行 `go generate ./...` 和 `go mod tidy`，`wire_gen.go` 中的 Wire 指令会
+重新生成 injector。`make init` 为本地开发安装 Wire 和 Buf。
 
-Wire 具有两个基本概念：*Provider* 和 *Injector*。
+应同时提交 `wire.go` 与 `wire_gen.go`。CI 中的干净重新生成检查可以发现构造函数
+变更后漏更新的 injector。
 
-Provider 是一个普通的 *Go Func* ，这个方法也可以接收其它 *Provider* 的返回值，从而形成了依赖注入；
+## 在 main 中管理清理
 
-```go
-// 提供一个配置文件（也可能是配置文件）
-func NewConfig() *conf.Data {...}
-
-// 提供数据组件，依赖了数据配置（初始化 Database、Cache 等）
-func NewData(c *conf.Data) (*Data, error) {...}
-
-// 提供持久化组件，依赖数据组件（实现 CURD 持久化层）
-func NewUserRepo(d *data.Data) (*UserRepo, error) {...}
-```
-
-### 使用方式
-
-在 Kratos 中，主要分为 *server、service、biz、data* 服务模块，会通过 *Wire* 进行模块顺序的初始化；
-
-<img src="/images/wire.png" alt="kratos ddd" width="650px" />
-
-在每个模块中，只需要一个 *ProviderSet* 提供者集合，就可以在 wire 中进行依赖注入；
-
-并且我们在每个组件提供入口即可，不需要其它依赖，例如：
+Injector 返回由各 provider cleanup 组成的清理函数。只有构造成功后才能调用它，
+并应在运行应用前 defer：
 
 ```go
--data
---data.go    // var ProviderSet = wire.NewSet(NewData, NewGreeterRepo)
---greeter.go // func NewGreeterRepo(data *Data, logger log.Logger) biz.GreeterRepo {...}
-```
-
-然后通过 *wire.go* 中定义所有 *ProviderSet* 可以完成依赖注入配置。
-
-### 初始化组件
-
-通过 wire 初始化组件，需要定义对应的 wire.go，以及 kratos application 用于启动管理。
-
-```go
-// 应用程序入口
-cmd
--main.go
--wire.go
--wire_gen.go
-
-// main.go 创建 kratos 应用生命周期管理
-func newApp(logger log.Logger, hs *http.Server, gs *grpc.Server, greeter *service.GreeterService) *kratos.App {
-    pb.RegisterGreeterServer(gs, greeter)
-    pb.RegisterGreeterHTTPServer(hs, greeter)
-    return kratos.New(
-        kratos.Name(Name),
-        kratos.Version(Version),
-        kratos.Logger(logger),
-        kratos.Server(
-            hs,
-            gs,
-        ),
-    )
+app, cleanup, err := wireApp(bc.Server, bc.Data, logger)
+if err != nil {
+	panic(err)
 }
+defer cleanup()
 
-// wire.go 初始化模块
-func initApp(*conf.Server, *conf.Data, log.Logger) (*kratos.App, error) {
-    // 构建所有模块中的 ProviderSet，用于生成 wire_gen.go 自动依赖注入文件
-    panic(wire.Build(server.ProviderSet, data.ProviderSet, biz.ProviderSet, service.ProviderSet, newApp))
+if err := app.Run(); err != nil {
+	panic(err)
 }
 ```
 
-在项目的 main 目录中，运行 wire 进行生成编译期依赖注入代码：
+`App.Run` 负责停止传输和注销服务，随后 Wire cleanup 关闭数据客户端和其他已构造
+资源。构造函数应让 cleanup 能安全处理部分初始化，并返回有用错误，而不是自行
+调用 `panic`。
 
-```
-wire
-```
+## 排查生成错误
 
-## References
+- **No provider found：** 添加构造函数所属的 provider set，或把该值作为
+  injector 输入。
+- **Multiple providers：** 移除有歧义的 provider，或为不同实现拆分 injector。
+- **Interface is not provided：** 让构造函数返回接口；若它返回具体类型，则使用
+  `wire.Bind`。
+- **Initialization cycle：** 把共同职责移到接口后，或调整所有权；Wire 无法构造
+  运行时依赖环。
 
-* [https://blog.golang.org/wire](https://blog.golang.org/wire)
-* [https://github.com/google/wire](https://github.com/google/wire)
-* [https://medium.com/@dche423/master-wire-cn-d57de86caa1b](https://medium.com/@dche423/master-wire-cn-d57de86caa1b)
+Wire 只能验证构造关系，不能验证行为。Usecase、service 和仓储仍需独立测试。

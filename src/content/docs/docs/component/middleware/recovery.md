@@ -1,77 +1,29 @@
 ---
 id: recovery
 title: Recovery
-keywords:
-  - Go
-  - Kratos
-  - Toolkit
-  - Framework
-  - Microservices
-  - Protobuf
-  - gRPC
-  - HTTP
 ---
 
-Recovery middleware is used for abnormal recovery and prevents the program from exiting directly in the event of an exception to the service.
-
-### configuration
-
-Two configuration methods are available in recovery middleware `WithHandler()` and `WithLogger()`。
-
-#### `WithHandler()`
+`recovery.Recovery()` converts a panic in a handler into an error and keeps the server process alive. By default it returns `recovery.ErrUnknownRequest`.
 
 ```go
-func WithHandler(h HandlerFunc) Option {
-	return func(o *options) {
-		o.handler = h
-	}
-}
-```
-When you set up a service exception, you can use a custom `handler` for handler processing, such as posting exception information to sentry.
-
-#### `WithLogger()`
-
-```go
-func WithLogger(logger log.Logger) Option {
-	return func(o *options) {
-		o.logger = logger
-	}
-}
-```
-To set up the `logger` for logging.
-
-### Usage
-
-#### HTTP
-
-```go
-var opts = []http.ServerOption{
-	http.Middleware(
-		recovery.Recovery(
-      recovery.WithLogger(log.DefaultLogger),
-			recovery.WithHandler(func(ctx context.Context, req, err interface{}) error {
-					// do someting
-					return nil
-			}),
-    ),
-	),
-}
-srv := http.NewServer(opts...)
+srv := grpc.NewServer(grpc.Middleware(
+    recovery.Recovery(recovery.WithLogger(logger)),
+))
 ```
 
-#### gRPC
+The logger must be `*slog.Logger`. Use `recovery.WithHandler(func(ctx context.Context, req, err any) error { ... })` to choose the error returned after a panic. The default handler returns `ErrUnknownRequest`; a custom handler's return value replaces it, including `nil`.
 
-```go
-var opts = []grpc.ServerOption{
-	grpc.Middleware(
-		recovery.Recovery(
-			recovery.WithLogger(log.DefaultLogger),
-			recovery.WithHandler(func(ctx context.Context, req, err interface{}) error {
-				// do someting
-				return nil
-			}),
-		),
-	),
-}
-srv := grpc.NewServer(opts...)
-````
+Normally return a non-nil public error. Returning `nil` makes the call complete
+with no error and a nil reply, which can hide the failure from clients and
+metrics. The custom handler context contains `recovery.Latency{}` as a
+`float64` number of elapsed seconds when reporting needs it.
+
+## Production behavior
+
+Recovery always logs the recovered value, request, and current goroutine stack through its logger. Use a custom handler for reporting or classification, then return a safe Kratos error. Never expose the panic value or stack trace to an HTTP/gRPC client.
+
+Place recovery inside logging if completion logs should record the converted
+error, and outside middleware whose panics it must catch. Recovery covers only
+the middleware and handler nested inside it.
+
+Recovery is the final safeguard, not normal control flow. Fix panic causes and add tests; resources partially mutated before a panic may still require application-specific cleanup or compensating logic.

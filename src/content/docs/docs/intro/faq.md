@@ -1,110 +1,83 @@
 ---
 id: faq
 title: FAQ
-description: Kratos FAQ
-keywords:
-  - Go 
-  - Kratos
-  - Toolkit
-  - Framework
-  - Microservices
-  - Protobuf
-  - gRPC
-  - HTTP
 ---
 
-### 1. `google/protobuf/descriptor.proto: File not found.` error while using `kratos proto` command.
-This issue is mainly caused by the improperly installation of protoc. The documentation [protoc-installation](https://grpc.io/docs/protoc-installation/) shows the correct way to install protoc. It is highly recommended that install protoc by system package manager to ensure the installation's integrity. If you have to install the pre-compiled version, please refer to the `readme.txt` in the zip file, make sure all the files under `include` folder could be put to correct include path of your system, e.g. `/usr/local/include/`, so that protoc can find them while compiling.
+## protoc cannot find a protobuf file
 
+Install the tools through `make init`, then run generation through the project's
+Buf configuration. The template declares the `api` and `internal` modules plus
+`buf.build/googleapis/googleapis` in `buf.yaml`; run `buf dep update` after
+changing remote dependencies. Configure the editor to use the same Buf workspace
+instead of maintaining a separate include path.
 
-### 2. There are errors from IDE show `import "google/api/annotations.proto";` with red wavy line 
-You can append `thrid_party` directory to custom protobuf`s include paths. Please follow these doc:
+## The `kratos` command is not found
 
-* [GoLand](https://github.com/ksprojects/protobuf-jetbrains-plugin#configuration) 
-* [VSCode](https://github.com/zxh0/vscode-proto3#extension-settings)
+Install the v3 CLI and make its Go binary directory available on `PATH`:
 
-### 3. Develop with goland
-
-All you need to do is configurate some setting like this:
-<img src="/images/goland.png" width="650px" />
-
-### 4. The code newly generated after the new release is unavailable, with system alarming errors.
-
-You can try to follow this:
-1. kratos upgrade
-2. Modify the version of kratos in `go.mod` file
-3. go generate ./...
-
-### 5. After invoke `kratos client`, there are no deserved http file.
-
-You can run `make http` or `kratos client xxx --go-http_opt=omitempty=false`
-
-### 6. It show `Command not found: kratos` after installed Kratos
-
-Make sure the env value `PATH` contain `GOBIN` directory. Or you can invoke `kratos` inside `GOBIN` directory.
-
-### 7. It show some proto file not found when generate pb file.
-Copy the missing proto file to `third_party` directory. Or append missing proto file location to corresponding Makefile command.
-
-### 8.There are  `// no validation rules for xxxx` for configurated property.
-```
-git clone github.com/envoyproxy/protoc-gen-validate
-cd protoc-gen-validate
-make build
+```bash
+go install github.com/go-kratos/kratos/cmd/kratos/v3@latest
+go env GOBIN GOPATH
+kratos --help
 ```
 
-### 9. Custom Http return value
+## Generated bindings do not compile after an upgrade
 
-You can write a custom `ResponseEncoder` and set to `http.Server()` by using `http.ResponseEncoder()`
+Update imports, select the appropriate v3 JSON codec, and regenerate code before debugging generated files:
 
-### 10. How to control the http return field 0 value ignore field and use proto's message field as the http return field
-
-You can import it in the `main.go` of the http service
-
-```
-import (
-  "github.com/go-kratos/kratos/v2/encoding/json"
-  "google.golang.org/protobuf/encoding/protojson"
-)
+```bash
+make all
+go test ./...
 ```
 
-Set `json.MarshalOptions` in the init method
+Generated protobuf and Wire files are outputs. See [Migrate from v2 to v3](/docs/migration/v2-to-v3/) for the required migration order.
 
-```
-func init() {
-    flag.StringVar(&flagconf, "conf", "../../configs", "config path, eg: -conf config.yaml")
-    //Add this code
-    json.MarshalOptions = protojson.MarshalOptions{
-        EmitUnpopulated: true, //Default value not ignored
-        UseProtoNames:   true, //Use proto name to return http field
-    }
-}
+## Control protobuf JSON output
+
+Use the v3 protobuf JSON codec when a transport needs protobuf JSON semantics:
+
+```go
+import _ "github.com/go-kratos/kratos/v3/encoding/protojson"
 ```
 
-### 11、Controls the name and number of the enum (enumeration type) returned by http
+Configure protobuf JSON behavior in the codec or response encoder used by the application. Do not rely on the removed v2 `encoding/json` protobuf behavior; see [Encoding](/docs/component/encoding/).
 
-You can import it in the `main.go` of the http service
+## The layout cannot connect to the database
 
-```
-import (
-  "github.com/go-kratos/kratos/v2/encoding/json"
-  "google.golang.org/protobuf/encoding/protojson"
-)
-```
+The current template uses MySQL at runtime. Create the database and set
+`KRATOS_DATABASE_SOURCE` to a DSN reachable from the process. Keep `parseTime=True`
+because the Ent model contains time fields. SQLite is included for repository
+tests and is not the default runtime driver. In a container, replace
+`127.0.0.1` with the database service hostname.
 
-Set `json.MarshalOptions` in the init method
+## Environment values do not replace nested configuration
 
-```
-func init() {
-    flag.StringVar(&flagconf, "conf", "../../configs", "config path, eg: -conf config.yaml")
-    // Add this code
-    json.MarshalOptions = protojson.MarshalOptions{
-        UseEnumNumbers: true, // UseEnumNumbers emits enum values as numbers.
-    }
-}
-```
+The layout uses placeholders such as `${DATABASE_SOURCE:default}` inside
+`configs/config.yaml`. `env.NewSource("KRATOS")` loads
+`KRATOS_DATABASE_SOURCE`, strips `KRATOS_`, and creates the root key
+`DATABASE_SOURCE`; the resolver then uses that merged key for the placeholder.
+The source does not translate underscores into a nested key path. Follow this
+prefix-and-placeholder convention, or choose an explicit key convention and
+decoder in your application.
 
-For more control over http return content, please refer to the documentation: https://pkg.go.dev/google.golang.org/protobuf@v1.30.0/encoding/protojson#MarshalOptions
+## `kratos run` does not regenerate or restart the service
 
+The v3 command locates a `cmd` package and executes `go run`. It is not a file
+watcher and does not run protobuf, Ent, configuration, or Wire generation.
+Run the project's `make all` after changing generator inputs, and restart the
+command after source changes.
 
+## An HTTP route returns 404
 
+Confirm that the proto has the intended `google.api.http` annotation, run
+`make api`, and register the generated HTTP service on the server. A gRPC
+registration does not register HTTP routes. For handwritten routes, use the
+same `*http.Server` instance passed to `kratos.App` and check group or server
+path prefixes.
+
+## A middleware does not run for streaming gRPC
+
+`grpc.Middleware` and `grpc.WithMiddleware` apply to unary calls. Use
+`grpc.StreamMiddleware` on the server and `grpc.WithStreamMiddleware` on the
+client for streams. HTTP generated streams still run the ordinary HTTP
+middleware chain around the stream handler.

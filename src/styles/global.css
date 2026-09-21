@@ -7,7 +7,7 @@
 :root {
   --sl-nav-height: 3.5rem;
   --sl-content-width: 64rem;
-  --sl-card-border: var(border-gray-200);
+  --sl-card-border: var(--sl-color-gray-5);
 }
 
 header {

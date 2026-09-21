@@ -1,176 +1,43 @@
 ---
 id: tracing
 title: 链路追踪
-keywords:
-  - Go
-  - Kratos
-  - Toolkit
-  - Framework
-  - Microservices
-  - Protobuf
-  - gRPC
-  - HTTP
+description: 使用 Kratos v3 contrib middleware 传播并记录 OpenTelemetry span。
 ---
 
-Tracing 中间件使用 OpenTelemetry 实现了链路追踪。
-
-### 配置
-
-有两种方法可用于使用`WithTracerProvider()` and `WithPropagator()`进行配置。
-
-#### `WithTracerProvider`
+Tracing 已从 core 移至 `github.com/go-kratos/kratos/contrib/otel/v3/tracing`。应用负责创建 OpenTelemetry tracer provider 和 exporter，contrib module 提供 transport middleware 与 propagation。
 
 ```go
-func WithTracerProvider(provider trace.TracerProvider) Option {
-    return func(opts *options) {
-        opts.TracerProvider = provider
-    }
-}    
-```
-
-`WithTracerProvider` 用于设置 provider，它接收的参数为 `trace.TracerProvider`。
-
-#### `WithPropagator`
-
-```go
-func WithPropagator(propagator propagation.TextMapPropagator) Option {
-    return func(opts *options) {
-        opts.Propagator = propagator
-    }
-}
-```
-
-`WithPropagator` 用于设置 text map propagator，它接收的参数为 `propagation.TextMapPropagator`。
-
-
-### 使用方法
-
-#### server 中使用 tracing 采集数据
-
-```go
-package server
-
-import (
-	"github.com/go-kratos/kratos/v2/middleware/tracing"
-	"github.com/go-kratos/kratos/v2/transport/grpc"
-
-	"go.opentelemetry.io/otel"
-	"go.opentelemetry.io/otel/attribute"
-	"go.opentelemetry.io/otel/exporters/otlp/otlptrace/otlptracehttp"
-	"go.opentelemetry.io/otel/sdk/resource"
-	tracesdk "go.opentelemetry.io/otel/sdk/trace"
-	semconv "go.opentelemetry.io/otel/semconv/v1.4.0"
+serverTracing := tracing.Server(
+	tracing.WithTracerProvider(provider),
+	tracing.WithTracerName("todo-service"),
 )
-
-// 设置全局trace
-func initTracer(endpoint string) error {
-	// 创建 exporter
-	exporter, err := otlptracehttp.New(context.Background(),
-		otlptracehttp.WithEndpoint(endpoint),
-		otlptracehttp.WithInsecure(),
-	)
-	if err != nil {
-		return err
-	}
-	tp := tracesdk.NewTracerProvider(
-		// 将基于父span的采样率设置为100%
-		tracesdk.WithSampler(tracesdk.ParentBased(tracesdk.TraceIDRatioBased(1.0))),
-		// 始终确保在生产中批量处理
-		tracesdk.WithBatcher(exporter),
-		// 在资源中记录有关此应用程序的信息
-		tracesdk.WithResource(resource.NewSchemaless(
-			semconv.ServiceNameKey.String("kratos-trace"),
-			attribute.String("exporter", "otlp"),
-			attribute.Float64("float", 312.23),
-		)),
-	)
-	otel.SetTracerProvider(tp)
-	return nil
-}
-
-// NewGRPCServer new a gRPC server.
-func NewGRPCServer(c *conf.Server, executor *service.ExecutorService) *grpc.Server {
-	err := initTracer("localhost:4318")
-	if err != nil {
-		panic(err)
-	}
-	//tr := otel.Tracer("component-main")
-	var opts = []grpc.ServerOption{
-		grpc.Middleware(
-			tracing.Server(),
-		),
-	}
-	// ...
-}
+clientTracing := tracing.Client(
+	tracing.WithTracerProvider(provider),
+	tracing.WithTracerName("todo-service"),
+)
 ```
 
-#### client 中使用 tracing 采集数据
+未传 provider 时，constructor 使用全局 OpenTelemetry provider。默认 tracer name 为 `kratos`。默认 propagator 组合 Kratos metadata、W3C baggage 和 W3C trace context；只有整个服务集群已经选择另一套兼容策略时才使用 `WithPropagator`。
+
+## Server 与 client 行为
+
+Server middleware 从请求 header 提取 parent context，以规范 RPC operation 为名称启动 server span，记录 request attribute，并根据 reply/error 结束 span。Client middleware 启动 client span，并在出站调用前注入 propagation header。
+
+Error 会被记录到 span。Kratos error code 会写入 `rpc.status_code`；reply 实现 `proto.Message` 时会记录 protobuf reply size。只有存在 transport context 时 middleware 才能完成这些操作。
+
+## 关联日志
+
+`TraceID`、`SpanID` 和 `TraceAttrs` 从 active span context 读取值。当前 layout 把 `tracing.TraceAttrs` 传给 `log.WithExtractor`，使使用 request context 写出的日志包含 trace/span ID。
 
 ```go
-package client
-
-import (
-	"context"
-
-	"github.com/go-kratos/kratos/v2/middleware/tracing"
-	"github.com/go-kratos/kratos/v2/transport/grpc"
-
-	"go.opentelemetry.io/otel"
-	"go.opentelemetry.io/otel/attribute"
-	"go.opentelemetry.io/otel/exporters/otlp/otlptrace/otlptracehttp"
-	"go.opentelemetry.io/otel/sdk/resource"
-	tracesdk "go.opentelemetry.io/otel/sdk/trace"
-	semconv "go.opentelemetry.io/otel/semconv/v1.4.0"
-	googlegrpc "google.golang.org/grpc"
+logger := log.NewLogger(
+	slog.NewTextHandler(os.Stdout, nil),
+	log.WithExtractor(tracing.TraceAttrs),
 )
-
-// 设置全局trace
-func initTracer(endpoint string) error {
-	// 创建 exporter
-	exporter, err := otlptracehttp.New(context.Background(),
-		otlptracehttp.WithEndpoint(endpoint),
-		otlptracehttp.WithInsecure(),
-	)
-	if err != nil {
-		return err
-	}
-	tp := tracesdk.NewTracerProvider(
-		// 将基于父span的采样率设置为100%
-		tracesdk.WithSampler(tracesdk.ParentBased(tracesdk.TraceIDRatioBased(1.0))),
-		// 始终确保在生产中批量处理
-		tracesdk.WithBatcher(exporter),
-		// 在资源中记录有关此应用程序的信息
-		tracesdk.WithResource(resource.NewSchemaless(
-			semconv.ServiceNameKey.String("kratos-trace"),
-			attribute.String("exporter", "otlp"),
-			attribute.Float64("float", 312.23),
-		)),
-	)
-	otel.SetTracerProvider(tp)
-	return nil
-}
-
-func grpcCli() (*googlegrpc.ClientConn, error) {
-	// 如果本项目没有初始化initTracer 请初始化
-	return grpc.DialInsecure(
-		context.Background(),
-		grpc.WithMiddleware(
-			tracing.Client(),
-		),
-	)
-}
 ```
 
-#### 自动采集数据
+应使用带 request context 的 `InfoContext`/`ErrorContext`；使用 background context 的 package helper 无法取得 active span。
 
-如果不想手动修改代码，您还可以使用一些框架进行OpenTelemetry数据的自动采集，比如[Alibaba Go Auto Instrumentation](https://github.com/alibaba/opentelemetry-go-auto-instrumentation) (后续将正式捐赠至[OpenTelemetry官方](https://github.com/open-telemetry/opentelemetry-go-compile-instrumentation))。
+## 停止与 sampling
 
-您可以参考[文档](https://github.com/alibaba/opentelemetry-go-auto-instrumentation/blob/main/README.md)来编译您的Kratos应用。
-
-### References
-
-* https://opentelemetry.io/
-* https://github.com/open-telemetry/opentelemetry-go/tree/main/example
-* https://pkg.go.dev/go.opentelemetry.io/otel
-* https://github.com/alibaba/opentelemetry-go-auto-instrumentation
-* https://github.com/open-telemetry/opentelemetry-go-compile-instrumentation
+Provider 应在 transport server 前创建，并在它们停止后 shutdown，同时设置有限的 flush 时间。Resource identity、sampling、batching、exporter TLS 和凭据都由应用配置，Kratos middleware 不会替应用选择这些策略。

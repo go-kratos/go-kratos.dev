@@ -1,62 +1,32 @@
 ---
 id: metrics
-title: 监控接口
-description: Kratos 暴露了三种监控接口，分别是 Counter, Gauge, Observer
-keywords:
-  - Go
-  - Kratos
-  - Toolkit
-  - Framework
-  - Microservices
-  - Protobuf
-  - gRPC
-  - HTTP
+title: 指标
+description: 为 Kratos v3 服务配置 OpenTelemetry metrics。
 ---
 
-### 接口实现
+Kratos v3 core 不提供 metrics facade 或 exporter。请求 instrumentation 位于独立的 `github.com/go-kratos/kratos/contrib/otel/v3/metrics` module，并使用应用提供的 OpenTelemetry metric instrument。
 
-Kratos 暴露了三种监控接口，分别是 Counter, Gauge, Observer。
+## 职责划分
 
-#### Counter
+应用必须构造并停止自己的 OpenTelemetry SDK meter provider、reader 和 exporter。Kratos contrib middleware 只在 HTTP/gRPC handler 周围记录请求数量与耗时。导出间隔、temporality、resource attribute、endpoint 认证和重试策略属于 SDK/exporter 配置。
 
-```go
+应在 server 之前初始化 provider，将其设为全局 provider 或用它的 meter 构造 instrument，并在 transport 停止后 flush/shutdown。Provider 启动失败应作为应用启动失败处理。
 
-type Counter interface {
-	With(lvs ...string) Counter
-	Inc()
-	Add(delta float64)
-}
-```
+## Instrument 与 label
 
+Contrib package 提供 `Int64Counter` 和 `Float64Histogram` helper。默认名称为：
 
+| 方向 | Counter | Duration histogram |
+| --- | --- | --- |
+| Server | `server_requests_code_total` | `server_requests_seconds` |
+| Client | `client_requests_code_total` | `client_requests_seconds` |
 
-Counter 是最简单的计数器，对外提供了Inc, Add两个方法。只能用于计数的增加。通常用于统计服务的错误数，请求qps。
+Counter 记录 `kind`、`operation`、HTTP 等价 `code` 和 Kratos error `reason`。Histogram 记录 `kind` 和 `operation`，耗时单位是秒。提供的 histogram helper 使用从 5 ms 到 1 s 的显式 bucket boundary。
 
-#### Gauge
+Operation name 来自生成的 RPC descriptor，例如 `/todo.v1.TodoService/GetTodo`，因此基数有界。不要把 request ID、user ID、原始 URL 或无界错误消息加入 metric label。
 
-```go
-type Gauge interface {
-	With(lvs ...string) Gauge
-	Set(value float64)
-	Add(delta float64)
-	Sub(delta float64)
-}
-```
+## 导出与 dashboard
 
- Gauge是个状态指示器，用于记录服务当前的状态，状态值可以随着时间增加或减少。通常用于监控服务当前的cpu使用率，内存使用量等。
+可选择 Prometheus、OTLP 或 OpenTelemetry 支持的其它 exporter。Kratos 默认不会选择或配置 exporter。Endpoint 和凭据应放在运行时配置中；dashboard 和 alert 依赖 instrument name 后，应保持名称稳定。
 
-#### Observer
-
-```go
-type Observer interface {
-	With(lvs ...string) Observer
-	Observe(float64)
-}
-```
-
-Observer属于比较复杂的监控指标，对比以上两个提供了更多额外的信息，可以用于观察统计总值，数量以及分位百分比。在Prometheus中，对应了**Histogram** 和**Summary**的实现。其中Histogram 直方图用于记录不同分桶的数量。比如不同请求耗时区间的请求数，用于指示将指标保存到了多个分桶，因此Histogram几乎无开销。Summary则记录了不同分位的值，基于概率采样计算，比如90% 99% 分位耗时，由于需要进行额外的计算，因此对于服务有一定的开销。
-
-### References
-
-* https://prometheus.io/docs/concepts/metric_types/
-* https://github.com/go-kratos/examples/tree/main/metrics
+构造方式见[指标 Middleware](/zh-cn/docs/component/middleware/metrics/)，导出 API 可查阅 [metrics package](https://github.com/go-kratos/kratos/tree/main/contrib/otel/metrics)。

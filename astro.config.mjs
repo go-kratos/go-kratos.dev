@@ -67,6 +67,11 @@ export default defineConfig({
                   autogenerate: { directory: "/docs/guide" },
                 },
                 {
+                  label: "migration",
+                  translations: { "zh-CN": "迁移" },
+                  autogenerate: { directory: "/docs/migration" },
+                },
+                {
                   label: "component",
                   translations: { "zh-CN": "组件" },
                   autogenerate: { directory: "/docs/component" },

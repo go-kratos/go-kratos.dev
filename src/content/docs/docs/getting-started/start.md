@@ -1,74 +1,128 @@
 ---
 id: start
 title: Quick Start
+description: Create, generate, test, and run the current Kratos v3 project layout.
 ---
 
-## Version
-The version of kratos must be v2.0.0 or above.
+The maintained project template is the most complete starting point for a v3
+service. It includes protobuf APIs, HTTP and gRPC servers, Wire, Ent, tests, and
+an OpenAPI document. The commands and directory structure below follow the
+[current project layout](https://github.com/go-kratos/kratos-layout).
 
-## Environment Requirements
-These environments and tools must be installed properly.
-- [go](https://golang.org/dl/)
-- [protoc](https://github.com/protocolbuffers/protobuf)
-- [protoc-gen-go](https://github.com/protocolbuffers/protobuf-go)
+## Prerequisites
 
-The `GO111MODULE` should be enabled.
-```bash
-go env -w GO111MODULE=on
-```
+- Go 1.25.7 or a compatible supported release. The core module requires Go
+  1.25; the current layout records the patch-level version in `go.mod`.
+- Git and Make.
+- MySQL for the template's default runtime configuration.
+- Buf and Wire for regeneration; the layout installs these with `make init`.
 
-If you faced with network problem (especially you are in China Mainland), please [setup GOPROXY](https://goproxy.cn/)
-
-## Install Kratos tool
-
-> You can do it either way.
-
-#### 1. go install installation
+Clone the template and install its development commands:
 
 ```bash
-go install github.com/go-kratos/kratos/cmd/kratos/v2@latest
+git clone https://github.com/go-kratos/kratos-layout.git todo-service
+cd todo-service
+make init
 ```
 
-#### 2. Source code compilation and installation
+`make init` currently installs `buf@latest` and `wire@latest`. The actual
+protoc plugins invoked by Buf are versioned in `buf.gen.yaml`. In repeatable CI,
+pin command versions rather than depending on a moving `latest` installation.
+
+## Rename the template
+
+Set your own module path before editing generated or application code:
 
 ```bash
-git clone https://github.com/go-kratos/kratos
-cd kratos
-make install
+go mod edit -module github.com/your-org/todo-service
 ```
 
-## Project Creation
+Replace imports beginning with `github.com/go-kratos/kratos-layout`, then rename
+the command, API package, application name, and example resource as needed.
+Changing only `go.mod` leaves old Go imports unresolved. The Todo code is a
+reference implementation, not a framework-owned type.
+
+## Generate and test
 
 ```bash
-# create project's layout
-kratos new helloworld
-
-cd helloworld
-# pull dependencies
-go mod download
+make all
+go test ./...
+go vet ./...
 ```
-## Compilation and Running
+
+`make all` runs `make api`, `make config`, and `make generate`. Those targets
+generate protobuf HTTP/gRPC/OpenAPI files, configuration bindings, Ent output,
+Wire output, and module metadata according to the checked-in project files.
+Never hand-edit generated `.pb.go`, `_http.pb.go`, `_grpc.pb.go`, Ent, or
+`wire_gen.go` files.
+
+## Prepare the database
+
+The default `configs/config.yaml` uses the `mysql` driver. It resolves its
+`DATABASE_SOURCE` placeholder from `KRATOS_DATABASE_SOURCE` through the
+configured `KRATOS` environment source, and enables Ent debug logging and
+automatic schema creation. Start MySQL and create the selected database, then
+set a DSN appropriate for your environment:
+
 ```bash
-# installation dependency
-go get github.com/google/wire/cmd/wire@latest
-# generate all codes of proto and wire etc.
-go generate ./...
-
-# run the application
-kratos run
+export KRATOS_DATABASE_SOURCE='root:root@tcp(127.0.0.1:3306)/test?timeout=5s&parseTime=True&loc=Local&charset=utf8mb4'
 ```
 
-## Try it out
+Do not commit production credentials. Disable `debug` and `auto_migrate` in
+production and apply reviewed migrations separately. Although SQLite is in the
+module, the runtime binary imports MySQL; SQLite is used by repository tests.
+
+## Run the service
+
 ```bash
-curl 'http://127.0.0.1:8000/helloworld/kratos'
-
-The response should be
-{
-  "message": "Hello kratos"
-}
+go run ./cmd/server -conf ./configs
 ```
 
-## Project Layout
-Kratos CLI always pull the layout project from GitHub for project creation. The layout project is:
+The default listeners are HTTP `0.0.0.0:8000` and gRPC `0.0.0.0:9000`.
+Successful process startup does not prove the database is reachable if no query
+has run; call an endpoint as part of the check.
 
-* [Kratos Layout](https://github.com/go-kratos/kratos-layout)
+Create a Todo, copy the returned ID, and read it:
+
+```bash
+curl -sS -X POST http://127.0.0.1:8000/v1/todos/create \
+  -H 'Content-Type: application/json' \
+  -d '{"title":"learn Kratos","content":"run the v3 layout"}'
+
+curl -sS http://127.0.0.1:8000/v1/todos/REPLACE_WITH_ID
+```
+
+Routes come from `google.api.http` annotations in the API proto. Replace these
+Todo paths after replacing the example API.
+
+## Project structure
+
+```text
+api/              Protobuf API definitions and generated bindings
+cmd/              Application entrypoints and Wire injectors
+configs/          Runtime configuration without secrets
+internal/conf/    Configuration proto and generated bindings
+internal/server/  HTTP and gRPC server construction
+internal/service/ Transport-facing service methods and DTO conversion
+internal/biz/     Usecases, domain objects, errors, repository interfaces
+internal/data/    Ent repository implementations and storage clients
+openapi.yaml      Generated OpenAPI document
+```
+
+Continue with [Build a Service from the Layout](/docs/guide/service-development/)
+for the request flow and ownership rules, and [Application Lifecycle](/docs/component/application/)
+for startup, registration, and graceful shutdown.
+
+## Install the CLI
+
+The project can be used directly without the CLI. Install it when you want its
+template, proto scaffolding, run, upgrade, or changelog commands:
+
+```bash
+go install github.com/go-kratos/kratos/cmd/kratos/v3@latest
+kratos --help
+```
+
+The CLI and layout are separate modules. Always inspect command help and the
+generated project's `go.mod` instead of assuming that every installed CLI
+version produces the same template.

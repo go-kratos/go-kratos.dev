@@ -1,375 +1,125 @@
 ---
 id: http
 title: HTTP
-keywords:
-  - Go
-  - Kratos
-  - Toolkit
-  - Framework
-  - Microservices
-  - Protobuf
-  - gRPC
-  - HTTP
 ---
 
-transporter/http 中基于 [gorilla/mux](https://github.com/gorilla/mux) HTTP路由框架实现了`Transporter`，用以注册 http 到 `kratos.Server()` 中。
+Kratos HTTP 传输基于 `gorilla/mux` 和生成的 Protobuf 绑定。生成的绑定会把路径、
+查询和请求体字段转换为 Protobuf 请求，设置规范 RPC 操作名，运行中间件，并编码
+服务返回值。
 
-## Server
+## 创建服务端
 
-### 配置
-
-#### `Network(network string) ServerOption`
-
-配置服务端的 network 协议，如 tcp
-
-#### `Address(addr string) ServerOption`
-
-配置服务端监听的地址
-
-#### `Timeout(timeout time.Duration) ServerOption`
-
-配置服务端的超时设置
-
-#### `Logger(logger log.Logger) ServerOption`
-
-配置服务端使用日志
-
-#### `Middleware(m ...middleware.Middleware) ServerOption`
-
-配置服务端的 kratos Service中间件
-
-#### `Filter(filters ...FilterFunc) ServerOption`
-
-配置服务端的 kratos 全局HTTP原生Fitler，此Filter执行顺序在Service中间件之前
-
-#### `RequestDecoder(dec DecodeRequestFunc) ServerOption`
-
-配置kratos服务端的 HTTP Request Decode方法，用来将Request Body解析至用户定义的pb结构体中
-我们看下kratos中默认的RequestDecoder是怎么实现的：
+在 `internal/server` 中创建服务端，然后注册每个生成的服务。把服务端加入
+`kratos.App`，使启动和优雅退出统一由应用管理。
 
 ```go
-func DefaultRequestDecoder(r *http.Request, v interface{}) error {
-	// 从Request Header的Content-Type中提取出对应的解码器
-	codec, ok := CodecForRequest(r, "Content-Type")
-	// 如果找不到对应的解码器此时会报错
-	if !ok {
-		return errors.BadRequest("CODEC", r.Header.Get("Content-Type"))
-	}
-	data, err := ioutil.ReadAll(r.Body)
-	if err != nil {
-		return errors.BadRequest("CODEC", err.Error())
-	}
-	if err = codec.Unmarshal(data, v); err != nil {
-		return errors.BadRequest("CODEC", err.Error())
-	}
-	return nil
-}
-```
-
-那么如果我们想要扩展或者替换Content-Type对应的解析实现，就可以通过http.RequestDecoder()来替换kratos默认的RequestDecoder，
-或者也可以通过在encoding中注册或覆盖一个Content-Type对应的codec来进行扩展
-
-#### `ResponseEncoder(en EncodeResponseFunc) ServerOption`
-
-配置kratos服务端的 HTTP Response Encode方法，用来将用户pb定义里的reply结构体序列化后写入Response Body中
-我们看下kratos中默认的ResponseEncoder是怎么实现的：
-
-```go
-func DefaultResponseEncoder(w http.ResponseWriter, r *http.Request, v interface{}) error {
-	// 通过Request Header的Accept中提取出对应的编码器
-	// 如果找不到则忽略报错，并使用默认json编码器
-	codec, _ := CodecForRequest(r, "Accept")
-	data, err := codec.Marshal(v)
-	if err != nil {
-		return err
-	}
-	// 在Response Header中写入编码器的scheme
-	w.Header().Set("Content-Type", httputil.ContentType(codec.Name()))
-	w.Write(data)
-	return nil
-}
-```
-
-那么如果我们想要扩展或者替换Accept对应的序列化实现，就可以通过http.ResponseEncoder()来替换kratos默认的ResponseEncoder，
-或者也可以通过在encoding中注册或覆盖一个Accept对应的codec来进行扩展
-
-#### `ErrorEncoder(en EncodeErrorFunc) ServerOption`
-
-配置kratos服务端的 HTTP Error Encode方法，用来将业务抛出的error序列化后写入Response Body中，并设置HTTP Status Code
-我们看下kratos中默认的ErrorEncoder是怎么实现的：
-
-```go
-func DefaultErrorEncoder(w http.ResponseWriter, r *http.Request, err error) {
-	// 拿到error并转换成kratos Error实体
-	se := errors.FromError(err)
-	// 通过Request Header的Accept中提取出对应的编码器
-	codec, _ := CodecForRequest(r, "Accept")
-	body, err := codec.Marshal(se)
-	if err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
-		return
-	}
-	w.Header().Set("Content-Type", httputil.ContentType(codec.Name()))
-	// 设置HTTP Status Code
-	w.WriteHeader(int(se.Code))
-	w.Write(body)
-}
-```
-
-#### `TLSConfig(c *tls.Config) ServerOption`
-
-为 kratos 服务端添加 tls 配置用于加密 http 通信
-我们看下 kratos 中是如何配置的:
-
-```go
-// TLSConfig with TLS config.
-func TLSConfig(c *tls.Config) ServerOption {
-	return func(o *Server) {
-		o.tlsConf = c
-	}
-}
-
-```
-
-#### `StrictSlash(strictSlash bool) ServerOption`
-
-为 kratos 服务端添加 StrictSlash 配置，用于重定向路由
-我们看下 kratos 中是如何配置的
-
-```go
-// StrictSlash is with mux's StrictSlash
-// If true, when the path pattern is "/path/", accessing "/path" will
-// redirect to the former and vice versa.
-func StrictSlash(strictSlash bool) ServerOption {
-	return func(o *Server) {
-		o.strictSlash = strictSlash
-	}
-}
-```
-
-#### `Listener(lis net.Listener) ServerOption`
-
-为 kratos 服务端添加 Listener 接口用于面向流协议的传输
-我们看下 kratos 中是如何配置的
-
-```go
-// Listener with server lis
-func Listener(lis net.Listener) ServerOption {
-	return func(s *Server) {
-		s.lis = lis
-	}
-}
-```
-
-### 启动 Server
-
-#### `NewServer(opts ...ServerOption) *Server`
-
-传入opts配置并启动HTTP Server
-
-```go
-hs := http.NewServer()
-app := kratos.New(
-  kratos.Name("kratos"),
-  kratos.Version("v1.0.0"),
-  kratos.Server(hs),
-)
-```
-
-#### HTTP server 中使用 kratos middleware
-
-```go
-hs := http.NewServer(
+srv := http.NewServer(
 	http.Address(":8000"),
+	http.Timeout(time.Second),
 	http.Middleware(
-		logging.Server(),
-	),
-)
-```
-
-#### middleware 中处理 http 请求
-
-```go
-if tr, ok := transport.FromServerContext(ctx); ok {
-	kind = tr.Kind().String()
-	operation = tr.Operation()
-	// 断言成HTTP的Transport可以拿到特殊信息
-	if ht, ok := tr.(*http.Transport); ok {
-		fmt.Println(ht.Request())
-	}
-}
-```
-
-### Server Router
-
-#### `func (s *Server) Route(prefix string, filters ...FilterFunc) *Router`
-
-创建一个新的HTTP Server Router，同时可以传递kratos的HTTP Filter拦截器
-我们看下用法：
-
-```go
-r := s.Route("/v1")
-r.GET("/helloworld/{name}", _Greeter_SayHello0_HTTP_Handler(srv))
-```
-
-#### `func (s *Server) Handle(path string, h http.Handler)`
-
-将path添加到路由中，并使用标准的HTTP Handler来处理
-
-#### `func (s *Server) HandlePrefix(prefix string, h http.Handler)`
-
-前缀匹配的方式将prefix添加到路由中，并使用标准的HTTP Handler来处理
-
-#### `func (s *Server) ServeHTTP(res http.ResponseWriter, req *http.Request)`
-
-实现了标准库的HTTP Handler接口
-
-> 其他路由使用方法参考: [https://github.com/go-kratos/examples/tree/main/http/middlewares](https://github.com/go-kratos/examples/tree/main/http/middlewares)
-
-> 在Kratos HTTP中使用[gin](https://github.com/gin-gonic/gin)框架: [https://github.com/go-kratos/examples/blob/main/http/gin/main.go](https://github.com/go-kratos/examples/blob/main/http/gin/main.go)
-
-## Client
-
-### 配置
-
-#### `WithTransport(trans http.RoundTripper) ClientOption`
-
-配置客户端的HTTP RoundTripper
-
-#### `WithTimeout(d time.Duration) ClientOption`
-
-配置客户端的请求默认超时时间，如果有链路超时优先使用链路超时时间
-
-#### `WithUserAgent(ua string) ClientOption`
-
-配置客户端的默认User-Agent
-
-#### `WithMiddleware(m ...middleware.Middleware) ClientOption`
-
-配置客户端使用的 kratos client中间件
-
-#### `WithEndpoint(endpoint string) ClientOption`
-
-配置客户端使用的对端连接地址，如果不使用服务发现则为ip:port,如果使用服务发现则格式为discovery://\<authority\>/\<serviceName\>,这里\<authority\>可以默认填空
-
-#### `WithDiscovery(d registry.Discovery) ClientOption`
-
-配置客户端使用的服务发现
-
-#### `WithRequestEncoder(encoder EncodeRequestFunc) ClientOption`
-
-配置客户端的 HTTP Request Encode方法，用来将户定义的pb结构体中序列化至Request Body
-我们看下默认的encoder:
-
-```go
-func DefaultRequestEncoder(ctx context.Context, contentType string, in interface{}) ([]byte, error) {
-	// 通过外部配置的contentType获取encoder类型
-	name := httputil.ContentSubtype(contentType)
-	// 拿到实际的encoder
-	body, err := encoding.GetCodec(name).Marshal(in)
-	if err != nil {
-		return nil, err
-	}
-	return body, err
-}
-```
-
-#### `WithResponseDecoder(decoder DecodeResponseFunc) ClientOption`
-
-配置客户端的 HTTP Response Decode方法，用来将Response Body解析至用户定义的pb结构体中
-我们看下kratos中默认的decoder是怎么实现的：
-
-```go
-func DefaultResponseDecoder(ctx context.Context, res *http.Response, v interface{}) error {
-	defer res.Body.Close()
-	data, err := ioutil.ReadAll(res.Body)
-	if err != nil {
-		return err
-	}
-	// 这里根据Response Header中的Content-Type拿到对应的decoder
-	// 然后进行Unmarshal
-	return CodecForResponse(res).Unmarshal(data, v)
-}
-```
-
-#### `WithErrorDecoder(errorDecoder DecodeErrorFunc) ClientOption`
-
-配置客户端的Error解析方法
-我们看下kratos中默认的error decoder是怎么实现的：
-
-```go
-func DefaultErrorDecoder(ctx context.Context, res *http.Response) error {
-	// HTTP Status Code 为最高优先级
-	if res.StatusCode >= 200 && res.StatusCode <= 299 {
-		return nil
-	}
-	defer res.Body.Close()
-	data, err := ioutil.ReadAll(res.Body)
-	if err == nil {
-		e := new(errors.Error)
-		// 这里根据Response Header中的Content-Type拿到对应的response decoder
-		// 然后解析出error主体内容
-		if err = CodecForResponse(res).Unmarshal(data, e); err == nil {
-			// HTTP Status Code 为最高优先级
-			e.Code = int32(res.StatusCode)
-			return e
-		}
-	}
-	// 如果没有返回合法的Response Body则直接以HTTP Status Code为准
-	return errors.Errorf(res.StatusCode, errors.UnknownReason, err.Error())
-}
-```
-
-#### `WithBalancer(b balancer.Balancer) ClientOption`
-
-配置客户端的负载均衡策略
-
-#### `WithBlock() ClientOption`
-
-配置客户端的Dial策略为阻塞（直到服务发现发现节点才返回），默认为异步非阻塞
-
-#### `WithTLSConfig(c *tls.Config) ClientOption`
-
-配置客户端的tls
-
-```go
-// WithTLSConfig with tls config.
-func WithTLSConfig(c *tls.Config) ClientOption {
-	return func(o *clientOptions) {
-		o.tlsConf = c
-	}
-}
-```
-
-### Client使用方式
-
-#### 创建客户端连接
-
-```go
-conn, err := http.NewClient(
-	context.Background(),
-	http.WithEndpoint("127.0.0.1:8000"),
-)
-```
-
-#### 使用中间件
-
-```go
-conn, err := http.NewClient(
-	context.Background(),
-	http.WithEndpoint("127.0.0.1:9000"),
-	http.WithMiddleware(
 		recovery.Recovery(),
+		validate.Validator(),
 	),
 )
+v1.RegisterTodoServiceHTTPServer(srv, todo)
 ```
 
-#### 使用服务发现
+服务端默认使用 TCP、地址 `:0`、一秒请求 context 超时和严格斜杠路由。
+`TLSConfig` 启用 HTTPS；`Listener` 接收已有监听器；`Endpoint` 覆盖服务注册时
+公布的端点。其他选项可配置路径前缀、原生 HTTP filter、解码器、响应与错误
+编码器以及 404/405 处理函数。
+
+Kratos 中间件处理的是规范化 RPC 请求。`http.Filter` 是包在路由外层的原生
+`net/http` 中间件，适合 CORS、静态响应头等只与 HTTP 有关的工作。
+
+## 生成路由与绑定
+
+在 Protobuf 服务中通过 `google.api.http` 声明路由：
+
+```protobuf
+rpc GetTodo(GetTodoRequest) returns (Todo) {
+	option (google.api.http) = {get: "/v1/todos/{id}"};
+}
+```
+
+运行 `make api` 后调用 `RegisterTodoServiceHTTPServer`。生成的处理函数会根据
+注解调用 `BindVars`、`BindQuery` 和 `Bind`，再以
+`/todo.v1.TodoService/GetTodo` 作为操作名执行中间件。服务实现中不应重复这些
+绑定工作。
+
+默认请求体解码器根据 `Content-Type` 选择 codec；响应与错误编码器根据 `Accept`
+选择，无法匹配时回退到 `json`。返回的 Kratos 错误会转换为包含 code、reason、
+message 和 metadata 的 HTTP 响应。`google.api.HttpBody` 会跳过结构化编码，直接
+携带自己的内容类型和字节数据。
+
+## 手写路由
+
+不属于 Protobuf API 的端点可使用 `Router`。处理函数接收 `http.Context`；它
+内嵌 `context.Context`，并提供请求、响应、绑定和结果辅助方法。
 
 ```go
-conn, err := http.NewClient(
-	context.Background(),
-	http.WithEndpoint("discovery:///helloworld"),
-	http.WithDiscovery(r),
-)
+router := srv.Route("/")
+router.GET("/healthz", func(ctx http.Context) error {
+	return ctx.JSON(200, map[string]string{"status": "ok"})
+})
 ```
+
+Router 支持分组以及 GET、HEAD、POST、PUT、PATCH、DELETE、CONNECT、OPTIONS、
+TRACE 辅助方法。输入可用 `BindVars`、`BindQuery`、`BindForm` 或 `Bind`，输出可用
+`Returns`、`Result`、`JSON`、`XML`、`String`、`Blob` 或 `Stream`。服务端自身的
+`Handle` 和 `HandleFunc` 接收原生 `net/http` handler。
+
+## 创建客户端
+
+生成的 HTTP 客户端使用 Kratos `*http.Client`。默认客户端超时为两秒；没有 TLS
+配置时使用 HTTP，传入 `WithTLSConfig` 后使用 HTTPS。
+
+```go
+conn, err := http.NewClient(ctx,
+	http.WithEndpoint("http://127.0.0.1:8000"),
+	http.WithTimeout(2*time.Second),
+	http.WithMiddleware(logging.Client(logger)),
+)
+if err != nil {
+	return err
+}
+defer conn.Close()
+
+client := v1.NewTodoServiceHTTPClient(conn)
+todo, err := client.GetTodo(ctx, &v1.GetTodoRequest{Id: id})
+```
+
+客户端选项可以替换 round tripper、请求编码器、响应解码器或错误解码器；
+`WithUserAgent` 设置 User-Agent。服务发现需要把 `WithDiscovery(discovery)` 与
+`discovery:///todo` 之类的端点组合使用；`WithNodeFilter`、`WithSubset` 和全局
+selector 控制实例选择，`WithBlock` 等待第一批发现结果。
+
+## HTTP 流式调用
+
+v3 HTTP 生成器把服务端流映射为 Server-Sent Events，把客户端流或双向流映射为
+WebSocket。生成的客户端暴露带类型的流接口，因此服务代码仍使用生成的 `Send`
+和 `Recv` 方法。SSE 发送 `message` 事件，客户端只能接收；WebSocket 支持双向
+Protobuf 消息。修改流式方法后必须重新生成绑定，因为生成的 HTTP 方法和处理
+函数决定线上的实际行为。
+
+服务中应设置明确的流截止时间，并在 `Send` 或 `Recv` 失败时结束处理。流创建后，
+HTTP 服务端会让它脱离普通请求的 deadline 与 cancellation，因此长连接需要自己的
+生命周期策略。
+
+Protobuf 定义、类型安全的 server/client 示例、codec 选择、关闭行为和 proxy
+配置见[使用 SSE 与 WebSocket 实现 HTTP 流式调用](/zh-cn/docs/component/transport/http-streaming/)。
+
+## 路径与 codec 辅助方法
+
+生成的客户端使用 `BuildPath` 展开注解路径。手写代码也可使用它，字段名应使用
+JSON 名称：
+
+```go
+path := http.BuildPath("/v1/todos/{id}", &struct {
+	ID string `json:"id"`
+}{ID: "42"})
+```
+
+调用选项包括 `ContentType`、`Accept`、`Operation`、`PathTemplate` 和 `Header`。
+已注册 codec 见[编码](/zh-cn/docs/component/encoding/)，错误响应契约见
+[错误处理](/zh-cn/docs/component/errors/)。

@@ -1,62 +1,81 @@
 ---
-title: Overview
+id: overview
+title: Kratos v3 Documentation
+description: Build Go microservices with Kratos v3 HTTP/gRPC transports and explicit, composable infrastructure.
 ---
 
-Kratos is a framework upon the lightweight microservices implemented by Golang, which offers convenient capabilities to help you quickly build a bulletproof application from scratch.
+Kratos v3 is a lightweight Go framework for cloud-native services. It provides
+application lifecycle management, generated HTTP and gRPC transports,
+middleware, configuration, structured errors, metadata, encoding, logging, and
+service-discovery interfaces. Applications select persistence, registry,
+telemetry, and remote configuration implementations through independent
+modules.
 
->Its name is originated from one popular game, the God of War. It illustrates the fantastic story of Kratos turning from an ordinary person into a God of War and his significant accomplishments full of successful risky journeys to beat various gods.
+The guides cover the v3 API and the current
+[Kratos project layout](https://github.com/go-kratos/kratos-layout). Core and
+contrib packages are documented separately so it is clear which dependencies
+an application must add itself.
 
+## Start here
 
-## Goals
+1. Follow [Quick Start](/docs/getting-started/start/) to prepare tools, copy the
+   project template, generate code, run tests, and start a service.
+2. Read [Build a Service from the Layout](/docs/guide/service-development/) to
+   understand the Todo example from protobuf API to Ent repository.
+3. Use the [component pages](/docs/component/application/) when configuring an
+   application, transport, middleware, registry, or codec.
+4. Existing v2 services should begin with [Migrate from v2 to v3](/docs/migration/v2-to-v3/), then review [New Features in Kratos v3](/docs/migration/v3-new-features/).
 
-We aim to provide a comprehensive microservices development technique. Based on the integration of related frameworks and tools, it achieves the goals that the management of microservies is transparent to the upper level businesses development such that developers can focus on the business of developing and releasing applications. Additionally, for each developer, Kratos is also an ideal resource for learning many aspects of microservices thus enriching their experiences and skills.
+## Core model
 
-### Principles
+An application receives one or more servers and owns their start/stop
+lifecycle. Generated bindings adapt protobuf methods to HTTP and gRPC. A shared
+middleware type lets transport-independent behavior wrap generated handlers.
+Small interfaces define configuration sources, registries, selectors, and
+codecs without requiring a particular provider.
 
-* **Simple**: Appropriate design, plain and easy to code.
-* **General**: Covers the various utilities for business development.
-* **Highly efficient**: Speeding up the efficiency of businesses upgrading.
-* **Stable**: The base libs validated in the production environment which have the characteristics of high testability, high coverage as well as high security and reliability.
-* **Robust**: Eliminating misuse by using high quality base libs.
-* **High-performance**: Optimal performance to prevent hacking without use of unsafe. 
-* **Expandability**: Properly designed interfaces, you can expand utilities such as base libs to meet your further requirements.
-* **Fault-tolerance**: Designed against failure, enhance the understanding and exercising of SRE within Kratos to achieve more robustness.
-* **Toolchain**:  Includes an extensive toolchain, such as the generation of the cache layer, the lint tool, and so forth.
+The core module is `github.com/go-kratos/kratos/v3`. The CLI and each contrib
+integration are separate Go modules and can have their own versions. Check the
+module path before copying an example.
 
-## Features
-* APIs: Messages defined by Protobuf are using HTTP/gRPC for transport.
-* Errors: Both the definitions of error code and the handle interfaces of code generation for tools are defined by the Enum of the Protobuf.
-* Metadata:	In the HTTP/gRPC protocol, use the uniform metadata transfer method.
-* Config: Multiple data sources are supported for configurations and dynamic configurations (use *atomic* operations).
-* Logger: The standard log interfaces ease the integration of the third-party log libs and logs are collected through the *Fluentd*.
-* Metrics: *Prometheus* integrated by default. Furthermore, with the uniform metric interfaces, you can implement your own metric system more flexibly.
-* Tracing: The OpenTelemetry is conformed to achieve the tracing of microservices chains.
-* Encoding: The selection of the content encoding is automatically supported by Accept and Content-Type.
-* Transport: The uniform plugins for Middleware are supported by HTTP/gRPC.
-* Registry: The interfaces of the centralized registry are able to be connected with various other centralized registries through plug-ins.
+## What v3 provides
 
-## Architecture
+| Area | Core behavior |
+| --- | --- |
+| Application | Concurrent server lifecycle, hooks, signals, registration, graceful shutdown |
+| API tooling | Protobuf HTTP/error generators and a project CLI |
+| Transport | HTTP and gRPC servers/clients, generated bindings, unary and streaming support |
+| Middleware | Recovery, logging, metadata, validation, rate limiting, circuit breaking, selection |
+| Data contracts | Structured errors, transport metadata, codec registry, config values |
+| Routing | Registry interfaces, discovery integration, selectors and node filters |
+| Logging | Standard-library `log/slog` handlers, filtering and context attributes |
 
-<img src="/images/arch.png" alt="kratos architecture" width="650px" />
+JWT and OpenTelemetry tracing/metrics are contrib modules in v3. Database
+access, queues, caches, migrations, telemetry exporters, and deployment policy
+remain application choices. The framework does not silently configure those
+systems.
 
-## Related
+## Reference layout
 
-* [Docs](https://go-kratos.dev/)
-* [Examples](https://github.com/go-kratos/examples)
-* [Service Layout](https://github.com/go-kratos/kratos-layout)
+The maintained layout demonstrates a protobuf-first API, generated HTTP/gRPC
+bindings, Wire dependency injection, `service`/`biz`/`data` layers, Ent-backed
+storage, MySQL runtime configuration, SQLite repository tests, AIP list
+filtering/ordering/pagination, partial updates, and streaming RPCs.
 
-## Community
-* [Wechat Group](https://github.com/go-kratos/kratos/issues/682)
-* [Discord Group](https://discord.gg/BWzJsUJ)
-* QQ Group: 716486124
+Treat its structure as a tested starting point. Kratos itself does not require
+Wire, Ent, MySQL, or that exact package layout.
 
-## License
-Kratos is MIT licensed. See the [LICENSE](https://github.com/go-kratos/kratos/blob/main/LICENSE) file for details.
+## Reliability of examples
 
-## Contributors
-Thanks for their outstanding contributions.
-<a href="https://github.com/go-kratos/kratos/graphs/contributors">
-  <img src="https://contrib.rocks/image?repo=go-kratos/kratos" />
-</a>
+Examples are compiled and vetted as part of this site's build. English and
+Chinese pages share the same code, and internal links are checked before the
+site is published.
 
+## Community and license
 
+- [Kratos source](https://github.com/go-kratos/kratos)
+- [Project layout](https://github.com/go-kratos/kratos-layout)
+- [Examples](https://github.com/go-kratos/examples)
+- [Contribution guide](/docs/community/contribution/)
+
+Kratos is distributed under the [MIT License](https://github.com/go-kratos/kratos/blob/main/LICENSE).

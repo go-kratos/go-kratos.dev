@@ -1,159 +1,72 @@
 ---
 id: encoding
 title: 序列化
-keywords:
-  - Go
-  - Kratos
-  - Toolkit
-  - Framework
-  - Microservices
-  - Protobuf
-  - gRPC
-  - HTTP
+description: 理解 Kratos v3 codec、HTTP content negotiation 和 protobuf JSON 行为。
 ---
-我们抽象出了`Codec`接口，用于统一处理请求的序列化/反序列化逻辑，您也可以实现您自己的Codec以便支持更多格式。具体源代码在[encoding](https://github.com/go-kratos/kratos/tree/main/encoding)。
 
-目前内置支持了如下格式：
-* form
-* json
-* protobuf
-* xml
-* yaml
-
-### 接口实现
-
-`encoding` 的 `Codec` 接口中,包含了 Marshal，Unmarshal，Name 三个方法，用户只需要实现 `Codec` 即可使用自定义的 `encoding`。
+全局 codec registry 把小写 content subtype 映射到 `encoding.Codec`。Codec 提供 `Marshal`、`Unmarshal` 和稳定的 `Name`，并且必须支持并发调用。
 
 ```go
-// Codec 用于定义传输时用到的编码和解码接口，实现这个接口时必须注意，实现必须是线程安全的，可以并发协程调用。
 type Codec interface {
-	Marshal(v interface{}) ([]byte, error)
-	Unmarshal(data []byte, v interface{}) error
+	Marshal(v any) ([]byte, error)
+	Unmarshal(data []byte, v any) error
 	Name() string
 }
 ```
 
-### 实现示例
+`RegisterCodec` 遇到 nil codec 或空名称会 panic。再次注册同名 codec 会直接替换旧值，不返回错误。应用 codec 应在进程初始化时注册；可复用 library 不应静默替换应用选择的格式。
 
-在实现 `Codec` 时，可以参考 kratos 的内置实现, 如 json encoding，源代码如下。
+## 内置注册
+
+导入顶层 `transport` package 会通过 blank import 注册 form、标准 JSON、protobuf binary、protobuf JSON、XML 和 YAML codec。HTTP 和 gRPC transport package 会导入它，因此普通 transport 应用会自动得到这些注册。只使用 encoding registry 而不导入 transport 的代码必须显式导入所需 codec package。
 
 ```go
-// https://github.com/go-kratos/kratos/blob/main/encoding/json/json.go
-package json
-
 import (
-	"encoding/json"
-	"reflect"
-
-	"github.com/go-kratos/kratos/v2/encoding"
-	"google.golang.org/protobuf/encoding/protojson"
-	"google.golang.org/protobuf/proto"
+	"github.com/go-kratos/kratos/v3/encoding"
+	_ "github.com/go-kratos/kratos/v3/encoding/json"
+	_ "github.com/go-kratos/kratos/v3/encoding/protojson"
 )
 
-// Name is the name registered for the json codec.
-const Name = "json"
-
-var (
-	// MarshalOptions is a configurable JSON format marshaller.
-	MarshalOptions = protojson.MarshalOptions{
-		EmitUnpopulated: true,
-	}
-	// UnmarshalOptions is a configurable JSON format parser.
-	UnmarshalOptions = protojson.UnmarshalOptions{
-		DiscardUnknown: true,
-	}
-)
-
-func init() {
-	encoding.RegisterCodec(codec{})
-}
-
-// codec is a Codec implementation with json.
-type codec struct{}
-
-func (codec) Marshal(v interface{}) ([]byte, error) {
-	switch m := v.(type) {
-	case json.Marshaler:
-		return m.MarshalJSON()
-	case proto.Message:
-		return MarshalOptions.Marshal(m)
-	default:
-		return json.Marshal(m)
-	}
-}
-
-func (codec) Unmarshal(data []byte, v interface{}) error {
-	switch m := v.(type) {
-	case json.Unmarshaler:
-		return m.UnmarshalJSON(data)
-	case proto.Message:
-		return UnmarshalOptions.Unmarshal(data, m)
-	default:
-		rv := reflect.ValueOf(v)
-		for rv := rv; rv.Kind() == reflect.Ptr; {
-			if rv.IsNil() {
-				rv.Set(reflect.New(rv.Type().Elem()))
-			}
-			rv = rv.Elem()
-		}
-		if m, ok := reflect.Indirect(rv).Interface().(proto.Message); ok {
-			return UnmarshalOptions.Unmarshal(data, m)
-		}
-		return json.Unmarshal(data, m)
-	}
-}
-
-func (codec) Name() string {
-	return Name
-}
-````
-
-### 使用方式
-
-#### 注册 Codec
-
-```go
-encoding.RegisterCodec(codec{})
-```
-
-#### 获取 Codec
-
-```go
 jsonCodec := encoding.GetCodec("json")
+protoJSONCodec := encoding.GetCodec("protojson")
 ```
 
-#### 序列化
+`GetCodec` 要求小写 subtype；未注册时返回 `nil`。低层代码调用返回值前必须检查。
+
+## 标准 JSON 与 protobuf JSON
+
+v3 有意拆分两套 JSON 语义：
+
+- `encoding/json` 注册名称 `json`，委托标准库实现，也会使用 `json.Marshaler` 和 `json.Unmarshaler`。
+- `encoding/protojson` 注册名称 `protojson`，只接受 `proto.Message`，默认输出未设置字段，解码时默认丢弃未知字段。
+- `contrib/encoding/json/v3` 为迁移提供旧版混合行为，名称同样为 `json`；二者同时注册时会替换 core `json`。
+
+`protojson.MarshalOptions` 和 `UnmarshalOptions` 是导出的 package variable。应在并发请求开始前配置一次；codec 使用过程中修改进程全局 option 会产生不一致输出。
+
+## HTTP 选择规则
+
+默认 HTTP request decoder 根据请求 `Content-Type` 选择 codec。类型未注册时返回 reason 为 `CODEC` 的 Bad Request；空 body 不执行 unmarshal。Response 和 error encoder 根据 `Accept` 选择，找不到已注册类型时回退到 `json`。
+
+对于 `google.api.HttpBody`，Kratos 会绕过普通 codec marshal，按声明的 content type 复制原始数据；未声明时使用 `application/octet-stream`。
+
+生成的 binding 和 HTTP context binding 还会使用 form codec 处理 path、query 和 form value。其默认 field tag 是 `json`；protobuf value 使用 package 内的 protobuf-aware 转换。
+
+## 自定义 codec
 
 ```go
-// 直接使用内置 Codec 时需要 import _ "github.com/go-kratos/kratos/v2/encoding/json"
-jsonCodec := encoding.GetCodec("json")
-type user struct {
-	Name string
-	Age string
-	state bool
+type textCodec struct{}
+
+func (textCodec) Name() string { return "plain" }
+func (textCodec) Marshal(v any) ([]byte, error) {
+	return []byte(fmt.Sprint(v)), nil
 }
-u := &user{
-	Name:  "kratos",
-	Age:   "2",
-	state: false,
+func (textCodec) Unmarshal(data []byte, v any) error {
+	return fmt.Errorf("plain decoding is not implemented for %T", v)
 }
-bytes, _ := jsonCodec.Marshal(u)
-fmt.Println(string(bytes))
-// 输出：{"Name":"kratos","Age":"2"}
+
+encoding.RegisterCodec(textCodec{})
 ```
 
-#### 反序列化
+生产 codec 应校验目标类型、明确 buffer ownership、返回可用错误，并测试畸形与空输入。Codec name 会成为 HTTP content subtype，修改名称属于 wire contract 变化。
 
-```go
-// 直接使用内置 Codec 时需要 import _ "github.com/go-kratos/kratos/v2/encoding/json"
-jsonCodec := encoding.GetCodec("json")
-type user struct {
-	Name string
-	Age string
-	state bool
-}
-u := &user{}
-jsonCodec.Unmarshal([]byte(`{"Name":"kratos","Age":"2"}`), &u)
-fmt.Println(*u)
-// 输出：&{kratos 2 false}
-```
+更底层的行为可查阅 core [`encoding`](https://github.com/go-kratos/kratos/tree/main/encoding) package 和 [HTTP codec 实现](https://github.com/go-kratos/kratos/blob/main/transport/http/codec.go)。

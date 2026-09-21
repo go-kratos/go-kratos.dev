@@ -1,358 +1,102 @@
 ---
 id: grpc
 title: gRPC
-keywords:
-  - Go
-  - Kratos
-  - Toolkit
-  - Framework
-  - Microservices
-  - Protobuf
-  - gRPC
-  - HTTP
 ---
 
-transporter/grpc 中基于谷歌的 [grpc](https://www.grpc.io/) 框架实现了`Transporter`，用以注册 grpc 到 `kratos.Server()` 中。
+Kratos gRPC 传输在 `google.golang.org/grpc` 之上集成应用生命周期、Kratos
+中间件、服务发现、负载均衡以及一致的错误和元数据转换。生成的 Protobuf 服务
+接口仍是普通 gRPC 接口。
 
-## Server
+## 创建服务端
 
-### 配置
-
-#### `Network(network string) ServerOption `
-
-配置服务端的 network 协议，如 tcp
-
-#### `Address(addr string) ServerOption`
-
-配置服务端监听的地址
-
-#### `Timeout(timeout time.Duration) ServerOption`
-
-配置服务端的超时设置
-
-#### `Logger(logger log.Logger) ServerOption`
-
-配置服务端使用的日志组件
-
-#### `Middleware(m ...middleware.Middleware) ServerOption`
-
-配置服务端的 kratos 中间件
-
-#### `TLSConfig(c *tls.Config) ServerOption`
-
-配置服务端的 TLS 配置
-
-#### `UnaryInterceptor(in ...grpc.UnaryServerInterceptor) ServerOption`
-
-配置服务端使用的 grpc 单元拦截器
-
-#### `StreamInterceptor(in ...grpc.StreamServerInterceptor) ServerOption`
-
-配置服务端使用的 grpc 流媒体拦截器
-
-#### `Options(opts ...grpc.ServerOption) ServerOption`
-
-配置一些额外的 grpc.ServerOption
-
-### 主要的实现细节
-
-#### `NewServer()`
-```go
-func NewServer(opts ...ServerOption) *Server {
-  	// grpc server 默认配置
-	srv := &Server{
-		network: "tcp",
-		address: ":0",
-		timeout: 1 * time.Second,
-		health:  health.NewServer(),
-		log:     log.NewHelper(log.GetLogger()),
-	}
-  	// 递归 opts
-	for _, o := range opts {
-		o(srv)
-	}
-  	// kratos middleware 转换成 grpc 拦截器，并处理一些细节
-	unaryInts := []grpc.UnaryServerInterceptor{
-		srv.unaryServerInterceptor(),
-	}
-	streamInts := []grpc.StreamServerInterceptor{
-		srv.streamServerInterceptor(),
-	}
-
-	if len(srv.unaryInts) > 0 {
-		unaryInts = append(unaryInts, srv.unaryInts...)
-	}
-	if len(srv.streamInts) > 0 {
-		streamInts = append(streamInts, srv.streamInts...)
-	}
-
-  	// 将 UnaryInterceptor 和 StreamInterceptor 转换成 ServerOption
-	var grpcOpts = []grpc.ServerOption{
-		grpc.ChainUnaryInterceptor(unaryInts...),
-		grpc.ChainStreamInterceptor(streamInts...),
-	}
-	// 将 TLS 配置转化成 ServerOption
-	if srv.tlsConf != nil {
-		grpcOpts = append(grpcOpts, grpc.Creds(credentials.NewTLS(srv.tlsConf)))
-	}
-	// 追加通过 Options(opts ...grpc.ServerOption) 添加的options
-	if len(srv.grpcOpts) > 0 {
-		grpcOpts = append(grpcOpts, srv.grpcOpts...)
-	}
-  	// 创建 grpc server
-	srv.Server = grpc.NewServer(grpcOpts...)
-  	// 创建 metadata server
-	srv.metadata = apimd.NewServer(srv.Server)
-	// 配置 lis 和 endpoint
-	srv.err = srv.listenAndEndpoint()
-  	// 内部注册
-	grpc_health_v1.RegisterHealthServer(srv.Server, srv.health)
-	apimd.RegisterMetadataServer(srv.Server, srv.metadata)
-	reflection.Register(srv.Server)
-	return srv
-}
-```
-
-#### `unaryServerInterceptor()`
+在 `internal/server` 中构造服务端并注册生成的服务。
 
 ```go
-func (s *Server) unaryServerInterceptor() grpc.UnaryServerInterceptor {
-	return func(ctx context.Context, req interface{}, info *grpc.UnaryServerInfo, handler grpc.UnaryHandler) (interface{}, error) {
-    	// 把两个 ctx 合并成一个
-		ctx, cancel := ic.Merge(ctx, s.ctx)
-		defer cancel()
-    	// 从 ctx 中取出 metadata
-		md, _ := grpcmd.FromIncomingContext(ctx)
-    	// 把一些信息绑定到 ctx 上
-		replyHeader := grpcmd.MD{}
-		ctx = transport.NewServerContext(ctx, &Transport{
-			endpoint:    s.endpoint.String(),
-			operation:   info.FullMethod,
-			reqHeader:   headerCarrier(md),
-			replyHeader: headerCarrier(replyHeader),
-		})
-    	// ctx 超时设置
-		if s.timeout > 0 {
-			ctx, cancel = context.WithTimeout(ctx, s.timeout)
-			defer cancel()
-		}
-    	// 中间件处理
-		h := func(ctx context.Context, req interface{}) (interface{}, error) {
-			return handler(ctx, req)
-		}
-		if len(s.middleware) > 0 {
-			h = middleware.Chain(s.middleware...)(h)
-		}
-		// 执行中间件 handler
-		reply, err := h(ctx, req)
-		if len(replyHeader) > 0 {
-			_ = grpc.SetHeader(ctx, replyHeader)
-		}
-		return reply, err
-	}
-}
-```
-### 使用方式
-
-简单列举了一些 kratos 中 grpc 的用法，其他 grpc 用法可以到 grpc 仓库中查看。
-
-#### 注册 grpc server
-```go
-gs := grpc.NewServer()
-app := kratos.New(
-	kratos.Name("kratos"),
-	kratos.Version("v1.0.0"),
-	kratos.Server(gs),
-)
-```
-
-#### grpc server 中使用 kratos middleware
-```go
-grpcSrv := grpc.NewServer(
+srv := grpc.NewServer(
 	grpc.Address(":9000"),
+	grpc.Timeout(time.Second),
 	grpc.Middleware(
-		logging.Server(),
+		recovery.Recovery(),
+		validate.Validator(),
 	),
 )
+v1.RegisterTodoServiceServer(srv, todo)
 ```
 
-#### middleware 中处理 grpc 请求
+服务端默认使用 TCP、地址 `:0` 和一秒的一元请求超时。`TLSConfig` 安装传输凭据；
+`Listener` 接收已有监听器；`Endpoint` 覆盖注册时使用的端点；`Options` 传入原生
+`grpc.ServerOption`。
+
+`Middleware` 用于一元 RPC，流式 RPC 使用 `StreamMiddleware`。流 context 持续
+整个流生命周期，不会自动继承一元请求超时。`UnaryInterceptor` 和
+`StreamInterceptor` 会把原生 gRPC interceptor 追加在 Kratos interceptor 之后。
+
+## 内置 gRPC 服务
+
+Kratos 服务端默认注册标准 gRPC health 服务、reflection 和 channelz 等 gRPC
+admin 服务。`DisableReflection` 关闭反射；`CustomHealth` 阻止自动注册 health，
+以便应用注册自己的实现。服务停止时还会执行 admin 清理函数。
+
+启动时，内置 health 服务切换为 `SERVING`；停止时切换为 `NOT_SERVING`。关闭过程
+先尝试 `GracefulStop`，如果传入的停止 context 到期则调用 `Stop`。
+
+## 实现并注册服务
+
+在 Protobuf 中定义一元或流式 RPC，运行 `make api`，在 `internal/service` 中实现
+生成的服务端接口，并只注册一次。请求进入中间件时带有完整操作名，例如
+`/todo.v1.TodoService/GetTodo`。
+
+处理函数返回的 Kratos 错误会转换为 gRPC status 错误。框架客户端再把收到的
+status 错误转换回 Kratos 错误，并保留线上携带的 code、reason、message 和
+metadata。
+
+## 创建客户端
+
+`grpc.NewClient` 返回 `*grpc.ClientConn`。默认一元超时为两秒，配置加权轮询选择，
+并在返回前开始连接。
+
 ```go
-if info, ok := transport.FromServerContext(ctx); ok {
-  kind = info.Kind().String()
-  operation = info.Operation()
+conn, err := grpc.NewClient(ctx,
+	grpc.WithEndpoint("dns:///127.0.0.1:9000"),
+	grpc.WithTimeout(2*time.Second),
+	grpc.WithMiddleware(logging.Client(logger)),
+)
+if err != nil {
+	return err
 }
+defer conn.Close()
+
+client := v1.NewTodoServiceClient(conn)
+todo, err := client.GetTodo(ctx, &v1.GetTodoRequest{Id: id})
 ```
 
-## Client
+未传入 `WithTLSConfig` 时，Kratos 会安装 gRPC insecure 凭据；传入 TLS 配置后则
+启用 TLS。`WithOptions` 添加原生 `grpc.DialOption`，一元和流 interceptor 选项
+追加原生 interceptor。生成的流客户端使用 `WithStreamMiddleware`。
 
-### 配置
+## 服务发现与负载均衡
 
-#### `WithEndpoint(endpoint string) ClientOption` 
-
-配置客户端使用的对端连接地址，如果不使用服务发现则为ip:port,如果使用服务发现则格式为discovery://\<authority\>/\<serviceName\>
-
-#### `WithTimeout(timeout time.Duration) ClientOption`
-
-配置客户端的请求默认超时时间，如果有链路超时优先使用链路超时时间
-
-#### `WithMiddleware(m ...middleware.Middleware) ClientOption`
-
-配置客户端使用的 kratos 中间件
-
-#### `WithDiscovery(d registry.Discovery) ClientOption`
-
-配置客户端使用的服务发现
-
-#### `WithTLSConfig(c *tls.Config) ClientOption`
-
-配置客户端使用的 TLS 配置
-
-#### `WithUnaryInterceptor(in ...grpc.UnaryClientInterceptor) ClientOption`
-
-配置客户端使用的 grpc 原生拦截器
-
-#### `WithOptions(opts ...grpc.DialOption) ClientOption`
-
-配置一些额外的 grpc.ClientOption
-
-#### `WithHealthCheck(healthCheck bool) ClientOption`
-
-配置是否开启健康检查
-
-#### `WithNodeFilter(filters ...selector.NodeFilter) ClientOption`
-
-配置过滤某些不希望被请求的节点
-
-### 主要的实现细节
-
-#### `dial()`
-```go
-func dial(ctx context.Context, insecure bool, opts ...ClientOption) (*grpc.ClientConn, error) {
-	// 默认配置
-	options := clientOptions{
-		timeout:      2000 * time.Millisecond,
-		balancerName: wrr.Name,
-		logger:       log.GetLogger(),
-	}
-	// 遍历 opts
-	for _, o := range opts {
-		o(&options)
-	}
-	// 将 kratos 中间件转化成 grpc 拦截器
-	ints := []grpc.UnaryClientInterceptor{
-		unaryClientInterceptor(options.middleware, options.timeout, options.filters),
-	}
-	if len(options.ints) > 0 {
-		ints = append(ints, options.ints...)
-	}
-	// 负载均衡
-	grpcOpts := []grpc.DialOption{
-		grpc.WithDefaultServiceConfig(fmt.Sprintf(`{"LoadBalancingPolicy": "%s"}`, options.balancerName)),
-		grpc.WithChainUnaryInterceptor(ints...),
-	}
-	if options.discovery != nil {
-    	// 如果存在服务发现配置，就配置 grpc 的 Resolvers
-		grpcOpts = append(grpcOpts,
-			grpc.WithResolvers(
-				discovery.NewBuilder(
-					options.discovery,
-					discovery.WithInsecure(insecure),
-					discovery.WithLogger(options.logger),
-				)))
-	}
-	if insecure {
-    	// 跳过证书验证
-		grpcOpts = append(grpcOpts, grpc.WithTransportCredentials(grpcinsecure.NewCredentials()))
-	}
-	// TLS 配置
-	if options.tlsConf != nil {
-		grpcOpts = append(grpcOpts, grpc.WithTransportCredentials(credentials.NewTLS(options.tlsConf)))
-	}
-	if len(options.grpcOpts) > 0 {
-		grpcOpts = append(grpcOpts, options.grpcOpts...)
-	}
-	return grpc.DialContext(ctx, options.endpoint, grpcOpts...)
-}
-```
-
-#### `unaryClientInterceptor()`
+直接连接可使用 gRPC 支持的 target，例如 `dns:///host:port`。使用 Kratos 服务
+发现时，传入 `registry.Discovery` 并使用 `discovery:///service-name`：
 
 ```go
-func unaryClientInterceptor(ms []middleware.Middleware, timeout time.Duration) grpc.UnaryClientInterceptor {
-	return func(ctx context.Context, method string, req, reply interface{}, cc *grpc.ClientConn, invoker grpc.UnaryInvoker, opts ...grpc.CallOption) error {
-    	// 把一些信息绑定到 ctx 上
-		ctx = transport.NewClientContext(ctx, &Transport{
-			endpoint:  cc.Target(),
-			operation: method,
-			reqHeader: headerCarrier{},
-			filters:   filters,
-		})
-		if timeout > 0 {
-      		// timeout 如果大于 0，就重新设置一下 ctx 的超时时间
-			var cancel context.CancelFunc
-			ctx, cancel = context.WithTimeout(ctx, timeout)
-			defer cancel()
-		}
-    	// 中间件处理
-		h := func(ctx context.Context, req interface{}) (interface{}, error) {
-			if tr, ok := transport.FromClientContext(ctx); ok {
-				header := tr.RequestHeader()
-				keys := header.Keys()
-				keyvals := make([]string, 0, len(keys))
-				for _, k := range keys {
-					keyvals = append(keyvals, k, header.Get(k))
-				}
-				ctx = grpcmd.AppendToOutgoingContext(ctx, keyvals...)
-			}
-			return reply, invoker(ctx, method, req, reply, cc, opts...)
-		}
-		if len(ms) > 0 {
-			h = middleware.Chain(ms...)(h)
-		}
-		_, err := h(ctx, req)
-		return err
-	}
-}
-```
-
-### 使用方式
-
-#### 创建客户端连接
-
-```go
-conn, err := grpc.DialInsecure(
-		context.Background(),
-		grpc.WithEndpoint("127.0.0.1:9000"),
-	)
-```
-
-#### 使用中间件
-
-```go
-conn, err := grpc.DialInsecure(
-	context.Background(),
-	grpc.WithEndpoint("127.0.0.1:9000"),
-	grpc.WithTimeout(3600 * time.Second),
-  	grpc.WithMiddleware(
-		  recovery.Recovery(),
-		  validate.Validator(),
-	),
+conn, err := grpc.NewClient(ctx,
+	grpc.WithEndpoint("discovery:///todo"),
+	grpc.WithDiscovery(discovery),
+	grpc.WithNodeFilter(selector.Version("v3.0.0")),
 )
 ```
 
-#### 使用服务发现
+客户端默认启用 gRPC 健康检查；目标服务没有实现时使用
+`grpc.WithHealthCheck(false)`。`WithSubset` 限制发现子集，`WithNodeFilter` 在
+selector 选择前过滤候选节点。
 
-```go
-conn, err := grpc.DialInsecure(
-	context.Background(),
-	grpc.WithEndpoint("discovery:///helloworld"),
-	grpc.WithDiscovery(r),
-)
-```
+## 元数据与流式行为
 
-## References
+安装 `metadata.Client()` 和 `metadata.Server()` 来传播 Kratos 元数据，传输适配器
+会在它与原生 gRPC metadata 之间转换。公共中间件应使用
+`transport.FromServerContext` 或 `transport.FromClientContext`，避免耦合 gRPC
+内部类型。
 
-* https://www.grpc.io/
-* https://www.grpc.io/docs/languages/go/quickstart/
-* https://github.com/grpc/grpc-go
+流式方法需要明确处理取消、截止时间和清理。关闭客户端连接会结束该连接上的所有
+流；服务端优雅停止会等待活动 RPC，直到应用的停止 context 到期。

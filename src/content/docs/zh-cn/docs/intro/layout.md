@@ -1,7 +1,7 @@
 ---
 id: layout
 title: 项目结构
-description: Kratos 项目工程骨架，Go 项目目录结构，快速创建工程项目
+description: Kratos v3 项目模板的目录、分层边界、生成和测试流程
 keywords:
   - Go
   - Kratos
@@ -12,80 +12,56 @@ keywords:
   - gRPC
   - HTTP
 ---
-我们创建了 [kratos-layout](https://github.com/go-kratos/kratos-layout) 作为使用 `kratos new` 新建项目时所使用结构，其中包括了开发过程中所需的配套工具链( Makefile 等)，便于开发者更高效地维护整个项目，本项目亦可作为使用 Kratos 构建微服务的工程化最佳实践的参考。
+[Kratos 项目模板](https://github.com/go-kratos/kratos-layout)提供了一个 v3 服务的
+参考工程结构：protobuf-first API、HTTP/gRPC 服务端和生成式依赖注入。该结构是模板
+约定，并非 Kratos runtime 强制要求的 API。
 
-<img src="/images/ddd.png" alt="kratos ddd" width="500px" />
+## 目录
 
-使用如下命令即可基于 kratos-layout 创建项目：
-
-```shell
-kratos new <project-name>
+```text
+api/<domain>/<version>/  Protobuf sources and generated stubs; public contract
+cmd/<app>/               Entrypoint, `main.go`, and Wire injector
+configs/                 Runtime configuration; do not commit secrets
+internal/conf/           Configuration proto and generated Go bindings
+internal/server/         HTTP and gRPC server construction and registration
+internal/service/        Transport adapters, normally one file per resource
+internal/biz/            Domain objects, usecases, repository interfaces, errors
+internal/data/           Repository implementations and storage clients
+buf.yaml                 Buf modules and remote protobuf dependencies
 ```
 
-生成的目录结构如下：
+`*.pb.go`、`*_grpc.pb.go`、`*_http.pb.go` 和 `wire_gen.go` 均为生成产物。应修改
+对应 proto 或 injector 输入后重新生成，而不是手动编辑生成文件。
 
-```
-  .
-├── Dockerfile  
-├── LICENSE
-├── Makefile  
-├── README.md
-├── api // 下面维护了微服务使用的proto文件以及根据它们所生成的go文件
-│   └── helloworld
-│       └── v1
-│           ├── error_reason.pb.go
-│           ├── error_reason.proto
-│           ├── error_reason.swagger.json
-│           ├── greeter.pb.go
-│           ├── greeter.proto
-│           ├── greeter.swagger.json
-│           ├── greeter_grpc.pb.go
-│           └── greeter_http.pb.go
-├── cmd  // 整个项目启动的入口文件
-│   └── server
-│       ├── main.go
-│       ├── wire.go  // 我们使用wire来维护依赖注入
-│       └── wire_gen.go
-├── configs  // 这里通常维护一些本地调试用的样例配置文件
-│   └── config.yaml
-├── generate.go
-├── go.mod
-├── go.sum
-├── internal  // 该服务所有不对外暴露的代码，通常的业务逻辑都在这下面，使用internal避免错误引用
-│   ├── biz   // 业务逻辑的组装层，类似 DDD 的 domain 层，data 类似 DDD 的 repo，而 repo 接口在这里定义，使用依赖倒置的原则。
-│   │   ├── README.md
-│   │   ├── biz.go
-│   │   └── greeter.go
-│   ├── conf  // 内部使用的config的结构定义，使用proto格式生成
-│   │   ├── conf.pb.go
-│   │   └── conf.proto
-│   ├── data  // 业务数据访问，包含 cache、db 等封装，实现了 biz 的 repo 接口。我们可能会把 data 与 dao 混淆在一起，data 偏重业务的含义，它所要做的是将领域对象重新拿出来，我们去掉了 DDD 的 infra层。
-│   │   ├── README.md
-│   │   ├── data.go
-│   │   └── greeter.go
-│   ├── server  // http和grpc实例的创建和配置
-│   │   ├── grpc.go
-│   │   ├── http.go
-│   │   └── server.go
-│   └── service  // 实现了 api 定义的服务层，类似 DDD 的 application 层，处理 DTO 到 biz 领域实体的转换(DTO -> DO)，同时协同各类 biz 交互，但是不应处理复杂逻辑
-│       ├── README.md
-│       ├── greeter.go
-│       └── service.go
-└── third_party  // api 依赖的第三方proto
-    ├── README.md
-    ├── google
-    │   └── api
-    │       ├── annotations.proto
-    │       ├── http.proto
-    │       └── httpbody.proto
-    └── validate
-        ├── README.md
-        └── validate.proto
+## 分层边界
+
+模板明确区分三种模型：
+
+```text
+client -> DTO -> service -> DO -> biz -> DO -> data -> PO -> storage
 ```
 
----
+- `service` 在 transport 边界转换 DTO 并调用 usecase；可 import `api/...` 和
+  `biz`，不能 import `data` 或存储客户端。
+- `biz` 持有领域对象、usecase、业务错误和仓储接口；不依赖 `service` 或 `data`。
+- `data` 实现仓储接口，持有持久化对象和存储客户端细节，并负责 DO/PO 转换；不能
+  import API DTO 或 `service`。
+- `cmd` 通过 Wire 组合各层。`server` 构造 transport 并注册服务，不处理 transport
+  转换或业务规则。
 
-### 推荐阅读
+这些模板约定让存储与 transport 的变化可以在局部测试，而不会将依赖扩散到应用各层。
 
-* [Go 工程化 - Project Layout 最佳实践](https://go-kratos.dev/blog/go-project-layout)
-* [Kratos 学习笔记 - 通过 layout 简单分析应用是如何跑起来的](https://go-kratos.dev/blog/go-layout-operation-process)
+## 生成和测试
+
+模板提供以下工作流：
+
+```bash
+make init    # install Buf and Wire
+make api     # generate API bindings and OpenAPI output
+make config  # generate configuration bindings
+make all     # run all generation, Wire, and go mod tidy
+go test ./...
+```
+
+测试与被测包放在一起。模板建议在 `service` 和 `biz` 测试中使用假的 usecase 或
+仓储实现，而在 `data` 中测试真实的存储边界实现。

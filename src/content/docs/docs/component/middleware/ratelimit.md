@@ -1,66 +1,39 @@
 ---
 id: ratelimit
 title: Rate Limiter
-keywords:
-  - Go
-  - Kratos
-  - Toolkit
-  - Framework
-  - Microservices
-  - Protobuf
-  - gRPC
-  - HTTP
 ---
 
-Rate limiter middleware for server-side traffic control, with [bbr limiter](https://github.com/go-kratos/aegis/tree/main/ratelimit/bbr) algorithm implemented by default.
-
-### Configuration
-
-#### `WithLimiter`
-
-Used to replace the default limiter algorithm
+`ratelimit.Server()` performs server-side admission control. When its limiter rejects a request, it returns `ratelimit.ErrLimitExceed` (HTTP 429). For admitted calls, the middleware invokes the limiter's completion function with the handler error after the handler returns.
 
 ```go
-// WithLimiter set Limiter implementation,
-// default is bbr limiter
-func WithLimiter(limiter ratelimit.Limiter) Option {
-    return func(o *options) {
-        o.limiter = limiter
-    }
-}
+srv := http.NewServer(http.Middleware(ratelimit.Server()))
 ```
 
-The custom limiter needs to implement the `Limiter` interface of [aegis/ratelimit](https://github.com/go-kratos/aegis/blob/main/ratelimit/ratelimit.go).
+The default limiter is implemented inside Kratos. Supply your own `ratelimit.Limiter` with `ratelimit.WithLimiter(limiter)` when the default policy does not fit the service. A limiter must implement the exported `Limiter` contract, including its `Allow` completion callback.
 
 ```go
-// Limiter is a rate limiter.
 type Limiter interface {
-    Allow() (DoneFunc, error)
+	Allow() (DoneFunc, error)
+}
+
+type DoneInfo struct {
+	Err error
 }
 ```
 
-### Usage
+`Allow` runs before the handler. Any non-nil error rejects the request and the
+middleware returns its stable `RATELIMIT` error rather than exposing the
+limiter's internal error. On admission, return a non-nil completion function;
+Kratos calls it once with the handler result after the request finishes.
 
-#### Use rate limiter in Server
+## Apply and observe limits
 
-```go
-var opts = []http.ServerOption{
-    http.Middleware(
-        // default is bbr limiter
-        ratelimit.Server(),
-        // custom limiter
-        //ratelimit.Server(ratelimit.WithLimiter(limiter)),
-    ),
-}
+Place the limiter near the outside of the server middleware chain so rejected requests do not consume expensive work. Use `selector.Server(...)` when only selected operations require a different policy. Return the standard limit error to preserve predictable HTTP/gRPC mapping instead of writing a transport-specific rejection.
 
-srv := http.NewServer(opts...)
-```
+The completion callback receives handler outcome information. A custom limiter can use it for adaptive policy, but it must be safe under concurrent requests and must not block request completion indefinitely. Capacity limits remain a deployment and service-design decision.
 
-#### Trigger rate limiter
-
-When the rate limiter is triggered, the current request is rejected directly and error `ErrLimitExceed` will be returned, as defined below:
-
-```go
-// ErrLimitExceed is service unavailable due to rate limit exceeded.
-var ErrLimitExceed = errors.New(429, "RATELIMIT", "service unavailable due to rate limit exceeded")
-```
+The default is an adaptive BBR-style limiter owned by the framework. Its
+internal tuning is not a public configuration API. Use `WithLimiter` when the
+service requires a fixed quota, distributed quota, tenant-aware policy, or
+provider-specific implementation, and expose rejection counts through the
+application's metrics system.

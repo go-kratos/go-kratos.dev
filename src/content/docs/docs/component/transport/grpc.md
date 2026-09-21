@@ -1,357 +1,115 @@
 ---
 id: grpc
 title: gRPC
-keywords:
-  - Go
-  - Kratos
-  - Toolkit
-  - Framework
-  - Microservices
-  - Protobuf
-  - gRPC
-  - HTTP
 ---
-Our transporter/grpc is developed upon [gRPC](https://www.grpc.io/), and implements `Transporter` interface. You could use it for the communication between services on gRPC protocol.
 
-## Server
+Kratos gRPC transport wraps `google.golang.org/grpc` with the application
+lifecycle, Kratos middleware, discovery, balancing, and consistent error and
+metadata conversion. Generated protobuf service interfaces remain ordinary
+gRPC interfaces.
 
-### Options
+## Create a server
 
-#### `Network(network string) ServerOption `
-
-To set communication protocol such as tcp.
-
-#### `Address(addr string) ServerOption`
-
-To set server's listening address.
-
-#### `Timeout(timeout time.Duration) ServerOption`
-
-To set the server-side timeout.
-
-#### `Logger(logger log.Logger) ServerOption`
-
-To set logger.
-
-#### `Middleware(m ...middleware.Middleware) ServerOption`
-
-To set middleware for gRPC server.
-
-#### `TLSConfig(c *tls.Config) ServerOption`
-
-To set TLS config.
-
-#### `UnaryInterceptor(in ...grpc.UnaryServerInterceptor) ServerOption`
-
-To set interceptors for gRPC server.
-
-#### `StreamInterceptor(in ...grpc.StreamServerInterceptor) ServerOption`
-
-To set stream interceptors for gRPC server.
-
-#### `Options(opts ...grpc.ServerOption) ServerOption`
-
-To set some extra `grpc.ServerOption`.
-
-### Implementation Details
-
-#### `NewServer()`
-```go
-func NewServer(opts ...ServerOption) *Server {
-  	// grpc server default configuration
-	srv := &Server{
-		network: "tcp",
-		address: ":0",
-		timeout: 1 * time.Second,
-		health:  health.NewServer(),
-		log:     log.NewHelper(log.GetLogger()),
-	}
-  	// apply opts
-	for _, o := range opts {
-		o(srv)
-	}
-  	// convert middleware to grpc interceptor
-	unaryInts := []grpc.UnaryServerInterceptor{
-		srv.unaryServerInterceptor(),
-	}
-	streamInts := []grpc.StreamServerInterceptor{
-		srv.streamServerInterceptor(),
-	}
-
-	if len(srv.unaryInts) > 0 {
-		unaryInts = append(unaryInts, srv.unaryInts...)
-	}
-	if len(srv.streamInts) > 0 {
-		streamInts = append(streamInts, srv.streamInts...)
-	}
-
-  	// convert UnaryInterceptor and StreamInterceptor to ServerOption
-	var grpcOpts = []grpc.ServerOption{
-		grpc.ChainUnaryInterceptor(unaryInts...),
-		grpc.ChainStreamInterceptor(streamInts...),
-	}
-	// convert LTS config to ServerOption
-	if srv.tlsConf != nil {
-		grpcOpts = append(grpcOpts, grpc.Creds(credentials.NewTLS(srv.tlsConf)))
-	}
-	// convert srv.grpcOpts to ServerOption
-	if len(srv.grpcOpts) > 0 {
-		grpcOpts = append(grpcOpts, srv.grpcOpts...)
-	}
-  	// create grpc server
-	srv.Server = grpc.NewServer(grpcOpts...)
-  	// create metadata server
-	srv.metadata = apimd.NewServer(srv.Server)
-	// set lis and endpoint
-	srv.err = srv.listenAndEndpoint()
-	// register these internal API
-	grpc_health_v1.RegisterHealthServer(srv.Server, srv.health)
-	apimd.RegisterMetadataServer(srv.Server, srv.metadata)
-	reflection.Register(srv.Server)
-	return srv
-}
-```
-
-#### `unaryServerInterceptor()`
+Construct the server and register generated services in `internal/server`.
 
 ```go
-func (s *Server) unaryServerInterceptor() grpc.UnaryServerInterceptor {
-	return func(ctx context.Context, req interface{}, info *grpc.UnaryServerInfo, handler grpc.UnaryHandler) (interface{}, error) {
-    	// merge two ctx
-		ctx, cancel := ic.Merge(ctx, s.ctx)
-		defer cancel()
-    	// get metadata from ctx
-		md, _ := grpcmd.FromIncomingContext(ctx)
-    	// bind some information into ctx
-		replyHeader := grpcmd.MD{}
-		ctx = transport.NewServerContext(ctx, &Transport{
-			endpoint:    s.endpoint.String(),
-			operation:   info.FullMethod,
-			reqHeader:   headerCarrier(md),
-			replyHeader: headerCarrier(replyHeader),
-		})
-    	// set timeout
-		if s.timeout > 0 {
-			ctx, cancel = context.WithTimeout(ctx, s.timeout)
-			defer cancel()
-		}
-    	// middleware
-		h := func(ctx context.Context, req interface{}) (interface{}, error) {
-			return handler(ctx, req)
-		}
-		if len(s.middleware) > 0 {
-			h = middleware.Chain(s.middleware...)(h)
-		}
-		// execute handler
-		reply, err := h(ctx, req)
-		if len(replyHeader) > 0 {
-			_ = grpc.SetHeader(ctx, replyHeader)
-		}
-		return reply, err
-	}
-}
-```
-### Usage
-
-These are some basic usage of gRPC, you could refer to [gRPC Docs](https://pkg.go.dev/google.golang.org/grpc) for advanced examples.
-
-#### Register gRPC Server
-```go
-gs := grpc.NewServer()
-app := kratos.New(
-	kratos.Name("kratos"),
-	kratos.Version("v1.0.0"),
-	kratos.Server(gs),
-)
-```
-
-#### Set middleware in gRPC Server
-```go
-grpcSrv := grpc.NewServer(
+srv := grpc.NewServer(
 	grpc.Address(":9000"),
+	grpc.Timeout(time.Second),
 	grpc.Middleware(
-		logging.Server(),
+		recovery.Recovery(),
+		validate.Validator(),
 	),
 )
+v1.RegisterTodoServiceServer(srv, todo)
 ```
 
-#### Process Request in gRPC Middleware
+The server defaults to TCP, address `:0`, and a one-second unary request
+timeout. `TLSConfig` installs transport credentials. `Listener` accepts an
+existing listener and `Endpoint` overrides the endpoint used for registration.
+`Options` passes native `grpc.ServerOption` values.
+
+`Middleware` applies to unary RPCs. Use `StreamMiddleware` for streaming RPCs;
+the stream context lasts for the stream lifetime and is not given the unary
+timeout automatically. `UnaryInterceptor` and `StreamInterceptor` append native
+gRPC interceptors after the Kratos interceptor.
+
+## Built-in gRPC services
+
+By default, the Kratos server registers the standard gRPC health service,
+reflection, and gRPC admin services such as channelz. `DisableReflection`
+removes reflection. `CustomHealth` prevents automatic health registration so
+the application can register its own health implementation. The admin cleanup
+runs when the server stops.
+
+During `Start`, the built-in health service changes to `SERVING`; during `Stop`
+it changes to `NOT_SERVING`. Shutdown first attempts `GracefulStop` and calls
+`Stop` if the supplied shutdown context expires.
+
+## Implement and register services
+
+Define unary or streaming RPCs in protobuf, run `make api`, implement the
+generated server interface in `internal/service`, and register it once. A
+request reaches middleware with the full operation name, for example
+`/todo.v1.TodoService/GetTodo`.
+
+Kratos errors returned by a handler are converted to gRPC status errors.
+Framework clients convert received status errors back to Kratos errors, keeping
+the code, reason, message, and metadata carried across the wire.
+
+## Create a client
+
+`grpc.NewClient` returns a `*grpc.ClientConn`. It uses a two-second unary timeout
+by default, configures weighted round-robin selection, and starts connecting
+before it returns.
+
 ```go
-if info, ok := transport.FromServerContext(ctx); ok {
-  kind = info.Kind().String()
-  operation = info.Operation()
+conn, err := grpc.NewClient(ctx,
+	grpc.WithEndpoint("dns:///127.0.0.1:9000"),
+	grpc.WithTimeout(2*time.Second),
+	grpc.WithMiddleware(logging.Client(logger)),
+)
+if err != nil {
+	return err
 }
+defer conn.Close()
+
+client := v1.NewTodoServiceClient(conn)
+todo, err := client.GetTodo(ctx, &v1.GetTodoRequest{Id: id})
 ```
 
-## Client
+Without `WithTLSConfig`, Kratos installs gRPC insecure credentials. Supplying a
+TLS configuration enables TLS. `WithOptions` adds native `grpc.DialOption`
+values, while unary and stream interceptor options append native interceptors.
+Use `WithStreamMiddleware` for generated stream clients.
 
-### Options
+## Discovery and balancing
 
-#### `WithEndpoint(endpoint string) ClientOption` 
-
-To set the endpoint which the client will connect to.
-
-#### `WithTimeout(timeout time.Duration) ClientOption`
-
-To set the client-side timeout.
-
-#### `WithMiddleware(m ...middleware.Middleware) ClientOption`
-
-To set middleware.
-
-#### `WithDiscovery(d registry.Discovery) ClientOption`
-
-To set the discovery for gRPC client.
-
-#### `WithTLSConfig(c *tls.Config) ClientOption`
-
-To set TLS config.
-
-#### `WithUnaryInterceptor(in ...grpc.UnaryClientInterceptor) ClientOption`
-
-To set interceptors for gRPC client.
-
-#### `WithOptions(opts ...grpc.DialOption) ClientOption`
-
-To set some extra `grpc.ClientOption`.
-
-#### `WithHealthCheck(healthCheck bool) ClientOption`
-
-To enable or disable the health check.
-
-#### `WithNodeFilter(filters ...selector.NodeFilter) ClientOption`
-
-Set filtering to exclude nodes that should not be requested.
-
-### Implementation Details
-
-#### `dial()`
-```go
-func dial(ctx context.Context, insecure bool, opts ...ClientOption) (*grpc.ClientConn, error) {
-	// default options
-  options := clientOptions{
-		timeout:      2000 * time.Millisecond,
-		balancerName: wrr.Name,
-		logger:       log.GetLogger(),
-	}
-  	// apply opts
-	for _, o := range opts {
-		o(&options)
-	}
-  	// convert middleware to grpc interceptor
-	ints := []grpc.UnaryClientInterceptor{
-		unaryClientInterceptor(options.middleware, options.timeout, options.filters),
-	}
-	if len(options.ints) > 0 {
-		ints = append(ints, options.ints...)
-	}
-	// client side balancer
-	grpcOpts := []grpc.DialOption{
-		grpc.WithDefaultServiceConfig(fmt.Sprintf(`{"LoadBalancingPolicy": "%s"}`, options.balancerName)),
-		grpc.WithChainUnaryInterceptor(ints...),
-	}
-	if options.discovery != nil {
-    	// To use service discovery
-		grpcOpts = append(grpcOpts,
-			grpc.WithResolvers(
-				discovery.NewBuilder(
-					options.discovery,
-					discovery.WithInsecure(insecure),
-					discovery.WithLogger(options.logger),
-				)))
-	}
-	if insecure {
-    	// to disable transport security for connection
-		grpcOpts = append(grpcOpts, grpc.WithTransportCredentials(grpcinsecure.NewCredentials()))
-	}
-	// TLS config
-	if options.tlsConf != nil {
-		grpcOpts = append(grpcOpts, grpc.WithTransportCredentials(credentials.NewTLS(options.tlsConf)))
-	}
-	if len(options.grpcOpts) > 0 {
-		grpcOpts = append(grpcOpts, options.grpcOpts...)
-	}
-	return grpc.DialContext(ctx, options.endpoint, grpcOpts...)
-}
-```
-
-#### `unaryClientInterceptor()`
+For a direct connection, use a target supported by gRPC, such as
+`dns:///host:port`. For Kratos service discovery, pass a `registry.Discovery`
+and use `discovery:///service-name`:
 
 ```go
-func unaryClientInterceptor(ms []middleware.Middleware, timeout time.Duration) grpc.UnaryClientInterceptor {
-	return func(ctx context.Context, method string, req, reply interface{}, cc *grpc.ClientConn, invoker grpc.UnaryInvoker, opts ...grpc.CallOption) error {
-    	// bind some information into ctx
-		ctx = transport.NewClientContext(ctx, &Transport{
-			endpoint:  cc.Target(),
-			operation: method,
-			reqHeader: headerCarrier{},
-			filters:   filters,
-		})
-		if timeout > 0 {
-      		// set the timeout
-			var cancel context.CancelFunc
-			ctx, cancel = context.WithTimeout(ctx, timeout)
-			defer cancel()
-		}
-    	// middleware 
-		h := func(ctx context.Context, req interface{}) (interface{}, error) {
-			if tr, ok := transport.FromClientContext(ctx); ok {
-				header := tr.RequestHeader()
-				keys := header.Keys()
-				keyvals := make([]string, 0, len(keys))
-				for _, k := range keys {
-					keyvals = append(keyvals, k, header.Get(k))
-				}
-				ctx = grpcmd.AppendToOutgoingContext(ctx, keyvals...)
-			}
-			return reply, invoker(ctx, method, req, reply, cc, opts...)
-		}
-		if len(ms) > 0 {
-			h = middleware.Chain(ms...)(h)
-		}
-		_, err := h(ctx, req)
-		return err
-	}
-}
-```
-
-### Usage
-
-#### Client Connection
-
-```go
-	conn, err := grpc.DialInsecure(
-		context.Background(),
-		grpc.WithEndpoint("127.0.0.1:9000"),
-	)
-```
-
-#### Middleware
-
-```go
-conn, err := grpc.DialInsecure(
-	context.Background(),
-	grpc.WithEndpoint("127.0.0.1:9000"),
-	grpc.WithTimeout(3600 * time.Second),
-  	grpc.WithMiddleware(
-		  recovery.Recovery(),
-		  validate.Validator(),
-	),
+conn, err := grpc.NewClient(ctx,
+	grpc.WithEndpoint("discovery:///todo"),
+	grpc.WithDiscovery(discovery),
+	grpc.WithNodeFilter(selector.Version("v3.0.0")),
 )
 ```
 
-#### Service Discovery
+The client enables gRPC health checking by default. Use
+`grpc.WithHealthCheck(false)` when the selected service does not implement it.
+`WithSubset` limits the discovery subset and `WithNodeFilter` filters candidate
+nodes before the selector chooses one.
 
-```go
-conn, err := grpc.DialInsecure(
-	context.Background(),
-	grpc.WithEndpoint("discovery:///helloworld"),
-	grpc.WithDiscovery(r),
-)
-```
+## Metadata and stream behavior
 
-## References
+Install `metadata.Client()` and `metadata.Server()` to propagate Kratos
+metadata. The transport adapters translate it to and from native gRPC metadata.
+Use `transport.FromServerContext` or `transport.FromClientContext` in common
+middleware instead of coupling it to gRPC internals.
 
-* https://www.grpc.io/
-* https://www.grpc.io/docs/languages/go/quickstart/
-* https://github.com/grpc/grpc-go
+For streaming methods, arrange cancellation, deadlines, and cleanup explicitly.
+Closing the client connection ends all streams on that connection; graceful
+server shutdown waits for active RPCs until the application shutdown context
+expires.

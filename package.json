@@ -7,7 +7,9 @@
     "start": "astro dev",
     "build": "astro build",
     "preview": "astro preview",
-    "astro": "astro"
+    "astro": "astro",
+    "docs:verify": "bash scripts/verify-kratos-docs.sh",
+    "examples:verify": "cd examples/docs-v3 && GOTOOLCHAIN=go1.25.7 go test ./... && GOTOOLCHAIN=go1.25.7 go vet ./..."
   },
   "dependencies": {
     "@astrojs/sitemap": "^3.6.0",

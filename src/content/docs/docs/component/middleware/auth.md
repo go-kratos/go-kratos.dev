@@ -1,159 +1,59 @@
 ---
 id: auth
 title: Authentication
-keywords:
-  - Go
-  - Kratos
-  - Toolkit
-  - Framework
-  - Microservices
-  - Protobuf
-  - gRPC
-  - HTTP
-  - Auth
 ---
 
-`Auth` middleware is used to authenticate requests. Only those authenticated could be processed.
-At the same time, one can setup white list with `selector` middleware.
+Kratos v3 has no core JWT middleware. Use the maintained contrib module:
+
+```bash
+go get github.com/go-kratos/kratos/contrib/middleware/jwt/v3
+```
+
+Import its `jwt` package and add its server or client middleware to the matching HTTP or gRPC transport `Middleware` option. Configure the signing key function and claims according to the contrib module's exported options. Claims extracted by successful authentication belong to the request context.
 
 ## Usage
 
-### server
-
-> User should provider a `jwt.Keyfunc` as parameter.
-
-- http
+Install the module's server middleware in the HTTP or gRPC server chain. Configure its key function, expected signing method, and fresh claims value according to the contrib package API. A claims factory must return a new value for each request if the decoder writes into it.
 
 ```go
-httpSrv := http.NewServer(
-	http.Address(":8000"),
-	http.Middleware(
-		jwt.Server(func(token *jwtv4.Token) (interface{}, error) {
-			return []byte(testKey), nil
-		}),
-	),
+import (
+	jwtv5 "github.com/golang-jwt/jwt/v5"
+	kratosjwt "github.com/go-kratos/kratos/contrib/middleware/jwt/v3"
 )
-```
 
-- grpc
-
-```go
-grpcSrv := grpc.NewServer(
-	grpc.Address(":9000"),
-	grpc.Middleware(
-		jwt.Server(func(token *jwtv4.Token) (interface{}, error) {
-			return []byte(testKey), nil
-		}),
+srv := http.NewServer(http.Middleware(
+	kratosjwt.Server(
+		func(*jwtv5.Token) (any, error) { return []byte(signingKey), nil },
+		kratosjwt.WithSigningMethod(jwtv5.SigningMethodHS256),
+		kratosjwt.WithClaims(func() jwtv5.Claims { return &jwtv5.RegisteredClaims{} }),
 	),
-)
+))
 ```
 
-### client
+JWT verifies a credential; application authorization remains application code. Use `selector.Server(...)` to exclude explicitly public RPC operations from authentication. Do not copy v2 imports from `middleware/auth/jwt`: that core package is not part of v3.
 
-> User should provider a `jwt.Keyfunc` as parameter.
+## Server and client placement
 
-- http
+Install the JWT server middleware on incoming HTTP or gRPC transports. Install the client middleware only when a service must issue credentials to a trusted downstream service. Keep token issuance, key rotation, issuer/audience policy, and authorization decisions in application-owned code and configuration.
+
+Protect explicit RPC operations with `selector.Server(...)` rather than relying on an HTTP route match: the selector uses canonical RPC operation names for both transports. Public health and login methods should be intentionally allowlisted and covered by integration tests.
+
+## Read claims and allow public operations
+
+After successful authentication, read claims through the context helper exported by the JWT contrib module, then type-assert to the claims model configured by the application. Do not use claims before checking that extraction succeeded. Wrap the server middleware in `selector.Server(...)` to leave only an explicit operation allowlist public.
 
 ```go
-conn, err := http.NewClient(
-	context.Background(),
-	http.WithEndpoint("127.0.0.1:8000"),
-	http.WithMiddleware(
-		jwt.Client(func(token *jwtv4.Token) (interface{}, error) {
-			return []byte(serviceTestKey), nil
-		}),
-	),
-)
+claims, ok := kratosjwt.FromContext(ctx)
+if !ok {
+	return nil, errors.Unauthorized("UNAUTHENTICATED", "missing claims")
+}
+registered, ok := claims.(*jwtv5.RegisteredClaims)
 ```
 
-- grpc
+## Issue tokens
 
-```go
-con, _ := grpc.DialInsecure(
-	context.Background(),
-	grpc.WithEndpoint("xxx.xxx.domain"),
-	grpc.WithMiddleware(
-		jwt.Client(func(token *jwtv4.Token) (interface{}, error) {
-			return []byte(serviceTestKey), nil
-		}),
-	),
-)
-```
+Kratos does not issue tokens for an application. Token creation, key ownership, expiration, audience, and refresh policy are application responsibilities. The caller and accepting service must agree on the signing method, verification key, and claims model.
 
-### Options
+## Security considerations
 
-#### `WithSigningMethod()`
-
-Used to set the sigining method.Works for `server` and `client`. 
-
-For examples：
-
-```go
-import jwtv4 "github.com/golang-jwt/jwt/v4"
-
-jwt.WithSigningMethod(jwtv4.SigningMethodHS256)
-```
-
-#### `WithClaims()`
-
-Used to set the `claims`. 
-
-For examples：
-
-- For `client`:
-
-```go
-claims := &jwtv4.StandardClaims{}
-jwt.WithClaims(func()jwtv4.Claims{return claims})
-```
-
-- For `server`:
-
-> Caution：`server` setting is different to `client`. `server` must return a new object in order to avoid concurrent write problems.
-
-```go
-jwt.WithClaims(func()jwtv4.Claims{return &jwtv4.StandardClaims{}})
-```
-
-
-## Example
-
-A simple [example](https://github.com/go-kratos/kratos/blob/9743ad8d32890258177e0335d1a0741e9d45833e/examples/auth/jwt/main.go), includes the use of `server` and `client`.
-
-In particular, `client` is set to visit a service listening the port 9001. And that service should set a key as the same as the client one named `serviceTestKey`.
-
-```golang
-con, _ := grpc.DialInsecure(
-	context.Background(),
-	grpc.WithEndpoint("dns:///127.0.0.1:9001"), // Services for local port 9001
-	grpc.WithMiddleware(
-		jwt.Client(func(token *jwtv4.Token) (interface{}, error) {
-			return []byte(serviceTestKey), nil
-		}),
-	),
-)
-```
-## Extract Users' Information
-
-In summary, one could get users' information by calling interface `jwt.FromContext(ctx)`.
-
-Under the hook, after processing by the middleware, the `claims` information would be stored into the context. One should assert the `claims` as the type that is used to create the token before using it.
-
-Source code：
-
-```golang
-func FromContext(ctx context.Context) (token jwt.Claims, ok bool)
-```
-
-## White List Demo
-
-With `selector` middleware, one could setup white list. Ref: https://github.com/go-kratos/beer-shop/blob/a29eae57a9baeae9969e9a7d418ff677cf494a21/app/shop/interface/internal/server/http.go#L41.
-
-## Generate `JWT Token`
-
-> Caution：The generated `JWT Token` is only used to the authentication between the client and the service. There are no interface that generated token for other use case. So user should write thire own code to satify thire use case. 
-
-There only one thing that the user should guarantee: client and service should use same sigining method and key. 
-The external information, such as user information, could be set with `WithClaims()` option.
-
-Ref: https://github.com/go-kratos/kratos/blob/9e66ac2f5bcb9ab18d9b8d378c5b3233c7bb0a73/middleware/auth/jwt/jwt.go#L148
+Use short-lived tokens, validate the expected signing method and claims, and do not log a raw token or claims containing credentials. A valid JWT only establishes the claims chosen by the issuer; check permissions in the business boundary before performing a protected action.

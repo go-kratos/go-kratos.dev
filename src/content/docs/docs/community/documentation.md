@@ -1,56 +1,89 @@
 ---
 id: documentation
 title: Documentation Guide
-description: Documentation Guide
-keywords:
-  - Go
-  - Kratos
-  - Toolkit
-  - Framework
-  - Microservices
-  - Protobuf
-  - gRPC
-  - HTTP
+description: How to edit and check the Kratos documentation site
 ---
 
-This document is maintained in the repository [go-kratos/go-kratos.dev](https://github.com/go-kratos/go-kratos.dev) using the [docusaurus](https://docusaurus.io/) as a document system. When repository content is updated, Github Actions will be automatically triggered to build and deploy documents.
+The documentation site is maintained in
+[go-kratos/go-kratos.dev](https://github.com/go-kratos/go-kratos.dev) and built
+with Astro and Starlight. Framework documentation has matching English and
+Simplified Chinese trees.
 
-## Add/modify Documents
+## Set up the site
 
-First fork document repository, and clone to local.
+Use Node 20 and pnpm 8, matching the deployment workflow:
 
-You can then add or modify the appropriate documents under the corresponding subdirectory in the docs directory. The document format is Markdown and supports some extended syntax, as well as specifically supported syntax
-[Docusaurus: Markdown Features](https://docusaurus.io/docs/markdown-features)
+```bash
+pnpm install --frozen-lockfile
+pnpm dev
+```
 
-Note the following:
+Edit English pages under `src/content/docs/docs` and Chinese pages under
+`src/content/docs/zh-cn/docs`. The content collection is configured in
+`src/content.config.ts`.
 
-- Subheadings of the body of the document should use a second or lower level of the title, i.e. `##` or `###` and so on, to avoid using a level 1 title.
-- For other pages within the document, references can be made directly by something like`[document in a subfolder](subfolder/doc3.md)`
-- If you add a new document, follow the instructions below to modify the sidebar so that the document can appear in the sidebar.
+## Add or change a page
 
-After committing to Github, create a Pull Request to the 'main' branch, waiting for merging by the maintenance team.
+Keep the same relative path and frontmatter `id` in both languages. For example:
 
-## Modify the sidebar
+```text
+src/content/docs/docs/component/application.md
+src/content/docs/zh-cn/docs/component/application.md
+```
 
-The entries for the sidebar are maintained in the file [sidebars.js](https://github.com/go-kratos/go-kratos.dev/blob/main/sidebars.js) If you need to modify the sidebar, edit this file.
-Put subpath of `docs` and doc id into this .json file.
+Use the frontmatter `title` for the page title and begin body sections with
+`##`; do not repeat a level-one heading. Write links as site-relative paths,
+including the locale in Chinese links:
 
-Please refer to the specific configuration method of this file [Docusaurus: Sidebar](https://docusaurus.io/docs/sidebar)
+```markdown
+[Errors](/docs/component/errors/)
+[错误处理](/zh-cn/docs/component/errors/)
+```
 
-## Document translation
+Topic pages are generated from directories by the sidebar configuration in
+`astro.config.mjs`. An ordinary page appears automatically. Edit the configured
+top-level topics only when adding or reorganizing a whole section, and update
+the English and Chinese labels together.
 
-If you want to maintain multilingual translations, clone the document repository to local.
+## Write useful framework documentation
 
-The corresponding language directory is in the `i18n` directory, such as the English version in `i18n/en/docusaurus-plugin-content-docs/current`, you can find or create a file corresponding to the `docs` directory, note that the id should be the same as the id of the corresponding file in `docs`. Once the appropriate document has been translated, it can be submitted.
+Describe observable behavior and the public API. Check claims against the
+framework source and the project template rather than copying old pages or
+README text. A component page should explain:
 
-Please refer to the advanced use of document translation [Docusaurus: i18n - Using git](https://docusaurus.io/docs/i18n/git)
+- what the component owns and what remains application responsibility;
+- constructors, important options, defaults, and lifecycle;
+- a complete example with the imports and surrounding setup a user needs;
+- error, cancellation, concurrency, and shutdown behavior where relevant;
+- links to the tutorial or component pages needed for the next step.
 
-## Document Specification
+Keep examples small enough to understand, but preserve required error handling
+and cleanup. Use current v3 module paths. When English and Chinese pages show the
+same example, keep their fenced code exactly equal so they cannot drift.
 
-- The contents remain intact, with functional components fully represented. Simple examples or their links should be attached. Such efforts shall be made to guide the users and offer them answers as they read this materials.
-- For code indentation, it needs to set space indent before duplication.
-- The hierarchical directory should take the form of [Google AIP](https://google.aip.dev/121).
-- What is lined with the numeral and the English is the Chinese characters with space,more [Chinese Copywriting Guidelines](https://github.com/sparanoid/chinese-copywriting-guidelines). For English Content, the punctuation is the next content with space. Recommand to use formatter such as **Prettier** to format.
-- Reduce the diff before commit to ease the workload of the auditor.
-- It's different to **Line separator(EOL)** in multi-platforms.You can set to **End Of Line(EOL)** config to **LF(\n)** in editor to prevent a large number of errors in commit.
-- Kratos shall begin with a capital letter “K”.
+## Run checks
+
+Before opening a pull request, run:
+
+```bash
+pnpm docs:verify
+pnpm examples:verify
+pnpm build
+```
+
+`docs:verify` checks locale pairing, matching IDs, corresponding code blocks,
+internal links, and unexpected v2 imports. `examples:verify` compiles and vets
+the executable documentation examples with the supported Go toolchain.
+`pnpm build` validates the content schema and renders the complete site.
+
+If a code example depends on generated application types, update the full
+service tutorial or the project template link as appropriate. Reusable
+framework examples belong in `examples/docs-v3`, where tests can exercise their
+actual behavior.
+
+## Submit the change
+
+Keep the pull request focused, explain which user workflow improves, and mention
+the checks run. Include both languages for framework content. Follow the
+[Contribution Guide](/docs/community/contribution/) for branch, commit, and
+pull request conventions.

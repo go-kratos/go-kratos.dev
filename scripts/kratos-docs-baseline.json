@@ -1,0 +1,19 @@
+{
+  "verifiedAt": "2026-09-06",
+  "kratos": {
+    "branch": "main",
+    "commit": "668db92c2c001e9552594ba5a8aede8456af6d7e",
+    "module": "github.com/go-kratos/kratos/v3",
+    "version": "v3.0.0"
+  },
+  "layout": {
+    "branch": "main",
+    "commit": "59ad406328acba9a70c9e7f426720a75a89a6b9f",
+    "module": "github.com/go-kratos/kratos-layout"
+  },
+  "migrationFrom": {
+    "tag": "v2.9.2",
+    "commit": "b9fab9a5a5ab76268bafaebc68eefcd558c20119",
+    "module": "github.com/go-kratos/kratos/v2"
+  }
+}

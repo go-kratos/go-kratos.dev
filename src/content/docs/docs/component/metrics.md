@@ -1,101 +1,50 @@
 ---
 id: metrics
 title: Metrics
+description: Configure OpenTelemetry metrics for a Kratos v3 service.
 ---
 
-### Interface
+Kratos v3 core has no metrics facade or exporter. Request instrumentation lives
+in the independent `github.com/go-kratos/kratos/contrib/otel/v3/metrics` module
+and uses OpenTelemetry metric instruments supplied by the application.
 
-`Counter`, `Gauge`, `Observer` are the three major metric interface of kratos.
+## Responsibilities
 
-### Counter
+The application must construct and shut down its OpenTelemetry SDK meter
+provider, reader, and exporter. The Kratos contrib middleware only records
+request count and duration around HTTP/gRPC handlers. Export intervals,
+temporality, resource attributes, endpoint authentication, and retry policy
+belong to the SDK/exporter configuration.
 
-```go
+Initialize the provider before servers, install it globally or pass its meter
+to instrument constructors, and flush/shut it down after transports stop. Treat
+provider startup errors as application startup failures.
 
-type Counter interface {
-	With(lvs ...string) Counter
-	Inc()
-	Add(delta float64)
-}
-```
+## Instruments and labels
 
+The contrib package supplies helpers for an `Int64Counter` and
+`Float64Histogram`. Its default names are:
 
+| Side | Counter | Duration histogram |
+| --- | --- | --- |
+| Server | `server_requests_code_total` | `server_requests_seconds` |
+| Client | `client_requests_code_total` | `client_requests_seconds` |
 
-Counter is just a standard counter. It should expose `Inc` and `Add` method. This counter can only count the increasing. It usually used at counting the numbers of errors or QPS.
+Counters record `kind`, `operation`, HTTP-equivalent `code`, and Kratos error
+`reason`. Histograms record `kind` and `operation`; duration is in seconds. The
+provided histogram helper uses explicit boundaries from 5 ms through 1 s.
 
-#### Gauge
+Operation names come from generated RPC descriptors, such as
+`/todo.v1.TodoService/GetTodo`, so they have bounded cardinality. Do not add
+request IDs, user IDs, raw URLs, or unbounded error messages as metric labels.
 
-```go
-type Gauge interface {
-	With(lvs ...string) Gauge
-	Set(value float64)
-	Add(delta float64)
-	Sub(delta float64)
-}
-```
+## Export and dashboards
 
-Gauge is a status indicator. It records the current status of service. The value of gauge may increase or decrease. It usually used at monitoring CPU usage or Mem usage etc.
+Choose Prometheus, OTLP, or another exporter supported by OpenTelemetry. Kratos
+does not select or configure one by default. Keep endpoints and credentials in
+runtime configuration, and keep stable instrument names when dashboards and
+alerts depend on them.
 
-#### Observer
-
-```go
-type Observer interface {
-	With(lvs ...string) Observer
-	Observe(float64)
-}
-```
-Observer is a kind of more complex metric. It provides more extra information for monitoring sums, quantities and percentages. It is corresponding to Prometheus'**Histogram** and **Summary**. The Histogram is used for record the counts in different buckets, such as the count of requests in different latency ranges. The Histogram is efficient. Summary records the percentiles, because of extra computation, it maybe slower.
-
-
-### Usage
-
-#### Metrics in server
-
-```go
-import (
-	"github.com/go-kratos/kratos/v2/middleware"
-	kmetrics "github.com/go-kratos/prometheus/metrics"
-	"github.com/go-kratos/kratos/v2/middleware/metrics"
-	"github.com/go-kratos/kratos/v2/transport/http"
-	"github.com/prometheus/client_golang/prometheus"
-)
-func NewHTTPServer(c *conf.Server) *http.Server {
-    // for prometheus 
-	counter := prometheus.NewCounterVec(prometheus.CounterOpts{Name: "kratos_counter"}, []string{"server", "qps"})
-	var opts = []http.ServerOption{
-		http.Middleware(
-			middleware.Chain(
-				recovery.Recovery(),
-				metrics.Server(metrics.WithRequests(kmetrics.NewCounter(counter))),
-			),
-		),
-	}
-
-```
-
-#### Metrics in Client
-
-```go
-import (
-	"context"
-
-	"github.com/go-kratos/kratos/v2/middleware"
-	kmetrics "github.com/go-kratos/prometheus/metrics"
-
-	"github.com/go-kratos/kratos/v2/middleware/metrics"
-	"github.com/go-kratos/kratos/v2/transport/http"
-	"github.com/prometheus/client_golang/prometheus"
-)
-func useClient() {
-	counter := prometheus.NewCounterVec(prometheus.CounterOpts{Name: "kratos_counter"},
-		[]string{"client", "qps"})
-	client, _ := http.NewClient(context.Background(),
-		http.WithMiddleware(metrics.Client(metrics.WithRequests(kmetrics.NewCounter(counter)))))
-	// ...
-}
-```
-
-
-
-### References
-
-* https://prometheus.io/docs/concepts/metric_types/
+See [Metrics Middleware](/docs/component/middleware/metrics/) for construction
+and the [metrics package](https://github.com/go-kratos/kratos/tree/main/contrib/otel/metrics)
+for its exported API.

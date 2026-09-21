@@ -1,162 +1,59 @@
 ---
 id: auth
 title: 认证
-keywords:
-  - Go
-  - Kratos
-  - Toolkit
-  - Framework
-  - Microservices
-  - Protobuf
-  - gRPC
-  - HTTP
-  - Auth
 ---
 
-`Auth` 中间件用于认证请求。只有通过认证的请求才能被处理，结合 `selector` 中间件可实现白名单。目前提供基于JWT认证的中间件。
+Kratos v3 核心不再提供 JWT middleware。请使用维护中的 contrib 模块：
+
+```bash
+go get github.com/go-kratos/kratos/contrib/middleware/jwt/v3
+```
+
+导入其中的 `jwt` 包，并将其 server 或 client middleware 加入对应 HTTP 或 gRPC transport 的 `Middleware` option。签名密钥函数和 claims 使用该 contrib 模块导出的 options 配置；认证成功后可从请求 context 取得 claims。
 
 ## 使用方法
 
-### server
-
-> 需要配置 `JWT` 秘钥生成函数。
-
-- http
+在 HTTP 或 gRPC server chain 中安装该模块的 server middleware。根据 contrib package API 配置 key function、预期 signing method 和新的 claims 值。若 decoder 会写入 claims，claims factory 必须为每个 request 返回新值。
 
 ```go
-httpSrv := http.NewServer(
-	http.Address(":8000"),
-	http.Middleware(
-		jwt.Server(func(token *jwtv4.Token) (interface{}, error) {
-			return []byte(testKey), nil
-		}),
-	),
+import (
+	jwtv5 "github.com/golang-jwt/jwt/v5"
+	kratosjwt "github.com/go-kratos/kratos/contrib/middleware/jwt/v3"
 )
-```
 
-- grpc
-
-```go
-grpcSrv := grpc.NewServer(
-	grpc.Address(":9000"),
-	grpc.Middleware(
-		jwt.Server(func(token *jwtv4.Token) (interface{}, error) {
-			return []byte(testKey), nil
-		}),
+srv := http.NewServer(http.Middleware(
+	kratosjwt.Server(
+		func(*jwtv5.Token) (any, error) { return []byte(signingKey), nil },
+		kratosjwt.WithSigningMethod(jwtv5.SigningMethodHS256),
+		kratosjwt.WithClaims(func() jwtv5.Claims { return &jwtv5.RegisteredClaims{} }),
 	),
-)
+))
 ```
 
-### client
+JWT 用于验证凭据，业务授权仍应在应用代码中完成。使用 `selector.Server(...)` 可明确排除无需认证的公开 RPC operation。不要沿用 v2 的 `middleware/auth/jwt` import，它不属于 v3 核心。
 
-> 需要配置 `JWT` 秘钥生成函数。
+## Server 与 client 放置
 
-- http
+在入站 HTTP 或 gRPC transport 安装 JWT server middleware。仅当服务必须向可信下游服务签发凭据时才安装 client middleware。token 签发、密钥轮换、issuer/audience 策略和授权判断应由应用代码和配置持有。
+
+使用 `selector.Server(...)` 按明确 RPC operation 保护接口，而不是按 HTTP route 匹配：selector 在两个 transport 中都使用规范 RPC operation。公开 health 和 login method 应明确加入白名单并覆盖集成测试。
+
+## 获取用户信息与白名单
+
+认证成功后通过 JWT contrib 模块导出的 context helper 读取 claims，再断言为应用配置的 claims model。使用前必须检查读取是否成功。用 `selector.Server(...)` 包装 server middleware，仅保留明确 operation allowlist 为公开接口。
 
 ```go
-conn, err := http.NewClient(
-	context.Background(),
-	http.WithEndpoint("127.0.0.1:8000"),
-	http.WithMiddleware(
-		jwt.Client(func(token *jwtv4.Token) (interface{}, error) {
-			return []byte(serviceTestKey), nil
-		}),
-	),
-)
+claims, ok := kratosjwt.FromContext(ctx)
+if !ok {
+	return nil, errors.Unauthorized("UNAUTHENTICATED", "missing claims")
+}
+registered, ok := claims.(*jwtv5.RegisteredClaims)
 ```
 
-- grpc
+## 签发 JWT Token
 
-```go
-con, _ := grpc.DialInsecure(
-	context.Background(),
-	grpc.WithEndpoint("xxx.xxx.domain"),
-	grpc.WithMiddleware(
-		jwt.Client(func(token *jwtv4.Token) (interface{}, error) {
-			return []byte(serviceTestKey), nil
-		}),
-	),
-)
-```
+Kratos 不负责为应用签发 token。token 创建、密钥所有权、过期时间、audience 与刷新策略属于应用职责。调用方与接收服务必须就 signing method、验证 key 和 claims model 达成一致。
 
-## 配置Options
+## 安全注意事项
 
-### `WithSigningMethod()`
-
-用于配置JWT签名的算法。适用于 `server` 和 `client`。
-
-例如：
-
-```go
-import jwtv4 "github.com/golang-jwt/jwt/v4"
-
-jwt.WithSigningMethod(jwtv4.SigningMethodHS256)
-```
-
-### `WithClaims()`
-
-用于配置 `JWT` 的 `claims`。
-
-例：
-
-- 配置 `client` 的 `claims`：
-
-```go
-claims := &jwtv4.StandardClaims{}
-jwt.WithClaims(func()jwtv4.Claims{return claims})
-```
-
-- 配置 `server` 的 `claims`：
-
-> 注意：`server` 的 `claims` 和 `client` 的配置方式有一定的区别，`server` 必须返回一个新对象。目的为了避免出现并发写的问题。
-```go
-jwt.WithClaims(func()jwtv4.Claims{return &jwtv4.StandardClaims{}})
-```
-
-## Example
-
-一个简易的 [example](https://github.com/go-kratos/examples/blob/main/auth/jwt/main.go)，包含了 `server` 和 `client` 的使用。
-
-其中 `client` 配置的是另外一个监听了9001的服务，并且该服务的key和这里配置的 `serviceTestKey` 一样。
-
-```golang
-con, _ := grpc.DialInsecure(
-	context.Background(),
-	grpc.WithEndpoint("dns:///127.0.0.1:9001"), // 本地的9001服务
-	grpc.WithMiddleware(
-		jwt.Client(func(token *jwtv4.Token) (interface{}, error) {
-			return []byte(serviceTestKey), nil
-		}),
-	),
-)
-```
-
-## 获取用户信息
-
-使用者可通过提供的接口 `jwt.FromContext(ctx)` 获取用户信息。
-
-带有 `JWT Token` 的请求，经过 `server` 侧的 `jwt` 中间件后，`token` 的 `claims` 会放进上下文 `context` 中。  
-此时使用者通过提供的接口 `jwt.FromContext(ctx)` 即可获取上下文中的 `claims` 对象，而一般用户信息是存储在 `claims` 里面的。使用者需要对 `claims` 断言后才能进一步处理，`claims` 类型的定义偏业务性质，和token签发的业务耦合。签发时使用的类型，这里就需要断言对应的类型。
-
-接口原型：
-
-```golang
-func FromContext(ctx context.Context) (token jwt.Claims, ok bool)
-```
-
-## 白名单参考方案
-
-结合 `selector` 中间件使用实现白名单机制。可参考[此处](https://github.com/go-kratos/beer-shop/blob/b12402ebc618c4563e69757e65a6db4dd767a869/app/shop/interface/internal/server/http.go#L26)。
-
-## 签发 `JWT Token`
-
-> 注意：这里签发的 `JWT Token` 只是用于服务间简单认证，并不能作为业务令牌使用。因此也没有开放签发的接口，业务令牌需要使用者根据实际业务自行实现签发逻辑。
-
-`Token` 的签发发生在 `client` 侧，使用者确保 `client` 和 `server` 使用相同的 `Key` 和签名算法即可。签发时附带的用户信息或者其他信息可以通过 `WithClaims()` 来配置。
-
-参考源码：https://github.com/go-kratos/kratos/blob/9e66ac2f5bcb9ab18d9b8d378c5b3233c7bb0a73/middleware/auth/jwt/jwt.go#L148
-
-
-
-
-
+使用短期 token，校验预期 signing method 和 claims，不要记录原始 token 或含凭据的 claims。有效 JWT 只代表 issuer 选择的 claims；执行受保护动作前仍应在业务边界检查权限。

@@ -3,223 +3,117 @@ id: overview
 title: Overview
 ---
 
-Kratos has a series of built-in middleware to deal with common purpose such as logging or metrics. You could also implement **Middleware** interface to develop your custom middleware to process common business such as the user authentication etc.
-
-## Built-in Middleware
-
-Their codes are located in `middleware` directory.
-
-- `logging`: This middleware is for logging the request.
-- `metrics`: This middleware is for enabling metric.
-- `recovery`: This middleware is for panic recovery.
-- `tracing`: This middleware is for enabling trace.
-- `validate`: This middleware is for parameter validation.
-- `metadata`: This middleware is for enabling metadata transmission.
-- `auth`: This middleware is for authority check using JWT.
-- `ratelimit`: This middleware is for traffic control in server side.
-- `circuitbreaker`: This middleware is for breaker control in client side.
-
-## Effective Sequence
-
-The execution sequence of the request is the sequence of Middleware registration, and the execution sequence of the response returned is the reverse of the registration sequence.That is a First In, Last Out (FILO).
-
-```
-         ┌───────────────────┐
-         │MIDDLEWARE 1       │
-         │ ┌────────────────┐│
-         │ │MIDDLEWARE 2    ││
-         │ │ ┌─────────────┐││
-         │ │ │MIDDLEWARE 3 │││
-         │ │ │ ┌─────────┐ │││
-REQUEST  │ │ │ │  YOUR   │ │││  RESPONSE
-   ──────┼─┼─┼─▷ HANDLER ○─┼┼┼───▷
-         │ │ │ └─────────┘ │││
-         │ │ └─────────────┘││
-         │ └────────────────┘│
-         └───────────────────┘
-```
-
-## Usage
-
-Register it with `ServerOption` in `NewGRPCServer` or `NewHTTPServer`.
-
-For example:
+Kratos middleware wraps an RPC handler. The same abstraction works with HTTP
+and gRPC, so authentication, validation, logging, and other request policies do
+not need separate transport implementations.
 
 ```go
-// http
-// define opts
-var opts = []http.ServerOption{
-	http.Middleware(
-		recovery.Recovery(),
-		tracing.Server(),
-		logging.Server(),
+type Middleware func(Handler) Handler
+
+type Handler func(context.Context, any) (any, error)
+```
+
+## Execution order
+
+`middleware.Chain(a, b, c)` executes the request side as `a -> b -> c ->
+handler`, then unwinds the response side in reverse. Server and client transport
+options preserve the order supplied to them.
+
+```go
+srv := http.NewServer(http.Middleware(
+	metadata.Server(),
+	tracing.Server(),
+	logging.Server(logger),
+	recovery.Recovery(recovery.WithLogger(logger)),
+	validate.Validator(),
+))
+```
+
+In this example, metadata and tracing are available to the remaining chain.
+Logging surrounds recovery, so a panic converted to an error by recovery is
+included in the completion log. Validation runs immediately before the service
+handler. Select an order from the data each middleware needs and the failures it
+must observe; there is no single chain suitable for every service.
+
+## Available middleware
+
+The v3 core contains:
+
+| Package | Typical side | Purpose |
+| --- | --- | --- |
+| `circuitbreaker` | Client | Reject calls while a dependency is failing |
+| `logging` | Both | Record operation, duration, status, and transport data |
+| `metadata` | Both | Move selected request metadata across service calls |
+| `ratelimit` | Server | Admit or reject work through a limiter |
+| `recovery` | Server | Convert a panic into a Kratos error |
+| `selector` | Both | Apply another middleware to selected operations |
+| `validate` | Server | Call generated request validation |
+
+JWT authentication is in
+`github.com/go-kratos/kratos/contrib/middleware/jwt/v3`. Metrics and tracing are
+in `github.com/go-kratos/kratos/contrib/otel/v3`. The core does not include a
+retry middleware; define retry and idempotency policy at the client or
+application boundary.
+
+## Install middleware
+
+Use `http.Middleware` or `grpc.Middleware` for unary server calls. Client
+constructors use `WithMiddleware`. gRPC streaming has separate
+`StreamMiddleware` and `WithStreamMiddleware` options, which is useful when a
+stream needs a different lifetime or authorization policy.
+
+```go
+conn, err := grpc.NewClient(ctx,
+	grpc.WithEndpoint("dns:///127.0.0.1:9000"),
+	grpc.WithMiddleware(
+		metadata.Client(),
+		logging.Client(logger),
+		circuitbreaker.Client(),
 	),
-}
-// create server
-http.NewServer(opts...)
-
-//grpc
-var opts = []grpc.ServerOption{
-		grpc.Middleware(
-			recovery.Recovery(),
-			status.Server(),
-			tracing.Server(),
-			logging.Server(),
-		),
-	}
-
-// create server
-grpc.NewServer(opts...)
-```
-
-## Modify Middleware
-
-Need to implement the `Middleware` interface.
-
-In the middleware, you can use `tr, ok := transport.FromServerContext(ctx)` to get the **Transporter** instance to access metadata about the interface.
-
-Example:
-
-```go
-import (
-    "context"
-
-    "github.com/go-kratos/kratos/v2/middleware"
-    "github.com/go-kratos/kratos/v2/transport"
 )
+```
 
-func Middleware1() middleware.Middleware {
-    return func(handler middleware.Handler) middleware.Handler {
-        return func(ctx context.Context, req interface{}) (reply interface{}, err error) {
-            if tr, ok := transport.FromServerContext(ctx); ok {
-                // Do something on entering
-                defer func() {
-                // Do something on exiting
-                 }()
-            }
-            return handler(ctx, req)
-        }
-    }
+HTTP and gRPC servers also provide `Use(pattern, middleware...)`. Patterns
+match canonical RPC operations: `/*`, `/package.Service/*`, or
+`/package.Service/Method`. Generated bindings set the operation before running
+the chain.
+
+## Select operations
+
+Use `selector.Server` or `selector.Client` when a policy applies to only part of
+an API. `Path`, `Prefix`, `Regex`, and `Match` inspect canonical operations such
+as `/todo.v1.TodoService/GetTodo`, rather than HTTP paths.
+
+```go
+auth := selector.Server(jwt.Server(keyFunc)).
+	Prefix("/todo.v1.TodoService/").
+	Build()
+```
+
+## Write middleware
+
+A middleware should call `next` exactly once unless it deliberately rejects the
+request. Store request-scoped values in the returned context, keep shared state
+safe for concurrent use, and return Kratos errors when the failure is part of
+the public API contract.
+
+```go
+func audit(logger *slog.Logger) middleware.Middleware {
+	return func(next middleware.Handler) middleware.Handler {
+		return func(ctx context.Context, request any) (any, error) {
+			start := time.Now()
+			reply, err := next(ctx, request)
+			logger.InfoContext(ctx, "request completed",
+				"elapsed", time.Since(start),
+				"error", err,
+			)
+			return reply, err
+		}
+	}
 }
 ```
 
-## Custom Middleware
-
-Customized middleware for specific routes:
-
-- server: `selector.Server(ms...)`
-- client: `selector.Client(ms...)`
-
-Matching rule (multi parameter):
-
-- `Path(path...)`: path match
-- `Regex(regex...)`: regex match
-- `Prefix(prefix...)`: prefix path match
-- `Match(fn)`: function match, The function format is `func(ctx context.Context,operation string) bool`. `operation` is path,If the return value is `true`,match successful, `ctx` for `transport.FromServerContext(ctx)` or `transport.FromClientContext(ctx` get `Transporter)`.
-
-**http server**
-
-```go
-import "github.com/go-kratos/kratos/v2/middleware/selector"
-
-http.Middleware(
-            selector.Server(recovery.Recovery(), tracing.Server(),testMiddleware).
-                Path("/hello.Update/UpdateUser", "/hello.kratos/SayHello").
-                Regex(`/test.hello/Get[0-9]+`).
-                Prefix("/kratos.", "/go-kratos.", "/helloworld.Greeter/").
-                Build(),
-        )
-```
-
-**http client**
-
-```go
-import "github.com/go-kratos/kratos/v2/middleware/selector"
-
-http.WithMiddleware(
-            selector.Client(recovery.Recovery(), tracing.Server(),testMiddleware).
-                Path("/hello.Update/UpdateUser", "/hello.kratos/SayHello").
-                Regex(`/test.hello/Get[0-9]+`).
-                Prefix("/kratos.", "/go-kratos.", "/helloworld.Greeter/").
-                Match(func(ctx context.Context,operation string) bool {
-                    if strings.HasPrefix(operation, "/go-kratos.dev") || strings.HasSuffix(operation, "world") {
-                        return true
-                    }
-                    tr, ok := transport.FromClientContext(ctx)
-                    if !ok {
-                        return false
-				    }
-                    if tr.RequestHeader().Get("go-kratos") == "kratos" {
-					    return true
-				    }
-                    return false
-                }).Build(),
-        )
-```
-
-**grpc server**
-
-```go
-import "github.com/go-kratos/kratos/v2/middleware/selector"
-
-grpc.Middleware(
-            selector.Server(recovery.Recovery(), tracing.Server(),testMiddleware).
-                Path("/hello.Update/UpdateUser", "/hello.kratos/SayHello").
-                Regex(`/test.hello/Get[0-9]+`).
-                Prefix("/kratos.", "/go-kratos.", "/helloworld.Greeter/").
-                Build(),
-        )
-```
-
-**grpc client**
-
-```go
-import "github.com/go-kratos/kratos/v2/middleware/selector"
-
-grpc.Middleware(
-            selector.Client(recovery.Recovery(), tracing.Server(),testMiddleware).
-                Path("/hello.Update/UpdateUser", "/hello.kratos/SayHello").
-                Regex(`/test.hello/Get[0-9]+`).
-                Prefix("/kratos.", "/go-kratos.", "/helloworld.Greeter/").
-                Build(),
-        )
-```
-
-> **Note: the customized middleware matches through `operation`, not is the HTTP routing ! ! ! **
->
-> operation is the unified GRC path of HTTP and GRC.
-
-**operation find**
-
-gRPC path's splicing rule is `/package.Service/Method`.
-
-For example, in the following proto file，if we want to call the sayhello method, then the operation is `/helloworld.Greeter/SayHello`.
-
-```protobuf
-syntax = "proto3";
-
-package helloworld;
-
-import "google/api/annotations.proto";
-
-option go_package = "github.com/go-kratos/examples/helloworld/helloworld";
-
-// The greeting service definition.
-service Greeter {
-  // Sends a greeting
-  rpc SayHello (HelloRequest) returns (HelloReply)  {
-        option (google.api.http) = {
-            get: "/helloworld/{name}",
-        };
-  }
-}
-// The request message containing the user's name.
-message HelloRequest {
-  string name = 1;
-}
-
-// The response message containing the greetings
-message HelloReply {
-  string message = 1;
-}
-```
+Use `transport.FromServerContext` or `transport.FromClientContext` when the
+middleware needs the operation, endpoint, request headers, or reply headers.
+Avoid depending on native HTTP or gRPC context types unless the policy is truly
+transport-specific.

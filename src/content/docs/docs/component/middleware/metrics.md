@@ -1,219 +1,56 @@
 ---
 id: metrics
-title: Metrics
-keywords:
-  - Go
-  - Kratos
-  - Toolkit
-  - Framework
-  - Microservices
-  - Protobuf
-  - gRPC
-  - HTTP
+title: Metrics Middleware
+description: Record Kratos v3 client and server request metrics with OpenTelemetry instruments.
 ---
 
-Metrics middleware is used to monitor performance metrics for services, counting request time and request counts.
+Install the v3 OpenTelemetry contrib module; the old core
+`middleware/metrics` package does not exist in v3.
 
-### Configuration
+```bash
+go get github.com/go-kratos/kratos/contrib/otel/v3
+```
 
-Two configuration methods are available in metrics middleware `WithSeconds()` and `WithRequests()`。
+Create instruments from the application's meter, then pass them into the
+server or client middleware:
 
-#### `WithSeconds()`
 ```go
-func WithSeconds(c metrics.Observer) Option {
-	return func(o *options) {
-		o.seconds = c
-	}
+meter := otel.Meter("todo-service")
+requests, err := metrics.DefaultRequestsCounter(meter, metrics.DefaultServerRequestsCounterName)
+if err != nil {
+	return err
 }
-```
-The `Observer` histogram used to set up the metrics middleware statistics request.
-
-#### `WithRequests()`
-
-```go
-func WithRequests(c metrics.Counter) Option {
-	return func(o *options) {
-		o.requests = c
-	}
+seconds, err := metrics.DefaultSecondsHistogram(meter, metrics.DefaultServerSecondsHistogramName)
+if err != nil {
+	return err
 }
+
+srv := http.NewServer(http.Middleware(
+	metrics.Server(metrics.WithRequests(requests), metrics.WithSeconds(seconds)),
+))
 ```
 
-The `Counter` counter used to set the metrics middleware statistics request count.
+Use the client constant names and `metrics.Client` for outbound clients. Passing
+no instruments makes server middleware call the next handler without recording;
+client middleware also records only non-nil instruments.
 
-### Usage (kratos < 2.8.0)
+## Histogram view
 
-#### Prometheus
-```go
-// Detailed reference https://github.com/go-kratos/examples/tree/main/metrics
+`DefaultSecondsHistogramView(name)` returns an SDK view using the same explicit
+buckets as the helper. Register the view when constructing the SDK meter
+provider if that aggregation is required. A view affects matching instruments
+at provider construction time; adding it after meters are active is too late.
 
-_metricSeconds = prometheus.NewHistogramVec(prometheus.HistogramOpts{
-	Namespace: "server",
-	Subsystem: "requests",
-	Name:      "duration_sec",
-	Help:      "server requests duratio(sec).",
-	Buckets:   []float64{0.005, 0.01, 0.025, 0.05, 0.1, 0.250, 0.5, 1},
-}, []string{"kind", "operation"})
+`EnableOTELExemplar` sets `OTEL_GO_X_EXEMPLAR=true` and returns the environment
+update error. Prefer configuring process environment before startup when
+possible, since changing it inside a running process is global state.
 
-_metricRequests = prometheus.NewCounterVec(prometheus.CounterOpts{
-	Namespace: "client",
-	Subsystem: "requests",
-	Name:      "code_total",
-	Help:      "The total number of processed requests",
-}, []string{"kind", "operation", "code", "reason"})
-	
-prometheus.MustRegister(_metricSeconds, _metricRequests)
-```
-#### To configure metrics in servers
+## Placement
 
-```go
-import (
-	prom "github.com/go-kratos/kratos/contrib/metrics/prometheus/v2"
-)
+Install server metrics after transport context has been created; Kratos server
+options do this for registered middleware. Middleware reads operation and kind
+from the transport context and derives code/reason from returned Kratos errors.
+Place it so it measures the middleware and handler work you intend to observe.
 
-// grpc service
-grpcSrv := grpc.NewServer(
-	grpc.Address(":9000"),
-	grpc.Middleware(
-		metrics.Server(
-			metrics.WithSeconds(prom.NewHistogram(_metricSeconds)),
-			metrics.WithRequests(prom.NewCounter(_metricRequests)),
-		),
-	),
-)
-
-// http service
-httpSrv := http.NewServer(
-	http.Address(":8000"),
-	http.Middleware(
-		metrics.Server(
-			metrics.WithSeconds(prom.NewHistogram(_metricSeconds)),
-			metrics.WithRequests(prom.NewCounter(_metricRequests)),
-		),
-	),
-)
-httpSrv.Handle("/metrics", promhttp.Handler())
-```
-
-#### To configure metrics in clients
-
-```go
-// grpc client
-conn, err := grpc.DialInsecure(
-	context.Background(),
-	grpc.WithEndpoint("127.0.0.1:9000"),
-	grpc.WithMiddleware(
-		metrics.Client(
-			metrics.WithSeconds(prom.NewHistogram(_metricSeconds)),
-			metrics.WithRequests(prom.NewCounter(_metricRequests)),
-		),
-	),
-)
-
-// http client
-conn, err := http.NewClient(
-	context.Background(),
-	http.WithEndpoint("127.0.0.1:8000"),
-	http.WithMiddleware(
-		metrics.Client(
-			metrics.WithSeconds(prom.NewHistogram(_metricSeconds)),
-			metrics.WithRequests(prom.NewCounter(_metricRequests)),
-		),
-	),
-)
-```
-
-### Usage (kratos >= 2.8.0)
-
-Since version [v2.8.0](https://github.com/go-kratos/kratos/releases/tag/v2.8.0), kratos uses otel.Metrics. Way to export metrics to prometheus is as follows:
-
-#### Prometheus
-```go
-import (
-	"github.com/go-kratos/kratos/v2/middleware/metrics"
-	"go.opentelemetry.io/otel/exporters/prometheus"
-	"go.opentelemetry.io/otel/metric"
-	sdkmetric "go.opentelemetry.io/otel/sdk/metric"
-)
-
-// Detailed reference https://github.com/go-kratos/examples/tree/main/metrics
-func init() {
-	exporter, err := prometheus.New()
-	if err != nil {
-		panic(err)
-	}
-	provider := sdkmetric.NewMeterProvider(sdkmetric.WithReader(exporter))
-	meter := provider.Meter(Name)
-
-	_metricRequests, err = metrics.DefaultRequestsCounter(meter, metrics.DefaultServerRequestsCounterName)
-	if err != nil {
-		panic(err)
-	}
-
-	_metricSeconds, err = metrics.DefaultSecondsHistogram(meter, metrics.DefaultServerSecondsHistogramName)
-	if err != nil {
-		panic(err)
-	}
-}
-```
-
-#### To configure metrics in servers
-```go
-import (
-	"github.com/prometheus/client_golang/prometheus/promhttp"
-)
-
-// grpc service
-grpcSrv := grpc.NewServer(
-	grpc.Address(":9000"),
-	grpc.Middleware(
-		metrics.Server(
-			metrics.WithSeconds(_metricSeconds),
-			metrics.WithRequests(_metricRequests),
-		),
-	),
-)
-
-// http service
-httpSrv := http.NewServer(
-	http.Address(":8000"),
-	http.Middleware(
-		metrics.Server(
-			metrics.WithSeconds(_metricSeconds),
-			metrics.WithRequests(_metricRequests),
-		),
-	),
-)
-httpSrv.Handle("/metrics", promhttp.Handler())
-```
-
-#### To configure metrics in clients
-```go
-// grpc client
-conn, err := grpc.DialInsecure(
-	context.Background(),
-	grpc.WithEndpoint("127.0.0.1:9000"),
-	grpc.WithMiddleware(
-		metrics.Client(
-			metrics.WithSeconds(_metricSeconds),
-			metrics.WithRequests(_metricRequests),
-		),
-	),
-)
-
-// http client
-conn, err := http.NewClient(
-	context.Background(),
-	http.WithEndpoint("127.0.0.1:8000"),
-	http.WithMiddleware(
-		metrics.Client(
-			metrics.WithSeconds(_metricSeconds),
-			metrics.WithRequests(_metricRequests),
-		),
-	),
-)
-```
-
-### References
-* https://prometheus.io/docs/concepts/metric_types/
-* https://github.com/go-kratos/examples/tree/main/metrics
-* https://pkg.go.dev/go.opentelemetry.io/otel/exporters/prometheus
+Provider shutdown remains application code. A middleware constructor does not
+create, flush, or close an exporter.
