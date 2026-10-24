@@ -1,0 +1,19 @@
+---
+interface Props { compact?: boolean; locale?: 'en' | 'zh-cn' }
+const { compact = false, locale = 'zh-cn' } = Astro.props;
+---
+<div class:list={['architecture', { compact }]} role="img" aria-label={locale === "zh-cn" ? "Kratos 服务架构示意：HTTP 与 gRPC 接入，连接中间件、业务逻辑和数据层" : "Kratos architecture: HTTP and gRPC connect to middleware, business logic, and data"}>
+  <div class="diagram-caption"><span class="live-dot"></span> CONNECTED BY DESIGN <span>FIG. 01</span></div>
+  <div class="orbit orbit-one"></div><div class="orbit orbit-two"></div><div class="orbit orbit-three"></div>
+  <svg class="diagram-lines" viewBox="0 0 600 440" aria-hidden="true">
+    <path d="M120 110H230Q250 110 250 130V190M480 110H370Q350 110 350 130V190M300 250V310M300 310H120V350M300 310V350M300 310H480V350" />
+    <circle cx="250" cy="160" r="3"/><circle cx="350" cy="145" r="3"/><circle cx="300" cy="290" r="3"/>
+  </svg>
+  <div class="diagram-node protocol protocol-http"><span>↗︎</span><div><b>HTTP</b><small>RESTful APIs</small></div><i></i></div>
+  <div class="diagram-node protocol protocol-grpc"><span>⇄</span><div><b>gRPC</b><small>Type-safe RPC</small></div><i></i></div>
+  <div class="core-node"><span class="core-symbol">K<span>↗︎</span></span><div><strong>kratos</strong><small>ONE COHERENT SYSTEM</small></div></div>
+  <div class="diagram-node service service-one"><span>⌘</span><b>Middleware</b><small>{locale === "zh-cn" ? "可组合的能力" : "Composable"}</small></div>
+  <div class="diagram-node service service-two"><span>◇</span><b>Business</b><small>{locale === "zh-cn" ? "专注业务逻辑" : "Domain logic"}</small></div>
+  <div class="diagram-node service service-three"><span>▤</span><b>Data</b><small>{locale === "zh-cn" ? "清晰的数据边界" : "Clear boundaries"}</small></div>
+  <div class="diagram-footer"><span>TRANSPORT → SERVICE → DATA</span><span>Go / Open source</span></div>
+</div>

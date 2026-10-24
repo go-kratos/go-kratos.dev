@@ -1,0 +1,9 @@
+---
+import DefaultPageTitle from '@astrojs/starlight/components/PageTitle.astro';
+const home = ['/', '/zh-cn', '/zh-cn/'].includes(Astro.url.pathname);
+---
+{!home && <>
+  <p class="glacier-page-label">{Astro.url.pathname.includes('/blades/') ? 'BLADES / AGENT FRAMEWORK' : Astro.url.pathname.includes('/blog/') ? 'KRATOS / JOURNAL' : 'KRATOS / DOCUMENTATION'}</p>
+  <DefaultPageTitle />
+  {Astro.locals.starlightRoute.entry.data.description && <p class="glacier-page-description">{Astro.locals.starlightRoute.entry.data.description}</p>}
+</>}

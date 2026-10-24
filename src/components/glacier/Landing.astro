@@ -1,0 +1,56 @@
+---
+import Architecture from './Architecture.astro';
+import '../../styles/glacier-landing.css';
+interface Props { locale?: 'en' | 'zh-cn' }
+const { locale = 'en' } = Astro.props;
+const t = (zh: string, en: string) => locale === 'zh-cn' ? zh : en;
+const prefix = locale === 'zh-cn' ? '/zh-cn' : '';
+const docsUrl = `${prefix}/docs/getting-started/start/`;
+const installCommand = `git clone https://github.com/go-kratos/kratos-layout.git todo-service
+cd todo-service
+make init`;
+const features = [
+  { number: '01', icon: '⇄', title: t('一份定义，多种协议', 'One contract. Multiple protocols.'), text: t('以 Protobuf 定义 API，让 HTTP 与 gRPC 共享清晰、一致的服务契约。', 'Define your API with Protobuf. Give HTTP and gRPC a clear, consistent service contract.'), tag: 'API FIRST', path: '/docs/guide/api-protobuf/' },
+  { number: '02', icon: '⌘', title: t('按需组合，自由扩展', 'Compose what you need.'), text: t('日志、认证、限流与链路追踪。将通用能力交给中间件，让业务代码保持专注。', 'Logging, authentication, rate limiting, and tracing. Let middleware handle common concerns and keep your business logic focused.'), tag: 'COMPOSABLE', path: '/docs/component/middleware/overview/' },
+  { number: '03', icon: '◉', title: t('从运行，到洞察', 'See the whole system.'), text: t('通过日志、指标和分布式追踪，理解每一次请求，观察服务之间的连接。', 'Understand requests and the connections between services with logging, metrics, and distributed tracing.'), tag: 'OBSERVABLE', path: '/docs/component/middleware/tracing/' },
+];
+---
+<div class="glacier-landing not-content">
+  <section class="hero-section page-width" aria-labelledby="_top">
+    <div class="hero-copy">
+      <a class="release-link" href={`${prefix}/docs/migration/v3-new-features/`}><span class="live-dot"></span>{t('探索 Kratos v3', 'Explore Kratos v3')}<span class="release-divider">/</span>{t('为下一次构建准备就绪', 'Ready for your next build')}<span aria-hidden="true">↗︎</span></a>
+      <p class="eyebrow">THE GO FRAMEWORK FOR MICROSERVICES</p>
+      <h1 id="_top">{t('构建服务的能力，', 'The foundation for services.')}<br /><em>{t('留给创造的空间。', 'The space to create.')}</em></h1>
+      <p class="hero-description">{t('用清晰的架构，应对复杂的世界。', 'Bring clarity to complex systems.')}<br />{t('Kratos 为 Go 微服务提供坚实的基础，让你专注业务，让服务自然生长。', 'Kratos gives your Go microservices a solid foundation, so you can focus on what you build.')}</p>
+      <div class="hero-actions"><a class="button primary" href={docsUrl}>{t('开始构建', 'Start building')}<span aria-hidden="true">↗︎</span></a><a class="button secondary" href="https://github.com/go-kratos/kratos">{t('探索源代码', 'Explore the source')}<span aria-hidden="true">→</span></a></div>
+      <div class="hero-footnote"><span class="tiny-symbol" aria-hidden="true">✳︎</span>{t('Go 原生', 'Go native')}<i></i>{t('模块化设计', 'Modular by design')}<i></i>{t('开源共建', 'Open source')}</div>
+    </div>
+    <div class="hero-visual"><Architecture locale={locale} /><div class="visual-note"><span>Space to build.</span><span>KRATOS / CONNECTED BY DESIGN</span></div></div>
+  </section>
+  <div class="principles-strip"><div class="page-width"><span>{t('复杂系统，清晰构建。', 'Complex systems. Clear foundations.')}</span><b>Go native</b><span class="strip-star" aria-hidden="true">✳︎</span><b>API first</b><span class="strip-star" aria-hidden="true">✳︎</span><b>Modular by design</b><span class="strip-star" aria-hidden="true">✳︎</span><b>Open source</b></div></div>
+  <section class="capabilities page-width" aria-labelledby="capabilities-title">
+    <div class="section-intro"><p class="eyebrow">01 / BUILT FOR THE WAY YOU BUILD</p><h2 id="capabilities-title">{t('足够轻盈，也足够强大。', 'Lightweight. Built to go further.')}</h2><p>{t('从第一个接口，到协作运行的服务。', 'From your first endpoint to connected services.')}<br />{t('需要的能力，恰好都在这里。', 'The building blocks you need, right here.')}</p></div>
+    <div class="feature-grid">{features.map((feature) => <a class="feature" href={`${prefix}${feature.path}`}><div class="feature-top"><span aria-hidden="true">{feature.icon}</span><small>{feature.number} /</small></div><p class="eyebrow">{feature.tag}</p><h3>{feature.title}</h3><p>{feature.text}</p><span class="feature-arrow" aria-hidden="true">↗︎</span></a>)}</div>
+  </section>
+  <section class="build-section page-width" aria-labelledby="build-title">
+    <div><p class="eyebrow">02 / FROM IDEA TO SERVICE</p><h2 id="build-title">{t('下一行代码，', 'Your next line of code ')}<br />{t('从这里开始。', 'starts here.')}</h2><p>{t('从项目模板出发，探索 API、业务与数据的清晰边界。', 'Start with the project template and clear boundaries between your API, business logic, and data.')}<br />{t('一步步构建属于你的 Go 服务。', 'Build your Go service, one step at a time.')}</p><a class="text-link" href={docsUrl}>{t('跟随快速开始指南', 'Follow the quick-start guide')}<span aria-hidden="true">→</span></a></div>
+    <div class="terminal"><div class="terminal-bar"><span aria-hidden="true"><i></i><i></i><i></i></span><span>Terminal</span><button type="button" data-glacier-copy data-label={t('复制命令', 'Copy commands')} data-success={t('已复制 ✓', 'Copied ✓')} data-failure={t('请选中命令复制', 'Select the commands to copy')} aria-live="polite">{t('复制命令', 'Copy commands')}</button></div><div class="terminal-content"><p># 01 — {t('获取项目模板', 'Clone the project template')}</p><pre><code>{installCommand}</code></pre><div class="terminal-note"><span aria-hidden="true">↳</span>{t('接下来：配置 module、生成代码并准备数据库。', 'Next: set your module path, generate code, and prepare your database.')}<a href={docsUrl}>{t('查看完整步骤', 'See the complete setup')} ↗︎</a></div></div></div>
+  </section>
+  <section class="ecosystem-section page-width"><div class="ecosystem-icon" aria-hidden="true">✳︎</div><div><p class="eyebrow">BEYOND MICROSERVICES</p><h2>{t('从服务架构，到智能应用。', 'From services to intelligent apps.')}</h2><p>{t('探索 Blades，用 Go 构建模块化 AI Agent 与工作流。', 'Explore Blades. Build modular AI agents and workflows in Go.')}</p></div><a class="button secondary" href={`${prefix}/blades/`}>{t('认识 Blades', 'Meet Blades')}<span aria-hidden="true">↗︎</span></a></section>
+  <footer class="site-footer page-width"><a class="wordmark" href={`${prefix}/`}>kratos<span class="footer-dot">.</span></a><p>{t('构建有章法，创造无边界。', 'Clear foundations. Room to create.')}</p><a href={`${prefix}/docs/community/contribution/`}>{t('参与贡献', 'Contribute')} ↗︎</a><a href="https://discord.gg/BWzJsUJ">Discord ↗︎</a><span>GO-KRATOS / OPEN SOURCE</span></footer>
+</div>
+<script>
+  document.querySelectorAll<HTMLButtonElement>('[data-glacier-copy]').forEach((button) => {
+    button.addEventListener('click', async () => {
+      const command = button.closest('.terminal')?.querySelector('code')?.textContent;
+      if (!command) return;
+      try {
+        await navigator.clipboard.writeText(command);
+        button.textContent = button.dataset.success ?? 'Copied';
+      } catch {
+        button.textContent = button.dataset.failure ?? 'Select the commands to copy';
+      }
+      window.setTimeout(() => { button.textContent = button.dataset.label ?? 'Copy commands'; }, 2500);
+    });
+  });
+</script>

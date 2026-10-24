@@ -1,0 +1,73 @@
+---
+import { getEntry, render } from 'astro:content';
+import ThemeLab from '../../layouts/ThemeLab.astro';
+import SiteNav from '../../components/theme-lab/SiteNav.astro';
+import Architecture from '../../components/theme-lab/Architecture.astro';
+import { themes } from '../../components/theme-lab/themes';
+export function getStaticPaths() {
+  return themes.flatMap((theme) => [
+    { params: { path: theme.id }, props: { theme, view: 'landing' as const } },
+    { params: { path: `${theme.id}/docs` }, props: { theme, view: 'docs' as const } },
+  ]);
+}
+const { theme, view } = Astro.props;
+const entry = await getEntry('docs', 'zh-cn/docs/getting-started/start');
+if (!entry) throw new Error('Missing quick-start documentation for theme preview');
+const { Content, headings } = await render(entry);
+const docsUrl = `/theme-lab/${theme.id}/docs/`;
+const installCommand = `git clone https://github.com/go-kratos/kratos-layout.git todo-service
+cd todo-service
+make init`;
+const features = [
+  { number: '01', icon: '⇄', title: '一份定义，多种协议', text: '以 Protobuf 定义 API，让 HTTP 与 gRPC 共享清晰、一致的服务契约。', tag: 'API FIRST', href: '/zh-cn/docs/guide/api-protobuf/' },
+  { number: '02', icon: '⌘', title: '按需组合，自由扩展', text: '日志、认证、限流与链路追踪。将通用能力交给中间件，让业务代码保持专注。', tag: 'COMPOSABLE', href: '/zh-cn/docs/component/middleware/overview/' },
+  { number: '03', icon: '◉', title: '从运行，到洞察', text: '通过日志、指标和分布式追踪，理解每一次请求，观察服务之间的连接。', tag: 'OBSERVABLE', href: '/zh-cn/docs/component/middleware/tracing/' },
+];
+---
+<ThemeLab theme={theme} view={view} title={`${theme.name} · ${view === 'docs' ? '文档' : '首页'}`}>
+  <SiteNav theme={theme} docs={view === 'docs'} />
+  {view === 'landing' ? <>
+    <main id="main-content">
+      <section class="hero-section page-width">
+        <div class="hero-copy">
+          <a class="release-link" href="/zh-cn/docs/migration/v3-new-features/"><span class="live-dot"></span> 探索 Kratos v3 <span class="release-divider">/</span> 为下一次构建准备就绪 <span>↗</span></a>
+          <p class="eyebrow">THE GO FRAMEWORK FOR MICROSERVICES</p>
+          <h1>{theme.headline[0]}<br /><em>{theme.headline[1]}</em></h1>
+          <p class="hero-description">用清晰的架构，应对复杂的世界。<br />Kratos 为 Go 微服务提供坚实的基础，<br class="desktop-break" />让你专注业务，让服务自然生长。</p>
+          <div class="hero-actions"><a class="button primary" href={docsUrl}>开始构建 <span>↗</span></a><a class="button secondary" href="https://github.com/go-kratos/kratos">探索源代码 <span>→</span></a></div>
+          <div class="hero-footnote"><span class="tiny-symbol">✳</span> Go 原生 <i></i> 模块化设计 <i></i> 开源共建</div>
+        </div>
+        <div class="hero-visual"><Architecture /><div class="visual-note"><span>{theme.en}</span><span>KRATOS / {theme.number}</span></div></div>
+      </section>
+      <div class="principles-strip"><div class="page-width"><span>复杂系统，清晰构建。</span><b>Go native</b><span class="strip-star">✳</span><b>API first</b><span class="strip-star">✳</span><b>Modular by design</b><span class="strip-star">✳</span><b>Open source</b></div></div>
+      <section class="capabilities page-width" aria-labelledby="capabilities-title">
+        <div class="section-intro"><p class="eyebrow">01 / BUILT FOR THE WAY YOU BUILD</p><h2 id="capabilities-title">足够轻盈，也足够强大。</h2><p>从第一个接口，到协作运行的服务。<br />需要的能力，恰好都在这里。</p></div>
+        <div class="feature-grid">{features.map((feature) => <a class="feature" href={feature.href}><div class="feature-top"><span>{feature.icon}</span><small>{feature.number} /</small></div><p class="eyebrow">{feature.tag}</p><h3>{feature.title}</h3><p>{feature.text}</p><span class="feature-arrow" aria-hidden="true">↗</span></a>)}</div>
+      </section>
+      <section class="build-section page-width" aria-labelledby="build-title"><div><p class="eyebrow">02 / FROM IDEA TO SERVICE</p><h2 id="build-title">下一行代码，<br />从这里开始。</h2><p>从项目模板出发，探索 API、业务与数据的清晰边界。<br />一步步构建属于你的 Go 服务。</p><a class="text-link" href={docsUrl}>跟随快速开始指南 <span>→</span></a></div><div class="terminal"><div class="terminal-bar"><span><i></i><i></i><i></i></span><span>Terminal</span><button type="button" data-copy aria-live="polite">复制命令</button></div><div class="terminal-content"><p># 01 — 获取项目模板</p><pre><code>{installCommand}</code></pre><div class="terminal-note"><span>↳</span> 接下来：配置 module、生成代码并准备数据库。<a href={docsUrl}>查看完整步骤 ↗</a></div></div></div></section>
+      <section class="ecosystem-section page-width"><div class="ecosystem-icon">✳</div><div><p class="eyebrow">BEYOND MICROSERVICES</p><h2>从服务架构，到智能应用。</h2><p>探索 Blades，用 Go 构建模块化 AI Agent 与工作流。</p></div><a class="button secondary" href="/zh-cn/blades/">认识 Blades <span>↗</span></a></section>
+    </main>
+    <footer class="site-footer page-width"><a class="wordmark" href={`/theme-lab/${theme.id}/`}>kratos<span class="footer-dot">.</span></a><p>构建有章法，创造无边界。</p><a href="/zh-cn/docs/community/contribution/">参与贡献 ↗</a><span>GO-KRATOS / OPEN SOURCE</span></footer>
+  </> : <>
+    <div class="docs-mobile-bar"><button type="button" data-docs-toggle aria-expanded="false" aria-controls="docs-sidebar">☰ 文档目录</button><a href="#doc-toc">本页内容 ↓</a></div>
+    <div class="docs-layout">
+      <aside id="docs-sidebar" class="docs-sidebar" aria-label="文档导航">
+        <a class="product-select" href="/zh-cn/docs/"><span class="product-icon">K</span><span><b>Kratos Framework</b><small>v3 · 中文文档</small></span><span>↗</span></a>
+        <p class="sidebar-label">开始探索</p><a href="/zh-cn/docs/">概览 <span>↗</span></a><a href="/zh-cn/docs/intro/design/">设计理念</a><a href="/zh-cn/docs/intro/layout/">项目结构</a>
+        <p class="sidebar-label">快速开始</p><a href={docsUrl} aria-current="page"><span>快速开始</span><span class="active-dot"></span></a><a href="/zh-cn/docs/getting-started/usage/">使用 Kratos</a><a href="/zh-cn/docs/getting-started/examples/">示例项目</a>
+        <p class="sidebar-label">构建服务</p><a href="/zh-cn/docs/guide/api-protobuf/">定义 Protobuf API</a><a href="/zh-cn/docs/guide/service-development/">开发业务服务</a><a href="/zh-cn/docs/component/transport/overview/">HTTP / gRPC</a><a href="/zh-cn/docs/component/middleware/overview/">中间件</a><a href="/zh-cn/docs/component/config/">配置管理</a>
+        <p class="sidebar-label">更进一步</p><a href="/zh-cn/docs/migration/v2-to-v3/">迁移至 v3 <span>↗</span></a><a href="/zh-cn/docs/community/contribution/">参与贡献</a>
+        <div class="sidebar-card"><span>✳</span><b>一起让 Kratos 更好</b><p>每一次贡献，都在连接更多可能。</p><a href="https://github.com/go-kratos/kratos">前往 GitHub ↗</a></div>
+      </aside>
+      <main id="main-content" class="doc-main">
+        <div class="breadcrumbs"><span>文档</span><span>/</span><span>快速开始</span></div>
+        <div class="doc-title-row"><p class="eyebrow">GET STARTED</p><span class="reading-badge">KRATOS v3</span></div>
+        <h1>{entry.data.title}</h1><p class="doc-lead">从一个清晰的起点，构建你的第一个 Go 微服务。</p>
+        <div class="doc-callout"><span>i</span><div><strong>从官方 Layout 开始</strong><p>本页使用项目现有的 v3 快速开始内容。按照前置条件准备环境，再逐步生成、测试和运行服务。</p></div></div>
+        <article class="doc-prose"><Content /></article>
+        <div class="doc-bottom"><span>准备好下一步了吗？</span><a href="/zh-cn/docs/guide/service-development/">基于 Layout 开发服务 <span>→</span></a></div>
+      </main>
+      <aside class="doc-toc" id="doc-toc" aria-label="本页内容"><p class="sidebar-label">本页内容</p><nav>{headings.filter((heading) => heading.depth === 2).map((heading) => <a href={`#${heading.slug}`}>{heading.text}</a>)}</nav><div class="toc-bottom"><span>在阅读中遇到问题？</span><a href="https://github.com/go-kratos/kratos/issues">在 GitHub 反馈 ↗</a><a href="/zh-cn/docs/getting-started/start/">查看当前正式文档 ↗</a></div></aside>
+    </div>
+  </>}
+</ThemeLab>

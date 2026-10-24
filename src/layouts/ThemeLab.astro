@@ -1,0 +1,54 @@
+---
+import '../styles/theme-lab.css';
+import { themes, type Theme } from '../components/theme-lab/themes';
+interface Props { theme?: Theme; view?: 'landing' | 'docs'; title: string }
+const { theme, view = 'landing', title } = Astro.props;
+---
+<!doctype html>
+<html lang="zh-CN" data-concept={theme?.id ?? 'gallery'} data-theme={theme?.id === 'glacier' ? 'light' : 'dark'}>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="robots" content="noindex, nofollow" />
+    <meta name="description" content="Kratos 主题设计实验室：探索首页与文档的三种视觉方向。" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <title>{title} · Kratos Design Lab</title>
+  </head>
+  <body class:list={[{ 'docs-view': view === 'docs', 'gallery-view': !theme }]}>
+    <a class="skip-link" href="#main-content">跳转到内容</a>
+    <div class="lab-toolbar">
+      <a class="lab-home" href="/theme-lab/"><span class="lab-symbol">◈</span><span>DESIGN LAB</span><span class="lab-label">主题提案</span></a>
+      {theme ? <>
+        <nav class="concept-switch" aria-label="主题方案">
+          {themes.map((item) => <a href={`/theme-lab/${item.id}/${view === 'docs' ? 'docs/' : ''}`} aria-current={theme.id === item.id ? 'page' : undefined}><i style={`--swatch: ${item.accent}`}></i><span>{item.name}</span><span class="concept-number">{item.number}</span></a>)}
+        </nav>
+        <nav class="view-switch" aria-label="预览页面">
+          <a href={`/theme-lab/${theme.id}/`} aria-current={view === 'landing' ? 'page' : undefined}>首页</a>
+          <a href={`/theme-lab/${theme.id}/docs/`} aria-current={view === 'docs' ? 'page' : undefined}>文档</a>
+        </nav>
+      </> : <span class="lab-edition">THREE DIRECTIONS. ONE KRATOS.</span>}
+    </div>
+    <slot />
+    <script>
+      document.querySelectorAll<HTMLButtonElement>('[data-copy]').forEach((button) => {
+        button.addEventListener('click', async () => {
+          const code = button.closest('.terminal')?.querySelector('code')?.textContent;
+          if (!code) return;
+          try {
+            await navigator.clipboard.writeText(code);
+            button.textContent = '已复制 ✓';
+          } catch {
+            button.textContent = '请选中命令复制';
+          }
+          window.setTimeout(() => { button.textContent = '复制命令'; }, 2500);
+        });
+      });
+      document.querySelector<HTMLButtonElement>('[data-docs-toggle]')?.addEventListener('click', (event) => {
+        const button = event.currentTarget as HTMLButtonElement;
+        const open = button.getAttribute('aria-expanded') !== 'true';
+        button.setAttribute('aria-expanded', String(open));
+        document.querySelector('#docs-sidebar')?.classList.toggle('is-open', open);
+      });
+    </script>
+  </body>
+</html>

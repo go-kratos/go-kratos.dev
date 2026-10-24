@@ -44,6 +44,26 @@ All commands are run from the root of the project, from a terminal:
 | `npm run astro ...`       | Run CLI commands like `astro add`, `astro check` |
 | `npm run astro -- --help` | Get help using the Astro CLI                     |
 
+## Glacier theme
+
+The English (`/`) and Chinese (`/zh-cn/`) homepages use Glacier, with matching Starlight documentation and blog styles. New visitors start in light mode; existing dark and system preferences are retained. Search, localized navigation, code copying, and mobile navigation use Starlight's existing functionality.
+
+Production theme styles live in `src/styles/global.css` and `src/styles/glacier-landing.css`. Homepage content and shared architecture artwork live in `src/components/glacier/`.
+
+## Theme design previews
+
+Run `pnpm dev` and open `http://localhost:4321/theme-lab/` to compare three visual directions:
+
+| Theme | Landing page | Documentation |
+| :--- | :--- | :--- |
+| Obsidian — 深空薄荷 | `/theme-lab/obsidian/` | `/theme-lab/obsidian/docs/` |
+| Glacier — 冰川蓝图 | `/theme-lab/glacier/` | `/theme-lab/glacier/docs/` |
+| Ultraviolet — 紫外轨道 | `/theme-lab/ultraviolet/` | `/theme-lab/ultraviolet/docs/` |
+
+The preview toolbar switches themes while preserving the current page type. Documentation samples render the existing Chinese v3 quick-start content. Other documentation links lead to the current site. The three original design studies remain available for comparison, independently of the production Glacier theme; they are excluded from the sitemap and marked `noindex`.
+
+Shared theme tokens and responsive styles live in `src/styles/theme-lab.css`, theme metadata and diagrams in `src/components/theme-lab/`, and preview routes in `src/pages/theme-lab/`.
+
 ## 👀 Want to learn more?
 
 Check out [Starlight’s docs](https://starlight.astro.build/), read [the Astro documentation](https://docs.astro.build), or jump into the [Astro Discord server](https://astro.build/chat).
