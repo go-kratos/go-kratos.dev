@@ -1,0 +1,15 @@
+---
+import ThemeLab from '../../layouts/ThemeLab.astro';
+import { themes } from '../../components/theme-lab/themes';
+import Architecture from '../../components/theme-lab/Architecture.astro';
+---
+<ThemeLab title="主题设计提案">
+  <main id="main-content" class="gallery-main">
+    <div class="gallery-heading"><p class="eyebrow">KRATOS / VISUAL EXPLORATIONS</p><span class="gallery-edition">DESIGN STUDIES — 01 / 03</span><h1>同一个 Kratos。<br /><em>三种新的表达。</em></h1><p>让架构的清晰，也成为视觉的语言。<br />探索三套完整的首页与文档样例，找到适合下一阶段的设计方向。</p></div>
+    <div class="proposal-grid">{themes.map((theme) => <section class="proposal-card" data-concept={theme.id}>
+      <a class="proposal-preview" href={`/theme-lab/${theme.id}/`} aria-label={`预览 ${theme.name} 首页`}><div class="mini-nav"><b>kratos<span>.</span></b><span>FRAMEWORK / DOCS / COMMUNITY</span></div><div class="mini-title"><small>{theme.descriptor}</small><strong>{theme.en}</strong></div><Architecture compact /><span class="preview-open">探索方案 ↗</span></a>
+      <div class="proposal-info"><div class="proposal-name"><span>{theme.number}</span><h2>{theme.name}<small>{theme.label}</small></h2><span class="palette"><i></i><i></i><i></i></span></div><p>{theme.description}</p><div class="proposal-actions"><a href={`/theme-lab/${theme.id}/`}>首页预览 <span>↗</span></a><a href={`/theme-lab/${theme.id}/docs/`}>文档预览 <span>↗</span></a></div></div>
+    </section>)}</div>
+    <div class="gallery-note"><span>↗</span><p>每套方案均包含响应式首页、真实文档内容、代码样式和移动端导航。<br /><span>预览页顶部可随时切换主题，保留当前的首页或文档视图。</span></p><a href="/">返回当前官网 →</a></div>
+  </main>
+</ThemeLab>

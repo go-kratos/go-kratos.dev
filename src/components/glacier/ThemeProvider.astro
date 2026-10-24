@@ -1,0 +1,12 @@
+---
+import DefaultThemeProvider from '@astrojs/starlight/components/ThemeProvider.astro';
+---
+{/* Start new visitors in Glacier light. Existing dark or auto preferences are preserved. */}
+<script is:inline>
+  try {
+    if (localStorage.getItem('starlight-theme') === null) {
+      localStorage.setItem('starlight-theme', 'light');
+    }
+  } catch { /* Leave the system preference unchanged if storage is unavailable. */ }
+</script>
+<DefaultThemeProvider />

@@ -13,11 +13,14 @@ export default defineConfig({
   base: "/",
   output: "static",
   integrations: [
-    sitemap(),
+    sitemap({
+      filter: (page) => !new URL(page).pathname.startsWith('/theme-lab/'),
+    }),
     starlight({
       title: "Kratos",
       logo: {
-        src: "./src/assets/logo.svg",
+        light: "./src/assets/logo.svg",
+        dark: "./src/assets/logo-dark.svg",
       },
       social: [
         {
@@ -39,6 +42,8 @@ export default defineConfig({
       },
       components: {
         Header: "./src/components/Header.astro",
+        PageTitle: "./src/components/glacier/PageTitle.astro",
+        ThemeProvider: "./src/components/glacier/ThemeProvider.astro",
       },
       expressiveCode: {
         tabWidth: 4,
